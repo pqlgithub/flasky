@@ -1,0 +1,63 @@
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Abilities List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_ability') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="abilities-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="abilities-form" action="{{ url_for('main.delete_ability') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Ability Name') }}</th>
+						<th class="text-right">{{ _('操作') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for acl in paginated_abilities.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ acl.id }}" type="checkbox">
+						</td>
+						<td>
+							{{ acl.name }}
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_ability', id=acl.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(paginated_abilities, '.show_abilities') }}
+				</nav>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Product manage') }}
+	</div>
+	<a href="{{ url_for('main.show_products') }}" class="list-group-item {% if sub_menu == 'products'%} active{% endif %}">
+		{{ _('Product List') }}
+	</a>
+	<div class="list-group-header">
+		{{ _('Supplier manage') }}
+	</div>
+	<a href="{{ url_for('main.show_suppliers') }}" class="list-group-item {% if sub_menu == 'suppliers'%} active{% endif %}">
+		{{ _('Supplier List') }}
+	</a>
+	<a href="#" class="list-group-item {% if sub_menu == 'assets'%} active{% endif %}">
+		{{ _('Supplier Dealings') }}
+	</a>
+	<div class="list-group-header">
+		{{ _('Category manage') }}
+	</div>
+	<a href="{{ url_for('main.show_categories') }}" class="list-group-item {% if sub_menu == 'categories'%} active{% endif %}">
+		{{ _('Category List') }}
+	</a>
+
+</div>

@@ -1,0 +1,89 @@
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'finances/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Transaction List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="transactions-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="transactions-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Add Date') }}</th>
+						<th class="text-center">{{ _('Serial Number') }}</th>
+						<th class="text-center">{{ _('Payee') }}</th>
+						<th class="text-center">{{ _('Amount') }}</th>
+						<th class="text-center">{{ _('Trans Type') }}</th>
+						<th class="text-center">{{ _('Relation Target') }}</th>
+						<th>{{ _('Remark') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for trans in paginated_transactions.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ trans.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							{{ momentjs(trans.created_at).fromNow() }}
+						</td>
+						<td class="text-center">
+							<code>{{ trans.serial_no }}</code>
+						</td>
+						<td class="text-center">
+
+						</td>
+						<td class="text-center">
+							{{ trans.amount }}
+						</td>
+						<td class="text-center">
+							{{ trans.type }}
+						</td>
+						<td class="text-center">
+
+						</td>
+						<td>
+							{{ trans.remark }}
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_warehouse', id=trans.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_transactions, '.show_transactions') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'layout/auth.html' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<div class="card card-signin">
+	<img class="img-circle profile-img" src="{{ url_for('static', filename='img/avatar.png') }}">
+	<form class="form-signin" action="" method="post" name="login">
+		{{ form.hidden_tag() }}
+
+		<label for="account" class="sr-only">{{ _('账号') }}</label>
+		<input type="email" id="account" name="account" class="form-control" placeholder="{{ _('账号') }}" required autofocus>
+
+		<label for="password" class="sr-only">{{ _('密码') }}</label>
+		<input type="password" id="password" name="password" class="form-control" placeholder="{{ _('密码') }}" required>
+
+		<button class="btn btn-lg btn-primary btn-block" type="submit">{{ _('现在登录') }}</button>
+
+		<div class="checkbox">
+			<a href="{{ url_for('auth.signup') }}" class="pull-right">{{ _('申请账号？') }}</a>
+			<label>
+				{{ form.remember_me }} 记住我
+			</label>
+		</div>
+
+	</form>
+</div>
+{% endblock %}

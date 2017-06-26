@@ -1,0 +1,138 @@
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'product/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Product List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group form-group-lg">
+			<input type="text" class="form-control" size="60" placeholder="Search products...">
+		</div>
+
+		<div class="form-group">
+			<div class="dropdown">
+				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Type: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Search Type')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Supplier Name') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Contact') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="dropdown">
+				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Sort: Add Date
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Business Mode') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="table-responsive">
+		<form id="warehouses-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Image') }}</th>
+						<th>{{ _('Product Name') }}</th>
+						<th>{{ _('Weight') }}</th>
+						<th>{{ _('Price') }}</th>
+						<th class="text-right">{{ _('Quantity') }}</th>
+						<th class="text-right">{{ _('Status') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for warehouse in paginated_products.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ warehouse.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+
+						</td>
+						<td>
+							{{ product.name|safe }}
+						</td>
+						<td>
+							{{ product.s_weight }}
+						</td>
+						<td>
+							{{ product.cost_price|safe }}
+						</td>
+						<td class="text-right">
+
+						</td>
+						<td class="text-right">
+
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_products, '.show_products') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}
