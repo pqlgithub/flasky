@@ -1,10 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'purchases/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	// 审核 全部 or 单个
+	$('button.verify-all').click(function () {
+		var form_id = $(this).data('form-id');
+		// 检测是否选中
+		selected = [];
+		$('#' + form_id).find('.check-one:checked').each(function () {
+			var id = $(this).val();
+			selected.push(id);
+		});
+		if (selected.length){
+			$.post('{{ url_for("main.ajax_apply_pay") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+				if (result.success) {
+					ids = result.data;
+					for (var i=0,l=ids.length;i<l;i++) {
+						$('#tr_' + ids[i]).remove();
+					}
+				} else {
+					swal("Error", result.status.message, "error");
+				}
+			});
+		} else {
+			swal("Error", "First to selected the one!!!", "error");
+		}
+	});
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Purchases List') }}
+		<span class="pull-right">
+			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+		</span>
+	</h2>
+
+	<ul class="nav nav-tabs nav-tabs-google">
+		{% for pay in purchase_payed %}
+		<li role="presentation" {% if f == pay[0] %}class="active"{% endif %}>
+			<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}">{{ pay[1] }}</a>
+		</li>
+		{% endfor %}
+	</ul>
+
+	<div class="table-responsive">
+		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Status') }}</th>
+						<th>{{ _('Purchase Serial') }}</th>
+						<th>{{ _('Supplier') }}</th>
+						<th>{{ _('Warehouse') }}</th>
+						<th class="text-center">{{ _('Quantity') }}</th>
+						<th class="text-center">{{ _('Amount') }}</th>
+						<th class="text-right">{{ _('Add Date') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for purchase in paginated_purchases.items %}
+					<tr id="tr_{{ purchase.id }}">
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							<label class="label label-{{ purchase.payed_label[2] }}">{{ purchase.payed_label[1] }}</label>
+						</td>
+						<td>
+							{{ purchase.serial_no }}
+						</td>
+						<td>
+							{{ purchase.supplier.name }}
+						</td>
+						<td>
+							{{ purchase.warehouse.name }}
+						</td>
+						<td class="text-center">
+							{{ purchase.quantity_sum }}
+						</td>
+						<td class="text-center">
+							￥{{ purchase.total_amount }}
+						</td>
+						<td class="text-right">
+							{{ momentjs(purchase.created_at).fromNow() }}
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_purchase', id=purchase.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_purchases, '.payments') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Shop List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+
+	</div>
+{% endblock %}

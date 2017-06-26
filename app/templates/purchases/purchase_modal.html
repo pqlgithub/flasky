@@ -1,10 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Add Product') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form" action="" method="post" id="sku-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group form-group-lg">
+					<div class="input-group input-group-lg">
+						<input type="text" name="q" value="" class="form-control" placeholder="Search sku or name..." >
+						<div class="input-group-btn">
+							<button class="btn btn-primary" type="button">
+								<i class="glyphicon glyphicon-search"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th class="text-center">
+								<input name="check_all" type="checkbox" class="check-all">
+							</th>
+							<th>{{ _('Image') }}</th>
+							<th>{{ _('SKU') }}</th>
+							<th>{{ _('Product Name') }}</th>
+							<th class="text-center">{{ _('Attributes') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-right">{{ _('Total Stock') }}</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for sku in skus %}
+					<tr id="tr_sku_{{ sku.id }}">
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							<img src="{{ sku.cover.view_url }}" width="60px">
+						</td>
+						<td>
+							{{ sku.serial_no }}
+						</td>
+						<td>
+							{{ sku.product.name }}
+						</td>
+						<td>
+							{{ sku.s_model }}
+						</td>
+						<td>
+							{{ sku.cost_price }}
+						</td>
+						<td>
+
+						</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="sku-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+
+	// 全选 or 反选
+	$('#sku-form').find('input.check-all').bind('click', function() {
+		if ($(this).is(':checked')){
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', true);
+		} else {
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', false);
+		}
+	});
+
+	$('#sku-form').find('input.check-one').click(function () {
+		// 取消全选
+		if (!$(this).is(':checked')) {
+			$('input.check-all')
+				.prop('checked', false);
+		}
+	});
+
+	$('#sku-submit-btn').click(function (e) {
+		data = $('#sku-form').serialize();
+
+		$.ajax({
+			url: "{{ url_for('main.ajax_find_skus') }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#sku-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#sku-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+					$('#sku-modal').modal('hide');
+					// 解析结果
+					$('#purchase-products')
+						.append(parse_result(result.data));
+					recount();
+				} else {
+					$('#sku-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

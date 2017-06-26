@@ -1,10 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	$('.ajax-role').click(function (e) {
+		var $btn = $(this), post_url = $(this).attr('href');
+		$('#modal-role').remove();
+		$.ajax({
+			url: post_url,
+			dataType: 'html',
+			beforeSend: function() {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function(html) {
+				$('body').append('<div id="modal-role" role="dialog" class="modal">' + html + '</div>');
+
+				$('#modal-role').modal('show');
+			}
+		});
+		return false;
+	});
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Users List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<ul class="nav nav-tabs nav-tabs-google">
+		<li role="presentation" class="active">
+			<a href="#">{{ _('All') }}</a>
+		</li>
+		{% for d in department %}
+		<li role="presentation">
+			<a href="#">{{ d.name }}</a>
+		</li>
+		{% endfor %}
+	</ul>
+
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Account') }}</th>
+					<th>{{ _('Mobile') }}</th>
+					<th>{{ _('Roles') }}</th>
+					<th>{{ _('Department') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in paginated_users.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ user.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ user.email }} / {{ user.username }}
+					</td>
+					<td>{{ user.mobile }}</td>
+					<td>
+						{{ user.role_group }}
+					</td>
+					<td></td>
+					<td class="text-right"></td>
+					<td class="text-right">
+						<a href="{{ url_for('main.set_role', user_id=user.id)}}" class="btn btn-icon ajax-role btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							{{ _('Set Role') }}
+						</a>
+						<a href="{{ url_for('main.edit_user', id=user.id) }}" class="btn btn-icon btn-primary waves-effect waves-light" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<i class="glyphicon glyphicon-edit"></i>
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(paginated_users, '.show_users') }}
+				</nav>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}

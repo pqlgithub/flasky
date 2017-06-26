@@ -1,10 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Supplier List') }}
+		<span class="pull-right">
+			<button class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Import') }}">
+				<i class="glyphicon glyphicon-import"></i>
+			</button>
+			<a href="{{ url_for('main.create_supplier') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="suppliers-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group form-group-lg">
+			<input type="text" class="form-control" size="60" placeholder="Search suppliers...">
+		</div>
+
+		<div class="form-group">
+			<div class="dropdown">
+				<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Type: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Search Type')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Supplier Name') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Contact') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="dropdown">
+				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Sort: Add Date
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Business Mode') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="table-responsive">
+		<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Supplier Name') }}</th>
+						<th class="text-center">{{ _('Business Mode') }}</th>
+						<th class="text-center">{{ _('Contact') }}</th>
+						<th class="text-center">{{ _('Phone') }}</th>
+						<th class="text-center">{{ _('End Date') }}</th>
+						<th>{{ _('Remark') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for supplier in paginated_suppliers.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ supplier.id }}" type="checkbox">
+						</td>
+						<td>
+							{{ supplier.name }}
+						</td>
+						<td class="text-center">
+							{% if supplier.type == 'C' %}
+							<span class="label label-primary">
+								{{ supplier.desc_type[1] }}
+							</span>
+							{% elif supplier.type == 'Q'%}
+							<span class="label label-warning">
+								{{ supplier.desc_type[1] }}
+							</span>
+							{% else %}
+							<span class="label label-info">
+								{{ supplier.desc_type[1] }}
+							</span>
+							{% endif %}
+						</td>
+						<td class="text-center">
+							{{ supplier.contact_name }}
+						</td>
+						<td class="text-center">
+							{{ supplier.phone }}
+						</td>
+						<td class="text-center">
+							{{ supplier.end_date }}
+						</td>
+						<td>
+							{{ supplier.remark }}
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_suppliers, '.show_suppliers') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}

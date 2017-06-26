@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Warehouse manage') }}
+	</div>
+	<a href="#" class="list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
+		{{ _('Shop List') }}
+		<span class="badge">14</span>
+	</a>
+
+	<div class="list-group-header">
+		{{ _('Warehouse Allot') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('Waiting Out') }}
+		<span class="badge">0</span>
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('In Transit') }}
+		<span class="badge">0</span>
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Part In') }}
+		<span class="badge">0</span>
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('All In') }}
+		<span class="badge">0</span>
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Canceled') }}
+		<span class="badge">0</span>
+	</a>
+
+
+	<div class="list-group-header">
+		{{ _('Warehouse settings') }}
+	</div>
+	<a href="{{ url_for('main.show_warehouses') }}" class="list-group-item {% if sub_menu == 'warehouses'%} active{% endif %}">
+		{{ _('Warehouse List') }}
+	</a>
+
+</div>

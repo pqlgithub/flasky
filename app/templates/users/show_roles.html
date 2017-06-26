@@ -1,10 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	$('.ajax-role').click(function (e) {
+		var $btn = $(this), post_url = $(this).attr('href');
+		$('#role-modal').remove();
+		$.ajax({
+			url: post_url,
+			dataType: 'html',
+			beforeSend: function() {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function(html) {
+				$('body').append('<div id="role-modal" role="dialog" class="modal">' + html + '</div>');
+
+				$('#role-modal').modal('show');
+			}
+		});
+		return false;
+	});
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Role List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_role') }}" class="btn btn-primary ajax-role" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="roles-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="roles-form" action="{{ url_for('main.delete_role') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Role Name') }}</th>
+						<th>{{ _('Title') }}</th>
+						<th>{{ _('Description') }}</th>
+						<th>{{ _('Has Abilities') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for role in paginated_roles.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ role.id }}" type="checkbox">
+						</td>
+						<td>
+							{{ role.name }}
+						</td>
+						<td>{{ role.title }}</td>
+						<td>{{ role.description }}</td>
+						<td>{{ role.ability_group }}</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.set_ability', role_id=role.id)}}" class="btn btn-icon ajax-role btn-primary" data-toggle="tooltip" data-original-title="{{ _('Set Ability') }}">
+								{{ _('Set Ability') }}
+							</a>
+							<a href="{{ url_for('main.edit_role', id=role.id)}}" class="btn btn-icon ajax-role btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_roles, '.show_roles') }}
+			</nav>
+		</div>
+	</div>
+
+{% endblock %}

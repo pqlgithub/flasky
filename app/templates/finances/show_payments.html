@@ -5,12 +5,53 @@
 	{% include 'finances/_sub_menu.html' %}
 {% endblock %}
 
+{% block jquery %}
+{#<script type="text/javascript">#}
+	$('.confirm-payed').click(function (e) {
+		var $btn = $(this), post_url=$(this).data('href');
+		swal({
+			title: "Confirm payment already?",
+			text: "You will not be able to recover!",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: 'btn-warning',
+			confirmButtonText: "Yes, I do!",
+			closeOnConfirm: true
+		}, function (is_confirm) {
+			if (is_confirm) {
+				$.ajax({
+					url: post_url,
+					type: 'POST',
+					data: {'csrf_token': csrf_token},
+					dataType: 'json',
+					beforeSend: function() {
+						$btn.prop('disabled', true);
+					},
+					complete: function() {
+						$btn.prop('disabled', false);
+					},
+					success: function(result) {
+						if (result.success) {
+							$('#tr_' + result.data.id).remove();
+						} else {
+							$('div.main').prepend(display_alert(result.status.message));
+						}
+					}
+				});
+			}
+		});
+
+		return false;
+	});
+{#</script>#}
+{% endblock %}
+
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Transaction List') }}
+		{{ _('Payment List') }}
 		<span class="pull-right">
-			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_transaction') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all" data-form-id="transactions-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
@@ -18,6 +59,16 @@
 			</button>
 		</span>
 	</h2>
+
+	<ul class="nav nav-tabs nav-tabs-google">
+		<li role="presentation" {% if status==1 %}class="active"{% endif %}>
+			<a href="{{ url_for('main.show_payments') }}?s=1">{{ _('Waiting') }}</a>
+		</li>
+		<li role="presentation" {% if status==2 %}class="active"{% endif %}>
+			<a href="{{ url_for('main.show_payments') }}?s=2">{{ _('Finished') }}</a>
+		</li>
+
+	</ul>
 
 	<div class="table-responsive">
 		<form id="transactions-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
@@ -29,9 +80,10 @@
 						<th class="text-center">
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
+						<th class="text-center">{{ _('Status') }}</th>
 						<th class="text-center">{{ _('Add Date') }}</th>
 						<th class="text-center">{{ _('Serial Number') }}</th>
-						<th class="text-center">{{ _('Payee') }}</th>
+						<th class="text-center">{{ _('Receives') }}</th>
 						<th class="text-center">{{ _('Amount') }}</th>
 						<th class="text-center">{{ _('Trans Type') }}</th>
 						<th class="text-center">{{ _('Relation Target') }}</th>
@@ -40,10 +92,17 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for trans in paginated_transactions.items %}
-					<tr>
+					{% for trans in paginated_payments.items %}
+					<tr id="tr_{{ trans.id }}">
 						<td class="text-center">
 							<input name="selected[]" class="check-one" value="{{ trans.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							{% if trans.status == 2 %}
+							<label class="label label-success">{{ trans.status_label }}</label>
+							{% else %}
+							<label class="label label-danger">{{ trans.status_label }}</label>
+							{% endif %}
 						</td>
 						<td class="text-center">
 							{{ momentjs(trans.created_at).fromNow() }}
@@ -52,24 +111,29 @@
 							<code>{{ trans.serial_no }}</code>
 						</td>
 						<td class="text-center">
-
+							{{ trans.transact_user }}
 						</td>
 						<td class="text-center">
 							{{ trans.amount }}
 						</td>
 						<td class="text-center">
-							{{ trans.type }}
+							{{ trans.target_type_label[1] }}
 						</td>
 						<td class="text-center">
-
+							{{ trans.target.serial_no }}
 						</td>
 						<td>
 							{{ trans.remark }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_warehouse', id=trans.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							{% if trans.status != 2 %}
+							<a href="{{ url_for('main.edit_payment', id=trans.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								<i class="glyphicon glyphicon-edit"></i>
 							</a>
+							<button data-href="{{ url_for('main.ajax_payed', id=trans.id) }}" class="btn btn-icon btn-warning confirm-payed" data-toggle="tooltip" data-original-title="{{ _('Confirm Payed') }}">
+								<i class="glyphicon glyphicon-ok"></i>
+							</button>
+							{% endif %}
 						</td>
 					</tr>
 					{% endfor %}
@@ -81,7 +145,7 @@
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_transactions, '.show_transactions') }}
+				{{ macros.pagination_widget(paginated_payments, '.show_payments', s=status) }}
 			</nav>
 		</div>
 	</div>

@@ -1,10 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Asset List') }}
+		<span class="pull-right">
+			<button class="btn btn-danger delete-all" data-form-id="assets-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="btn btn-primary" data-original-title="{{ _('Upload') }}">
+		<i class="glyphicon glyphicon-upload"></i> Upload Files
+	</a>
+
+	<div class="table-responsive">
+		<form id="assets-form" action="{{ url_for('main.delete_asset') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Directory') }}</th>
+						<th>{{ _('Filepath') }}</th>
+						<th class="text-center">{{ _('Size') }}</th>
+						<th class="text-center">{{ _('Upload Date') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for asset in paginated_assets.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ asset.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							{{ asset.directory.name }}
+						</td>
+						<td>
+							{{ asset.filepath }}
+						</td>
+						<td class="text-center">
+							{{ asset.size }} K
+						</td>
+						<td class="text-center">
+							{{ momentjs(asset.created_at).fromNow() }}
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.view_asset', id=asset.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('View') }}">
+								<i class="glyphicon glyphicon-eye-open"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_assets, '.show_assets') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}

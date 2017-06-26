@@ -1,10 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Set the role') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="role-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					{% for role in roles %}
+					<div class="col-sm-4">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" value="{{ role.id }}" name="selected[]" {% if role.name in belong_roles %}checked="checked"{% endif %}>
+								{{ role.name }}
+							</label>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="role-submit-btn" class="btn btn-primary">{{ _('Save changes') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+	var list_url = "{{ url_for('main.show_users') }}";
+
+	$('#role-submit-btn').click(function (e) {
+		data = $('#role-form').serialize();
+
+		$.ajax({
+			url: "{{ post_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#role-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#role-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#role-modal').modal('hide');
+					// 自动刷新
+					window.location.href = list_url;
+				} else {
+					$('#role-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

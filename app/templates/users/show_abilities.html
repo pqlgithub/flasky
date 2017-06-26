@@ -28,7 +28,7 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th>{{ _('Ability Name') }}</th>
-						<th class="text-right">{{ _('操作') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -51,13 +51,13 @@
 			</table>
 		</form>
 
-		<div class="pages-box">
-			<div class="pull-left">
-				<nav aria-label="Page navigation">
-					{{ macros.pagination_widget(paginated_abilities, '.show_abilities') }}
-				</nav>
-			</div>
-		</div>
+	</div>
 
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_abilities, '.show_abilities') }}
+			</nav>
+		</div>
 	</div>
 {% endblock %}

@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'finances/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+		{{ _('Add Payment') }}
+		{% else %}
+		{{ _('Edit Payment') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="transaction-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_payments') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<form id="transaction-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group required {% if form.errors.supplier_id %} has-error{% endif %}">
+			{{ form.supplier_id.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-10">
+				{{ form.supplier_id(id="supplier_id", class="form-control select2") }}
+				{% for error in form.errors.supplier_id %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg required">
+			{{ form.serial_no.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-10">
+				{{ form.serial_no(id="serial_no", class="form-control") }}
+			</div>
+		</div>
+	</form>
+
+</div>
+{% endblock %}

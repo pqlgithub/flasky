@@ -1,10 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Add SKU') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="sku-form">
+				{{ form.hidden_tag() }}
+				<div class="form-group form-group-lg">
+					{{ form.serial_no.label(class="col-sm-2 control-label text-right") }}
+					<div class="col-sm-4">
+						{{ form.serial_no(class="form-control", placeholder="serial number", readonly="true") }}
+					</div>
+
+				</div>
+
+				<div class="form-group form-group-lg">
+					{{ form.cost_price.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<div class="input-group">
+							{{ form.cost_price(id="cost_price", class="form-control") }}
+							<span class="input-group-addon">
+								CNY
+							</span>
+						</div>
+					</div>
+					{{ form.sale_price.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<div class="input-group">
+							{{ form.sale_price(id="sale_price", class="form-control") }}
+							<span class="input-group-addon">
+								CNY
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					{{ form.s_model.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.s_model(class="form-control", placeholder="model") }}
+					</div>
+					{{ form.s_weight.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<div class="input-group">
+							{{ form.s_weight(id="d_weight", class="form-control") }}
+							<span class="input-group-addon">
+								g
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					{{ form.remark.label(class="col-sm-2 control-label text-right") }}
+					<div class="col-sm-10">
+						{{ form.remark(class="form-control", placeholder="remark") }}
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					{{ form.sku_cover_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-10">
+						{% if mode == 'create' %}
+						<a href="javascript:void(0);" id="sku_cover_thumb_image" data-target="sku_cover" data-toggle="image" class="img-thumbnail">
+							<img src="{{ url_for('static', filename='img/no_image-100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_image-100x100.png') }}">
+						</a>
+						{% else %}
+						<a href="javascript:void(0);" id="sku_cover_thumb_image" data-target="sku_cover" data-toggle="image" class="img-thumbnail">
+							<img src="{{ sku.cover.view_url|default(url_for('static', filename='img/no_image-100x100.png')) }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_image-100x100.png') }}">
+						</a>
+						{% endif %}
+						<input id="sku_cover_id" name="sku_cover_id" value="{{ form.sku_cover_id.data }}" type="hidden">
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="sku-submit-btn" class="btn btn-primary">{{ _('Save changes') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+
+	$('#sku-submit-btn').click(function (e) {
+		data = $('#sku-form').serialize();
+
+		$.ajax({
+			url: "{{ post_sku_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#sku-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#sku-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#sku-modal').modal('hide');
+					$('#product-skus').load('{{ url_for("main.show_skus", id=product.id) }}');
+				} else {
+					$('#sku-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

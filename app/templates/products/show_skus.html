@@ -1,10 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<table class="table table-bordered m-t-20">
+	<thead>
+	<tr>
+		<th class="text-center">Image</th>
+		<th>Serial No.</th>
+		<th>Cost Price</th>
+		<th>Model</th>
+		<th>Weight</th>
+		<th>Remark</th>
+		<th class="text-right">Action</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for sku in product_skus %}
+	<tr id="tr_sku_{{ sku.id }}">
+		<td class="text-center">
+			<img src="{{ sku.cover.view_url }}" width="60px">
+		</td>
+		<td>
+			{{ sku.serial_no }}
+		</td>
+		<td>
+			{{ sku.cost_price }}
+		</td>
+		<td>
+			{{ sku.s_model }}
+		</td>
+		<td>
+			{{ sku.s_weight}}
+		</td>
+		<td>
+			{{ sku.remark }}
+		</td>
+		<td class="text-right">
+			<a href="{{ url_for('main.edit_sku', id=sku.product_id, s_id=sku.id) }}" class="btn btn-icon ajax-sku btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+				<i class="glyphicon glyphicon-edit"></i>
+			</a>
+			<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn btn-icon ajax-delete-sku btn-danger" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</a>
+		</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>

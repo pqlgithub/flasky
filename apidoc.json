@@ -1,0 +1,12 @@
+{
+  "name": "Mic REST API",
+  "version": "1.0.0",
+  "description": "Mic RESR API",
+  "title": "Mic API Doc",
+  "url": "http://localhost:5000",
+  "template": {
+	"forceLanguage":"en",
+	"withCompare": true,
+	"withGenerator": true
+  }
+}

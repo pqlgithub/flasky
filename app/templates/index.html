@@ -1,10 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Dashboard') }}
+	</div>
+	<a href="#" class="list-group-item active">
+		{{ _('Account') }}
+		<span class="badge">14</span>
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Tasks') }}
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Helpers') }}
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Logs') }}
+	</a>
+</div>
+{% endblock %}
+
+{% block mainbar %}
+<div class="page-list">
+	<h2 class="page-header">{{ _('Dashboard') }}</h2>
+	<h3 class="sub-header">{{ _('World Map') }}</h3>
+
+	<h3 class="sub-header">{{ _('Sales Analytics') }}</h3>
+
+	<div class="row">
+		<div class="col-md-12">
+			<h3 class="sub-header">{{ _('Latest Orders') }}</h3>
+			<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>{{ _('Order ID') }}</th>
+							<th>{{ _('Customer') }}</th>
+							<th>{{ _('Status') }}</th>
+							<th>{{ _('Date Added') }}</th>
+							<th>{{ _('Total') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1,001</td>
+							<td>Lorem</td>
+							<td>ipsum</td>
+							<td>dolor</td>
+							<td>sit</td>
+							<td class="text-right">
+								<a href="" class="btn btn-icon btn-primary">
+									{{ _('View') }}
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</div>
+{% endblock %}
+
+

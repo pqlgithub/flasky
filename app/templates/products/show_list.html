@@ -2,7 +2,7 @@
 {% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
-	{% include 'product/_sub_menu.html' %}
+	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
 {% block mainbar %}
@@ -10,10 +10,13 @@
 	<h2 class="page-header">
 		{{ _('Product List') }}
 		<span class="pull-right">
-			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
+			<a href="{{ url_for('main.show_products') }}" data-toggle="tooltip" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
+				<i class="glyphicon glyphicon-refresh"></i>
+			</a>
+			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
+			<button class="btn btn-danger" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -28,7 +31,7 @@
 
 		<div class="form-group">
 			<div class="dropdown">
-				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					Type: All
 					<span class="caret"></span>
 				</button>
@@ -50,7 +53,7 @@
 
 		<div class="form-group">
 			<div class="dropdown">
-				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					Sort: Add Date
 					<span class="caret"></span>
 				</button>
@@ -83,6 +86,7 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th class="text-center">{{ _('Image') }}</th>
+						<th class="text-center">{{ _('Serial No') }}</th>
 						<th>{{ _('Product Name') }}</th>
 						<th>{{ _('Weight') }}</th>
 						<th>{{ _('Price') }}</th>
@@ -92,22 +96,25 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for warehouse in paginated_products.items %}
+					{% for product in paginated_products.items %}
 					<tr>
 						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ warehouse.id }}" type="checkbox">
+							<input name="selected[]" class="check-one" value="{{ product.id }}" type="checkbox">
 						</td>
 						<td class="text-center">
-
+							<img src="{{ product.cover.view_url }}" width="60px">
+						</td>
+						<td class="text-center">
+							{{ product.serial_no }}
 						</td>
 						<td>
 							{{ product.name|safe }}
 						</td>
 						<td>
-							{{ product.s_weight }}
+							{{ product.s_weight|round(precision=2) }}
 						</td>
 						<td>
-							{{ product.cost_price|safe }}
+							{{ product.cost_price|round(precision=2) }}
 						</td>
 						<td class="text-right">
 

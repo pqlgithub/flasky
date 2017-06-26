@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Transaction List') }}
+	</div>
+	<a href="{{ url_for('main.show_payments') }}" class="list-group-item {% if sub_menu == 'payments' %} active{% endif %}">
+		{{  _('Payment') }}
+		<span class="badge">0</span>
+	</a>
+	<a href="{{ url_for('main.show_receives') }}?t=1" class="list-group-item {% if sub_menu == 'receives' %} active{% endif %}">
+		{{  _('Receivables') }}
+		<span class="badge">0</span>
+	</a>
+</div>

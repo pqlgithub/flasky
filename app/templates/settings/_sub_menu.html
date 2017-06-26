@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('System settings') }}
+	</div>
+	<a href="{{ url_for('main.show_stores') }}" class="list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
+		{{ _('Store List') }}
+	</a>
+	<div class="list-group-header">
+		{{ _('Asset manage') }}
+	</div>
+	<a href="{{ url_for('main.show_assets') }}" class="list-group-item {% if sub_menu == 'assets'%} active{% endif %}">
+		{{ _('Asset List') }}
+	</a>
+	<a href="#" class="list-group-item {% if sub_menu == 'directories'%} active{% endif %}">
+		{{ _('Directory List') }}
+	</a>
+	<div class="list-group-header">
+		{{ _('Privilege manage') }}
+	</div>
+	<a href="{{ url_for('main.show_users') }}" class="list-group-item {% if sub_menu == 'users'%} active{% endif %}">
+		{{ _('User List') }}
+	</a>
+	<a href="{{ url_for('main.show_roles') }}" class="list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
+		{{ _('Role List') }}
+	</a>
+	<a href="{{ url_for('main.show_abilities') }}" class="list-group-item {% if sub_menu == 'abilities'%} active{% endif %}">
+		{{ _('Ability List') }}
+	</a>
+</div>

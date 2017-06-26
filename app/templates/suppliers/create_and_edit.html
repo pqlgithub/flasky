@@ -1,10 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+			{{ _('Add Supplier') }}
+		{% else %}
+			{{ _('Edit Supplier') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="supplier-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_suppliers') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<form id="supplier-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group required {% if form.errors.type %} has-error{% endif %}">
+			{{ form.type.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.type(id="type", class="form-control select2") }}
+				{% for error in form.errors.type %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.name(id="name", class="form-control") }}
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg required {% if form.errors.full_name %} has-error{% endif %}">
+			{{ form.full_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-10">
+				{{ form.full_name(id="full_name", class="form-control") }}
+				{% for error in form.errors.full_name %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			{{ form.start_date.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				<div class="input-group">
+					{{ form.start_date(id="start_date", class="form-control") }}
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+				</div>
+			</div>
+			{{ form.end_date.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				<div class="input-group">
+					{{ form.end_date(id="end_date", class="form-control") }}
+					<span class="input-group-addon">
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			{{ form.contact_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				<div class="input-group">
+					<span class="input-group-addon">@</span>
+					{{ form.contact_name(id="contact_name", class="form-control") }}
+				</div>
+			</div>
+			{{ form.phone.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.phone(id="phone", class="form-control") }}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			{{ form.address.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-10">
+				{{ form.address(id="address", class="form-control") }}
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			{{ form.remark.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-10">
+				{{ form.remark(id="remark", class="form-control") }}
+			</div>
+		</div>
+
+	</form>
+</div>
+{% endblock %}

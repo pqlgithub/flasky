@@ -1,10 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Information Aggregation') }}
+	</div>
+	<a href="#" class="list-group-item {% if sub_menu == 'stats'%} active{% endif %}">
+		{{ _('All Aggregation') }}
+	</a>
+
+	<div class="list-group-header">
+		{{ _('Product Analytics') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('New Products') }}
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Sale Quantity') }}
+	</a>
+
+	<div class="list-group-header">
+		{{ _('Order Analytics') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('Performance summary') }}
+	</a>
+	<a href="#" class="list-group-item">
+		{{ _('Customer distribution') }}
+	</a>
+
+	<div class="list-group-header">
+		{{ _('Sales Analytics') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('Profit Charts') }}
+	</a>
+</div>

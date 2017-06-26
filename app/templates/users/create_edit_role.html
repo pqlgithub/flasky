@@ -1,10 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Add role') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="role-form">
+				{{ form.hidden_tag() }}
+				<div class="form-group form-group-lg">
+					<label for="name" class="col-sm-3 control-label text-right">{{ form.name.label }}</label>
+					<div class="col-sm-9">
+						{{ form.name(class="form-control", placeholder="name") }}
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label for="name" class="col-sm-3 control-label text-right">{{ form.title.label }}</label>
+					<div class="col-sm-9">
+						{{ form.title(class="form-control", placeholder="title") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="name" class="col-sm-3 control-label text-right">{{ form.description.label }}</label>
+					<div class="col-sm-9">
+						{{ form.description(class="form-control") }}
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="role-submit-btn" class="btn btn-primary">{{ _('Save changes') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+	var list_url = "{{ url_for('main.show_roles') }}";
+
+	$('#role-submit-btn').click(function (e) {
+		data = $('#role-form').serialize();
+
+		$.ajax({
+			url: "{{ post_url }}",
+			type: 'post',
+			data: data,
+			beforeSend: function () {
+				$('#role-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#role-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				$('#role-modal').modal('hide');
+				// 自动刷新
+				window.location.href = list_url;
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

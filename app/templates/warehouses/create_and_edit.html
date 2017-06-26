@@ -1,10 +1,251 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'warehouses/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	var warehouse_id = {{ warehouse_id|default(0) }};
+	var counter = 0;
+	$('.add-row').click(function (e) {
+		var new_row = '<tr id="tr_'+ counter +'">' +
+			'<td><input type="text" name="name_'+ counter +'" class="form-control" placeholder="无货架位"></td>' +
+			'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" value="1"> 良品 </label>' +
+			'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> 次品 </label>' +
+			'</td>' +
+			'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-primary save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row">{{ _("Delete") }}</button> </td>' +
+			'</tr>';
+
+		$('#shelves-wrapper').append(new_row);
+		
+		$('.save-row').click(function (e) {
+			var n = $(this).data('number'), $this=$(this);
+			var data = {
+				'name': $('input[name="name_'+ n +'"]').val(),
+				'type': $('input[name="type_'+ n +'"]:checked').val(),
+				'warehouse_id': warehouse_id,
+				'csrf_token': csrf_token
+			};
+			$.post({
+				url: '{{ url_for("main.add_shelve") }}',
+				dataType: 'json',
+				data: data,
+				beforeSend: function() {
+					$this.prop('disabled', true);
+				},
+				complete: function() {
+					$this.prop('disabled', false);
+				},
+				success: function(result) {
+					if (result.success) {
+						var added_row = '<tr>' +
+								'<td>'+ result.data.name +'</td>' +
+								'<td>'+ result.data.type +'</td>' +
+								'<td class="text-center">--</td>' +
+								'</tr>';
+						$this.parent().parent()
+							.before(added_row)
+							.end()
+							.remove();
+					} else {
+						$('#warehouse-form').prepend(display_alert(result.status.message))
+					}
+				}
+			});
+		});
+
+		$('.delete-row').click(function () {
+			$(this).parent().parent().remove();
+		});
+
+		counter +=1;
+
+		return false;
+	});
+
+	$('.ajax-delete').click(function (e) {
+		var id = $(this).data('target'), post_url=$(this).attr('href');
+		$.post(post_url, {'id': id, 'csrf_token': csrf_token}, function (result) {
+			if (result.success) {
+				$('#tr_'+id).remove();
+			} else {
+				$('#warehouse-form').prepend(display_alert(result.status.message))
+			}
+		});
+		return false;
+	});
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+		{{ _('Add Warehouse') }}
+		{% else %}
+		{{ _('Edit Warehouse') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="warehouse-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_warehouses') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+
+	<form id="warehouse-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<ul class="nav nav-tabs m-b-20" role="tablist">
+			<li role="presentation" class="active">
+				<a id="general-tab" href="#general" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
+					{{ _('General') }}
+				</a>
+			</li>
+			{% if mode == 'edit' %}
+			<li role="presentation">
+				<a href="#shelves" role="tab" id="shelves-tab" data-toggle="tab" aria-controls="shelves">
+					{{ _('Shelves') }}
+				</a>
+			</li>
+			{% endif %}
+		</ul>
+
+		<div class="tab-content">
+			<div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
+				<div class="form-group form-group-lg required {% if form.errors.type %} has-error{% endif %}">
+					<label for="type" class="col-sm-2 control-label">{{ form.type.label }}</label>
+					<div class="col-sm-4">
+						{{ form.type(id="type", class="list-inline radio-group") }}
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg required {% if form.errors.name %} has-error{% endif %}">
+					<label for="name" class="col-sm-2 control-label">{{ form.name.label }}</label>
+					<div class="col-sm-10">
+						{{ form.name(id="name", class="form-control") }}
+						{% for error in form.errors.name %}
+						<span class="help-block">{{ error }}</span>
+						{% endfor %}
+					</div>
+				</div>
+
+
+
+				<div class="form-group form-group-lg">
+					{{ form.is_default.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<div class="checkbox">
+							<label>
+								{{ form.is_default(id="is_default") }} {{ _('Yes') }}
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label for="address" class="col-sm-2 control-label">{{ form.address.label }}</label>
+					<div class="col-sm-10">
+						{{ form.address(id="address", class="form-control") }}
+					</div>
+				</div>
+				<div class="form-group form-group-lg">
+					<label for="en_address" class="col-sm-2 control-label">{{ form.en_address.label }}</label>
+					<div class="col-sm-10">
+						{{ form.en_address(id="en_address", class="form-control") }}
+					</div>
+				</div>
+
+
+				<div class="form-group form-group-lg">
+					<label for="username" class="col-sm-2 control-label">{{ form.username.label }}</label>
+					<div class="col-sm-4">
+						{{ form.username(id="username", class="form-control") }}
+					</div>
+					<label for="phone" class="col-sm-2 control-label">{{ form.phone.label }}</label>
+					<div class="col-sm-4">
+						{{ form.phone(id="phone", class="form-control") }}
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label for="email" class="col-sm-2 control-label">{{ form.email.label }}</label>
+					<div class="col-sm-4">
+						{{ form.email(id="email", class="form-control") }}
+					</div>
+					<label for="qq" class="col-sm-2 control-label">{{ form.qq.label }}</label>
+					<div class="col-sm-4">
+						{{ form.qq(id="qq", class="form-control") }}
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label for="description" class="col-sm-2 control-label">{{ form.description.label }}</label>
+					<div class="col-sm-10">
+						{{ form.description(id="description", class="form-control") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="status" class="col-sm-2 control-label">{{ form.status.label }}</label>
+					<div class="col-sm-10">
+						{{ form.status(id="status", class="form-control select2") }}
+					</div>
+				</div>
+			</div>
+
+			{% if mode == 'edit' %}
+			<div id="shelves" class="active tab-pane fade in" role="tabpanel" aria-labelledby="shelves-tab">
+				<div class="btn-group">
+					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ _('Add Shelve') }} <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="javascript:void(0);" class="add-row">Add One</a></li>
+						<li class="disabled"><a href="#">Add Many</a></li>
+					</ul>
+				</div>
+
+				<table class="table table-bordered m-t-20">
+					<thead>
+						<tr>
+							<th>{{ _('Shelve Name') }}</th>
+							<th>{{ _('Shelve Type') }}</th>
+							<th class="text-center">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="shelves-wrapper">
+						<tr>
+							<td>无货架位</td>
+							<td>良品</td>
+							<td class="text-center">--</td>
+						</tr>
+						{% for shelve in warehouse.shelves %}
+						<tr id="tr_{{ shelve.id }}">
+							<td>{{ shelve.name }}</td>
+							<td>
+								{% if shelve.type == 1 %}良品{% else %}次品{% endif %}
+							</td>
+							<td class="text-center">
+								<a href="{{ url_for('main.ajax_delete_shelve') }}" data-target="{{ shelve.id }}" class="btn btn-icon btn-danger ajax-delete" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+									<i class="glyphicon glyphicon-trash"></i>
+								</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			{% endif %}
+		</div>
+
+	</form>
+</div>
+{% endblock %}

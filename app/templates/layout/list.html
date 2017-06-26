@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'product/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Supplier List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="warehouses-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Warehouse Name') }}</th>
+						<th class="text-center">{{ _('Default Warehouse') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for warehouse in paginated_warehouses.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ warehouse.id }}" type="checkbox">
+						</td>
+						<td>
+							{{ warehouse.name }}
+						</td>
+						<td class="text-center">
+
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_warehouses, '.show_warehouses') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}

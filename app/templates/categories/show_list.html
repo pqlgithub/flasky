@@ -1,10 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Category List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_category') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="categories-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="categories-form" action="{{ url_for('main.delete_category') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Category Name') }}</th>
+						<th class="text-center">{{ _('Sort Order') }}</th>
+						<th class="text-right">Status</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for cate in paginated_categories %}
+					<tr role="row">
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ cate.id }}" type="checkbox">
+						</td>
+						<td>{{ cate.name|safe }}</td>
+						<td class="text-center">{{ cate.sort_order }}</td>
+						<td class="text-right">
+							{% if cate.status %}
+							<span class="label label-success">{{ _('Enabled') }}</span>
+							{% else %}
+							<span class="label label-warning">{{ _('Disabled') }}</span>
+							{% endif %}
+						</td>
+						<td class="actions text-right">
+							<a href="{{ url_for('main.edit_category', id=cate.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<i class="glyphicon glyphicon-edit"></i>
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(pagination, '.show_categories') }}
+			</nav>
+		</div>
+	</div>
+</div>
+{% endblock %}
