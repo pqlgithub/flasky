@@ -50,6 +50,9 @@ class TransactDetail(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp)
 
+    __table_args__ = (
+        db.UniqueConstraint('target_id', 'target_type', name='uix_target_id_type'),
+    )
 
     @property
     def status_label(self):

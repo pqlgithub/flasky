@@ -1,0 +1,105 @@
+{% extends "layout/base.html" %}
+{% import "block/_macros.html" as macros %}
+
+{% block sidebar %}
+	{% include 'warehouses/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+		{{ _('Add Warehouse') }}
+		{% else %}
+		{{ _('Edit Warehouse') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="inwarehouse-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_in_warehouses') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+
+	<form id="inwarehouse-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group form-group-lg">
+			<label class="col-sm-2 control-label">{{ _('Scanned goods') }}</label>
+			<div class="col-sm-8">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Scan barcode">
+					<div class="input-group-addon">
+						<i class="glyphicon glyphicon-barcode"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			<label class="col-sm-2 control-label">{{ _('Warehouse') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">{{ in_warehouse.warehouse.name }}</p>
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			<label class="col-sm-2 control-label">{{ _('Remark') }}</label>
+			<div class="col-sm-8">
+				<textarea name="remark" class="form-control">{{ in_warehouse.remark }}</textarea>
+			</div>
+		</div>
+
+		<table class="table table-bordered m-t-20 m-b-30">
+			<thead>
+				<tr>
+					<th class="text-center">{{ _('Product Image') }}</th>
+					<th>{{ _('Product Name') }}</th>
+					<th class="text-center">{{ _('Product Model') }}</th>
+					<th class="text-center">{{ _('Total Quantity') }}</th>
+					<th class="text-center">{{ _('In Quantity') }}</th>
+					<th class="text-center">{{ _('Quantity') }}</th>
+				</tr>
+			</thead>
+			<tbody id="purchase-products">
+				{% for item in in_warehouse.products %}
+				<tr>
+					<td class="text-center">
+						<img src="{{ item.sku.cover.view_url }}" width="60px">
+					</td>
+					<td>
+						{{ item.sku.serial_no }}
+					</td>
+					<td class="text-center">
+						<label class="label label-warning">{{ item.sku.s_model }}</label>
+					</td>
+					<td class="text-center">
+						{{ item.total_quantity }}
+					</td>
+					<td class="text-center">
+						{{ item.in_quantity }}
+					</td>
+					<td class="text-center">
+						<input type="text" name="quantity[{{ item.id }}]" class="form-control input-quantity">
+						<input type="hidden" name="items[]" value="{{ item.id }}">
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+
+	</form>
+</div>
+{% endblock %}

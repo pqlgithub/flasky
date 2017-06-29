@@ -59,11 +59,11 @@
 						<li {% if top_menu == 'products' %}class="active"{% endif %}>
 							<a href="{{ url_for('main.show_products') }}">{{ _('Products') }}</a>
 						</li>
-						<li>
+						<li {% if top_menu == 'purchases' %}class="active"{% endif %}>
 							<a href="{{ url_for('main.show_purchases') }}">{{ _('Purchase') }}</a>
 						</li>
-						<li>
-							<a href="{{ url_for('main.show_warehouses') }}">{{ _('Warehouse') }}</a>
+						<li {% if top_menu == 'warehouses' %}class="active"{% endif %}>
+							<a href="{{ url_for('main.show_stocks') }}">{{ _('Warehouse') }}</a>
 						</li>
 						<li>
 							<a href="../customize/">{{ _('Logistics') }}</a>

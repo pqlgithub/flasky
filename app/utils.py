@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import enum, time, random
+from datetime import datetime
 from flask import jsonify
+from flask_login import current_user
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
 R201_CREATED = { 'code': 201, 'message': 'All created.' }
@@ -10,9 +12,31 @@ R403_FORBIDDEN = { 'code': 403, 'message': 'You can not do this.' }
 R404_NOTFOUND = { 'code': 404, 'message': 'No result matched.' }
 R500_BADREQUEST = { 'code': 500, 'message': 'Request failed.' }
 
+
+
+class Master:
+    """支持多账户管理，根据当前登录用户返回主账号"""
+
+    @staticmethod
+    def master_uid():
+        """获取管理员ID"""
+        return current_user.id if current_user else None
+
+
 def timestamp():
-    '''return the current timestamp as an integer.'''
+    """return the current timestamp as an integer."""
     return time.time()
+
+
+def string_to_timestamp(str_value):
+    """字符串日期时间转换成时间戳"""
+    d = datetime.strptime(str_value, "%Y-%m-%d %H:%M:%S.%f")
+    t = d.timetuple()
+    timestamp = int(time.mktime(t))
+    timestamp = float(str(timestamp) + str("%06d" % d.microsecond)) / 1000000
+
+    return timestamp
+
 
 def gen_serial_no(prefix='1'):
     """生成产品编号"""
@@ -34,7 +58,7 @@ def is_sequence(arg):
 
 
 def full_response(success=True, status=R200_OK, data=None):
-    '''结果响应：带数据和状态信息'''
+    """结果响应：带数据和状态信息"""
     return jsonify({
         'success': success,
         'status': status,
@@ -43,11 +67,16 @@ def full_response(success=True, status=R200_OK, data=None):
 
 
 def status_response(success=True, status=R200_OK):
-    '''结果响应：状态信息'''
+    """结果响应：状态信息"""
     return jsonify({
         'success': success,
         'status': status
     })
+
+
+def custom_response(success=True, message=None):
+    """自定义响应结果"""
+    return status_response(success, custom_status(message))
 
 
 def custom_status(message, code=400):

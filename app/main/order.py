@@ -9,12 +9,12 @@ from ..decorators import user_has, user_is
 
 
 @main.route('/orders')
-@user_has('view_orders')
+#@user_has('view_orders')
 def show_orders():
     return render_template('order/show_list.html')
 
 
 @main.route('/orders/create', methods=['GET', 'POST'])
-@user_is('admin')
+#@user_is('admin')
 def create_order():
     return render_template('order/create_and_edit.html')

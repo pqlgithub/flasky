@@ -2,15 +2,24 @@
   <dictionary name="xiaoyi">
     <words>
       <w>addon</w>
+      <w>asctime</w>
       <w>glyphicon</w>
       <w>inlist</w>
+      <w>inwarehouse</w>
       <w>inwarehouses</w>
       <w>jinja</w>
+      <w>keydown</w>
       <w>lazada</w>
+      <w>levelname</w>
+      <w>lineno</w>
       <w>mainbar</w>
       <w>micku</w>
       <w>momentjs</w>
       <w>navbar</w>
+      <w>outlist</w>
+      <w>outwarehouses</w>
+      <w>persale</w>
+      <w>presale</w>
       <w>purpen</w>
       <w>pymysql</w>
       <w>saled</w>

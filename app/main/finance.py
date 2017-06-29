@@ -6,7 +6,7 @@ from . import main
 from .. import db
 from ..utils import timestamp, gen_serial_no, full_response, status_response, custom_status, R200_OK
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
-from app.models import PayAccount, TransactDetail, Invoice, Purchase, InWarehouse, InWarehouseProduct
+from app.models import PayAccount, TransactDetail, Invoice, Purchase, InWarehouse
 from app.forms import PurchaseForm
 
 top_menu = 'finances'
@@ -54,27 +54,7 @@ def ajax_payed(id):
     # 支付完成，如果是采购单，更新采购单状态
     if transaction.target_type == 1:
         purchase = Purchase.query.get(transaction.target_id)
-        purchase.update_status(5)
         purchase.update_payed(3)
-
-        # 自动生成入库单
-        in_warehouse = InWarehouse(
-            master_uid=purchase.master_uid,
-            serial_no=gen_serial_no('RK'),
-            target_id=purchase.id,
-            warehouse_id=purchase.warehouse_id,
-            total_quantity=purchase.quantity_sum
-        )
-        db.session.add(in_warehouse)
-        # 添加入库单明细
-        items = []
-        for product in purchase.products:
-            item = {}
-            item['product_sku_id'] = product.product_sku_id
-            item['total_quantity'] = product.quantity
-
-            new_item = InWarehouseProduct(in_warehouse=in_warehouse, **item)
-            db.session.add(new_item)
 
     db.session.commit()
 

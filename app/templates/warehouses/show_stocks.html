@@ -34,7 +34,7 @@
 	var submit_filter_form = function () {
 		var data = $('#filter-stocks-form').serialize();
 
-		$.post("{{ url_for('main.show_in_warehouses') }}", data, function (result) {
+		$.post("{{ url_for('main.show_stocks') }}", data, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
 	};
@@ -84,7 +84,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="Search serial no...">
+			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="Search products sku or name...">
 		</div>
 
 		<div class="form-group m-l-5">
@@ -137,9 +137,7 @@
 
 	</form>
 
-	<div id="table-refresh-box">
-		{% include "warehouses/in_table.html" %}
-	</div>
+	{% include "warehouses/stock_table.html" %}
 
 </div>
 {% endblock %}

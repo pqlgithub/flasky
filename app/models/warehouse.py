@@ -3,14 +3,15 @@ from flask import current_app
 
 from app import db
 from ..utils import timestamp
+from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE
+from .purchase import Purchase
 
 __all__ = [
     'Warehouse',
     'WarehouseShelve',
     'InWarehouse',
-    'InWarehouseProduct',
     'OutWarehouse',
-    'OutWarehouseProduct',
+    'StockHistory',
     'ExchangeWarehouse',
     'ExchangeWarehouseProduct'
 ]
@@ -38,7 +39,7 @@ class Warehouse(db.Model):
     qq = db.Column(db.String(32), nullable=True)
     # 类型 1: 自建仓库 2：第三方仓库
     type = db.Column(db.SmallInteger, default=1)
-    # 状态 1： 禁用（默认）2：启用
+    # 状态 -1： 禁用（默认）1：启用
     status = db.Column(db.SmallInteger, default=1)
     # 是否默认仓库
     is_default = db.Column(db.Boolean, default=False)
@@ -55,6 +56,27 @@ class Warehouse(db.Model):
     purchases = db.relationship(
         'Purchase', backref='warehouse', lazy='dynamic'
     )
+
+    # warehouse to in_warehouse => 1 to N
+    in_warehouse = db.relationship(
+        'InWarehouse', backref='warehouse', lazy='dynamic'
+    )
+
+    # warehouse to out_warehouse => 1 to N
+    out_warehouse = db.relationship(
+        'OutWarehouse', backref='warehouse', lazy='dynamic'
+    )
+
+    # warehouse to stock_history => 1 to N
+    stock_history = db.relationship(
+        'StockHistory', backref='warehouse', lazy='dynamic'
+    )
+
+    # warehouse to stock => 1 to N
+    product_stock = db.relationship(
+        'ProductStock', backref='warehouse', lazy='dynamic'
+    )
+
 
     @classmethod
     def wh_types(self):
@@ -82,6 +104,16 @@ class WarehouseShelve(db.Model):
 
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
 
+    # warehouse shelve to stock_history => 1 to N
+    stock_history = db.relationship(
+        'StockHistory', backref='warehouse_shelve', lazy='dynamic'
+    )
+
+    # warehouse shelve to stock => 1 to N
+    product_stock = db.relationship(
+        'ProductStock', backref='warehouse_shelve', lazy='dynamic'
+    )
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_data = {
@@ -103,12 +135,13 @@ class InWarehouse(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
     # 关联ID: 采购、订单退货、调拨
-    target_id = db.Column(db.Integer, default=0)
+    target_serial_no = db.Column(db.String(20), index=True, nullable=False)
     # 类型：1. 采购；2.订单退货；3.调拔
     target_type = db.Column(db.SmallInteger, default=1)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
+    warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
+
     total_quantity = db.Column(db.Integer, default=0)
-    in_quantity = db.Column(db.Integer, default=0)
     # 入库状态： 1、未入库 2、入库中 3、入库完成
     in_status = db.Column(db.SmallInteger, default=1)
     # 入库流程状态
@@ -118,28 +151,32 @@ class InWarehouse(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-    # in and item => 1 to N
-    products = db.relationship(
-        'InWarehouseProduct', backref='in_warehouse', lazy='dynamic'
+    # db.UniqueConstraint
+    __table_args__ = (
+        db.Index('ix_target_serial_type', 'target_serial_no', 'target_type'),
     )
+
+    @property
+    def status_label(self):
+        for s in INWAREHOUSE_STATUS:
+            if s[0] == self.in_status:
+                return s
+
+    @property
+    def target(self):
+        if self.target_type == 1:
+            return Purchase.query.filter_by(serial_no=self.target_serial_no).first()
+        return None
+
+    @property
+    def target_label(self):
+        if self.target_type == 1:
+            return 'Purchase'
+        return None
+
 
     def __repr__(self):
         return '<InWarehouse %r>' % self.serial_no
-
-
-
-class InWarehouseProduct(db.Model):
-    """入库单产品明细"""
-
-    __tablename__ = 'warehouse_in_products'
-    id = db.Column(db.Integer, primary_key=True)
-    in_warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse_in_list.id'))
-    product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
-    total_quantity = db.Column(db.Integer, default=0)
-    in_quantity = db.Column(db.Integer, default=0)
-
-    def __repr__(self):
-        return '<InWarehouseProduct %r>' % self.product_sku_id
 
 
 class OutWarehouse(db.Model):
@@ -149,9 +186,9 @@ class OutWarehouse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
-    # 关联ID: 采购、订单退货、调拨
-    target_id = db.Column(db.Integer, default=0)
-    # 类型：1. 采购；2.订单退货；3.调拔
+    # 关联ID: 订单ID、订单退货、调拨
+    target_serial_no = db.Column(db.String(20), index=True, nullable=False)
+    # 类型：1. 订单出库；2.订单退货；3.调拔; 10.孤立出库 (target_id=0);
     target_type = db.Column(db.SmallInteger, default=1)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
     total_quantity = db.Column(db.Integer, default=0)
@@ -165,27 +202,73 @@ class OutWarehouse(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-    # out and item => 1 to N
-    products = db.relationship(
-        'OutWarehouseProduct', backref='out_warehouse', lazy='dynamic'
+    __table_args__ = (
+        db.Index('ix_target_serial_type','target_serial_no', 'target_type'),
     )
+
+    @property
+    def target(self):
+        return None
+
+    @property
+    def target_label(self):
+        if self.target_type == 1:
+            return 'Order'
+        return None
+
 
     def __repr__(self):
         return '<OutWarehouse %r>' % self.serial_no
 
 
-class OutWarehouseProduct(db.Model):
-    """出库单产品明细"""
+class StockHistory(db.Model):
+    """库存变化的历史记录明细"""
 
-    __tablename__ = 'warehouse_out_products'
+    __tablename__ = 'warehouse_stock_history'
     id = db.Column(db.Integer, primary_key=True)
-    out_warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse_out_list.id'))
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
+    warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
-    total_quantity = db.Column(db.Integer, default=0)
-    out_quantity = db.Column(db.Integer, default=0)
+
+    # 出库单/入库单 编号
+    serial_no = db.Column(db.String(20), index=True, nullable=False)
+    # 类型：1、入库 2：出库
+    type = db.Column(db.SmallInteger, default=1)
+    # 操作类型
+    operation_type = db.Column(db.SmallInteger, default=1)
+    # 原库存数量
+    original_quantity = db.Column(db.Integer, default=0)
+    # 变化数量
+    quantity = db.Column(db.Integer, default=1)
+    # 当前数量
+    current_quantity = db.Column(db.Integer, default=0)
+    # 原价格
+    ori_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    # in_warehouse and products => 1 to 1
+    sku = db.relationship(
+        'ProductSku', backref='stock_history', uselist=False
+    )
+
+    @property
+    def symbol(self):
+        """运算符号"""
+        return '+' if self.type == 1 else '-'
+
+    @property
+    def operate_type_label(self):
+        for s in WAREHOUSE_OPERATION_TYPE:
+            if s[0] == self.operation_type:
+                return s
+
 
     def __repr__(self):
-        return '<OutWarehouseProduct %r>' % self.product_sku_id
+        return '<StockHistory %r>' % self.product_sku_id
 
 
 class ExchangeWarehouse(db.Model):
@@ -227,6 +310,10 @@ class ExchangeWarehouseProduct(db.Model):
     exchange_warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse_exchange_list.id'))
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
     total_quantity = db.Column(db.Integer, default=0)
+
+    __table_args__ = (
+        db.UniqueConstraint('exchange_warehouse_id', 'product_sku_id', name='uix_ex_warehouse_sku_id'),
+    )
 
     def __repr__(self):
         return '<ExchangeWarehouseProduct %r>' % self.id

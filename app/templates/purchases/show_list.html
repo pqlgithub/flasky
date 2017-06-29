@@ -32,18 +32,13 @@
 		}
 	});
 
-	$('#add-product-btn').click(function (e) {
-		var $btn = $(this), post_url=$(this).attr('href');
-		var supplier_id = $('#supplier_id').find(':selected').eq(0).val();
-		if (supplier_id == 0) {
-			alert('请先选择供应商');
-			return false;
-		}
-		$('#sku-modal').remove();
+	$('.ajax-arrival').click(function (e) {
+		var $btn = $(this), post_url = $(this).attr('href');
+		$('#modal-arrival').remove();
 		$.ajax({
 			url: post_url,
 			dataType: 'html',
-			data: {'supplier_id': supplier_id},
+			data: {'csrf_token': csrf_token},
 			beforeSend: function() {
 				$btn.prop('disabled', true);
 			},
@@ -51,11 +46,12 @@
 				$btn.prop('disabled', false);
 			},
 			success: function(html) {
-				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+				$('body').append('<div id="modal-arrival" role="dialog" class="modal">' + html + '</div>');
 
-				$('#sku-modal').modal('show');
+				$('#modal-arrival').modal('show');
 			}
 		});
+
 		return false;
 	});
 
@@ -67,16 +63,19 @@
 	<h2 class="page-header">
 		{{ _('Purchases List') }}
 		<span class="pull-right">
-			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
-			<button class="btn btn-warning" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Import') }}">
+			<button class="btn btn-info" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+			<button class="btn btn-warning" type="button" data-toggle="tooltip" data-original-title="{{ _('Import') }}">
 				<i class="glyphicon glyphicon-import"></i>
 			</button>
-			<button class="btn btn-warning" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Export') }}">
+			<button class="btn btn-warning" type="button" data-toggle="tooltip" data-original-title="{{ _('Export') }}">
 				<i class="glyphicon glyphicon-export"></i>
 			</button>
 			<button class="btn btn-danger delete-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
@@ -85,68 +84,190 @@
 		</span>
 	</h2>
 
-	<ul class="nav nav-tabs nav-tabs-google">
-		<li role="presentation" {% if status == 0 %}class="active"{% endif %}>
-			<a href="{{ url_for('main.show_purchases') }}">{{ _('All') }}</a>
-		</li>
-		{% for s in purchase_status %}
-		<li role="presentation" {% if status == s[0] %}class="active"{% endif %}>
-			<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}">{{ s[1] }}</a>
-		</li>
-		{% endfor %}
-	</ul>
+	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-	<div class="table-responsive">
+		<div class="form-group">
+			<input type="text" class="form-control" size="60" placeholder="Search products sku or name...">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Warehouse: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-warehouse">
+					<li class="dropdown-header">{{ _('Search Warehouse')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('WH Name') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Status: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-status">
+					<li class="dropdown-header">{{ _('Filter Status')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('All') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Available') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Pending Arrival') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Date: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-date">
+					<li class="dropdown-header">{{ _('Filter Date')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('All') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Today') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Yesterday') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('7 Days') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('30 Days') }}</a>
+					</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Custom Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-30">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Sort: Add Date
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Business Mode') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="table-responsive m-t-20">
 		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 			<table class="table table-bordered table-striped table-hover">
 				<thead>
 					<tr>
-						<th class="text-center">
+						<th colspan="3">
 							<input name="check_all" type="checkbox" class="check-all">
+							{{ _('Product Info') }}
 						</th>
-						<th class="text-center">{{ _('Status') }}</th>
-						<th>{{ _('Purchase Serial') }}</th>
-						<th>{{ _('Supplier') }}</th>
-						<th>{{ _('Warehouse') }}</th>
-						<th class="text-center">{{ _('Quantity') }}</th>
-						<th class="text-center">{{ _('Amount') }}</th>
+						<th>{{ _('Payment Info') }}</th>
+						<th class="text-center">{{ _('Express No.') }}</th>
+						<th class="text-center">{{ _('Total Quantity') }}</th>
+						<th>{{ _('Status') }}</th>
 						<th class="text-right">{{ _('Add Date') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for purchase in paginated_purchases.items %}
+					<tr id="tr_{{ purchase.id }}_parent">
+						<td colspan="3">
+							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox" id="purchase-id-{{ purchase.id }}"> <label for="purchase-id-{{ purchase.id }}">{{ purchase.serial_no }}</label>
+						</td>
+						<td colspan="3">
+							{{ _('Warehouse') }}: <label>{{ purchase.warehouse.name }}</label>
+						</td>
+						<td colspan="3">
+							{{ _('Supplier') }}: <label>{{ purchase.supplier.name }}</label>
+						</td>
+					</tr>
 					<tr id="tr_{{ purchase.id }}">
-						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox">
-						</td>
-						<td class="text-center">
-							<label class="label label-{{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
-						</td>
-						<td>
-							{{ purchase.serial_no }}
-						</td>
-						<td>
-							{{ purchase.supplier.name }}
+						<td class="text-center" colspan="3">
+							<img src="{{ purchase.first_child.sku.cover.view_url }}" width="60px" class="pull-left">
+							<div class="product-info">
+								{{ _('Product Count') }}： <label>{{ purchase.sku_count }}</label> <br>
+								{{ _('Total Quantity') }}: <label>{{ purchase.quantity_sum }}</label> <br>
+								<a href="">{{ _('Products Detail') }}</a>
+							</div>
 						</td>
 						<td>
-							{{ purchase.warehouse.name }}
+							{{ _('Amount payable') }}: {{ purchase.payable_amount }} ({{ purchase.freight }} {{ _('freight') }})
 						</td>
 						<td class="text-center">
-							{{ purchase.quantity_sum }}
+							<a href="" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
+								{{ _('Add Express') }}
+							</a>
 						</td>
 						<td class="text-center">
-							￥{{ purchase.total_amount }}
+							<span class="text-danger">{{ purchase.in_quantity }}</span> / {{ purchase.quantity_sum }}
+						</td>
+						<td class="text-center">
+							{% if purchase.status == 5 %}
+								{% if purchase.in_quantity > 0 and purchase.in_quantity != purchase.quantity_sum %}
+									<label class="label label-warning">{{ _('Partial arrival') }}</label>
+								{% endif %}
+							{% else %}
+								<label class="label label-{{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
+							{% endif %}
 						</td>
 						<td class="text-right">
 							{{ momentjs(purchase.created_at).fromNow() }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_purchase', id=purchase.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								<i class="glyphicon glyphicon-edit"></i>
-							</a>
+							<div class="btn-group">
+								<a href="{{ url_for('main.ajax_arrival', id=purchase.id)}}" class="btn ajax-arrival btn-primary" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
+									{{ _('Arrival') }}
+								</a>
+							</div>
+							<div class="btn-group">
+								<button class="btn btn-primary dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									{{ _('More') }}
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ purchase.id }}-actions">
+									<li><a href="{{ url_for('main.edit_purchase', id=purchase.id) }}">{{ _('Edit') }}</a></li>
+									<li><a href="#">{{ _('Canceled') }}</a></li>
+									<li><a href="#">{{ _('Remark') }}</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a href="#">{{ _('Show Detail') }}</a></li>
+								</ul>
+							</div>
 						</td>
 					</tr>
 					{% endfor %}

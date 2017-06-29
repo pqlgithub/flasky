@@ -5,9 +5,9 @@ from flask_sqlalchemy import Pagination
 from . import main
 from .. import db
 from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku
+from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve
 from app.forms import ProductForm, SupplierForm, CategoryForm, ProductSkuForm
-from ..utils import full_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
+from ..utils import full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 
 top_menu = 'products'
 
@@ -23,6 +23,69 @@ def show_products(page=1):
                            sub_menu='products',
                            paginated_products=paginated_products
                         )
+
+
+@main.route('/products/ajax_search', methods=['GET', 'POST'])
+@login_required
+def ajax_search_products():
+    """搜索产品,满足采购等选择产品"""
+    supplier_id = request.form.get('supplier_id')
+    skus = ProductSku.query.filter_by(supplier_id=supplier_id).all()
+
+    return render_template('purchases/purchase_modal.html',
+                           skus=skus)
+
+
+@main.route('/products/skus', methods=['POST'])
+@login_required
+def ajax_find_skus():
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        return status_response(False, custom_status('Select id is null!'))
+
+    selected_ids = [int(sku_id) for sku_id in selected_ids]
+    skus = ProductSku.query.filter(ProductSku.id.in_(selected_ids)).all()
+
+    sku_list = [sku.to_json() for sku in skus]
+
+    return full_response(True, R200_OK, sku_list)
+
+
+@main.route('/products/ajax_select', methods=['POST'])
+@login_required
+def ajax_select_products():
+    """搜索库存产品,满足下单/出库等选择产品"""
+    paginated_stocks = None
+    wh_id = request.form.get('wh_id')
+    page = request.values.get('page', 1, type=int)
+
+    query = ProductStock.query
+    if wh_id:
+        query = query.filter_by(warehouse_id=wh_id)
+        paginated_stocks = query.order_by('created_at desc').paginate(page, 10)
+
+    return render_template('products/select_product_modal.html',
+                           paginated_stocks=paginated_stocks,
+                           wh_id=wh_id)
+
+@main.route('/products/ajax_submit_result', methods=['POST'])
+@login_required
+def ajax_submit_result():
+    """返回已选定产品的结果"""
+    wh_id = request.form.get('wh_id')
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        return 'Select id is null!'
+
+    selected_ids = [int(stock_id) for stock_id in selected_ids]
+    stock_products = ProductStock.query.filter(ProductStock.id.in_(selected_ids)).all()
+
+    # 货架
+    warehouse_shelves = WarehouseShelve.query.filter_by(warehouse_id=wh_id).all()
+    return render_template('products/select_result.html',
+                           stock_products=stock_products,
+                           warehouse_shelves=warehouse_shelves)
+
 
 
 @main.route('/products/create', methods=['GET', 'POST'])

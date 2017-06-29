@@ -63,18 +63,17 @@ def create_app(config_name):
     # 文件大小限制，默认为16MB
     patch_request_class(app)
 
-    # Jinja2 导入我们的类作为所有模板的一个全局变量
-    app.jinja_env.globals['momentjs'] = Momentjs
+
 
     # logging setting
     if not app.debug:
         import logging
         from logging.handlers import RotatingFileHandler
         file_handler = RotatingFileHandler(app.config['ERROR_LOG'])
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
         app.logger.addHandler(file_handler)
-        app.logger.setLevel(logging.INFO)
+        app.logger.setLevel(logging.DEBUG)
         app.logger.info('Urk startup')
 
     # attach routes
@@ -87,5 +86,11 @@ def create_app(config_name):
 
     #from .api_1_0 import api as api_1_0_blueprint
     #app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
+
+
+    from .main.filters import timestamp2string
+    app.add_template_filter(timestamp2string, 'timestamp2string')
+    # Jinja2 导入我们的类作为所有模板的一个全局变量
+    app.jinja_env.globals['momentjs'] = Momentjs
 
     return app

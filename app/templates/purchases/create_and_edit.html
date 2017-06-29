@@ -145,7 +145,7 @@
 
 		<div class="form-group form-group-lg">
 			<div class="col-sm-5">
-				<a href="{{ url_for('main.ajax_find_products') }}" class="btn btn-primary" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+				<a href="{{ url_for('main.ajax_search_products') }}" class="btn btn-primary" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
 					<i class="glyphicon glyphicon-plus"></i> {{ _('Select Products') }}
 				</a>
 			</div>
@@ -168,7 +168,7 @@
 					<th class="text-right">Action</th>
 				</tr>
 			</thead>
-			<tbody id="purchase-products">
+			<tbody id="choose-products">
 				{% for item in purchase.products %}
 				<tr id="tr_sku_{{ item.sku.id }}">
 					<td class="text-center">
@@ -200,7 +200,7 @@
 			</tbody>
 		</table>
 
-		<div class="form-group form-group-lg">
+		<div class="form-group">
 			{{ form.freight.label(class="col-sm-1 control-label") }}
 			<div class="col-sm-2">
 				<div class="input-group">

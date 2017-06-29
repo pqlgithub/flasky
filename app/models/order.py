@@ -133,6 +133,10 @@ class OrderItem(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    __table_args__ = (
+        db.UniqueConstraint('order_id', 'sku_id', name='uix_order_id_sku_id'),
+    )
+
     def __repr__(self):
         return '<OrderItem %r>' % self.id
 

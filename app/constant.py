@@ -39,19 +39,25 @@ SUPPORT_PLATFORM = (
 
 # 采购到货状态
 PURCHASE_STATUS = (
-    (1, gettext('Unchecked'), 'warning'),
-    (2, gettext('Checked'), 'warning'),
-    (5, gettext('No Arrival'), 'danger'),
-    (10, gettext('Waiting In'), 'primary'),
+    (1, gettext('Pending Review'), 'warning'),
+    (5, gettext('Pending Arrival'), 'danger'),
+    (10, gettext('Pending Storage'), 'primary'),
     (15, gettext('Finished'), 'success'),
     (-1, gettext('Canceled'), 'default')
 )
 
 # 采购付款状态
 PURCHASE_PAYED = (
-    (1, gettext('Apply Pay'), 'default'),
-    (2, gettext('Waiting Pay'), 'warning'),
-    (3, gettext('Finished Pay '), 'success')
+    (1, gettext('Available to Apply'), 'default'),
+    (2, gettext('Unpaid'), 'warning'),
+    (3, gettext('Finished Paid '), 'success')
+)
+
+# 入库状态
+INWAREHOUSE_STATUS = (
+    (1, gettext('Waiting In'), 'danger'),
+    (2, gettext('Part'), 'warning'),
+    (6, gettext('Finished'), 'success'),
 )
 
 # 收支类型
@@ -65,3 +71,20 @@ TRANSACT_TARGET_TYPE = (
     (1, gettext('Purchase')),
     (2, gettext('Order'))
 )
+
+# 仓库出入库操作类型
+WAREHOUSE_OPERATION_TYPE = (
+    (10, gettext('Purchase Storage')), # 采购入库
+    (13, gettext('Returned Storage')), # 退货入库
+    (16, gettext('Exchange Storage')), # 调仓入库
+    (19, gettext('Manual Storage')), # 手动入库
+    (20, gettext('Manual Out')), # 手动出库
+    (24, gettext('Returned Out')), # 退货出库
+)
+
+# 排序代码简称
+SORT_TYPE_CODE = {
+    'ad': 'created_at',
+    'ud': 'updated_at',
+    'sq': 'current_count'
+}

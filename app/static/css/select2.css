@@ -41,7 +41,7 @@ Version: 3.2 Timestamp: Mon Sep 10 10:38:04 PDT 2012
     overflow: hidden;
 		text-decoration: none;
 		
-		padding: 9px 20px 9px 14px;
+		padding: 5px 8px;
 		margin: 0;
 		color: #333;
 		text-shadow: 0 1px 0 #fff;
@@ -186,7 +186,7 @@ Version: 3.2 Timestamp: Mon Sep 10 10:38:04 PDT 2012
     background-clip: padding-box;
     position: absolute;
     right: 5px;
-    top: 5px;
+    top: 0px;
     display: block;
     height: 100%;
     width: 18px;

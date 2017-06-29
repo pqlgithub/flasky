@@ -120,14 +120,14 @@
 
 		<div class="tab-content">
 			<div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
-				<div class="form-group form-group-lg required {% if form.errors.type %} has-error{% endif %}">
+				<div class="form-group required {% if form.errors.type %} has-error{% endif %}">
 					<label for="type" class="col-sm-2 control-label">{{ form.type.label }}</label>
 					<div class="col-sm-4">
 						{{ form.type(id="type", class="list-inline radio-group") }}
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg required {% if form.errors.name %} has-error{% endif %}">
+				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					<label for="name" class="col-sm-2 control-label">{{ form.name.label }}</label>
 					<div class="col-sm-10">
 						{{ form.name(id="name", class="form-control") }}
@@ -139,7 +139,7 @@
 
 
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.is_default.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="checkbox">
@@ -150,13 +150,13 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label for="address" class="col-sm-2 control-label">{{ form.address.label }}</label>
 					<div class="col-sm-10">
 						{{ form.address(id="address", class="form-control") }}
 					</div>
 				</div>
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label for="en_address" class="col-sm-2 control-label">{{ form.en_address.label }}</label>
 					<div class="col-sm-10">
 						{{ form.en_address(id="en_address", class="form-control") }}
@@ -164,7 +164,7 @@
 				</div>
 
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label for="username" class="col-sm-2 control-label">{{ form.username.label }}</label>
 					<div class="col-sm-4">
 						{{ form.username(id="username", class="form-control") }}
@@ -175,7 +175,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label for="email" class="col-sm-2 control-label">{{ form.email.label }}</label>
 					<div class="col-sm-4">
 						{{ form.email(id="email", class="form-control") }}
@@ -186,7 +186,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label for="description" class="col-sm-2 control-label">{{ form.description.label }}</label>
 					<div class="col-sm-10">
 						{{ form.description(id="description", class="form-control") }}
@@ -202,7 +202,7 @@
 			</div>
 
 			{% if mode == 'edit' %}
-			<div id="shelves" class="active tab-pane fade in" role="tabpanel" aria-labelledby="shelves-tab">
+			<div id="shelves" class="tab-pane fade in" role="tabpanel" aria-labelledby="shelves-tab">
 				<div class="btn-group">
 					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						{{ _('Add Shelve') }} <span class="caret"></span>

@@ -3,6 +3,7 @@ from sqlalchemy import text
 from app import db, uploader
 from ..utils import timestamp, gen_serial_no
 from .asset import Asset
+from .purchase import PurchaseProduct
 
 __all__ = [
     'Product',
@@ -155,21 +156,58 @@ class ProductStock(db.Model):
     __tablename__ = 'product_stocks'
     id = db.Column(db.Integer, primary_key=True)
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'), index=True)
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
 
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'), index=True)
     warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
 
-    # 库存总数
+    # 库存累计总数
     total_count = db.Column(db.Integer, default=0)
+    # 当前库存数
+    current_count = db.Column(db.Integer, default=0)
+    # 预售库存数
+    presale_count = db.Column(db.Integer, default=0)
     # 已销售数
     saled_count = db.Column(db.Integer, default=0)
+    # 残次品数量
+    defective_count = db.Column(db.Integer, default=0)
+    # 退换数量
+    returned_count = db.Column(db.Integer, default=0)
+    # 手动数量
+    manual_count = db.Column(db.Integer, default=0)
 
     # 库存预警设置
     min_count = db.Column(db.Integer, default=0)
     max_count = db.Column(db.Integer, default=0)
+
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp)
 
+
+    @staticmethod
+    def validate_is_exist(warehouse_id, sku_id):
+        return ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).first()
+
+    @staticmethod
+    def validate_stock_quantity(warehouse_id, sku_id, quantity=1):
+        stock = ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).one()
+        return stock.current_count >= quantity
+
+    @staticmethod
+    def get_stock_quantity(warehouse_id, sku_id):
+        """获取某个仓库某个产品的有效库存数量"""
+        stock = ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).first()
+        return stock.current_count if stock else 0
+
+    @property
+    def available_count(self):
+        """当前某个仓库某个产品的有效库存数量"""
+        return self.current_count - self.presale_count
+
+    @property
+    def purchasing_count(self):
+        """已采购未到货的数量"""
+        return 0
 
     def __repr__(self):
         return '<ProductStock %r>' % self.id

@@ -1,0 +1,131 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Put in warehouse') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="inwarehouse-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group form-group-lg">
+					<label class="col-sm-2 control-label">{{ _('Scanned goods') }}</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Scan barcode">
+							<div class="input-group-addon">
+								<i class="glyphicon glyphicon-barcode"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label class="col-sm-2 control-label">{{ _('Warehouse') }}</label>
+					<div class="col-sm-3">
+						<p class="form-control-static">{{ purchase.warehouse.name }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Serial No') }}</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">{{ purchase.serial_no }}</p>
+					</div>
+				</div>
+
+				<div class="form-group form-group-lg">
+					<label class="col-sm-2 control-label">{{ _('Remark') }}</label>
+					<div class="col-sm-8">
+						<textarea name="remark" class="form-control"></textarea>
+					</div>
+				</div>
+
+				<table class="table table-bordered table-striped m-t-20 m-b-30">
+					<thead>
+					<tr>
+						<th class="text-center">{{ _('Product Image') }}</th>
+						<th>{{ _('Product Name') }}</th>
+						<th class="text-center">{{ _('Product Model') }}</th>
+						<th class="text-center">{{ _('In / Total Quantity') }}</th>
+						<th class="text-center">{{ _('Quantity') }}</th>
+					</tr>
+					</thead>
+					<tbody id="purchase-products">
+					{% for item in purchase.products %}
+					<tr>
+						<td class="text-center">
+							<img src="{{ item.sku.cover.view_url }}" width="60px">
+						</td>
+						<td>
+							{{ item.sku.serial_no }}
+						</td>
+						<td class="text-center">
+							<label class="label label-warning">{{ item.sku.s_model }}</label>
+						</td>
+						<td class="text-center">
+							<span class="text-danger">{{ item.in_quantity }}</span> / {{ item.quantity }}
+						</td>
+						<td class="text-center">
+							{% if not item.is_finished %}
+							<input type="text" name="quantity[{{ item.product_sku_id }}]" class="form-control input-quantity">
+							<input type="hidden" name="items[]" value="{{ item.product_sku_id }}">
+							{% else %}
+							<input type="text" class="form-control input-quantity" disabled>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="5" class="text-right">
+								<label class="control-label">
+									SKU种类：<span id="sku_count" class="text-danger">{{ purchase.sku_count|default(0) }}</span>， 采购数量：<span id="purchase_quantity" class="text-danger">{{ purchase.quantity_sum|default(0) }}</span>， 总价：<span id="total_amount" class="text-danger">￥{{ purchase.total_amount|default(0) }}</span>
+								</label>
+							</th>
+						</tr>
+					</tfoot>
+				</table>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<input type="checkbox" aria-checked="true" checked="checked" disabled > {{ _('Immediate warehousing') }}
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="arrival-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+
+	$('#arrival-submit-btn').click(function (e) {
+		data = $('#inwarehouse-form').serialize();
+
+		$.ajax({
+			url: "{{ post_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#role-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#role-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#modal-arrival').modal('hide');
+					// 自动刷新
+					window.location.reload();
+				} else {
+					$('#inwarehouse-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

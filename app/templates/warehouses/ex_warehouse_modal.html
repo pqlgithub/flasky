@@ -1,0 +1,131 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Ex-warehouse') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="stock-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('From Warehouse') }}</label>
+					<div class="col-sm-4 m-b-10">
+						<select name="warehouse_id" id="warehouse_id" class="form-control select2">
+							<option value="0">{{ _('Select warehouses') }}</option>
+							{% for w in warehouses %}
+							<option value="{{ w.id }}">{{ w.name }}</option>
+							{% endfor  %}
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Out Type') }}</label>
+					<div class="col-sm-4 m-b-10">
+						<select name="operation_type" id="operation_type" class="form-control select2">
+							<option value="0">{{ _('Select type') }}</option>
+							<option value="20">{{ _('Manual Out') }}</option>
+							<option value="24">{{ _('Returned Out') }}</option>
+						</select>
+					</div>
+					<div class="col-sm-6 text-right">
+						<a class="btn btn-primary m-t-10" href="{{ url_for('main.ajax_select_products') }}" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+							<i class="glyphicon glyphicon-plus" aria-hidden="true"></i> {{ _('Select Products') }}
+						</a>
+					</div>
+				</div>
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th>{{ _('Product Info') }}</th>
+							<th class="text-center">{{ _('Warehouse') }}</th>
+							<th class="text-center">{{ _('Total Stock') }}</th>
+							<th class="text-center">{{ _('Quantity') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="choose-products">
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="stock-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	$('.select2').select2({
+		'width': '100%'
+	});
+
+	$('#stock-submit-btn').click(function (e) {
+		$.ajax({
+			url: "{{ url_for('main.create_ex_warehouse') }}",
+			type: 'post',
+			data: $('#stock-form').serialize(),
+			dataType: 'json',
+			beforeSend: function () {
+				$('#sku-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#sku-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+					$('#out-stock-modal').modal('hide');
+					$('.btn-refresh').trigger('click');
+				} else {
+					$('#stock-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+
+	$('#add-product-btn').click(function (e) {
+		var $btn = $(this), post_url=$(this).attr('href');
+		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
+		if (warehouse_id == 0) {
+			swal({
+				title: "Warning",
+				text: "Please first choose the warehouse to ship？",
+				type: "warning",
+				showCancelButton: false,
+				confirmButtonClass: 'btn-warning',
+				confirmButtonText: "Okay, I know!",
+				closeOnConfirm: true
+			});
+			return false;
+		}
+
+		$('#sku-modal').remove();
+		$.ajax({
+			url: post_url,
+			type: 'post',
+			dataType: 'html',
+			data: {'wh_id': warehouse_id, 'csrf_token': '{{ csrf_token() }}'},
+			beforeSend: function() {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function(html) {
+				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+
+				$('#sku-modal').modal('show');
+			}
+		});
+
+		return false;
+	});
+//-->
+</script>

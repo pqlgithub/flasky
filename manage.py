@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from datetime import datetime
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from flask_apidoc.commands import GenerateApiDoc

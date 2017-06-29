@@ -1,36 +1,32 @@
 <div class="list-group">
 	<div class="list-group-header">
-		{{ _('Warehouse manage') }}
+		{{ _('Stock manage') }}
 	</div>
-	<a href="#" class="list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
-		{{ _('Shop List') }}
-		<span class="badge">14</span>
+	<a href="{{ url_for('main.show_stocks') }}" class="list-group-item {% if sub_menu == 'stocks'%} active{% endif %}">
+		{{ _('Stock List') }}
+	</a>
+
+	<a href="{{ url_for('main.show_inout') }}" class="list-group-item {% if sub_menu == 'inout'%} active{% endif %}">
+		{{ _('In-out Stock') }}
+	</a>
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item {% if sub_menu == 'inlist'%} active{% endif %}">
+		{{ _('In List') }}
+	</a>
+	<a href="{{ url_for('main.show_out_warehouses') }}" class="list-group-item {% if sub_menu == 'outlist'%} active{% endif %}">
+		{{ _('Out List') }}
 	</a>
 
 	<div class="list-group-header">
-		{{ _('Warehouse Allot') }}
+		{{ _('Inventory Allocation') }}
 	</div>
-	<a href="#" class="list-group-item">
-		{{ _('Waiting Out') }}
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item">
+		{{ _('Inventory Allocation') }}
 		<span class="badge">0</span>
 	</a>
-	<a href="#" class="list-group-item">
-		{{ _('In Transit') }}
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item">
+		{{ _('Inventory Verification') }}
 		<span class="badge">0</span>
 	</a>
-	<a href="#" class="list-group-item">
-		{{ _('Part In') }}
-		<span class="badge">0</span>
-	</a>
-	<a href="#" class="list-group-item">
-		{{ _('All In') }}
-		<span class="badge">0</span>
-	</a>
-	<a href="#" class="list-group-item">
-		{{ _('Canceled') }}
-		<span class="badge">0</span>
-	</a>
-
 
 	<div class="list-group-header">
 		{{ _('Warehouse settings') }}

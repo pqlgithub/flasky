@@ -50,6 +50,12 @@
 .m-l-15 {
     margin-left: 15px;
 }
+.m-l-20 {
+    margin-left: 20px;
+}
+.m-l-30 {
+    margin-left: 30px;
+}
 .m-t-5 {
     margin-top: 5px;
 }
@@ -213,7 +219,7 @@
 	margin-top: 0;
 }
 .table-responsive {
-	margin-top: 30px;
+	min-height: 450px;
 }
 .pages-entries {
 	line-height: 50px;
@@ -227,6 +233,12 @@
 }
 .page-one {
 	margin-top: 100px;
+}
+.bg-default i {
+	display: block;
+    font-size: 4em;
+	color: #d9534f;
+    margin-bottom: 30px;
 }
 .modal-dialog {
 	margin: 50px auto;
@@ -252,4 +264,16 @@ div.required .control-label:not(span)::before, td.required::before {
 }
 .fa-5x {
     font-size: 5em;
+}
+.input-quantity {
+	width: 60px;
+	margin: 0 auto;
+	text-align: center;
+}
+.table .product-info {
+    display: block;
+    margin-left: 60px;
+    margin-right: 20px;
+    padding-left: 10px;
+    text-align: left;
 }

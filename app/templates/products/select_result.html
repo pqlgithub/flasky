@@ -1,0 +1,28 @@
+{% for stock in stock_products %}
+<tr id="tr_stock_{{ stock.id }}">
+	<td>
+		<img src="{{ stock.product_sku.cover.view_url }}" width="60px" class="pull-left">
+		<div class="product-info">
+			{{ stock.product_sku.serial_no }} <small>({{ stock.product_sku.s_model }})</small><br>
+			{{ stock.product_sku.product.name }}<br>
+		</div>
+	</td>
+	<td class="text-center">
+		<select name="warehouse_shelve_id[{{ stock.product_sku_id }}]" class="form-control select2">
+			{% for w in warehouse_shelves %}
+			<option value="{{ w.id }}" {% if stock.warehouse_shelve_id == w.id %}selected="selected"{% endif %}>{{ w.name }}</option>
+			{% endfor %}
+		</select>
+	</td>
+	<td class="text-center">
+		{{ stock.current_count }}
+	</td>
+	<td>
+		<input type="text" name="quantity[{{ stock.product_sku_id }}]" class="form-control input-quantity">
+		<input type="hidden" name="items[]" value="{{ stock.product_sku_id }}">
+	</td>
+	<td class="text-right">
+		<a href="" class="btn btn-link">{{ _('Remove') }}</a>
+	</td>
+</tr>
+{% endfor %}

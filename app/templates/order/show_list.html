@@ -3,10 +3,18 @@
 {% block sidebar %}
 <div class="list-group">
 	<div class="list-group-header">
-		{{ _('订单处理') }}
+		{{ _('Order Search') }}
 	</div>
 	<a href="#" class="list-group-item active">
-		{{ _('订单列表') }}
+		{{ _('Order List') }}
+	</a>
+</div>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Order manage') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('Order List') }}
 		<span class="badge">14</span>
 	</a>
 	<a href="#" class="list-group-item">
@@ -28,19 +36,11 @@
 		<span class="badge">10</span>
 	</a>
 </div>
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('订单查询') }}
-	</div>
-	<a href="#" class="list-group-item">
-		{{ _('历史订单') }}
-	</a>
-</div>
 {% endblock %}
 
 {% block mainbar %}
 	<h2 class="page-header">
-		{{ _('订单列表') }}
+		{{ _('Order List') }}
 		<span class="pull-right">
 			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
 				<i class="glyphicon glyphicon-plus"></i>

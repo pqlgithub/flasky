@@ -25,17 +25,17 @@
 	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-		<div class="form-group form-group-lg">
+		<div class="form-group">
 			<input type="text" class="form-control" size="60" placeholder="Search suppliers...">
 		</div>
 
-		<div class="form-group">
+		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					Type: All
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
 					<li class="dropdown-header">{{ _('Search Type')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
@@ -51,13 +51,13 @@
 			</div>
 		</div>
 
-		<div class="form-group">
+		<div class="form-group m-l-20">
 			<div class="dropdown">
-				<button class="btn btn-flat-default btn-lg dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					Sort: Add Date
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
@@ -75,7 +75,7 @@
 
 	</form>
 
-	<div class="table-responsive">
+	<div class="table-responsive m-t-20">
 		<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 

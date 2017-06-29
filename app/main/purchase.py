@@ -7,7 +7,7 @@ from .. import db
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
-    TransactDetail
+    TransactDetail, InWarehouse, StockHistory, ProductStock
 from app.forms import PurchaseForm
 
 top_menu = 'purchases'
@@ -51,31 +51,6 @@ def payments(page=1):
                            purchase_payed=PURCHASE_PAYED,
                            f=status
                            )
-
-
-@main.route('/purchases/find_products', methods=['GET', 'POST'])
-@login_required
-def ajax_find_products():
-    supplier_id = request.form.get('supplier_id')
-    skus = ProductSku.query.filter_by(supplier_id=supplier_id).all()
-
-    return render_template('purchases/purchase_modal.html',
-                           skus=skus)
-
-@main.route('/purchases/skus', methods=['POST'])
-def ajax_find_skus():
-    selected_ids = request.form.getlist('selected[]')
-    if not selected_ids or selected_ids is None:
-        return status_response(False, custom_status('Select id is null!'))
-
-    selected_ids = [int(sku_id) for sku_id in selected_ids]
-    skus = ProductSku.query.filter(ProductSku.id.in_(selected_ids)).all()
-
-    sku_list = [sku.to_json() for sku in skus]
-
-    return full_response(True, R200_OK, sku_list)
-
-
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
 @login_required
@@ -258,14 +233,99 @@ def ajax_verify():
             purchase = Purchase.query.get(int(id))
             if purchase is None:
                 return status_response(False, custom_status('Delete purchase id[%s] is NULL!' % id))
-            purchase.payed = 1
-            purchase.status = 2
+            # 审批完毕，待到货状态
+            purchase.update_status(5)
+
         db.session.commit()
     except:
         db.session.rollback()
         return status_response(False, custom_status('Delete purchase is fail!'))
 
     return full_response(True, R200_OK, selected_ids)
+
+
+@main.route('/purchases/<int:id>/ajax_arrival', methods=['GET', 'POST'])
+@login_required
+def ajax_arrival(id):
+    purchase = Purchase.query.get(id)
+    if request.method == 'POST':
+        quantity_offset = 0
+        detail_products = []
+        remark = request.form.get('remark')
+        items = request.form.getlist('items[]')
+        for sku_id in items:
+            quantity = request.form.get('quantity[%s]' % sku_id, 0, type=int)
+            if not quantity:
+                continue
+
+            item_product = purchase.products.filter_by(product_sku_id=sku_id).first()
+            if not item_product.validate_quantity(quantity):
+                return status_response(False, custom_status('Quantity exceeded total quantity!'))
+
+            # 更新入库数量
+            item_product.in_quantity += quantity
+            # 新增总数量
+            quantity_offset += quantity
+
+            # 入库单明细
+            ori_stock = ProductStock.get_stock_quantity(purchase.warehouse_id, sku_id)
+            stock_history = StockHistory(
+                master_uid=current_user.id,
+                warehouse_id=purchase.warehouse_id,
+                product_sku_id=sku_id,
+                type=1,
+                operation_type=10,
+                original_quantity=ori_stock,
+                quantity=quantity,
+                current_quantity=ori_stock+quantity,
+                ori_price=item_product.cost_price,
+                price=item_product.cost_price,
+            )
+            detail_products.append(stock_history)
+
+            # 更新库房累计库存数
+            product_stock = ProductStock.validate_is_exist(purchase.warehouse_id, sku_id)
+            if not product_stock:
+                new_stock = ProductStock(
+                    product_sku_id=sku_id,
+                    warehouse_id=purchase.warehouse_id,
+                    total_count=quantity,
+                    current_count=quantity
+                )
+                db.session.add(new_stock)
+            else:
+                product_stock.total_count += quantity
+                product_stock.current_count += quantity
+
+        # 自动生成入库单
+        in_serial_no = gen_serial_no('RK')
+        in_warehouse = InWarehouse(
+            master_uid=purchase.master_uid,
+            serial_no=in_serial_no,
+            target_serial_no=purchase.serial_no,
+            warehouse_id=purchase.warehouse_id,
+            total_quantity=quantity_offset,
+            remark=remark
+        )
+        db.session.add(in_warehouse)
+        # 添加操作明细
+        for sh in detail_products:
+            sh.serial_no = in_serial_no
+            db.session.add(sh)
+
+        # 检测是否完成入库
+        if purchase.validate_finished(quantity_offset):
+            # 入库完成
+            purchase.update_status(15)
+        purchase.in_quantity += quantity_offset
+
+        db.session.commit()
+
+        return status_response(True, R200_OK)
+
+    return render_template('purchases/_modal_arrival.html',
+                           purchase=purchase,
+                           post_url=url_for('.ajax_arrival', id=id))
 
 
 @main.route('/purchases/ajax_apply_pay', methods=['POST'])
@@ -280,7 +340,12 @@ def ajax_apply_pay():
             purchase = Purchase.query.get(int(id))
             if purchase is None:
                 return status_response(False, custom_status('Apply purchase pay, id[%s] is NULL!' % id))
-            purchase.payed = 2
+            if purchase.payed != 1:
+                return status_response(False, custom_status('Purchase[%s] is already payed!' % id))
+
+            # 申请付款，进入待付款流程
+            purchase.update_payed(2)
+
             # 自动同步产生待付款单
             transaction = TransactDetail(
                 master_uid=current_user.id,

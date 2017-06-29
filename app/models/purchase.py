@@ -24,6 +24,7 @@ class Purchase(db.Model):
     # sku种类
     sku_count = db.Column(db.Integer, default=0)
     quantity_sum = db.Column(db.Integer, default=0)
+    in_quantity = db.Column(db.Integer, default=0)
     total_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.0000)
     # 运费
     freight = db.Column(db.Numeric(precision=10, scale=2), default=0.0000)
@@ -44,6 +45,21 @@ class Purchase(db.Model):
     products = db.relationship(
         'PurchaseProduct', backref='purchase', lazy='dynamic', cascade='delete'
     )
+
+    @property
+    def first_child(self):
+        """默认采购产品的第一个的封面图"""
+        return self.products.first()
+
+    @property
+    def payable_amount(self):
+        """应支付的金额"""
+        return self.total_amount + self.freight + self.extra_charge
+
+
+    def validate_finished(self, new_quantity=0):
+        """检测是否入库完成"""
+        return True if self.quantity_sum - self.in_quantity == new_quantity else False
 
 
     def update_status(self, status):
@@ -101,10 +117,25 @@ class PurchaseProduct(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    __table_args__ = (
+        db.UniqueConstraint('purchase_id', 'product_sku_id', name='uix_purchase_sku_id'),
+    )
+
     # purchase and products => 1 to 1
     sku = db.relationship(
         'ProductSku', backref='purchase_product', uselist=False
     )
+
+    @property
+    def is_finished(self):
+        """是否完成入库"""
+        return True if self.quantity == self.in_quantity else False
+
+
+    def validate_quantity(self, offset_quantity):
+        """验证数量是否匹配"""
+        return True if self.quantity - self.in_quantity >= offset_quantity else False
+
 
     def __repr__(self):
         return '<PurchaseProduct %r>' % self.id
@@ -150,6 +181,10 @@ class PurchaseReturnedProduct(db.Model):
     outed_quantity = db.Column(db.Integer, default=0)
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    __table_args__ = (
+        db.UniqueConstraint('purchase_returned_id', 'product_sku_id', name='uix_purchase_sku_id'),
+    )
 
     def __repr__(self):
         return '<PurchaseReturnedProduct %r>' % self.id

@@ -7,6 +7,7 @@
 		<div class="modal-body">
 			<form class="form" action="" method="post" id="sku-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="wh_id" value="{{ wh_id }}" >
 
 				<div class="form-group form-group-lg">
 					<div class="input-group input-group-lg">
@@ -25,37 +26,35 @@
 							<th class="text-center">
 								<input name="check_all" type="checkbox" class="check-all">
 							</th>
-							<th>{{ _('Image') }}</th>
-							<th>{{ _('SKU') }}</th>
-							<th>{{ _('Product Name') }}</th>
-							<th class="text-center">{{ _('Attributes') }}</th>
+							<th>{{ _('Product Info') }}</th>
 							<th class="text-center">{{ _('Price') }}</th>
-							<th class="text-right">{{ _('Total Stock') }}</th>
+							<th class="text-center">{{ _('Total Stock') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
 						</tr>
 					</thead>
 					<tbody>
-					{% for sku in skus %}
-					<tr id="tr_sku_{{ sku.id }}">
+					{% for stock in paginated_stocks.items %}
+					<tr>
 						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
+							<input name="selected[]" class="check-one" value="{{ stock.id }}" type="checkbox">
+						</td>
+						<td>
+							<img src="{{ stock.product_sku.cover.view_url }}" width="60px" class="pull-left">
+							<div class="product-info">
+								{{ stock.product_sku.serial_no }} <small>({{ stock.product_sku.s_model }})</small><br>
+								{{ stock.product_sku.product.name }}<br>
+							</div>
 						</td>
 						<td class="text-center">
-							<img src="{{ sku.cover.view_url }}" width="60px">
+							{{ stock.product_sku.product.cost_price }}
 						</td>
-						<td>
-							{{ sku.serial_no }}
+ 						<td class="text-center">
+							{{ stock.current_count }}
 						</td>
-						<td>
-							{{ sku.product.name }}
-						</td>
-						<td>
-							{{ sku.s_model }}
-						</td>
-						<td>
-							{{ sku.cost_price }}
-						</td>
-						<td>
-
+						<td class="text-right">
+							<a class="btn btn-link btn-select" role="button">
+								{{ _('Select') }}
+							</a>
 						</td>
 					</tr>
 					{% endfor %}
@@ -72,8 +71,6 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	var data = {};
-
 	// 全选 or 反选
 	$('#sku-form').find('input.check-all').bind('click', function() {
 		if ($(this).is(':checked')){
@@ -97,14 +94,18 @@
 		}
 	});
 
-	$('#sku-submit-btn').click(function (e) {
-		data = $('#sku-form').serialize();
+	$('a.btn-select').click(function () {
+		$(this)
+			.parent().parent()
+			.find('.check-one').attr('checked','checked');
+	});
 
+	$('#sku-submit-btn').click(function (e) {
 		$.ajax({
-			url: "{{ url_for('main.ajax_find_skus') }}",
+			url: "{{ url_for('main.ajax_submit_result') }}",
 			type: 'post',
-			data: data,
-			dataType: 'json',
+			data: $('#sku-form').serialize(),
+			dataType: 'html',
 			beforeSend: function () {
 				$('#sku-submit-btn').prop('disabled', true);
 			},
@@ -112,15 +113,12 @@
 				$('#sku-submit-btn').prop('disabled', false);
 			},
 			success: function (result) {
-				if (result.success) {
-					$('#sku-modal').modal('hide');
-					// 解析结果
-					$('#choose-products')
-						.append(parse_result(result.data));
-					recount();
-				} else {
-					$('#sku-form').prepend(display_alert(result.status.message))
-				}
+				$('#sku-modal').modal('hide');
+				// 解析结果
+				$('#choose-products').append(result);
+				$('#choose-products .select2').select2({
+					'width': '100%'
+				});
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
