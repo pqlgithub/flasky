@@ -1,0 +1,69 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+		{{ _('Add Express') }}
+		{% else %}
+		{{ _('Edit Express') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="express-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_expresses') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<form id="express-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.name(id="name", class="form-control") }}
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.contact_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.contact_name(id="contact_name", class="form-control") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.contact_mobile.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.contact_mobile(id="contact_mobile", class="form-control") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.contact_phone.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.contact_phone(id="contact_phone", class="form-control") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.description.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.description(id="description", class="form-control") }}
+			</div>
+		</div>
+	</form>
+
+</div>
+{% endblock %}

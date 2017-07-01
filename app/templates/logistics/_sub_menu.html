@@ -2,7 +2,10 @@
 	<div class="list-group-header">
 		{{ _('Logistics Settings') }}
 	</div>
-	<a href="{{ url_for('main.show_expresses') }}" class="list-group-item active">
+	<a href="{{ url_for('main.show_expresses') }}" class="list-group-item {% if sub_menu == 'express' %} active{% endif %}">
 		{{ _('Express List') }}
+	</a>
+	<a href="{{ url_for('main.show_shippers') }}" class="list-group-item {% if sub_menu == 'shipper' %} active{% endif %}">
+		{{ _('Shipper List') }}
 	</a>
 </div>

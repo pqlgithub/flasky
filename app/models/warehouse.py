@@ -77,6 +77,11 @@ class Warehouse(db.Model):
         'ProductStock', backref='warehouse', lazy='dynamic'
     )
 
+    # warehouse to shipper => 1 to 1
+    shipper = db.relationship(
+        'Shipper', backref='warehouse', uselist=False
+    )
+
 
     @classmethod
     def wh_types(self):

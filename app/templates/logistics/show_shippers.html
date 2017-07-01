@@ -7,12 +7,12 @@
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Express List') }}
+		{{ _('Shipper List') }}
 		<span class="pull-right">
-			<a href="{{ url_for('main.create_express') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_shipper') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all" data-form-id="expresses-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all" data-form-id="shippers-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -47,7 +47,7 @@
 	</form>
 
 	<div class="table-responsive m-t-20">
-		<form id="expresses-form" action="{{ url_for('main.delete_express') }}" method="post">
+		<form id="shippers-form" action="{{ url_for('main.delete_shipper') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 			<table class="table table-bordered table-striped table-hover">
@@ -56,25 +56,37 @@
 						<th class="text-center">
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
-						<th>{{ _('Logistics Name') }}</th>
-						<th>{{ _('Contact') }}</th>
+						<th class="text-center">{{ _('Ship Warehouse') }}</th>
+						<th class="text-center">{{ _('Shipper') }}</th>
+						<th class="text-center">{{ _('From') }}</th>
+						<th>{{ _('Phone') }}</th>
+						<th>{{ _('Address') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for express in paginated_express.items %}
+					{% for shipper in paginated_shippers.items %}
 					<tr>
 						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ express.id }}" type="checkbox">
+							<input name="selected[]" class="check-one" value="{{ shipper.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							{{ shipper.warehouse.name }}
+						</td>
+						<td class="text-center">
+							{{ shipper.name }}
+						</td>
+						<td class="text-center">
+							{{ shipper.from_city }}
 						</td>
 						<td>
-							{{ express.name }}
+							{{ shipper.phone }} {{ shipper.mobile }}
 						</td>
 						<td>
-							{{ express.contact_name }} {{ express.contact_mobile }}
+							{{ shipper.province }} {{ shipper.city }} {{ shipper.area }} {{ shipper.address }} {{ shipper.zipcode }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_express', id=express.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_shipper', id=shipper.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								<i class="glyphicon glyphicon-edit"></i>
 							</a>
 						</td>
@@ -89,7 +101,7 @@
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_express, '.show_expresses') }}
+				{{ macros.pagination_widget(paginated_shippers, '.show_shippers') }}
 			</nav>
 		</div>
 	</div>
