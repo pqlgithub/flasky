@@ -29,11 +29,11 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th>{{ _('Warehouse Name') }}</th>
-						<th>{{ _('Warehouse Type') }}</th>
+						<th class="text-center">{{ _('Warehouse Type') }}</th>
 						<th class="text-center">{{ _('Default Warehouse') }}</th>
 						<th class="text-center">{{ _('Leader') }}</th>
 						<th>{{ _('Description') }}</th>
-						<th>{{ _('Shelves') }}</th>
+						<th class="text-center">{{ _('Shelves Count') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
 				</thead>
@@ -46,12 +46,12 @@
 						<td>
 							{{ warehouse.name }}
 						</td>
-						<td>
+						<td class="text-center">
 							{{ warehouse.desc_type[1] }}
 						</td>
 						<td class="text-center">
 							{% if warehouse.is_default %}
-							<span class="text-success">
+							<span class="label label-success">
 								<i class="glyphicon glyphicon-ok"></i>
 							</span>
 							{% endif %}
@@ -62,9 +62,8 @@
 						<td>
 							{{ warehouse.description }}
 						</td>
-						<td>
+						<td class="text-center">
 							{{ warehouse.shelves.count() }}
-
 						</td>
 						<td class="text-right">
 							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">

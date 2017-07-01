@@ -45,13 +45,84 @@
 		</span>
 	</h2>
 
-	<ul class="nav nav-tabs nav-tabs-google">
-		{% for pay in purchase_payed %}
-		<li role="presentation" {% if f == pay[0] %}class="active"{% endif %}>
-			<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}">{{ pay[1] }}</a>
-		</li>
-		{% endfor %}
-	</ul>
+	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control" size="60" placeholder="Search products sku or name...">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Warehouse: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-warehouse">
+					<li class="dropdown-header">{{ _('Search Warehouse')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('WH Name') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Date: All
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-date">
+					<li class="dropdown-header">{{ _('Filter Date')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('All') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Today') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Yesterday') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('7 Days') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('30 Days') }}</a>
+					</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Custom Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-30">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Sort: Add Date
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="#">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Business Mode') }}</a>
+					</li>
+					<li>
+						<a href="#">{{ _('Phone') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
 
 	<div class="table-responsive m-t-20">
 		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
@@ -98,7 +169,7 @@
 							￥{{ purchase.total_amount }}
 						</td>
 						<td class="text-right">
-							{{ momentjs(purchase.created_at).fromNow() }}
+							{{ purchase.created_at|timestamp2string }}
 						</td>
 						<td class="text-right">
 							<a href="{{ url_for('main.edit_purchase', id=purchase.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">

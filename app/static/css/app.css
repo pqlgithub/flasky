@@ -206,7 +206,12 @@
 	color: #fff;
 	background-color: #428bca;
 }
-
+.btn-link:hover {
+	cursor: pointer;
+}
+.btn-link:focus {
+	border: 1px solid rgba(0, 0, 0, 0);
+}
 /*
  * Main content
  */
@@ -276,4 +281,7 @@ div.required .control-label:not(span)::before, td.required::before {
     margin-right: 20px;
     padding-left: 10px;
     text-align: left;
+}
+.panel-heading {
+	font-weight: bold;
 }

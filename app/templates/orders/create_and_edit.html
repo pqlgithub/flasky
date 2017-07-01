@@ -1,0 +1,296 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include "orders/_sub_menu.html" %}
+{% endblock %}
+
+{% block private_js %}
+<script type="text/javascript">
+	var recount = function () {
+		var total_quantity=0, total_amount=0, total_discount=0;
+		$('#choose-products input.quantity').each(function () {
+			var quantity = parseInt($(this).val()), sku_id = $(this).data('id');
+			var price = parseFloat($('#sale_price_' + sku_id).html());
+			var discount = parseFloat($('#discount_' + sku_id).val());
+
+			subtotal = price*quantity;
+			total_quantity += quantity;
+			total_discount += discount;
+			total_amount += subtotal;
+
+			$('#subtotal_' + sku_id).html((subtotal - discount).toFixed(2));
+		});
+		$('#total_quantity').html(total_quantity);
+		$('#total_amount').html(total_amount.toFixed(2));
+		$('#total_discount').html(total_discount.toFixed(2));
+		$('#payable_amount').html((total_amount - total_discount).toFixed(2))
+	};
+
+	var tracker_change = function () {
+		$('#choose-products input.input-quantity')
+			.unbind('change')
+			.on('change', function () {
+				recount();
+			});
+	};
+</script>
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	tracker_change();
+
+	$('#add-product-btn').click(function (e) {
+		var $btn = $(this), post_url=$(this).attr('href');
+		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
+		if (warehouse_id == 0) {
+			swal({
+				title: "Warning",
+				text: "Please first choose the warehouse to ship？",
+				type: "warning",
+				showCancelButton: false,
+				confirmButtonClass: 'btn-warning',
+				confirmButtonText: "Okay, I know!",
+				closeOnConfirm: true
+			});
+			return false;
+		}
+
+		$('#sku-modal').remove();
+		$.ajax({
+			url: post_url,
+			type: 'post',
+			dataType: 'html',
+			data: {'wh_id': warehouse_id, 'csrf_token': '{{ csrf_token() }}', 't':'order'},
+			beforeSend: function() {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function(html) {
+				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+
+				$('#sku-modal').modal('show');
+			}
+		});
+
+		return false;
+	});
+
+	// ajax save
+	$('button.btn-save').click(function () {
+		var form = $(this).data('form-id');
+		$.post("{{ url_for('main.create_order') }}", $('#'+form).serialize(), function (result) {
+			if (result.success) {
+				window.location.href = result.data.next_url;
+			} else {
+				for (var item in result.data) {
+					$('[name='+item+']')
+						.after('<span class="help-block">'+ result.data[item][0] +'</span>')
+						.parent()
+						.addClass('has-error');
+				}
+			}
+		}, 'json');
+	});
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+		{{ _('Add Order') }}
+		{% else %}
+		{{ _('Edit Order') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button role="button" data-form-id="order-form" class="btn btn-icon btn-primary btn-save" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_orders') }}" class="btn btn-icon btn-default btn-back" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<form id="order-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Order Info') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					{{ form.serial_no.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.serial_no(class="form-control", placeholder="Serial No.", readonly="readonly") }}
+					</div>
+					{{ form.outside_target_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.outside_target_id(class="form-control") }}
+					</div>
+				</div>
+				<div class="form-group">
+					{{ form.store_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<select class="form-control select2" name="store_id">
+							<option value="0">{{ _('Select stores') }}</option>
+							{% for store in store_list %}
+							<option value="{{ store.id }}">{{ store.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.express_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<select class="form-control select2" name="express_id">
+							<option value="0">Apple</option>
+							<option value="1">Banana</option>
+						</select>
+					</div>
+					{{ form.freight.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.freight(class="form-control") }}
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Customer Info') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					{{ form.buyer_country.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<select class="form-control select2" name="store_id">
+							<option value="1">Apple</option>
+						</select>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('币种') }}</label>
+					<div class="col-sm-4">
+						<input type="email" class="form-control" placeholder="">
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.buyer_name.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.buyer_name(class="form-control", placeholder="") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.buyer_tel.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.buyer_tel(class="form-control", placeholder="") }}
+					</div>
+					{{ form.buyer_phone.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.buyer_phone(class="form-control", placeholder="") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.buyer_province.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
+						{{ form.buyer_province(class="form-control", placeholder="") }}
+					</div>
+					{{ form.buyer_city.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
+						{{ form.buyer_city(class="form-control", placeholder="") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.buyer_address.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-6">
+						{{ form.buyer_address(class="form-control", placeholder="") }}
+					</div>
+					{{ form.buyer_zipcode.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
+						{{ form.buyer_zipcode(class="form-control", placeholder="Zipcode") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.buyer_remark.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-10">
+						{{ form.buyer_remark(class="form-control", placeholder="") }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Product Info') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					{{ form.warehouse_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<select name="warehouse_id" id="warehouse_id" class="form-control select2">
+							<option value="0">{{ _('Select warehouses') }}</option>
+							{% for w in warehouse_list %}
+							<option value="{{ w.id }}">{{ w.name }}</option>
+							{% endfor  %}
+						</select>
+					</div>
+					<div class="col-sm-6">
+						<a class="btn btn-primary" href="{{ url_for('main.ajax_select_products') }}" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+							<i class="glyphicon glyphicon-plus" aria-hidden="true"></i> {{ _('Select Products') }}
+						</a>
+					</div>
+				</div>
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th>{{ _('Product Info') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Quantity') }}</th>
+							<th class="text-center">{{ _('Discount') }}</th>
+							<th class="text-right">{{ _('Pay Amount') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="choose-products">
+						{% include "products/select_result_for_order.html" %}
+					</tbody>
+					<tfoot class="active">
+					<tr>
+						<th>
+							{{ _('Total') }} <strong class="text-danger" id="total_quantity">0</strong> {{ _('Products') }}
+						</th>
+						<th colspan="3" class="text-center">
+							{{ _('Total Amount:') }} <strong class="text-danger" id="total_amount">0</strong> RMB - {{ _('Total Discount:') }} <strong class="text-danger" id="total_discount">0</strong> RMB
+						</th>
+						<th colspan="2" class="text-right">
+							{{ _('Payable Amount:') }} <strong class="text-danger" id="payable_amount">0</strong> RMB
+						</th>
+					</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Order Remark') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<div class="col-sm-12">
+						{{ form.remark(class="form-control input-lg") }}
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+</div>
+{% endblock %}

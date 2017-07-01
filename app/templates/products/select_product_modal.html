@@ -8,6 +8,7 @@
 			<form class="form" action="" method="post" id="sku-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 				<input type="hidden" name="wh_id" value="{{ wh_id }}" >
+				<input type="hidden" name="t" value="{{ t }}" >
 
 				<div class="form-group form-group-lg">
 					<div class="input-group input-group-lg">
@@ -119,6 +120,12 @@
 				$('#choose-products .select2').select2({
 					'width': '100%'
 				});
+				if (recount && typeof(recount) == 'function') {
+					recount();
+				}
+				if (tracker_change && typeof(tracker_change) == 'function') {
+					tracker_change();
+				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);

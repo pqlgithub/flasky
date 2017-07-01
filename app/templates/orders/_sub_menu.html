@@ -1,0 +1,43 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Order Search') }}
+	</div>
+	<a href="{{ url_for('main.show_orders') }}" class="list-group-item {% if status == 0 %} active{% endif %}">
+		{{ _('Order List') }}
+	</a>
+</div>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Order manage') }}
+	</div>
+	<a href="{{ url_for('main.show_orders') }}?s=1" class="list-group-item {% if status == 1 %} active{% endif %}">
+		{{ _('Pending Payment') }}
+		{% if pending_pay_count %}<span class="badge">{{ pending_pay_count }}</span>{% endif %}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=5" class="list-group-item {% if status == 5 %} active{% endif %}">
+		{{ _('Pending Review') }}
+		{% if pending_review_count %}<span class="badge">{{ pending_review_count }}</span>{% endif %}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=10" class="list-group-item {% if status == 10 %} active{% endif %}">
+		{{ _('Pending Shipment') }}
+		{% if pending_ship_count %}<span class="badge">{{ pending_ship_count }}</span>{% endif %}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=15" class="list-group-item {% if status == 15 %} active{% endif %}">
+		{{ _('Shipped') }}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=20" class="list-group-item {% if status == 20 %} active{% endif %}">
+		{{ _('Finished') }}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=-1" class="list-group-item {% if status == -1 %} active{% endif %}">
+		{{ _('Canceled') }}
+	</a>
+</div>
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Returns Manage') }}
+	</div>
+	<a href="#" class="list-group-item">
+		{{ _('Returns List') }}
+		<span class="badge">0</span>
+	</a>
+</div>

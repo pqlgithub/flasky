@@ -41,7 +41,7 @@ def payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('f', 1, type=int)
 
-    paginated_purchases = Purchase.query.filter_by(payed=status).order_by('created_at desc').paginate(page, per_page)
+    paginated_purchases = Purchase.query.filter_by(payed=status).order_by('created_at asc').paginate(page, per_page)
 
     return render_template('purchases/pay_list.html',
                            paginated_purchases=paginated_purchases,

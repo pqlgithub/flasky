@@ -1,0 +1,27 @@
+{% for stock in stock_products %}
+<tr id="tr_stock_{{ stock.product_sku_id }}">
+	<td>
+		<img src="{{ stock.product_sku.cover.view_url }}" width="60px" class="pull-left">
+		<div class="product-info">
+			{{ stock.product_sku.serial_no }} <small class="label label-warning">({{ stock.product_sku.s_model }})</small><br>
+			{{ stock.product_sku.product.name }}<br>
+		</div>
+	</td>
+	<td class="text-center">
+		<strong id="sale_price_{{ stock.product_sku_id }}">{{ stock.product_sku.sale_price }}</strong>
+	</td>
+	<td class="text-center">
+		<input type="text" name="quantity[{{ stock.product_sku_id }}]" value="1" data-id="{{ stock.product_sku_id }}" id="quantity_{{ stock.product_sku_id }}" class="form-control quantity input-quantity">
+		<input type="hidden" name="items[]" value="{{ stock.product_sku_id }}">
+	</td>
+	<td class="text-center">
+		<input type="text" name="discount[{{ stock.product_sku_id }}]" value="0" data-id="{{ stock.product_sku_id }}" id="discount_{{ stock.product_sku_id }}" class="form-control input-quantity">
+	</td>
+	<td class="text-right">
+		<strong id="subtotal_{{ stock.product_sku_id }}">{{ stock.product_sku.sale_price *  1 }}</strong>
+	</td>
+	<td class="text-right">
+		<a href="" class="btn btn-link">{{ _('Remove') }}</a>
+	</td>
+</tr>
+{% endfor %}

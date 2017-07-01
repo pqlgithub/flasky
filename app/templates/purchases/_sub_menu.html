@@ -5,7 +5,9 @@
 	{% for s in purchase_status %}
 		<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}" class="list-group-item {% if status == s[0] %} active{% endif %}">
 			{{ s[1] }}
+			{% if s[0] in [1,5,10] %}
 			<span class="badge">0</span>
+			{% endif %}
 		</a>
 	{% endfor %}
 

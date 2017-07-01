@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask_babelex import gettext
 from app import db
-from ..utils import timestamp
+from .product import ProductSku
+from ..utils import timestamp, gen_serial_no
 
 __all__ = [
     'Order',
@@ -35,13 +36,26 @@ class OrderStatus:
     RATED = 30
 
 
+# 订单状态
+ORDER_STATUS = [
+    (OrderStatus.CANCELED, gettext('Canceled'), 'default'),
+    (OrderStatus.PENDING_PAYMENT, gettext('Pending Payment'), 'danger'),
+    (OrderStatus.PENDING_CHECK, gettext('Pending Check'), 'danger'),
+    (OrderStatus.PENDING_SHIPMENT, gettext('Pending Shipment'), 'primary'),
+    (OrderStatus.SHIPPED, gettext('Shipped'), 'warning'),
+    (OrderStatus.FINISHED, gettext('Pending Finished'), 'success'),
+    (OrderStatus.PENDING_RATING, gettext('Pending Rating'), 'success'),
+    (OrderStatus.RATED, gettext('Rated'), 'success')
+]
+
 class Order(db.Model):
     """订单表"""
 
     __tablename__ = 'orders'
 
     id = db.Column(db.Integer, primary_key=True)
-    serial_no = db.Column(db.Integer, unique=True, index=True, nullable=False)
+
+    serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
 
     # 用户ID
     master_uid = db.Column(db.Integer, index=True, default=0)
@@ -62,7 +76,7 @@ class Order(db.Model):
     # 优惠金额
     discount_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 物流ID
-    express_id = db.Column(db.Integer, db.ForeignKey('expresses.id'))
+    express_id = db.Column(db.Integer, default=0)
     # 运单号
     express_no = db.Column(db.String(32), nullable=True)
     # 卖家备注
@@ -111,6 +125,53 @@ class Order(db.Model):
         'Invoice', backref='order', uselist=False
     )
 
+    @property
+    def status_label(self):
+        """显示状态标签"""
+        for s in ORDER_STATUS:
+            if s[0] == self.status:
+                return s
+        return None
+
+    @property
+    def cover(self):
+        """默认采购产品的第一个的封面图"""
+        sku_id = self.items.first().sku_id
+        item_sku = ProductSku.query.get(sku_id)
+        return item_sku.cover.view_url
+
+    def mark_checked_status(self):
+        """标记为待审核状态"""
+        self.status = OrderStatus.PENDING_CHECK
+
+
+    def mark_shipment_status(self):
+        """标记为待发货状态"""
+        self.verified_at = timestamp()
+        self.status = OrderStatus.PENDING_SHIPMENT
+
+
+    def mark_shipped_status(self):
+        """标记为已发货状态"""
+        self.status = OrderStatus.SHIPPED
+
+
+    def mark_finished_status(self):
+        """标记为已完成的状态"""
+        self.status = OrderStatus.FINISHED
+
+
+    @staticmethod
+    def make_unique_serial_no(serial_no):
+        if Order.query.filter_by(serial_no=serial_no).first() == None:
+            return serial_no
+        while True:
+            new_serial_no = gen_serial_no('C')
+            if Order.query.filter_by(serial_no=new_serial_no).first() == None:
+                break
+        return new_serial_no
+
+
     def __repr__(self):
         return '<Order %r>' % self.serial_no
 
@@ -121,8 +182,9 @@ class OrderItem(db.Model):
     __tablename__ = 'order_items'
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
+    order_serial_no = db.Column(db.String(20), index=True, nullable=False)
     sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
-    sku_serial_no = db.Column(db.Integer, nullable=False)
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
     quantity = db.Column(db.Integer, default=1)
     # 交易价格
     deal_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
@@ -137,13 +199,7 @@ class OrderItem(db.Model):
         db.UniqueConstraint('order_id', 'sku_id', name='uix_order_id_sku_id'),
     )
 
+
     def __repr__(self):
         return '<OrderItem %r>' % self.id
-
-
-
-
-
-
-
 

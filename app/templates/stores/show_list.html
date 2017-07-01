@@ -1,0 +1,66 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Store List') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.create_store') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="stores-form" action="{{ url_for('main.delete_store') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Store Name') }}</th>
+					<th>{{ _('Platform') }}</th>
+					<th>{{ _('Contact') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for store in paginated_stores.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ store.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ store.name }}
+					</td>
+					<td>
+						{{ store.platform_name }}
+					</td>
+					<td>
+
+					</td>
+					<td class="text-right">
+
+					</td>
+					<td class="text-right">
+						<a href="{{ url_for('main.edit_store', id=store.id) }}" class="btn btn-icon btn-primary waves-effect waves-light" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<i class="glyphicon glyphicon-edit"></i>
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+
+{% endblock %}

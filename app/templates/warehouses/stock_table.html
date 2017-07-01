@@ -41,7 +41,7 @@
 						<td class="text-center">
 
 						</td>
-						<td class="text-center">
+						<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
 							{{ stock.current_count }} <br>
 							{% if stock.min_count %}<label class="label label-warning">{{ stock.min_count }}</label>{% endif %}
 						</td>

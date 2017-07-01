@@ -23,7 +23,7 @@ class Store(db.Model):
     access_token = db.Column(db.String(100), default='')
     refresh_token = db.Column(db.String(100), default='')
     type = db.Column(db.SmallInteger, default=1)
-    # 状态 1：禁用；2：正常
+    # 状态 -1：禁用；1：正常
     status = db.Column(db.SmallInteger, default=1)
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -33,12 +33,18 @@ class Store(db.Model):
         'PayAccount', backref='store', lazy='dynamic'
     )
 
+    # store and orders => 1 to N
+    orders = db.relationship(
+        'Order', backref='store', lazy='dynamic'
+    )
+
     @property
     def platform_name(self):
         for plat in SUPPORT_PLATFORM:
             if plat['id'] == self.platform:
                 return plat['name']
         return None
+
 
     def __repr__(self):
         return '<Store %r>' % self.name

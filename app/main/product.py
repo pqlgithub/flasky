@@ -57,6 +57,7 @@ def ajax_select_products():
     """搜索库存产品,满足下单/出库等选择产品"""
     paginated_stocks = None
     wh_id = request.form.get('wh_id')
+    t = request.form.get('t', 'stock')
     page = request.values.get('page', 1, type=int)
 
     query = ProductStock.query
@@ -66,13 +67,16 @@ def ajax_select_products():
 
     return render_template('products/select_product_modal.html',
                            paginated_stocks=paginated_stocks,
-                           wh_id=wh_id)
+                           wh_id=wh_id,
+                           t=t)
 
 @main.route('/products/ajax_submit_result', methods=['POST'])
 @login_required
 def ajax_submit_result():
     """返回已选定产品的结果"""
     wh_id = request.form.get('wh_id')
+    t = request.form.get('t', 'stock')
+
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
         return 'Select id is null!'
@@ -82,7 +86,11 @@ def ajax_submit_result():
 
     # 货架
     warehouse_shelves = WarehouseShelve.query.filter_by(warehouse_id=wh_id).all()
-    return render_template('products/select_result.html',
+
+    tpl = 'products/select_result.html'
+    if t == 'order':
+        tpl = 'products/select_result_for_order.html'
+    return render_template(tpl,
                            stock_products=stock_products,
                            warehouse_shelves=warehouse_shelves)
 

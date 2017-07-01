@@ -1,8 +1,7 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
-	{% include 'purchases/_sub_menu.html' %}
+	{% include "orders/_sub_menu.html" %}
 {% endblock %}
 
 {% block jquery %}
@@ -17,10 +16,11 @@
 			selected.push(id);
 		});
 		if (selected.length){
-			$.post('{{ url_for("main.ajax_verify") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+			$.post('{{ url_for("main.ajax_verify_order") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
 				if (result.success) {
 					ids = result.data;
 					for (var i=0,l=ids.length;i<l;i++) {
+						$('#tr_' + ids[i] + '_parent').remove();
 						$('#tr_' + ids[i]).remove();
 					}
 				} else {
@@ -32,43 +32,33 @@
 		}
 	});
 
-	$('.ajax-arrival').click(function (e) {
-		var $btn = $(this), post_url = $(this).attr('href');
-		$('#modal-arrival').remove();
-		$.ajax({
-			url: post_url,
-			dataType: 'html',
-			data: {'csrf_token': csrf_token},
-			beforeSend: function() {
-				$btn.prop('disabled', true);
-			},
-			complete: function() {
-				$btn.prop('disabled', false);
-			},
-			success: function(html) {
-				$('body').append('<div id="modal-arrival" role="dialog" class="modal">' + html + '</div>');
-
-				$('#modal-arrival').modal('show');
-			}
-		});
-
-		return false;
-	});
-
 {#</script>#}
 {% endblock %}
 
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Purchases List') }}
+		{{ _('Order List') }}
 		<span class="pull-right">
-			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+			{% if status == 1 or status == 5 %}
+			<button class="btn btn-success verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
+			{% endif %}
+			<div class="btn-group">
+				<button class="btn btn-primary dropdown-toggle" type="button" id="storage-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Batch operation') }}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
+					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Update buyer info') }}</a></li>
+					<li class="divider" role="separator"></li>
+					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Mark black list') }}</a></li>
+				</ul>
+			</div>
 			<button class="btn btn-info" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
@@ -78,13 +68,10 @@
 			<button class="btn btn-warning" type="button" data-toggle="tooltip" data-original-title="{{ _('Export') }}">
 				<i class="glyphicon glyphicon-export"></i>
 			</button>
-			<button class="btn btn-danger delete-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
-			</button>
 		</span>
 	</h2>
 
-	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+	<form class="form-inline" method="post" action="">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
@@ -164,7 +151,7 @@
 		<div class="form-group m-l-30">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Sort: Add Date
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: Add Date
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-type">
@@ -186,87 +173,96 @@
 	</form>
 
 	<div class="table-responsive m-t-20">
-		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
+		<form id="orders-form" action="" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 			<table class="table table-bordered table-striped table-hover">
 				<thead>
 					<tr>
-						<th colspan="3">
+						<th>
 							<input name="check_all" type="checkbox" class="check-all">
 							{{ _('Product Info') }}
 						</th>
-						<th>{{ _('Payment Info') }}</th>
-						<th class="text-center">{{ _('Express No.') }}</th>
-						<th class="text-center">{{ _('Total Quantity') }}</th>
-						<th>{{ _('Status') }}</th>
-						<th class="text-right">{{ _('Add Date') }}</th>
+						<th class="text-center">
+							{{ _('Quantity') }}
+						</th>
+						<th class="text-center">
+							{{ _('Total Amount') }}
+						</th>
+						<th class="text-center">
+							{{ _('Customer「Country」') }}
+						</th>
+						<th>
+							{{ _('Contact') }}
+						</th>
+						<th>
+							{{ _('Buyer Remark') }}
+						</th>
+						<th class="text-center">
+							{{ _('Express') }}
+						</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for purchase in paginated_purchases.items %}
-					<tr id="tr_{{ purchase.id }}_parent">
-						<td colspan="3">
-							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox" id="purchase-id-{{ purchase.id }}"> <label for="purchase-id-{{ purchase.id }}">{{ purchase.serial_no }}</label>
+					{% for order in paginated_orders.items %}
+					<tr id="tr_{{ order.serial_no }}_parent">
+						<td>
+							<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
+							<label for="order-id-{{ order.serial_no }}">{{ order.serial_no }}</label>
+						</td>
+						<td colspan="2">
+							{{ _('Add Date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
 						</td>
 						<td colspan="3">
-							{{ _('Warehouse') }}: <label>{{ purchase.warehouse.name }}</label>
+							{{ _('From Store') }}: <strong>{{ order.store.name }}</strong>
 						</td>
-						<td colspan="3">
-							{{ _('Supplier') }}: <label>{{ purchase.supplier.name }}</label>
+						<td colspan="2">
+							<label class="label label-{{ order.status_label[2] }}">{{ order.status_label[1] }}</label>
 						</td>
 					</tr>
-					<tr id="tr_{{ purchase.id }}">
-						<td class="text-center" colspan="3">
-							<img src="{{ purchase.first_child.sku.cover.view_url }}" width="60px" class="pull-left">
+					<tr id="tr_{{ order.serial_no }}">
+						<td>
+							<img src="{{ order.cover }}" width="60px" class="pull-left">
 							<div class="product-info">
-								{{ _('Product Count') }}： <label>{{ purchase.sku_count }}</label> <br>
-								{{ _('Total Quantity') }}: <label>{{ purchase.quantity_sum }}</label> <br>
-								<a href="">{{ _('Products Detail') }}</a>
+								{{ _('Product Count') }}： <label>{{ order.items.count() }}</label> <br>
+								<a href="">{{ _('Order Detail') }}</a>
 							</div>
 						</td>
+						<td class="text-center">
+							{{ order.total_quantity }}
+						</td>
+						<td class="text-center">
+							{{ order.total_amount }}
+						</td>
+						<td class="text-center">
+							{{ order.buyer_name }}
+						</td>
 						<td>
-							{{ _('Amount payable') }}: {{ purchase.payable_amount }}<br>
-							({{ purchase.freight }} {{ _('freight') }})
+							{{ order.buyer_tel }} {{ order.buyer_phone }}
+						</td>
+						<td>
+							{{ order.buyer_remark }}
 						</td>
 						<td class="text-center">
-							<a href="" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-								{{ _('Add Express') }}
-							</a>
-						</td>
-						<td class="text-center">
-							<span class="text-danger">{{ purchase.in_quantity }}</span> / {{ purchase.quantity_sum }}
-						</td>
-						<td class="text-center">
-							{% if purchase.status == 5 %}
-								{% if purchase.in_quantity > 0 and purchase.in_quantity != purchase.quantity_sum %}
-									<label class="label label-warning">{{ _('Partial arrival') }}</label>
-								{% endif %}
+							{% if order.express_no %}
+								{{ order.express_no }}
 							{% else %}
-								<label class="label label-{{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
+							<a href="" class="btn btn-link">Add Express</a>
 							{% endif %}
 						</td>
 						<td class="text-right">
-							{{ purchase.created_at|timestamp2string() }}
-						</td>
-						<td class="text-right">
 							<div class="btn-group">
-								<a href="{{ url_for('main.ajax_arrival', id=purchase.id)}}" class="ajax-arrival btn btn-link active" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
-									{{ _('Arrival') }}
-								</a>
-							</div>
-							<div class="btn-group">
-								<button class="btn btn-primary dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								<button class="btn btn-primary dropdown-toggle" type="button" id="more-{{ order.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 									{{ _('More') }}
 									<span class="caret"></span>
 								</button>
-								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ purchase.id }}-actions">
-									<li><a href="{{ url_for('main.edit_purchase', id=purchase.id) }}">{{ _('Edit') }}</a></li>
+								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
+									<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
 									<li><a href="#">{{ _('Canceled') }}</a></li>
 									<li><a href="#">{{ _('Remark') }}</a></li>
 									<li role="separator" class="divider"></li>
-									<li><a href="#">{{ _('Show Detail') }}</a></li>
+									<li><a href="{{ url_for('main.preview_order', sn=order.serial_no) }}">{{ _('Show Detail') }}</a></li>
 								</ul>
 							</div>
 						</td>
@@ -277,10 +273,11 @@
 		</form>
 	</div>
 
+	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_purchases, '.show_purchases') }}
+				{{ macros.pagination_widget(paginated_orders, '.show_orders') }}
 			</nav>
 		</div>
 	</div>

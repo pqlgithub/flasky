@@ -205,6 +205,11 @@ class ProductStock(db.Model):
         return self.current_count - self.presale_count
 
     @property
+    def out_of_stock(self):
+        """库存不足状态"""
+        return self.current_count <= self.min_count 
+
+    @property
     def purchasing_count(self):
         """已采购未到货的数量"""
         return 0
