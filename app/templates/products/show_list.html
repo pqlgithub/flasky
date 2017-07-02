@@ -10,13 +10,16 @@
 	<h2 class="page-header">
 		{{ _('Product List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<a href="{{ url_for('main.show_products') }}" data-toggle="tooltip" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
 				<i class="glyphicon glyphicon-refresh"></i>
 			</a>
 			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>

@@ -1,0 +1,83 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Add New User') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="user-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label">{{ _('Site') }}</label>
+					<div class="col-sm-8">
+						<p class="form-control-static">{{ site.company_name }}</p>
+					</div>
+				</div>
+
+				<div class="form-group required">
+					<label class="col-sm-3 control-label">{{ _('Account') }}</label>
+					<div class="col-sm-8">
+						{{ form.email(class="form-control", placeholder="email") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					<label class="col-sm-3 control-label">{{ _('Username') }}</label>
+					<div class="col-sm-8">
+						{{ form.username(class="form-control") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					<label class="col-sm-3 control-label">{{ _('Password') }}</label>
+					<div class="col-sm-8">
+						{{ form.password(class="form-control") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					<label class="col-sm-3 control-label">{{ _('Confirm Password') }}</label>
+					<div class="col-sm-8">
+						{{ form.password2(class="form-control") }}
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="user-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+
+	$('#user-submit-btn').click(function (e) {
+		$.ajax({
+			url: "{{ url_for('main.add_child_user') }}",
+			type: 'post',
+			data: $('#user-form').serialize(),
+			dataType: 'json',
+			beforeSend: function () {
+				$('#user-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#user-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+					$('#user-modal').modal('hide');
+					$('.btn-refresh').trigger('click');
+				} else {
+					$('#user-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

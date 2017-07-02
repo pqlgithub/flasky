@@ -1,0 +1,24 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include "settings/_sub_menu.html" %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('User Profile') }}
+
+		<span class="pull-right">
+			<button type="submit" form="ability-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form id="ability-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+	</form>
+</div>
+{% endblock %}

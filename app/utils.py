@@ -20,7 +20,10 @@ class Master:
     @staticmethod
     def master_uid():
         """获取管理员ID"""
-        return current_user.id if current_user else None
+        if current_user.is_master:
+            return current_user.id
+        else:
+            return current_user.master_uid if current_user else None
 
 
 def timestamp():

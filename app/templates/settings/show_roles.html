@@ -1,5 +1,4 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
 	{% include 'settings/_sub_menu.html' %}
@@ -32,12 +31,15 @@
 
 {% block mainbar %}
 	<h2 class="page-header">
-		{{ _('Role List') }}
+		{{ _('Acl List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<a href="{{ url_for('main.create_role') }}" class="btn btn-primary ajax-role" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all" data-form-id="roles-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -54,8 +56,6 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th>{{ _('Role Name') }}</th>
-						<th>{{ _('Title') }}</th>
-						<th>{{ _('Description') }}</th>
 						<th>{{ _('Has Abilities') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
@@ -67,17 +67,15 @@
 							<input name="selected[]" class="check-one" value="{{ role.id }}" type="checkbox">
 						</td>
 						<td>
-							{{ role.name }}
+							{{ role.title }} / {{ role.name }}
 						</td>
-						<td>{{ role.title }}</td>
-						<td>{{ role.description }}</td>
 						<td>{{ role.ability_group }}</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.set_ability', role_id=role.id)}}" class="btn btn-icon ajax-role btn-primary" data-toggle="tooltip" data-original-title="{{ _('Set Ability') }}">
+							<a href="{{ url_for('main.set_ability', role_id=role.id)}}" class="btn btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Set Ability') }}">
 								{{ _('Set Ability') }}
 							</a>
-							<a href="{{ url_for('main.edit_role', id=role.id)}}" class="btn btn-icon ajax-role btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								<i class="glyphicon glyphicon-edit"></i>
+							<a href="{{ url_for('main.edit_role', id=role.id)}}" class="btn ajax-role btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								{{ _('Edit') }}
 							</a>
 						</td>
 					</tr>
@@ -89,6 +87,7 @@
 
 	</div>
 
+	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">

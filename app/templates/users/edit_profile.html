@@ -1,14 +1,13 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
-	{% include 'settings/_sub_menu.html' %}
+	{% include "settings/_sub_menu.html" %}
 {% endblock %}
 
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
-		{{ _('Add ability') }}
+		{{ _('Setting Site') }}
 
 		<span class="pull-right">
 			<button type="submit" form="ability-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
@@ -23,15 +22,16 @@
 	<form id="ability-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-			<label for="name" class="col-sm-2 control-label">{{ form.name.label }}</label>
-			<div class="col-sm-8">
-				{{ form.name(id="name", class="form-control") }}
-				{% for error in form.errors.name %}
+		<div class="form-group required {% if form.errors.company_name %} has-error{% endif %}">
+			{{ form.company_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.company_name(id="company_name", class="form-control") }}
+				{% for error in form.errors.company_name %}
 				<span class="help-block">{{ error }}</span><br>
 				{% endfor %}
 			</div>
 		</div>
+
 	</form>
 </div>
 {% endblock %}

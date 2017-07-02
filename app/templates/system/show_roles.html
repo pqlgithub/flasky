@@ -1,0 +1,70 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'system/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Role List') }}
+		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
+			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="roles-form" action="{{ url_for('main.delete_role') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th>{{ _('Role Name') }}</th>
+						<th>{{ _('Description') }}</th>
+						<th>{{ _('Has Abilities') }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for role in paginated_roles.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ role.id }}" type="checkbox">
+						</td>
+						<td>
+							{{ role.title }} / {{ role.name }}
+						</td>
+						<td>{{ role.description }}</td>
+						<td>{{ role.ability_group }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+
+	</div>
+
+	{% import "block/_macros.html" as macros %}
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_roles, '.show_roles') }}
+			</nav>
+		</div>
+	</div>
+
+{% endblock %}

@@ -8,10 +8,13 @@
 	<h2 class="page-header">
 		{{ _('Store List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<a href="{{ url_for('main.create_store') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('新增') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('删除') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -52,9 +55,15 @@
 
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.edit_store', id=store.id) }}" class="btn btn-icon btn-primary waves-effect waves-light" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-							<i class="glyphicon glyphicon-edit"></i>
-						</a>
+						<div class="dropdown">
+							<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ store.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								{{ _('More') }}
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ store.id }}-actions">
+								<li><a href="{{ url_for('main.edit_store', id=store.id) }}">{{ _('Edit') }}</a></li>
+							</ul>
+						</div>
 					</td>
 				</tr>
 				{% endfor %}

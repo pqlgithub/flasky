@@ -14,7 +14,7 @@
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" value="{{ a.id }}" name="selected[]" {% if a.name in has_abilities %}checked="checked"{% endif %}>
-								{{ a.name }}
+								{{ a.title }}
 							</label>
 						</div>
 					</div>
@@ -31,7 +31,7 @@
 
 <script type="text/javascript"><!--
 	var data = {};
-	var list_url = "{{ url_for('main.show_roles') }}";
+	var list_url = "{{ url_for('main.setting_roles') }}";
 
 	$('#ability-submit-btn').click(function (e) {
 		data = $('#ability-form').serialize();

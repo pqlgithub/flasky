@@ -46,7 +46,7 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a href="../" class="navbar-brand">C</a>
+					<a href="../" class="navbar-brand">Y</a>
 				</div>
 				<nav class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
@@ -80,6 +80,9 @@
 						<li {% if top_menu == 'settings' %}class="active"{% endif %}>
 							<a href="{{ url_for('main.show_settings') }}">{{ _('Settings') }}</a>
 						</li>
+						<li {% if top_menu == 'system' %}class="active"{% endif %}>
+							<a href="{{ url_for('main.show_users') }}">{{ _('System') }}</a>
+						</li>
 					</ul>
 
 					<ul class="nav navbar-nav navbar-right">
@@ -109,8 +112,8 @@
 								{% endif %}
 							</a>
 							<ul class="dropdown-menu">
-								<li><a href="#">{{ _('Profile') }}</a></li>
-								<li><a href="#">{{ _('Update password') }}</a></li>
+								<li><a href="{{ url_for('main.site') }}">{{ _('Site info') }}</a></li>
+								<li><a href="{{ url_for('main.passwd') }}">{{ _('Update password') }}</a></li>
 								<li role="separator" class="divider"></li>
 								<li><a href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a></li>
 							</ul>
@@ -125,13 +128,6 @@
 			{% block content %}
 			<div class="col-sm-3 col-md-2 sidebar">
 				{% block sidebar %}{% endblock %}
-				<div class="well">
-					<p>
-						<strong>{{ _('Service') }}</strong> <br/>
-						Email: service@urknow.com <br/>
-						Wechat: urknow
-					</p>
-				</div>
 			</div>
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 				{% with messages = get_flashed_messages(with_categories=true) %}

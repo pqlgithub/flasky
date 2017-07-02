@@ -51,24 +51,17 @@
 	<h2 class="page-header">
 		{{ _('Payment List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<a href="{{ url_for('main.create_transaction') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all" data-form-id="transactions-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="transactions-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
 	</h2>
-
-	<ul class="nav nav-tabs nav-tabs-google">
-		<li role="presentation" {% if status==1 %}class="active"{% endif %}>
-			<a href="{{ url_for('main.show_payments') }}?s=1">{{ _('Waiting') }}</a>
-		</li>
-		<li role="presentation" {% if status==2 %}class="active"{% endif %}>
-			<a href="{{ url_for('main.show_payments') }}?s=2">{{ _('Finished') }}</a>
-		</li>
-
-	</ul>
 
 	<div class="table-responsive m-t-20">
 		<form id="transactions-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
@@ -130,7 +123,7 @@
 							<a href="{{ url_for('main.edit_payment', id=trans.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								<i class="glyphicon glyphicon-edit"></i>
 							</a>
-							<button data-href="{{ url_for('main.ajax_payed', id=trans.id) }}" class="btn btn-icon btn-warning confirm-payed" data-toggle="tooltip" data-original-title="{{ _('Confirm Payed') }}">
+							<button data-href="{{ url_for('main.ajax_payed', id=trans.id) }}" class="btn btn-icon btn-success confirm-payed" data-toggle="tooltip" data-original-title="{{ _('Confirm Payed') }}">
 								<i class="glyphicon glyphicon-ok"></i>
 							</button>
 							{% endif %}

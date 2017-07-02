@@ -14,7 +14,7 @@
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" value="{{ role.id }}" name="selected[]" {% if role.name in belong_roles %}checked="checked"{% endif %}>
-								{{ role.name }}
+								{{ role.title }}
 							</label>
 						</div>
 					</div>
@@ -31,7 +31,7 @@
 
 <script type="text/javascript"><!--
 	var data = {};
-	var list_url = "{{ url_for('main.show_users') }}";
+	var list_url = "{{ url_for('main.child_users') }}";
 
 	$('#role-submit-btn').click(function (e) {
 		data = $('#role-form').serialize();

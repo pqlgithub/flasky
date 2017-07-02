@@ -1,0 +1,122 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include "settings/_sub_menu.html" %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	$('.ajax-role').click(function (e) {
+		var $btn = $(this), post_url = $(this).attr('href');
+		$('#role-modal').remove();
+		$.ajax({
+			url: post_url,
+			dataType: 'html',
+			beforeSend: function() {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function(html) {
+				$('body').append('<div id="role-modal" role="dialog" class="modal">' + html + '</div>');
+
+				$('#role-modal').modal('show');
+			}
+		});
+		return false;
+	});
+
+	$('.btn-refresh').on('click', function () {
+		window.location.reload();
+	});
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Add User') }}
+		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
+			<button class="btn btn-default btn-refresh" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Refresh') }}">
+				<i class="glyphicon glyphicon-refresh"></i>
+			</button>
+			<a href="{{ url_for('main.add_child_user') }}" data-modal="user-modal" data-toggle="tooltip" class="btn btn-primary ajax-modal" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="users-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Account') }}</th>
+					<th class="text-center">{{ _('Username') }}</th>
+					<th class="text-center">{{ _('Roles') }}</th>
+					<th class="text-center">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Last Seen') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in paginated_users.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ user.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ user.email }}
+					</td>
+					<td class="text-center">
+						{{ user.username }}
+					</td>
+					<td class="text-center">
+						{{ user.role_group }}
+					</td>
+					<td class="text-center">
+						{% if user.confirmed %}
+						<span class="indicator success">
+							{{ _('Confirmed') }}
+						</span>
+						{% else %}
+						<span class="indicator danger">
+							{{ _('Pending Confirm') }}
+						</span>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{{ user.last_seen|timestamp2string()}}
+					</td>
+					<td class="text-right">
+						<a href="{{ url_for('main.set_role', user_id=user.id)}}" class="btn btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							{{ _('Set Role') }}
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	{% import "block/_macros.html" as macros %}
+	<div class="pages-box">
+		<div class="pull-left">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_users, '.show_users') }}
+			</nav>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

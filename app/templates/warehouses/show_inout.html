@@ -7,17 +7,6 @@
 
 {% block jquery %}
 {#<script type="text/javascript">#}
-	// 自动绑定ajax的链接
-	$('a.ajax-modal').click(function () {
-		var url = $(this).attr('href'), modal_name = $(this).data('modal');
-		$.get(url, function (html) {
-			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
-
-			$('#'+ modal_name).modal('show');
-		});
-		return false;
-	});
-
 	$('.btn-refresh').on('click', function () {
 		window.location.reload();
 	});

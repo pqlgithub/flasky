@@ -1,0 +1,86 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'system/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('User List') }}
+		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
+			<button class="btn btn-danger delete-all hidden" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive m-t-20">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Account') }}</th>
+					<th>{{ _('Mobile') }}</th>
+					<th class="text-center">{{ _('Master') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Last Seen') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in paginated_users.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ user.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ user.email }} / {{ user.username }}
+					</td>
+					<td>{{ user.mobile }}</td>
+					<td class="text-center">
+						{% if user.is_master %}
+							<i class="glyphicon glyphicon-user" data-toggle="tooltip" title="" data-original-title="{{ _('This is the master') }}"></i>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{% if user.confirmed %}
+						<span class="indicator success">
+							{{ _('Confirmed') }}
+						</span>
+						{% else %}
+						<span class="indicator danger">
+							{{ _('Pending Confirm') }}
+						</span>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{{ user.last_seen|timestamp2string()}}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(paginated_users, '.show_users') }}
+				</nav>
+			</div>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

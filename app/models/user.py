@@ -5,12 +5,14 @@ from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from hashlib import md5
 from ..utils import timestamp
+from ..constant import SUPPORT_DOMAINS,SUPPORT_LANGUAGES, SUPPORT_COUNTRIES, SUPPORT_CURRENCIES
 from app import db, login_manager
 
 __all__ = [
     'User',
     'Role',
     'Ability',
+    'Site',
     'AnonymousUser'
 ]
 
@@ -36,8 +38,10 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+
     # 主账号，默认为0
     master_uid = db.Column(db.Integer, index=True, default=0)
+
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
@@ -52,6 +56,9 @@ class User(UserMixin, db.Model):
     mobile = db.Column(db.String(20))
     description = db.Column(db.String(140))
 
+    # 是否配置站点信息
+    is_setting = db.Column(db.Boolean, default=False)
+
     # 本地化
     locale = db.Column(db.String(4), default='zh')
     language = db.Column(db.String(4), default='en')
@@ -61,6 +68,7 @@ class User(UserMixin, db.Model):
     # if online or offline
     online = db.Column(db.Boolean, default=False)
     last_seen = db.Column(db.Integer, default=timestamp)
+
     created_at = db.Column(db.Integer, default=timestamp)
     # update time of last time
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -76,7 +84,7 @@ class User(UserMixin, db.Model):
         return ' / '.join(self.has_roles())
 
     def has_roles(self):
-        return [role.name for role in self.roles]
+        return [role.title for role in self.roles]
 
     def add_roles(self, *roles):
         """添加用户角色"""
@@ -106,6 +114,17 @@ class User(UserMixin, db.Model):
         """生成一个令牌，有效期默认为一小时."""
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
+
+
+    @property
+    def is_master(self):
+        """是否为主账号"""
+        return self.master_uid == 0
+
+    def mark_as_setting(self):
+        """设置已配置站点信息"""
+        self.is_setting = True
+
 
     def confirm(self, token):
         """检验令牌，如果检验通过，则把新添加的confirmed 属性设为True."""
@@ -179,7 +198,10 @@ class Role(db.Model):
     __tablename__ = 'roles'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True)
+
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    name = db.Column(db.String(50), index=True, nullable=False)
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(255), nullable=True)
 
@@ -215,10 +237,12 @@ class Role(db.Model):
                 self.abilities.remove(existing_ability)
 
 
-    def __init__(self, name, title=None, description=None):
+    def __init__(self, name, master_uid, title=None, description=None):
         self.name = name.lower()
         self.title = title
         self.description = description
+        self.master_uid = master_uid
+
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
@@ -232,15 +256,15 @@ class Ability(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, index=True)
+    title = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, name):
+    def __init__(self, name, title):
         self.name = name.lower()
+        self.title = title
+
 
     def __repr__(self):
         return '<Ability {}>'.format(self.name)
-
-    def __str__(self):
-        return self.name
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -254,3 +278,53 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     """使用指定的标识符加载用户"""
     return User.query.get(int(user_id))
+
+
+class Site(db.Model):
+    """站点配置信息"""
+
+    __tablename__ = 'sites'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, unique=True, index=True)
+
+    company_name = db.Column(db.String(50), unique=True, index=True, nullable=False)
+    company_abbr = db.Column(db.String(10), nullable=True)
+
+    locale = db.Column(db.String(4), default='zh')
+    country = db.Column(db.String(30), nullable=True)
+    currency = db.Column(db.String(10), default='CNY')
+    # 行业范围
+    domain = db.Column(db.SmallInteger, default=1)
+    description = db.Column(db.Text)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+
+    @property
+    def locale_label(self):
+        for l in SUPPORT_LANGUAGES:
+            if l[1] == self.locale:
+                return l
+
+    @property
+    def country_label(self):
+        for c in SUPPORT_COUNTRIES:
+            if c[1] == self.country:
+                return c
+
+    @property
+    def currency_label(self):
+        for c in SUPPORT_CURRENCIES:
+            if c[1] == self.currency:
+                return c
+
+    @property
+    def domain_label(self):
+        for d in SUPPORT_DOMAINS:
+            if d[0] == self.domain:
+                return d
+
+    def __repr__(self):
+        return '<Site %r>' % self.company_name

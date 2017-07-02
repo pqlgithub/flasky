@@ -20,6 +20,23 @@ var get_url_params = function (href) {
 	return query;
 };
 
+var checked_items_status = function () {
+	var total_count = 0;
+	$('input.check-one').each(function () {
+		if ($(this).is(':checked')) {
+			total_count += 1;
+		}
+	});
+
+	if (total_count > 0) {
+		$('.checked-items-status').html(total_count + ' items selected').removeClass('hidden');
+		$('.btn.delete-all').removeClass('hidden');
+	} else {
+		$('.checked-items-status').addClass('hidden');
+		$('.btn.delete-all').addClass('hidden');
+	}
+};
+
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip({
 		container: 'body',
@@ -44,6 +61,7 @@ $(function () {
 				.find('.check-one')
 				.prop('checked', false);
 		}
+		checked_items_status();
 	});
 
 	$('input.check-one').click(function () {
@@ -52,6 +70,7 @@ $(function () {
 			$('input.check-all')
 				.prop('checked', false);
 		}
+		checked_items_status();
 	});
 
 	// 删除 全部 or 单个
@@ -75,6 +94,17 @@ $(function () {
 				}
 			}
 		});
+	});
+
+	// 自动绑定ajax的链接
+	$('a.ajax-modal').click(function () {
+		var url = $(this).attr('href'), modal_name = $(this).data('modal');
+		$.get(url, function (html) {
+			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
+
+			$('#'+ modal_name).modal('show');
+		});
+		return false;
 	});
 
 	$('.alert-dismissable').fadeTo(2000, 500).fadeOut(500, function(){

@@ -1,6 +1,32 @@
 # -*- coding: utf-8 -*-
 from flask_babelex import gettext
 
+
+# 开通的国家
+SUPPORT_COUNTRIES = (
+    (1, 'zh', gettext('China')),
+    (2, 'en', gettext('USA'))
+)
+
+# 支持的币种 currencies
+SUPPORT_CURRENCIES = (
+    (1, 'CNY'),
+    (2, 'USD'),
+    (3, 'JPY'),
+    (4, 'SGD'),
+    (5, 'THB'),
+    (6, 'KRW'),
+    (7, 'SUR'),
+    (8, 'PHP')
+)
+
+# 支持的语言 Language
+SUPPORT_LANGUAGES = (
+    (1, 'ZH', 'Chinese'),
+    (2, 'EN', 'English')
+)
+
+
 # 部门
 DEPARTMENT = (
     {
@@ -88,3 +114,9 @@ SORT_TYPE_CODE = {
     'ud': 'updated_at',
     'sq': 'current_count'
 }
+
+# 行业范围
+SUPPORT_DOMAINS = (
+    (1, gettext('Retail')),
+    (2, gettext('Services'))
+)
