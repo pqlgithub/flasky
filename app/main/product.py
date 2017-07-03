@@ -8,12 +8,14 @@ from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve
 from app.forms import ProductForm, SupplierForm, CategoryForm, ProductSkuForm
 from ..utils import full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
+from ..decorators import user_has
 
 top_menu = 'products'
 
 @main.route('/products')
 @main.route('/products/<int:page>')
 @login_required
+@user_has('admin_product')
 def show_products(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_products = Product.query.order_by('created_at desc').paginate(page, per_page)
@@ -27,6 +29,7 @@ def show_products(page=1):
 
 @main.route('/products/ajax_search', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def ajax_search_products():
     """搜索产品,满足采购等选择产品"""
     supplier_id = request.form.get('supplier_id')
@@ -38,6 +41,7 @@ def ajax_search_products():
 
 @main.route('/products/skus', methods=['POST'])
 @login_required
+@user_has('admin_product')
 def ajax_find_skus():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -53,6 +57,7 @@ def ajax_find_skus():
 
 @main.route('/products/ajax_select', methods=['POST'])
 @login_required
+@user_has('admin_product')
 def ajax_select_products():
     """搜索库存产品,满足下单/出库等选择产品"""
     paginated_stocks = None
@@ -72,6 +77,7 @@ def ajax_select_products():
 
 @main.route('/products/ajax_submit_result', methods=['POST'])
 @login_required
+@user_has('admin_product')
 def ajax_submit_result():
     """返回已选定产品的结果"""
     wh_id = request.form.get('wh_id')
@@ -98,6 +104,7 @@ def ajax_submit_result():
 
 @main.route('/products/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def create_product():
     form = ProductForm()
     if form.validate_on_submit():
@@ -142,6 +149,7 @@ def create_product():
 
 @main.route('/products/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def edit_product(id):
     product = Product.query.get_or_404(id)
     form = ProductForm()
@@ -183,10 +191,13 @@ def edit_product(id):
 
 
 @main.route('/products/delete', methods=['POST'])
+@login_required
+@user_has('admin_product')
 def delete_product():
     pass
 
 @main.route('/products/<int:id>/skus')
+@user_has('admin_product')
 def show_skus(id):
     product_skus = ProductSku.query.filter_by(product_id=id).all()
     return render_template('/products/show_skus.html',
@@ -194,6 +205,7 @@ def show_skus(id):
 
 
 @main.route('/products/<int:id>/add_sku', methods=['GET', 'POST'])
+@user_has('admin_product')
 def add_sku(id):
     product = Product.query.get_or_404(id)
     form = ProductSkuForm()
@@ -223,6 +235,7 @@ def add_sku(id):
 
 
 @main.route('/products/<int:id>/edit_sku/<int:s_id>', methods=['GET', 'POST'])
+@user_has('admin_product')
 def edit_sku(id, s_id):
     product = Product.query.get_or_404(id)
     sku = ProductSku.query.get_or_404(s_id)
@@ -257,6 +270,7 @@ def edit_sku(id, s_id):
 
 
 @main.route('/products/<int:s_id>/delete_sku', methods=['POST'])
+@user_has('admin_product')
 def delete_sku(s_id):
     try:
         sku = ProductSku.query.get_or_404(s_id)
@@ -272,6 +286,7 @@ def delete_sku(s_id):
 @main.route('/suppliers', methods=['GET', 'POST'])
 @main.route('/suppliers/<int:page>', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_suppliers = Supplier.query.order_by('created_at desc').paginate(page, per_page)
@@ -284,6 +299,7 @@ def show_suppliers(page=1):
 @main.route('/categories')
 @main.route('/categories/<int:page>')
 @login_required
+@user_has('admin_product')
 def show_categories(page=1):
     per_page = request.args.get('per_page', 10, type=int)
 
@@ -311,6 +327,7 @@ def show_categories(page=1):
 
 @main.route('/categories/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def create_category():
     form = CategoryForm()
     if form.validate_on_submit():
@@ -343,6 +360,7 @@ def create_category():
 
 @main.route('/categories/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_product')
 def edit_category(id):
     category = Category.query.get_or_404(id)
     form = CategoryForm()
@@ -376,6 +394,7 @@ def edit_category(id):
 
 @main.route('/categories/delete', methods=['POST'])
 @login_required
+@user_has('admin_product')
 def delete_category():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -399,6 +418,7 @@ def delete_category():
 
 @main.route('/suppliers/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_supplier')
 def create_supplier():
     form = SupplierForm()
     if form.validate_on_submit():
@@ -430,6 +450,7 @@ def create_supplier():
 
 @main.route('/suppliers/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_supplier')
 def edit_supplier(id):
     supplier = Supplier.query.get_or_404(id)
     form = SupplierForm()
@@ -459,6 +480,7 @@ def edit_supplier(id):
 
 @main.route('/suppliers/delete', methods=['POST'])
 @login_required
+@user_has('admin_supplier')
 def delete_supplier():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:

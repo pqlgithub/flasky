@@ -12,12 +12,6 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# available languages
-LANGUAGES = {
-    'zh': 'Chinese',
-    'en': 'English',
-}
-
 class Config:
     # change this in your production settings !!!
     CSRF_ENABLED = True

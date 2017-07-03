@@ -6,6 +6,7 @@ from . import main
 from .. import db
 from ..utils import timestamp, gen_serial_no, full_response, status_response, custom_status, R200_OK
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
+from ..decorators import user_has, user_is
 from app.models import PayAccount, TransactDetail, Invoice, Purchase, InWarehouse
 from app.forms import PurchaseForm
 
@@ -15,6 +16,7 @@ top_menu = 'finances'
 @main.route('/receives')
 @main.route('/receives/<int:page>')
 @login_required
+@user_has('admin_finance')
 def show_receives(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     type = request.args.get('t', 1, type=int)
@@ -29,6 +31,7 @@ def show_receives(page=1):
 @main.route('/payments')
 @main.route('/payments/<int:page>')
 @login_required
+@user_has('admin_finance')
 def show_payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 1, type=int)
@@ -43,6 +46,7 @@ def show_payments(page=1):
 
 @main.route('/payments/<int:id>/ajax_payed', methods=['POST'])
 @login_required
+@user_has('admin_finance')
 def ajax_payed(id):
     """确认支付信息"""
 
@@ -63,12 +67,14 @@ def ajax_payed(id):
 
 @main.route('/payments/<int:id>/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_finance')
 def edit_payment(id):
     pass
 
 
 @main.route('/transactions/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_finance')
 def create_transaction():
 
     return render_template('finances/create_and_edit.html')
@@ -76,6 +82,7 @@ def create_transaction():
 
 @main.route('/transactions/<int:id>/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_finance')
 def edit_transaction(id):
     pass
 
@@ -84,6 +91,7 @@ def edit_transaction(id):
 
 @main.route('/transactions/delete', methods=['POST'])
 @login_required
+@user_has('admin_finance')
 def delete_transaction():
     pass
 

@@ -9,7 +9,7 @@ from app.models import User, Role, Ability, Site
 from app.forms import RoleForm, AbilityForm, SiteForm, UserForm
 import app.constant as constant
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
-
+from ..decorators import user_has
 
 def load_common_data():
     """
@@ -21,12 +21,14 @@ def load_common_data():
 
 @main.route('/users/profile', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_setting')
 def profile():
     return render_template('users/profile.html')
 
 
 @main.route('/site/child_users')
 @login_required
+@user_has('admin_setting')
 def child_users():
     master_uid = Master.master_uid()
     per_page = request.args.get('per_page', 50, type=int)
@@ -40,6 +42,7 @@ def child_users():
 
 @main.route('/site/add_child_user', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_setting')
 def add_child_user():
     master_uid = Master.master_uid()
     form = UserForm()
@@ -64,6 +67,8 @@ def add_child_user():
 
 
 @main.route('/users/set_role/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
 def set_role(user_id):
     user = User.query.get_or_404(user_id)
     if request.method == 'POST':
@@ -85,12 +90,13 @@ def set_role(user_id):
     roles = Role.query.filter_by(master_uid=Master.master_uid()).all()
     return render_template('users/set_role.html',
                            roles=roles,
-                           belong_roles=user.has_roles(),
+                           belong_roles=[r.name for r in user.roles],
                            post_url=url_for('.set_role', user_id=user_id))
 
 
 @main.route('/users/passwd', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_setting')
 def passwd():
     """更新密码"""
     return render_template('users/passwd.html')

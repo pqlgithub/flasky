@@ -92,13 +92,13 @@
 						</td>
 						<td class="text-center">
 							{% if trans.status == 2 %}
-							<label class="label label-success">{{ trans.status_label }}</label>
+							<span class="indicator success">{{ trans.status_label }}</span>
 							{% else %}
-							<label class="label label-danger">{{ trans.status_label }}</label>
+							<span class="indicator danger">{{ trans.status_label }}</span>
 							{% endif %}
 						</td>
 						<td class="text-center">
-							{{ momentjs(trans.created_at).fromNow() }}
+							{{ trans.created_at|timestamp2string }}
 						</td>
 						<td class="text-center">
 							<code>{{ trans.serial_no }}</code>
@@ -120,11 +120,11 @@
 						</td>
 						<td class="text-right">
 							{% if trans.status != 2 %}
-							<a href="{{ url_for('main.edit_payment', id=trans.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								<i class="glyphicon glyphicon-edit"></i>
+							<a href="{{ url_for('main.edit_payment', id=trans.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								{{ _('Edit') }}
 							</a>
-							<button data-href="{{ url_for('main.ajax_payed', id=trans.id) }}" class="btn btn-icon btn-success confirm-payed" data-toggle="tooltip" data-original-title="{{ _('Confirm Payed') }}">
-								<i class="glyphicon glyphicon-ok"></i>
+							<button data-href="{{ url_for('main.ajax_payed', id=trans.id) }}" class="btn btn-link confirm-payed" data-toggle="tooltip" data-original-title="{{ _('Confirm Payed') }}">
+								{{ _('Confirm Payed') }}
 							</button>
 							{% endif %}
 						</td>

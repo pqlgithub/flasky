@@ -10,6 +10,7 @@ from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
     gen_serial_no
 from ..constant import SORT_TYPE_CODE
+from ..decorators import user_has, user_is
 
 
 def load_common_data():
@@ -26,6 +27,7 @@ def load_common_data():
 @main.route('/stocks', methods=['GET', 'POST'])
 @main.route('/stocks/<int:page>', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def show_stocks(page=1):
     """显示库存清单"""
     per_page = request.values.get('per_page', 10, type=int)
@@ -68,11 +70,14 @@ def show_stocks(page=1):
 
 @main.route('/stocks/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def edit_stock(id):
     pass
 
+
 @main.route('/inout/<int:id>/preview')
 @login_required
+@user_has('admin_warehouse')
 def preview_inout(id):
     """展示详情信息"""
     pass
@@ -81,6 +86,7 @@ def preview_inout(id):
 @main.route('/inout')
 @main.route('/inout/<int:page>')
 @login_required
+@user_has('admin_warehouse')
 def show_inout(page=1):
     """显示库存变化明细"""
     per_page = request.args.get('per_page', 10, type=int)
@@ -95,6 +101,7 @@ def show_inout(page=1):
 
 @main.route('/ex_warehouse/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def create_ex_warehouse():
     """添加出库单"""
     if request.method == 'POST':
@@ -180,6 +187,7 @@ def create_ex_warehouse():
 @main.route('/inwarehouses', methods=['GET', 'POST'])
 @main.route('/inwarehouses/<int:page>', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def show_in_warehouses(page=1):
     """显示入库单列表"""
     per_page = request.args.get('per_page', 10, type=int)
@@ -198,6 +206,7 @@ def show_in_warehouses(page=1):
 
 @main.route('/inwarehouses/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def create_in_warehouse():
     # 获取仓库列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
@@ -207,6 +216,7 @@ def create_in_warehouse():
 
 @main.route('/inwarehouses/<int:id>/preview')
 @login_required
+@user_has('admin_warehouse')
 def preview_inwarehouse(id):
     pass
 
@@ -214,6 +224,7 @@ def preview_inwarehouse(id):
 @main.route('/outwarehouses', methods=['GET', 'POST'])
 @main.route('/outwarehouses/<int:page>', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def show_out_warehouses(page=1):
     """显示出库单列表"""
     per_page = request.args.get('per_page', 10, type=int)
@@ -232,6 +243,7 @@ def show_out_warehouses(page=1):
 
 @main.route('/inwarehouses/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def edit_in_warehouse(id):
     in_warehouse = InWarehouse.query.get_or_404(id)
     if request.method == 'POST':
@@ -247,6 +259,7 @@ def edit_in_warehouse(id):
 @main.route('/warehouses')
 @main.route('/warehouses/<int:page>')
 @login_required
+@user_has('admin_warehouse')
 def show_warehouses(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_warehouses = Warehouse.query.order_by(Warehouse.id.asc()).paginate(page, per_page)
@@ -257,6 +270,7 @@ def show_warehouses(page=1):
 
 @main.route('/warehouses/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def create_warehouse():
     form = WarehouseForm()
     if form.validate_on_submit():
@@ -297,6 +311,7 @@ def create_warehouse():
 
 @main.route('/warehouses/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_warehouse')
 def edit_warehouse(id):
     warehouse = Warehouse.query.get_or_404(id)
     form = WarehouseForm()
@@ -330,6 +345,7 @@ def edit_warehouse(id):
 
 @main.route('/warehouses/delete', methods=['POST'])
 @login_required
+@user_has('admin_warehouse')
 def delete_warehouse():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -352,6 +368,7 @@ def delete_warehouse():
 
 @main.route('/warehouses/add_shelve', methods=['POST'])
 @login_required
+@user_has('admin_warehouse')
 def add_shelve():
     warehouse_id = request.form.get('warehouse_id')
     name = request.form.get('name')
@@ -375,6 +392,8 @@ def add_shelve():
 
 
 @main.route('/warehouses/delete_shelve', methods=['POST'])
+@login_required
+@user_has('admin_warehouse')
 def ajax_delete_shelve():
     shelve_id = request.form.get('id')
     if not shelve_id or shelve_id is None:

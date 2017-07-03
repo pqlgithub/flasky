@@ -20,7 +20,7 @@ def load_common_data():
 
 @main.route('/logistics')
 @main.route('/logistics/<int:page>')
-#@user_has('view_orders')
+@user_has('admin_logistics')
 def show_expresses(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_express = Express.query.order_by('created_at desc').paginate(page, per_page)
@@ -32,6 +32,7 @@ def show_expresses(page=1):
 
 @main.route('/expresses/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_logistics')
 def create_express():
     form = ExpressForm()
     if form.validate_on_submit():
@@ -58,6 +59,7 @@ def create_express():
 
 @main.route('/expresses/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_logistics')
 def edit_express(id):
     express = Express.query.get_or_404(id)
     form = EditExpressForm(express)
@@ -82,6 +84,8 @@ def edit_express(id):
 
 
 @main.route('/expresses/delete', methods=['POST'])
+@login_required
+@user_has('admin_logistics')
 def delete_express():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -107,6 +111,7 @@ def delete_express():
 @main.route('/shippers')
 @main.route('/shippers/<int:page>')
 @login_required
+@user_has('admin_logistics')
 def show_shippers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_shippers = Shipper.query.order_by('created_at desc').paginate(page, per_page)
@@ -118,6 +123,7 @@ def show_shippers(page=1):
 
 @main.route('/shippers/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_logistics')
 def create_shipper():
     form = ShipperForm()
     if form.validate_on_submit():
@@ -152,6 +158,7 @@ def create_shipper():
 
 @main.route('/shippers/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_logistics')
 def edit_shipper(id):
     shipper = Shipper.query.get_or_404(id)
     form = ShipperForm()
@@ -187,6 +194,7 @@ def edit_shipper(id):
 
 @main.route('/shippers/delete', methods=['POST'])
 @login_required
+@user_has('admin_logistics')
 def delete_shipper():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:

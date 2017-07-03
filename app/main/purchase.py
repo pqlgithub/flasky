@@ -6,6 +6,7 @@ from . import main
 from .. import db
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
+from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
     TransactDetail, InWarehouse, StockHistory, ProductStock
 from app.forms import PurchaseForm
@@ -15,6 +16,7 @@ top_menu = 'purchases'
 @main.route('/purchases')
 @main.route('/purchases/<int:page>')
 @login_required
+@user_has('admin_purchase')
 def show_purchases(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
@@ -37,6 +39,7 @@ def show_purchases(page=1):
 @main.route('/purchases/payments')
 @main.route('/purchases/payments/<int:page>')
 @login_required
+@user_has('admin_purchase')
 def payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('f', 1, type=int)
@@ -54,6 +57,7 @@ def payments(page=1):
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_purchase')
 def create_purchase():
     form = PurchaseForm()
     if form.validate_on_submit():
@@ -124,6 +128,7 @@ def create_purchase():
 
 @main.route('/purchases/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_purchase')
 def edit_purchase(id):
     purchase = Purchase.query.get_or_404(id)
     current_app.logger.debug(request.form)
@@ -201,6 +206,7 @@ def edit_purchase(id):
 
 @main.route('/purchases/delete', methods=['POST'])
 @login_required
+@user_has('admin_purchase')
 def delete_purchase():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -223,6 +229,7 @@ def delete_purchase():
 
 @main.route('/purchases/ajax_verify', methods=['POST'])
 @login_required
+@user_has('admin_purchase')
 def ajax_verify():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -246,6 +253,7 @@ def ajax_verify():
 
 @main.route('/purchases/<int:id>/ajax_arrival', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_purchase')
 def ajax_arrival(id):
     purchase = Purchase.query.get(id)
     if request.method == 'POST':
@@ -330,6 +338,7 @@ def ajax_arrival(id):
 
 @main.route('/purchases/ajax_apply_pay', methods=['POST'])
 @login_required
+@user_has('admin_purchase')
 def ajax_apply_pay():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:

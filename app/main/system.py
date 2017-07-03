@@ -18,8 +18,8 @@ def load_common_data():
         'top_menu': 'system'
     }
 
-@main.route('/users')
-@main.route('/users/<int:page>')
+@main.route('/system/users')
+@main.route('/system/users/<int:page>')
 @login_required
 def show_users(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -50,8 +50,8 @@ def show_roles(page=1):
                            sub_menu='roles', **load_common_data())
 
 
-@main.route('/abilities')
-@main.route('/abilities/<int:page>')
+@main.route('/system/abilities')
+@main.route('/system/abilities/<int:page>')
 def show_abilities(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_abilities = Ability.query.order_by(Ability.id.asc()).paginate(page, per_page)
@@ -61,7 +61,7 @@ def show_abilities(page=1):
                            sub_menu='abilities', **load_common_data())
 
 
-@main.route('/abilities/create', methods=['GET', 'POST'])
+@main.route('/system/abilities/create', methods=['GET', 'POST'])
 def create_ability():
     form = AbilityForm()
     if form.validate_on_submit():
@@ -80,7 +80,7 @@ def create_ability():
                            sub_menu='abilities', **load_common_data())
 
 
-@main.route('/abilities/<int:id>/edit', methods=['GET', 'POST'])
+@main.route('/system/abilities/<int:id>/edit', methods=['GET', 'POST'])
 def edit_ability(id):
     ability = Ability.query.get_or_404(id)
     form = AbilityForm()
@@ -103,7 +103,7 @@ def edit_ability(id):
                             **load_common_data())
 
 
-@main.route('/abilities/delete', methods=['POST'])
+@main.route('/system/abilities/delete', methods=['POST'])
 def delete_ability():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:

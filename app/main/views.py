@@ -4,9 +4,7 @@ from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user, login_required
 from . import main
 from .. import db, babel
-from ..decorators import user_has, user_is
-from config import LANGUAGES
-
+from ..constant import SUPPORT_LANGUAGES
 
 # 针对程序全局请求的钩子，
 @main.after_app_request
@@ -27,12 +25,17 @@ def get_locale():
     locale selector装饰器
     在请求之前被调用，当产生响应时，选择使用的语言
     """
+    # 优先当前选择语言
+    if session.get('locale'):
+        return session['locale']
+
+    # 其次，获取用户设置语言
     user = getattr(g, 'user', None)
     if user is not None and type(user) :
         return user.locale
-    if session.get('locale'):
-        return session['locale']
-    return request.accept_languages.best_match(LANGUAGES.keys())
+
+    # 最后，使用默认语言
+    return request.accept_languages.best_match([lang[1].lower() for lang in SUPPORT_LANGUAGES])
 
 @babel.timezoneselector
 def get_timezone():
@@ -68,8 +71,8 @@ def before_request():
 @main.route('/<string:lang>')
 def choose_locale(lang):
     """切换语言"""
-
-    if lang not in LANGUAGES.keys():
+    lang = lang.lower()
+    if lang not in [lang[1].lower() for lang in SUPPORT_LANGUAGES]:
         # 设置默认语言
         lang = current_app.config['BABEL_DEFAULT_LOCALE']
 
@@ -79,3 +82,11 @@ def choose_locale(lang):
     # session.pop('locale', None)
 
     return redirect(request.args.get('next') or url_for('main.index'))
+
+
+@main.context_processor
+def include_init_data():
+    """注入共用的变量"""
+    return {
+        'support_languages': SUPPORT_LANGUAGES
+    }

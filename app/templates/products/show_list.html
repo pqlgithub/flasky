@@ -54,10 +54,10 @@
 			</div>
 		</div>
 
-		<div class="form-group m-l-20">
+		<div class="form-group pull-right">
 			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Sort: Add Date
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: Add Date
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-type">
@@ -126,8 +126,8 @@
 
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								<i class="glyphicon glyphicon-edit"></i>
+							<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								{{ _('Edit') }}
 							</a>
 						</td>
 					</tr>

@@ -8,6 +8,7 @@ from .. import db
 from app.models import Store, Asset, Site, User, Role, Ability
 from app.forms import StoreForm, SiteForm, RoleForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
+from ..decorators import user_has
 
 
 def load_common_data():
@@ -26,6 +27,7 @@ def show_settings():
 
 @main.route('/site')
 @login_required
+@user_has('admin_setting')
 def site():
     master_uid = Master.master_uid()
     site = Site.query.filter_by(master_uid=master_uid).first()
@@ -37,6 +39,7 @@ def site():
 
 @main.route('/site/setting', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_setting')
 def setting_site():
     mode = 'create',
     master_uid = Master.master_uid()
@@ -86,6 +89,8 @@ def setting_site():
 
 
 @main.route('/stores')
+@login_required
+@user_has('admin_setting')
 def show_stores():
     per_page = request.args.get('per_page', 20, type=int)
     paginated_stores = Store.query.order_by(Store.id.asc()).paginate(1, per_page)
@@ -95,7 +100,10 @@ def show_stores():
                            paginated_stores=paginated_stores,
                            **load_common_data())
 
+
 @main.route('/stores/create', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
 def create_store():
     form = StoreForm()
     if form.validate_on_submit():
@@ -116,6 +124,8 @@ def create_store():
 
 
 @main.route('/stores/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
 def edit_store(id):
     store = Store.query.get_or_404(id)
     form = StoreForm()
@@ -138,6 +148,8 @@ def edit_store(id):
 
 
 @main.route('/stores/delete', methods=['POST'])
+@login_required
+@user_has('admin_setting')
 def delete_store():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -162,6 +174,7 @@ def delete_store():
 @main.route('/assets')
 @main.route('/assets/<int:page>')
 @login_required
+@user_has('admin_setting')
 def show_assets(page=1):
     per_page = request.args.get('per_page', 20, type=int)
     paginated_assets = Asset.query.order_by('created_at desc').paginate(page, per_page)
@@ -174,6 +187,7 @@ def show_assets(page=1):
 
 @main.route('/assets/delete', methods=['POST'])
 @login_required
+@user_has('admin_setting')
 def delete_asset():
     pass
 
@@ -181,6 +195,7 @@ def delete_asset():
 @main.route('/roles')
 @main.route('/roles/<int:page>')
 @login_required
+@user_has('admin_setting')
 def setting_roles(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     form = RoleForm()
@@ -194,6 +209,7 @@ def setting_roles(page=1):
 
 @main.route('/roles/create', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_setting')
 def create_role():
     form = RoleForm()
     if form.validate_on_submit():
@@ -215,6 +231,8 @@ def create_role():
 
 
 @main.route('/roles/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
 def edit_role(id):
     role = Role.query.get_or_404(id)
     form = RoleForm()
@@ -239,6 +257,8 @@ def edit_role(id):
                            )
 
 @main.route('/roles/delete', methods=['POST'])
+@login_required
+@user_has('admin_setting')
 def delete_role():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -260,6 +280,8 @@ def delete_role():
 
 
 @main.route('/roles/set_ability/<int:role_id>', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
 def set_ability(role_id):
     role = Role.query.get_or_404(role_id)
     if request.method == 'POST':

@@ -22,8 +22,8 @@ SUPPORT_CURRENCIES = (
 
 # 支持的语言 Language
 SUPPORT_LANGUAGES = (
-    (1, 'ZH', 'Chinese'),
-    (2, 'EN', 'English')
+    (1, 'zh', 'Chinese'),
+    (2, 'en', 'English')
 )
 
 
@@ -119,4 +119,20 @@ SORT_TYPE_CODE = {
 SUPPORT_DOMAINS = (
     (1, gettext('Retail')),
     (2, gettext('Services'))
+)
+
+# 默认权限列表
+DEFAULT_ACLIST = (
+    ('admin_store', gettext('Admin Store')),
+    ('admin_supplier', gettext('Admin Supplier')),
+    ('admin_purchase', gettext('Admin Purchase')),
+    ('admin_warehouse', gettext('Admin Warehouse')),
+    ('admin_logistics', gettext('Admin Logistics')),
+    ('admin_product', gettext('Admin Product')),
+    ('admin_order', gettext('Admin Order')),
+    ('admin_service', gettext('Admin Service')),
+    ('admin_finance', gettext('Admin Finance')),
+    ('admin_reports', gettext('Admin Reports')),
+    ('admin_setting', gettext('Admin Setting')),
+    ('admin_dashboard', gettext('Admin Dashboard'))
 )

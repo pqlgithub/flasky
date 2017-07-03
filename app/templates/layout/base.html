@@ -91,16 +91,15 @@
 								<span class="glyphicon glyphicon-globe"></span>
 							</a>
 							<ul class="dropdown-menu">
-								<li {% if g.locale == 'en' %}class="active"{% endif %}>
-									<a href="/en">English</a>
+								{% for lang in support_languages %}
+								<li {% if g.locale == lang[1] %}class="active"{% endif %}>
+									<a href="/{{ lang[1] }}">{{ lang[2] }}</a>
 								</li>
-								<li {% if g.locale == 'zh' %}class="active"{% endif %}>
-									<a href="/zh">简体中文</a>
-								</li>
+								{% endfor %}
 							</ul>
 						</li>
 						<li>
-							<a href="../toolbar-static-top/">
+							<a href="javascript:void(0);">
 								<span class="glyphicon glyphicon-bell"></span>
 							</a>
 						</li>
@@ -173,6 +172,7 @@
 					var $element = $(this);
 					var $popover = $element.data('bs.popover'); // element has bs popover?
 					var $target = $(this).data('target');
+					var $placement = $(this).data('placement') || 'right';
 
 					e.preventDefault();
 
@@ -186,10 +186,10 @@
 
 					$element.popover({
 						html: true,
-						placement: 'right',
+						placement: $placement,
 						trigger: 'manual',
 						content: function() {
-							return '<button type="button" id="button-image" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></button> <button type="button" id="button-clear" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></button>';
+							return '<button type="button" id="button-image" class="btn btn-primary m-r-10"><i class="glyphicon glyphicon-edit"></i></button> <button type="button" id="button-clear" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></button>';
 						}
 					});
 

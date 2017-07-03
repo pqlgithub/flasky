@@ -6,10 +6,12 @@ from . import main
 from .. import db
 from app.models import Order
 from ..utils import Master
+from ..decorators import user_has, user_is
 
 @main.route('/')
 @main.route('/index')
 @login_required
+@user_has('admin_dashboard')
 def index():
     top_orders = Order.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').limit(10).all()
 

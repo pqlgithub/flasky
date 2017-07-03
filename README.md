@@ -12,3 +12,8 @@ Erp for mic
 
 ## 安装要求：
 
+## 添加语言支持
+./tr_compile.py
+./tr_init.py en
+有更新时，
+./tr_update.py

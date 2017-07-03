@@ -29,7 +29,7 @@ def load_common_data():
 
 @main.route('/orders')
 @main.route('/orders/<int:page>')
-#@user_has('view_orders')
+@user_has('admin_order')
 def show_orders(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
@@ -47,7 +47,8 @@ def show_orders(page=1):
 
 
 @main.route('/orders/create', methods=['GET', 'POST'])
-#@user_is('admin')
+@login_required
+@user_has('admin_order')
 def create_order():
     form = OrderForm()
     if request.method == 'POST':
@@ -158,12 +159,14 @@ def create_order():
 
 @main.route('/orders/<string:sn>/edit', methods=['GET', 'POST'])
 @login_required
+@user_has('admin_order')
 def edit_order(sn):
     pass
 
 
 @main.route('/orders/<string:sn>/show')
 @login_required
+@user_has('admin_order')
 def preview_order(sn):
     order = Order.query.filter_by(serial_no=sn).first()
 
@@ -173,6 +176,7 @@ def preview_order(sn):
 
 @main.route('/orders/ajax_verify', methods=['POST'])
 @login_required
+@user_has('admin_order')
 def ajax_verify_order():
     selected_sns = request.form.getlist('selected[]')
     if not selected_sns or selected_sns is None:

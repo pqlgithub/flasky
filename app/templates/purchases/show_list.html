@@ -63,22 +63,32 @@
 	<h2 class="page-header">
 		{{ _('Purchases List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
+			<button class="btn btn-default verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+			<div class="btn-group">
+				<button class="btn btn-default dropdown-toggle" type="button" id="storage-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Actions') }}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
+					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Print') }}</a></li>
+					<li class="divider" role="separator"></li>
+					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Import Purchase') }}</a></li>
+					<li>
+						<a href="#" class="ajax-modal" data-modal="in-stock-modal">
+							{{ _('Export Purchase') }}
+						</a>
+					</li>
+				</ul>
+			</div>
 			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
-				<i class="glyphicon glyphicon-ok"></i>
-			</button>
-			<button class="btn btn-info" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
-				<i class="glyphicon glyphicon-print"></i>
-			</button>
-			<button class="btn btn-warning" type="button" data-toggle="tooltip" data-original-title="{{ _('Import') }}">
-				<i class="glyphicon glyphicon-import"></i>
-			</button>
-			<button class="btn btn-warning" type="button" data-toggle="tooltip" data-original-title="{{ _('Export') }}">
-				<i class="glyphicon glyphicon-export"></i>
-			</button>
-			<button class="btn btn-danger delete-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -164,7 +174,7 @@
 		<div class="form-group pull-right">
 			<div class="dropdown">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Sort: Add Date
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: Add Date
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
@@ -240,23 +250,21 @@
 						<td class="text-center">
 							{% if purchase.status == 5 %}
 								{% if purchase.in_quantity > 0 and purchase.in_quantity != purchase.quantity_sum %}
-									<label class="label label-warning">{{ _('Partial arrival') }}</label>
+									<label class="indicator warning">{{ _('Partial arrival') }}</label>
 								{% endif %}
 							{% else %}
-								<label class="label label-{{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
+								<label class="indicator {{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
 							{% endif %}
 						</td>
 						<td class="text-right">
 							{{ purchase.created_at|timestamp2string() }}
 						</td>
 						<td class="text-right">
-							<div class="btn-group">
-								<a href="{{ url_for('main.ajax_arrival', id=purchase.id)}}" class="ajax-arrival btn btn-link active" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
-									{{ _('Arrival') }}
-								</a>
-							</div>
-							<div class="btn-group">
-								<button class="btn btn-primary dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							<a href="{{ url_for('main.ajax_arrival', id=purchase.id)}}" class="ajax-arrival btn btn-link active" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
+								{{ _('Arrival') }}
+							</a>
+							<div class="dropdown">
+								<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 									{{ _('More') }}
 									<span class="caret"></span>
 								</button>

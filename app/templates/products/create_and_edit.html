@@ -112,7 +112,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg required">
+				<div class="form-group required">
 					{{ form.serial_no.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						{{ form.serial_no(id="serial_no", class="form-control", readonly="readonly") }}
@@ -122,7 +122,17 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+					{{ form.name.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-9">
+						{{ form.name(id="name", class="form-control") }}
+						{% for error in form.errors.name %}
+						<span class="help-block">{{ error }}</span>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="form-group">
 					{{ form.cover_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-10">
 						{% if mode == 'create' %}
@@ -138,17 +148,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg required {% if form.errors.name %} has-error{% endif %}">
-					{{ form.name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
-						{{ form.name(id="name", class="form-control") }}
-						{% for error in form.errors.name %}
-						<span class="help-block">{{ error }}</span>
-						{% endfor %}
-					</div>
-				</div>
-
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.cost_price.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -160,7 +160,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.sale_price.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -172,7 +172,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.s_weight.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -184,7 +184,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Product Size')}}</label>
 					<div class="col-sm-3">
 						<div class="input-group">
@@ -212,9 +212,9 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.from_url.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						<div class="input-group">
 							{{ form.from_url(id="from_url", class="form-control", placeholder="http://") }}
 							<span class="input-group-addon">
@@ -224,17 +224,17 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
-					{{ form.description.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
-						{{ form.description(id="description", class="form-control") }}
+				<div class="form-group">
+					{{ form.status.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.status(id="status", class="form-control select2") }}
 					</div>
 				</div>
 
 				<div class="form-group">
-					{{ form.status.label(class="col-sm-2 control-label") }}
+					{{ form.description.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-10">
-						{{ form.status(id="status", class="form-control select2") }}
+						{{ form.description(id="description", class="form-control", rows="8") }}
 					</div>
 				</div>
 
@@ -242,28 +242,28 @@
 
 			<div id="customs-declaration" class="tab-pane fade in" role="tabpanel" aria-labelledby="customs-tab">
 				<!--报关信息-->
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.dangerous_goods.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.dangerous_goods(id="dangerous_goods", class="list-inline radio-group")}}
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.local_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.local_name(id="local_name", class="form-control")}}
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.en_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.en_name(id="en_name", class="form-control")}}
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.d_weight.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -275,7 +275,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.amount.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -287,9 +287,9 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					{{ form.customs_code.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.customs_code(id="customs_code", class="form-control")}}
 					</div>
 				</div>
@@ -337,11 +337,11 @@
 									{{ sku.remark }}
 								</td>
 								<td class="text-right">
-									<a href="{{ url_for('main.edit_sku', id=product.id, s_id=sku.id) }}" class="btn btn-icon ajax-sku btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-										<i class="glyphicon glyphicon-edit"></i>
+									<a href="{{ url_for('main.edit_sku', id=product.id, s_id=sku.id) }}" class="btn btn-link ajax-sku" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+										{{ _('Edit') }}
 									</a>
-									<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn btn-icon ajax-delete-sku btn-danger" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
-										<i class="glyphicon glyphicon-trash"></i>
+									<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Remove') }}">
+										{{ _('Remove') }}
 									</a>
 								</td>
 							</tr>

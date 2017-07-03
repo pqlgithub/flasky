@@ -65,8 +65,8 @@
 							{{ stock.updated_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
 						</td>
 						<td class="text-right">
-							<div class="btn-group">
-								<button class="btn btn-primary dropdown-toggle" type="button" id="more-{{ stock.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							<div class="dropdown">
+								<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ stock.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 									{{ _('More') }}
 									<span class="caret"></span>
 								</button>

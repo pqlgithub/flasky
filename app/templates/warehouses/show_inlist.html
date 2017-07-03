@@ -68,18 +68,18 @@
 	<h2 class="page-header">
 		{{ _('Stock List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<button class="btn btn-info" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
-			<button class="btn btn-warning" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Export') }}">
-				<i class="glyphicon glyphicon-export"></i>
-			</button>
-			<button class="btn btn-danger delete-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>
+			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
 	</h2>
-	{{ data }}
+
 	<form class="form-inline" method="post" id="filter-stocks-form">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
@@ -109,10 +109,10 @@
 			</div>
 		</div>
 
-		<div class="form-group m-l-30">
+		<div class="form-group pull-right">
 			<div class="dropdown">
 				<input type="hidden" name="s_t" value="{{ sort_type }}">
-				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: <b>All</b>
 					<span class="caret"></span>
 				</button>

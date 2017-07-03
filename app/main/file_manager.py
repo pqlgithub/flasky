@@ -8,7 +8,7 @@ from PIL import Image
 from app import db, uploader
 from app.models import Asset, Directory
 from app.utils import full_response, status_response
-
+from ..decorators import user_has, user_is
 from . import main
 
 
