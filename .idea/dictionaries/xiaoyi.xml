@@ -1,18 +1,27 @@
 <component name="ProjectDictionaryState">
   <dictionary name="xiaoyi">
     <words>
+      <w>accesslog</w>
       <w>aclist</w>
       <w>addon</w>
       <w>asctime</w>
+      <w>autoescape</w>
+      <w>endassets</w>
+      <w>errorlog</w>
+      <w>gevent</w>
+      <w>ggevent</w>
       <w>glyphicon</w>
+      <w>gunicorn</w>
       <w>inlist</w>
       <w>inwarehouse</w>
       <w>inwarehouses</w>
       <w>jinja</w>
+      <w>jsmin</w>
       <w>keydown</w>
       <w>lazada</w>
       <w>levelname</w>
       <w>lineno</w>
+      <w>loglevel</w>
       <w>mainbar</w>
       <w>micku</w>
       <w>momentjs</w>
@@ -21,6 +30,7 @@
       <w>outwarehouses</w>
       <w>passwd</w>
       <w>persale</w>
+      <w>pidfile</w>
       <w>presale</w>
       <w>purpen</w>
       <w>pymysql</w>
@@ -29,9 +39,13 @@
       <w>signin</w>
       <w>skus</w>
       <w>sqlite</w>
+      <w>supervisord</w>
       <w>tabpanel</w>
       <w>todc</w>
       <w>urknow</w>
+      <w>webassets</w>
+      <w>werkzeug</w>
+      <w>wsgi</w>
     </words>
   </dictionary>
 </component>

@@ -272,6 +272,11 @@ class AnonymousUser(AnonymousUserMixin):
     def belong_roles(self):
         return []
 
+    @property
+    def is_setting(self):
+        return False
+
+
 login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader

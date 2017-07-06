@@ -24,6 +24,8 @@ from flask_babelex import Babel
 # 导入上传
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_wtf.csrf import CSRFProtect
+from flask_cdn import CDN
+from .assets import assets_env, bundles
 
 # 导入配置参数
 from config import config
@@ -35,6 +37,7 @@ db = SQLAlchemy()
 mail = Mail()
 babel = Babel()
 csrf = CSRFProtect()
+cdn = CDN()
 # 创建set
 uploader = UploadSet('photos', IMAGES)
 
@@ -58,11 +61,15 @@ def create_app(config_name):
     mail.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+
+    cdn.init_app(app)
+    assets_env.init_app(app)
+    assets_env.register(bundles)
+
     # 初始化
     configure_uploads(app, uploader)
     # 文件大小限制，默认为16MB
     patch_request_class(app)
-
 
 
     # logging setting

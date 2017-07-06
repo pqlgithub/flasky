@@ -50,7 +50,7 @@ def before_request():
     """
     Such a function is executed before each request, even if outside of a blueprint.
     """
-    current_app.logger.debug('Before func of all request!')
+    
     # 设置本地化语言
     g.locale = get_locale()
 
@@ -62,10 +62,10 @@ def before_request():
         if not current_user.confirmed and request.endpoint[:5] != 'auth.':
             return redirect(url_for('auth.unconfirmed'))
 
-    # 验证是否设置初始信息
-    if not current_user.is_setting:
-        if request.path[:8] != '/static/' and request.endpoint[5:17] != 'setting_site':
-            return redirect(url_for('main.setting_site'))
+        # 验证是否设置初始信息
+        if not current_user.is_setting:
+            if request.path[:8] != '/static/' and request.endpoint[5:17] != 'setting_site':
+                return redirect(url_for('main.setting_site'))
 
 
 @main.route('/<string:lang>')

@@ -46,6 +46,12 @@ class Config:
     MAIL_SUBJECT_PREFIX = '[MIC]'
     MAIL_SENDER = os.environ.get('MAIL_SENDER') or DEFAULT_MAIL_SENDER
 
+    # Can not compress the CSS/JS on Dev environment.
+    ASSETS_DEBUG = False
+    CDN_DOMAIN = 'qiniu.com'
+    CDN_DEBUG = True
+    CDN_HTTPS = False
+
     # 日志
     ERROR_LOG = 'logs/mic-error.log'
 
@@ -54,7 +60,7 @@ class Config:
     POSTS_PER_PAGE = 50
 
     # css/js
-    BOOTSTRAP_SERVE_LOCAL = False
+    # BOOTSTRAP_SERVE_LOCAL = False
 
     UPLOADED_PHOTOS_DEST = '/Users/xiaoyi/Project/micku/public/uploads'
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -83,8 +89,10 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     DEBUG_LOG = False
 
+    ASSETS_DEBUG = False
+
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
 
 
 config = {
