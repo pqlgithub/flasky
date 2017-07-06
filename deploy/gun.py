@@ -35,7 +35,7 @@ pidfile = '/var/log/gunicorn.pid'
 
 loglevel = 'debug'
 logfile = '/var/log/mic.log'
-accesslog = '/var/logs/mic-access.log'
+accesslog = '/var/log/mic-access.log'
 access_log_format = '%(h)s %(t)s %(U)s %(q)s'
 errorlog = '/var/log/mic-error.log'
 
