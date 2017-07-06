@@ -94,6 +94,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
 
+    ERROR_LOG = '/var/log/mic-error.log'
 
 config = {
     'development': DevelopmentConfig,
