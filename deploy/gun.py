@@ -30,14 +30,14 @@ daemon = True
 # 进程名称
 proc_name = 'gunicorn.pid'
 # 进程pid记录文件
-pidfile = 'logs/gunicorn.pid'
+pidfile = '/var/log/gunicorn.pid'
 
 
 loglevel = 'debug'
-logfile = 'logs/mic.log'
-accesslog = 'logs/mic-access.log'
+logfile = '/var/log/mic.log'
+accesslog = '/var/logs/mic-access.log'
 access_log_format = '%(h)s %(t)s %(U)s %(q)s'
-errorlog = 'logs/mic-error.log'
+errorlog = '/var/log/mic-error.log'
 
 
 x_forwarded_for_header = 'X-FORWARDED-FOR'
