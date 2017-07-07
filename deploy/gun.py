@@ -30,7 +30,7 @@ daemon = False
 # 进程名称
 proc_name = 'gunicorn.pid'
 # 进程pid记录文件
-pidfile = '/var/log/gunicorn.pid'
+pidfile = '/var/run/gunicorn.pid'
 
 
 loglevel = 'debug'
