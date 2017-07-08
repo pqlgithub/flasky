@@ -99,6 +99,7 @@ class ProductionConfig(Config):
 
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
+    FLASKS3_USE_HTTPS = True
     FLASKS3_CDN_DOMAIN = 's3.michose.com'
 
     SQLALCHEMY_ECHO = False
