@@ -183,32 +183,51 @@
     });
 
 	$('#modal-image #button-delete').on('click', function(e) {
-		if (confirm('Confirm to delete?')) {
-			$.ajax({
-				url: '{{ url_for("main.pldelete") }}',
-				type: 'post',
-				dataType: 'json',
-				data: $('input[name^=\'path\']:checked'),
-				beforeSend: function() {
-					$('#button-delete').prop('disabled', true);
-				},
-				complete: function() {
-					$('#button-delete').prop('disabled', false);
-				},
-				success: function(json) {
-					if (json['error']) {
-						alert(json['error']);
-					}
+		swal({
+			title: "Confirm to delete?",
+			text: "You will not be able to recover!",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: 'btn-warning',
+			confirmButtonText: "Yes, delete it!",
+			closeOnConfirm: true
+		}, function (is_confirm) {
+			if (is_confirm) {
+				var path = [];
+				$('input[name^=\'path\']:checked').each(function () {
+					path.push($(this).val());
+				});
+				var data = {
+					'path[]': path,
+					'csrf_token': csrf_token
+				};
 
-					if (json['success']) {
-						$('#button-refresh').trigger('click');
+				$.ajax({
+					url: '{{ url_for("main.pldelete") }}',
+					type: 'post',
+					dataType: 'json',
+					data: data,
+					beforeSend: function() {
+						$('#button-delete').prop('disabled', true);
+					},
+					complete: function() {
+						$('#button-delete').prop('disabled', false);
+					},
+					success: function(json) {
+						if (json['error']) {
+							swal('Error', json['error'], 'error');
+						}
+
+						if (json['success']) {
+							$('#button-refresh').trigger('click');
+						}
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 					}
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-				}
-			});
-		}
+				});
+			}
+		});
 	});
 
 //--></script>

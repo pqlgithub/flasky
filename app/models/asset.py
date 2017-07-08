@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..utils import timestamp
 from app import db, uploader
-
+from flask import current_app
 
 __all__ = [
     'Directory',
@@ -53,7 +53,11 @@ class Asset(db.Model):
 
     @property
     def view_url(self):
-        return uploader.url(self.filepath)
+        proto = 'http://'
+        if current_app.config['FLASKS3_USE_HTTPS']:
+            proto = 'https://'
+
+        return '{}{}/{}'.format(proto, current_app.config['FLASKS3_CDN_DOMAIN'], self.filepath)
 
 
     def __repr__(self):
@@ -64,7 +68,7 @@ class Asset(db.Model):
         """资源和JSON的序列化转换"""
         json_asset = {
             'id': self.id,
-            'view_url': uploader.url(self.filepath),
+            'view_url': self.view_url,
             'filepath': self.filepath,
             'filename': self.filename,
             'created_at': self.created_at
