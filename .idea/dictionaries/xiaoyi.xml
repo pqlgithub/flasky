@@ -6,6 +6,7 @@
       <w>addon</w>
       <w>asctime</w>
       <w>autoescape</w>
+      <w>cssmin</w>
       <w>endassets</w>
       <w>errorlog</w>
       <w>gevent</w>
@@ -23,7 +24,10 @@
       <w>lineno</w>
       <w>loglevel</w>
       <w>mainbar</w>
+      <w>michose</w>
       <w>micku</w>
+      <w>mimetype</w>
+      <w>mishoply</w>
       <w>momentjs</w>
       <w>navbar</w>
       <w>outlist</w>

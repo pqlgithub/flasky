@@ -8,19 +8,18 @@
 		{% if title %}
 		<title>{{ title }} - Micku</title>
 		{% else %}
-		<title>Micku</title>
+		<title>Mishoply</title>
 		{% endif %}
 
-		<!-- Bootstrap -->
-		<link href="{{ url_for('static', filename='css/bootstrap.min.css', _external=True) }}" rel="stylesheet">
-		<!-- TODC Bootstrap theme -->
-		<link href="{{ url_for('static', filename='css/todc-bootstrap.min.css', _external=True) }}" rel="stylesheet">
-		<link href="{{ url_for('static', filename='css/sweet-alert.css', _external=True) }}" rel="stylesheet">
-		<link href="{{ url_for('static', filename='css/select2.css', _external=True) }}" rel="stylesheet">
-		<link href="{{ url_for('static', filename='css/jquery.plupload.queue.css', _external=True) }}" rel="stylesheet">
+		{% assets "admin_css" %}
+		<link href="{{ ASSET_URL }}" type="text/css"  rel="stylesheet">
+  		{% endassets %}
+
 		{% block private_styles %}{% endblock %}
 
-		<link href="{{ url_for('static', filename='css/app.css', _external=True) }}" rel="stylesheet">
+		{% assets "app_css" %}
+		<link href="{{ ASSET_URL }}" type="text/css" rel="stylesheet">
+  		{% endassets %}
 
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,7 +27,7 @@
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
-		<script src="{{ url_for('static', filename='js/moment-with-locales.min.js', _external=True) }}" type="text/javascript"></script>
+		<script src="{{ url_for('static', filename='js/moment-with-locales.min.js') }}" type="text/javascript"></script>
 		{{ moment.lang(g.locale) }}
 		<script type="text/javascript">
 			var csrf_token = "{{ csrf_token() }}", img_last_open_folder = '';

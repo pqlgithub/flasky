@@ -24,7 +24,7 @@ from flask_babelex import Babel
 # 导入上传
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_wtf.csrf import CSRFProtect
-from flask_cdn import CDN
+from flask_s3 import FlaskS3
 from .assets import assets_env, bundles
 
 # 导入配置参数
@@ -37,7 +37,7 @@ db = SQLAlchemy()
 mail = Mail()
 babel = Babel()
 csrf = CSRFProtect()
-cdn = CDN()
+s3 = FlaskS3()
 # 创建set
 uploader = UploadSet('photos', IMAGES)
 
@@ -62,9 +62,9 @@ def create_app(config_name):
     login_manager.init_app(app)
     csrf.init_app(app)
 
-    cdn.init_app(app)
     assets_env.init_app(app)
     assets_env.register(bundles)
+    s3.init_app(app)
 
     # 初始化
     configure_uploads(app, uploader)

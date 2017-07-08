@@ -6,7 +6,7 @@ from flask_assets import Environment, Bundle
 assets_env = Environment()
 
 bundles = {
-    'admin_js' : Bundle(
+    'admin_js': Bundle(
         'js/jquery.min.js',
         'js/bootstrap.min.js',
         'js/jquery.cookie.js',
@@ -14,11 +14,25 @@ bundles = {
         'js/select2.js',
         'js/plupload.full.min.js',
         'js/jquery.plupload.queue.js',
-        output='dist/admin.js'
+        output='js/admin.min.js'
     ),
     'app_js': Bundle(
         'js/app.js',
         filters='jsmin',
-        output='dist/app.js'
+        output='js/app.min.js'
+    ),
+    'admin_css': Bundle(
+        'css/bootstrap.min.css',
+        'css/todc-bootstrap.min.css',
+        'css/sweet-alert.css',
+        'css/select2.css',
+        'css/jquery.plupload.queue.css',
+        filters='cssmin',
+        output='css/admin.min.css'
+    ),
+    'app_css': Bundle(
+        'css/app.css',
+        filters='cssmin',
+        output='css/app.min.css'
     )
 }

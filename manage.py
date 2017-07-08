@@ -15,6 +15,7 @@ from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from flask_apidoc.commands import GenerateApiDoc
 from flask_assets import ManageAssets
+from flask_s3 import create_all
 from werkzeug.contrib.fixers import ProxyFix
 
 from app import create_app, db
@@ -39,6 +40,12 @@ def test():
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+
+@manager.command
+def upload_files_s3():
+    create_all(app, user=app.config['AWS_ACCESS_KEY'], password=app.config['AWS_ACCESS_SECRET'],
+               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1')
 
 
 @manager.command

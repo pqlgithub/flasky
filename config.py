@@ -47,10 +47,18 @@ class Config:
     MAIL_SENDER = os.environ.get('MAIL_SENDER') or DEFAULT_MAIL_SENDER
 
     # Can not compress the CSS/JS on Dev environment.
-    ASSETS_DEBUG = False
-    CDN_DOMAIN = 'qiniu.com'
-    CDN_DEBUG = True
-    CDN_HTTPS = False
+    ASSETS_DEBUG = True
+
+    # Use Amazon S3
+    FLASK_ASSETS_USE_S3 = False
+    FLASKS3_ACTIVE = True
+    FLASKS3_USE_HTTPS = False
+    FLASKS3_BUCKET_NAME = 's3.michose.com'
+    FLASKS3_CDN_DOMAIN = 's3.michose.com'
+    FLASKS3_FORCE_MIMETYPE = True
+
+    AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
+    AWS_ACCESS_SECRET = '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'
 
     # 日志
     ERROR_LOG = 'logs/mic-error.log'
@@ -90,6 +98,8 @@ class ProductionConfig(Config):
     DEBUG_LOG = False
 
     ASSETS_DEBUG = False
+    FLASK_ASSETS_USE_S3 = True
+    FLASKS3_CDN_DOMAIN = 's3.michose.com'
 
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
