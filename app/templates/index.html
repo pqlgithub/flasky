@@ -43,15 +43,14 @@
 	</div>
 	<a href="#" class="list-group-item active">
 		{{ _('Dashboard') }}
-		<span class="badge">0</span>
 	</a>
-	<a href="#" class="list-group-item">
+	<a href="#" class="list-group-item disabled">
 		{{ _('Tasks') }}
 	</a>
-	<a href="#" class="list-group-item">
+	<a href="#" class="list-group-item disabled">
 		{{ _('Helpers') }}
 	</a>
-	<a href="#" class="list-group-item">
+	<a href="#" class="list-group-item disabled">
 		{{ _('Logs') }}
 	</a>
 </div>
@@ -84,8 +83,12 @@
 					<tbody>
 						{% for order in top_orders %}
 						<tr>
-							<td>{{ order.serial_no }}</td>
-							<td class="text-center">{{ order.buyer_name }}</td>
+							<td>
+								<span class="text-danger">{{ order.serial_no }}</span>
+							</td>
+							<td class="text-center">
+								{{ order.buyer_name }} {% if order.buyer_country %}{{ order.buyer_country }}{% endif %}
+							</td>
 							<td class="text-right">
 								{{ order.created_at|timestamp2string() }}
 							</td>
