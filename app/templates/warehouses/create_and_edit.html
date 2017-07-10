@@ -222,11 +222,6 @@
 						</tr>
 					</thead>
 					<tbody id="shelves-wrapper">
-						<tr>
-							<td>无货架位</td>
-							<td>良品</td>
-							<td class="text-center">--</td>
-						</tr>
 						{% for shelve in warehouse.shelves %}
 						<tr id="tr_{{ shelve.id }}">
 							<td>{{ shelve.name }}</td>
@@ -234,9 +229,11 @@
 								{% if shelve.type == 1 %}良品{% else %}次品{% endif %}
 							</td>
 							<td class="text-center">
+								{% if not shelve.is_default %}
 								<a href="{{ url_for('main.ajax_delete_shelve') }}" data-target="{{ shelve.id }}" class="btn btn-icon btn-danger ajax-delete" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 									<i class="glyphicon glyphicon-trash"></i>
 								</a>
+								{% endif %}
 							</td>
 						</tr>
 						{% endfor %}

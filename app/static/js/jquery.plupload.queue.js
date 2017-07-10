@@ -427,6 +427,7 @@ used as it is.
 								'</label>' +
 							'</div>'
 						);
+						hock_thumbnail();
 					});
 				});
 

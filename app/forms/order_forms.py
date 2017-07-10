@@ -4,8 +4,6 @@ from flask_babelex import gettext
 from wtforms import StringField, TextAreaField, IntegerField, DecimalField, SelectField, RadioField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
-from app.models import User, Role, Ability
-
 class OrderForm(Form):
     serial_no = StringField('Serial No.')
     outside_target_id = StringField('Out Serial No.')
@@ -29,3 +27,9 @@ class OrderForm(Form):
     buyer_city = StringField('City')
     # 买家备注
     buyer_remark = TextAreaField('Buyer Remark')
+
+
+
+class OrderExpressForm(Form):
+    express_id = IntegerField('Express')
+    express_no = StringField('Express No.')

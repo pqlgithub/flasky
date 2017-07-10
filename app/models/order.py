@@ -112,6 +112,8 @@ class Order(db.Model):
     verified_at = db.Column(db.Integer, default=0)
     # 支付时间
     payed_at = db.Column(db.Integer, default=0)
+    # 发货时间
+    express_at = db.Column(db.Integer, default=0)
     # 关闭或取消时间
     closed_at = db.Column(db.Integer, default=0)
 
@@ -154,11 +156,17 @@ class Order(db.Model):
     def mark_shipped_status(self):
         """标记为已发货状态"""
         self.status = OrderStatus.SHIPPED
+        self.express_at = timestamp()
 
 
     def mark_finished_status(self):
         """标记为已完成的状态"""
         self.status = OrderStatus.FINISHED
+
+    def mark_canceled_status(self):
+        """标记为关闭或取消状态"""
+        self.status = OrderStatus.CANCELED
+        self.closed_at = timestamp()
 
 
     @staticmethod

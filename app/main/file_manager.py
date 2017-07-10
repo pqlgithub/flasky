@@ -50,7 +50,7 @@ def folder(page=1):
 @main.route('/file_manager/show_asset')
 @main.route('/file_manager/show_asset/<int:page>')
 def show_asset(page=1):
-    per_page = 4
+    per_page = 20
     parent_directory = ''
     all_directory = None
     paginated_assets = None
@@ -118,19 +118,20 @@ def flupload():
         name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
         filename = '%s/%s/%s%s' % (root_folder, sub_folder, name_prefix, file_ext)
 
-        # Upload to local
-        # filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
         current_app.logger.debug('File length: %s,%s' % (f.content_length, f.mimetype))
-        # Upload to s3
-        f.filename = filename
-        out_result = aws.upload_file_to_s3(s3, f, current_app.config['FLASKS3_BUCKET_NAME'])
 
-        # response = s3.head_object(Bucket=current_app.config['FLASKS3_BUCKET_NAME'], Key=filename)
-        # current_app.logger.warning('Upload result: %s' % response)
+        if not current_app.config['DEBUG']:
+            # Upload to s3
+            f.filename = filename
+            out_result = aws.upload_file_to_s3(s3, f, current_app.config['FLASKS3_BUCKET_NAME'])
+            # response = s3.head_object(Bucket=current_app.config['FLASKS3_BUCKET_NAME'], Key=filename)
+        else:
+            # Upload to local
+            filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
+            # Get info of upload image
+            # img = Image.open(f)
+            # img.load()
 
-        # Get info of upload image
-        #img = Image.open(f)
-        #img.load()
         width = 0 #img.size[0]
         height = 0 #img.size[1]
 

@@ -57,7 +57,12 @@ class Asset(db.Model):
         if current_app.config['FLASKS3_USE_HTTPS']:
             proto = 'https://'
 
-        return '{}{}/{}'.format(proto, current_app.config['FLASKS3_CDN_DOMAIN'], self.filepath)
+        if not current_app.config['DEBUG']:
+            url = '{}{}/{}'.format(proto, current_app.config['FLASKS3_CDN_DOMAIN'], self.filepath)
+        else:
+            url = uploader.url(self.filepath)
+
+        return url
 
 
     def __repr__(self):

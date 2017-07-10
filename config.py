@@ -96,6 +96,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG_LOG = False
+    DEBUG = False
 
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
@@ -103,7 +104,7 @@ class ProductionConfig(Config):
     FLASKS3_CDN_DOMAIN = 's3.michose.com'
 
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://michose:Mix2017Cc@mishoply.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixDBShop'
 
     ERROR_LOG = '/var/log/mic-error.log'
 

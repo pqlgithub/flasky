@@ -67,16 +67,21 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	$('a.thumbnail').on('click', function(e) {
-		e.preventDefault();
-		var asset_id = $(this).data('target');
+	var hock_thumbnail = function () {
+		$('a.thumbnail').on('click', function(e) {
+			e.preventDefault();
+			var asset_id = $(this).data('target');
 
-		$('#{{ up_target }}_thumb_image').find('img').attr('src', $(this).find('img').attr('src'));
+			$('#{{ up_target }}_thumb_image').find('img').attr('src', $(this).find('img').attr('src'));
 
-		$('#{{ up_target }}_id').val(asset_id);
+			$('#{{ up_target }}_id').val(asset_id);
 
-		$('#modal-image').modal('hide');
-	});
+			$('#modal-image').modal('hide');
+		});
+	};
+
+	// hock img thumbnail
+	hock_thumbnail();
 
 	$('a.directory').on('click', function(e) {
 		e.preventDefault();

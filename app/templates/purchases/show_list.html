@@ -21,6 +21,7 @@
 				if (result.success) {
 					ids = result.data;
 					for (var i=0,l=ids.length;i<l;i++) {
+						$('#tr_' + ids[i] + '_parent').remove();
 						$('#tr_' + ids[i]).remove();
 					}
 				} else {
@@ -66,7 +67,7 @@
 			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
 				0 items selected
 			</span>
-			<button class="btn btn-default verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
 			<div class="btn-group">
@@ -205,7 +206,7 @@
 							<input name="check_all" type="checkbox" class="check-all">
 							{{ _('Product Info') }}
 						</th>
-						<th>{{ _('Payment Info') }}</th>
+						<th>{{ _('Payment Info') }} ({{ current_site.currency }})</th>
 						<th class="text-center">{{ _('Express No.') }}</th>
 						<th class="text-center">{{ _('Total Quantity') }}</th>
 						<th>{{ _('Status') }}</th>
@@ -228,7 +229,7 @@
 					</tr>
 					<tr id="tr_{{ purchase.id }}">
 						<td class="text-center" colspan="3">
-							<img src="{{ purchase.first_child.sku.cover.view_url }}" width="60px" class="pull-left">
+							<img src="{{ purchase.cover.view_url }}" width="60px" class="pull-left">
 							<div class="product-info">
 								{{ _('Product Count') }}： <label>{{ purchase.sku_count }}</label> <br>
 								{{ _('Total Quantity') }}: <label>{{ purchase.quantity_sum }}</label> <br>
@@ -240,17 +241,19 @@
 							({{ purchase.freight }} {{ _('freight') }})
 						</td>
 						<td class="text-center">
-							<a href="" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-								{{ _('Add Express') }}
+							<a href="{{ url_for('main.purchase_express_no', id=purchase.id) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
+								{% if purchase.express_no %} {{ purchase.express_no }} {% else %} {{ _('Add Express No.') }} {% endif %}
 							</a>
 						</td>
 						<td class="text-center">
 							<span class="text-danger">{{ purchase.in_quantity }}</span> / {{ purchase.quantity_sum }}
 						</td>
-						<td class="text-center">
+						<td>
 							{% if purchase.status == 5 %}
 								{% if purchase.in_quantity > 0 and purchase.in_quantity != purchase.quantity_sum %}
 									<label class="indicator warning">{{ _('Partial arrival') }}</label>
+								{% else %}
+									<label class="indicator {{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>
 								{% endif %}
 							{% else %}
 								<label class="indicator {{ purchase.status_label[2] }}">{{ purchase.status_label[1] }}</label>

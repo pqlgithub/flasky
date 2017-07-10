@@ -149,8 +149,10 @@
 					{{ form.express_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<select class="form-control select2" name="express_id">
-							<option value="0">Apple</option>
-							<option value="1">Banana</option>
+							<option value="0">{{ _('Select Express') }}</option>
+							{% for exp in express_list %}
+							<option value="{{ exp.id }}">{{ exp.name }}</option>
+							{% endfor %}
 						</select>
 					</div>
 					{{ form.freight.label(class="col-sm-2 control-label") }}
@@ -175,7 +177,7 @@
 					</div>
 					<label class="col-sm-2 control-label">{{ _('币种') }}</label>
 					<div class="col-sm-4">
-						<input type="email" class="form-control" placeholder="">
+						<input type="email" class="form-control" placeholder="{{ current_site.currency }}">
 					</div>
 				</div>
 
@@ -268,10 +270,10 @@
 							{{ _('Total') }} <strong class="text-danger" id="total_quantity">0</strong> {{ _('Products') }}
 						</th>
 						<th colspan="3" class="text-center">
-							{{ _('Total Amount:') }} <strong class="text-danger" id="total_amount">0</strong> RMB - {{ _('Total Discount:') }} <strong class="text-danger" id="total_discount">0</strong> RMB
+							{{ _('Total Amount:') }} <strong class="text-danger" id="total_amount">0</strong> {{ current_site.currency }} - {{ _('Total Discount:') }} <strong class="text-danger" id="total_discount">0</strong> {{ current_site.currency }}
 						</th>
 						<th colspan="2" class="text-right">
-							{{ _('Payable Amount:') }} <strong class="text-danger" id="payable_amount">0</strong> RMB
+							{{ _('Payable Amount:') }} <strong class="text-danger" id="payable_amount">0</strong> {{ current_site.currency }}
 						</th>
 					</tr>
 					</tfoot>

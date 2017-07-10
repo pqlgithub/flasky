@@ -7,7 +7,7 @@ from .. import db
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve
 from app.forms import ProductForm, SupplierForm, CategoryForm, ProductSkuForm
-from ..utils import full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
+from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
 
 top_menu = 'products'
@@ -18,7 +18,9 @@ top_menu = 'products'
 @user_has('admin_product')
 def show_products(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    paginated_products = Product.query.order_by('created_at desc').paginate(page, per_page)
+    query = Product.query.filter_by(master_uid=Master.master_uid())
+
+    paginated_products = query.order_by('created_at desc').paginate(page, per_page)
 
     return render_template('products/show_list.html',
                            top_menu=top_menu,
@@ -33,7 +35,8 @@ def show_products(page=1):
 def ajax_search_products():
     """搜索产品,满足采购等选择产品"""
     supplier_id = request.form.get('supplier_id')
-    skus = ProductSku.query.filter_by(supplier_id=supplier_id).all()
+
+    skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by('created_at desc').all()
 
     return render_template('purchases/purchase_modal.html',
                            skus=skus)
@@ -212,6 +215,7 @@ def add_sku(id):
     if form.validate_on_submit():
         sku = ProductSku(
             product_id=id,
+            master_uid=Master.master_uid(),
             serial_no=Product.make_unique_serial_no(form.serial_no.data),
             cover_id=form.sku_cover_id.data,
             s_model=form.s_model.data,
@@ -289,7 +293,7 @@ def delete_sku(s_id):
 @user_has('admin_product')
 def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    paginated_suppliers = Supplier.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
     return render_template('suppliers/show_list.html',
                            top_menu=top_menu,
                            sub_menu='suppliers',
@@ -301,11 +305,11 @@ def show_suppliers(page=1):
 @login_required
 @user_has('admin_product')
 def show_categories(page=1):
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 15, type=int)
 
-    total = Category.query.count()
+    total = Category.query.filter_by(master_uid=Master.master_uid()).count()
 
-    categories = Category.always_category(path=0, page=1, per_page=per_page)
+    categories = Category.always_category(path=0, page=page, per_page=per_page, uid=Master.master_uid())
 
     paginated_categories = []
     for cate in categories:

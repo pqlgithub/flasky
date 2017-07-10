@@ -89,11 +89,13 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th class="text-center">{{ _('Image') }}</th>
+						<th class="text-center">{{ _('Supplier') }}</th>
 						<th class="text-center">{{ _('Serial No') }}</th>
 						<th>{{ _('Product Name') }}</th>
-						<th>{{ _('Weight') }}</th>
-						<th>{{ _('Price') }}</th>
-						<th class="text-right">{{ _('Quantity') }}</th>
+						<th class="text-center">{{ _('Sku Count') }}</th>
+						<th class="text-right">{{ _('Cost Price') }}</th>
+						<th class="text-right">{{ _('Sale Price') }}</th>
+
 						<th class="text-right">{{ _('Status') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
@@ -110,20 +112,23 @@
 						<td class="text-center">
 							{{ product.serial_no }}
 						</td>
+						<td class="text-center">
+							{{ product.supplier.name }}
+						</td>
 						<td>
 							{{ product.name|safe }}
 						</td>
-						<td>
-							{{ product.s_weight|round(precision=2) }}
-						</td>
-						<td>
-							{{ product.cost_price|round(precision=2) }}
+						<td class="text-center">
+							{{ product.skus.count() }}
 						</td>
 						<td class="text-right">
-
+							{{ product.cost_price|round(precision=2) }} {{ current_site.currency }}
 						</td>
 						<td class="text-right">
-
+							{{ product.sale_price|round(precision=2) }} {{ current_site.currency }}
+						</td>
+						<td class="text-right">
+							<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
 						</td>
 						<td class="text-right">
 							<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">

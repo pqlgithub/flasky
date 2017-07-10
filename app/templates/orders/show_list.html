@@ -32,6 +32,21 @@
 		}
 	});
 
+	$('.ajax-canceled').click(function () {
+		var url = $(this).data('href');
+		$.post(url, {csrf_token: csrf_token}, function(result){
+			if (result.success) {
+				rid = result.data.rid;
+				$('#tr_' + rid + '_parent').remove();
+				$('#tr_' + rid).remove();
+			} else {
+				swal("Error", result.status.message, "error");
+			}
+		});
+
+		return false;
+	});
+
 {#</script>#}
 {% endblock %}
 
@@ -240,7 +255,7 @@
 							{{ order.total_quantity }}
 						</td>
 						<td class="text-center">
-							{{ order.total_amount }}
+							{{ order.total_amount }} {{ current_site.currency }}
 						</td>
 						<td class="text-center">
 							{{ order.buyer_name }}
@@ -252,10 +267,14 @@
 							{{ order.buyer_remark }}
 						</td>
 						<td class="text-center">
-							{% if order.express_no %}
-								{{ order.express_no }}
-							{% else %}
-							<a href="" class="btn btn-link">Add Express</a>
+							{% if order.status in [10,15] %}
+							<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="btn btn-link ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
+								{% if order.express_no %}
+									{{ order.express_no }}
+								{% else %}
+									{{ _('Add Express') }}
+								{% endif %}
+							</a>
 							{% endif %}
 						</td>
 						<td class="text-right">
@@ -265,8 +284,10 @@
 									<span class="caret"></span>
 								</button>
 								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
+									{% if order.status in [1,5] %}
 									<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
-									<li><a href="#">{{ _('Canceled') }}</a></li>
+									<li><a href="javascript:void(0);" data-href="{{ url_for('main.ajax_canceled', rid=order.serial_no) }}" class="ajax-canceled">{{ _('Canceled') }}</a></li>
+									{% endif %}
 									<li><a href="#">{{ _('Remark') }}</a></li>
 									<li role="separator" class="divider"></li>
 									<li><a href="{{ url_for('main.preview_order', sn=order.serial_no) }}">{{ _('Show Detail') }}</a></li>

@@ -154,7 +154,7 @@
 						<div class="input-group">
 							{{ form.cost_price(id="cost_price", class="form-control") }}
 							<span class="input-group-addon">
-								CNY
+								{{ current_site.currency }}
 							</span>
 						</div>
 					</div>
@@ -166,7 +166,7 @@
 						<div class="input-group">
 							{{ form.sale_price(id="sale_price", class="form-control") }}
 							<span class="input-group-addon">
-								CNY
+								{{ current_site.currency }}
 							</span>
 						</div>
 					</div>
@@ -281,7 +281,7 @@
 						<div class="input-group">
 							{{ form.amount(id="amount", class="form-control")}}
 							<span class="input-group-addon">
-								CNY
+								{{ current_site.currency }}
 							</span>
 						</div>
 					</div>
@@ -325,7 +325,7 @@
 									{{ sku.serial_no }}
 								</td>
 								<td class="text-center">
-									{{ sku.cost_price }}
+									{{ sku.cost_price }} {{ current_site.currency }}
 								</td>
 								<td class="text-center">
 									{{ sku.s_model }}

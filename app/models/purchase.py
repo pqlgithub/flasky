@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
+from flask import url_for
 from app import db
 from ..utils import timestamp, gen_serial_no
-from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
+from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, DEFAULT_IMAGES
 
 __all__ = [
     'Purchase',
@@ -31,6 +31,10 @@ class Purchase(db.Model):
     # 其他费用（附加费用）
     extra_charge = db.Column(db.Numeric(precision=10, scale=2), default=0.0000)
 
+    # express info
+    express_name = db.Column(db.String(30), nullable=True)
+    express_no = db.Column(db.String(255), nullable=True)
+
     # 预计到货时间
     arrival_date = db.Column(db.Date)
     description = db.Column(db.String(255))
@@ -50,6 +54,16 @@ class Purchase(db.Model):
     def first_child(self):
         """默认采购产品的第一个的封面图"""
         return self.products.first()
+
+    @property
+    def cover(self):
+        """获取采购的第一个商品的封面图"""
+        if not self.first_child:
+            return DEFAULT_IMAGES['cover']
+        sku = self.first_child.sku
+        if not sku:
+            return DEFAULT_IMAGES['cover']
+        return sku.cover
 
     @property
     def payable_amount(self):
@@ -109,6 +123,8 @@ class PurchaseProduct(db.Model):
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'))
 
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
+
     cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0.0000)
     quantity = db.Column(db.Integer, default=0)
     in_quantity = db.Column(db.Integer, default=0)
@@ -125,6 +141,14 @@ class PurchaseProduct(db.Model):
     sku = db.relationship(
         'ProductSku', backref='purchase_product', uselist=False
     )
+
+    @property
+    def cover(self):
+        """获取商品的封面图"""
+        sku = self.sku
+        if not sku:
+            return DEFAULT_IMAGES['cover']
+        return sku.cover
 
     @property
     def is_finished(self):

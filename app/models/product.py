@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import text
+from sqlalchemy.sql import func
 from app import db, uploader
 from ..utils import timestamp, gen_serial_no
 from .asset import Asset
-from .purchase import PurchaseProduct
+from ..constant import DEFAULT_IMAGES
+
 
 __all__ = [
     'Product',
@@ -30,6 +32,12 @@ BUSINESS_MODE = [
     ('C', '采销'),
     ('D', '代销'),
     ('Q', '独家')
+]
+
+# 产品的状态
+PRODUCT_STATUS = [
+    (1, 'Enabled', 'success'),
+    (-1, 'Disabled', 'danger')
 ]
 
 # product and category => N to N
@@ -82,6 +90,12 @@ class Product(db.Model):
     )
 
     @property
+    def status_label(self):
+        for s in PRODUCT_STATUS:
+            if s[0] == self.status:
+                return s
+
+    @property
     def cover(self):
         """cover asset info"""
         return Asset.query.get(self.cover_id) if self.cover_id else None
@@ -105,6 +119,7 @@ class ProductSku(db.Model):
 
     __tablename__ = 'product_skus'
     id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     # 产品编号sku
@@ -132,7 +147,13 @@ class ProductSku(db.Model):
     @property
     def cover(self):
         """cover asset info"""
-        return Asset.query.get(self.cover_id) if self.cover_id else None
+        return Asset.query.get(self.cover_id) if self.cover_id else DEFAULT_IMAGES['cover']
+
+    @property
+    def stock_count(self):
+        """product sku stock count"""
+        return ProductStock.stock_count_of_product(self.id)
+
 
     def to_json(self):
         """资源和JSON的序列化转换"""
@@ -155,6 +176,7 @@ class ProductStock(db.Model):
 
     __tablename__ = 'product_stocks'
     id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'), index=True)
     sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
 
@@ -183,6 +205,34 @@ class ProductStock(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp)
 
+    # stock and product_sku => 1 to 1
+    sku = db.relationship(
+        'ProductSku', backref='product_stock', uselist=False
+    )
+
+    @property
+    def cover(self):
+        """获取对应产品的封面图"""
+        sku = self.sku
+        if not sku:
+            return DEFAULT_IMAGES['cover']
+        return sku.cover
+
+
+    @property
+    def available_count(self):
+        """当前某个仓库某个产品的有效库存数量"""
+        return self.current_count - self.presale_count
+
+    @property
+    def out_of_stock(self):
+        """库存不足状态"""
+        return self.current_count <= self.min_count
+
+    @property
+    def purchasing_count(self):
+        """已采购未到货的数量"""
+        return 0
 
     @staticmethod
     def validate_is_exist(warehouse_id, sku_id):
@@ -199,20 +249,13 @@ class ProductStock(db.Model):
         stock = ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).first()
         return stock.current_count if stock else 0
 
-    @property
-    def available_count(self):
-        """当前某个仓库某个产品的有效库存数量"""
-        return self.current_count - self.presale_count
+    @staticmethod
+    def stock_count_of_product(sku_id):
+        """获取某个产品所有仓库的库存总数"""
+        total_quantity = ProductStock.query.filter_by(product_sku_id=sku_id).with_entities(func.sum(ProductStock.current_count)).one()
 
-    @property
-    def out_of_stock(self):
-        """库存不足状态"""
-        return self.current_count <= self.min_count 
+        return total_quantity[0] if (total_quantity and total_quantity[0] is not None) else 0
 
-    @property
-    def purchasing_count(self):
-        """已采购未到货的数量"""
-        return 0
 
     def __repr__(self):
         return '<ProductStock %r>' % self.id
@@ -356,14 +399,15 @@ class Category(db.Model):
     )
 
     @classmethod
-    def always_category(cls, path=0, page=1, per_page=20):
+    def always_category(cls, path=0, page=1, per_page=20, uid=0):
         """get category tree"""
         sql = "SELECT cp.category_id, group_concat(c.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') AS name, c2.id, c2.sort_order, c2.status FROM categories_paths AS cp"
         sql += " LEFT JOIN categories c ON (cp.path_id=c.id)"
         sql += " LEFT JOIN categories AS c2 ON (cp.category_id=c2.id)"
 
-        sql += ' GROUP BY cp.category_id'
-        sql += ' ORDER BY c2.sort_order ASC'
+        sql += " WHERE c2.master_uid=%d" % uid
+        sql += " GROUP BY cp.category_id"
+        sql += " ORDER BY cp.category_id ASC"
 
         if page == 1:
             offset = 0

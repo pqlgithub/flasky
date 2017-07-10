@@ -8,7 +8,7 @@
 			<form class="form-horizontal" action="" method="post" id="inwarehouse-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Scanned goods') }}</label>
 					<div class="col-sm-8">
 						<div class="input-group">
@@ -20,7 +20,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Warehouse') }}</label>
 					<div class="col-sm-3">
 						<p class="form-control-static">{{ purchase.warehouse.name }}</p>
@@ -31,7 +31,7 @@
 					</div>
 				</div>
 
-				<div class="form-group form-group-lg">
+				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Remark') }}</label>
 					<div class="col-sm-8">
 						<textarea name="remark" class="form-control"></textarea>

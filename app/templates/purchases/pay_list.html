@@ -39,6 +39,9 @@
 	<h2 class="page-header">
 		{{ _('Purchases List') }}
 		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
@@ -151,7 +154,7 @@
 							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox">
 						</td>
 						<td class="text-center">
-							<label class="indicator {{ purchase.payed_label[2] }}">{{ purchase.payed_label[1] }}</label>
+							<span class="indicator {{ purchase.payed_label[2] }}">{{ purchase.payed_label[1] }}</span>
 						</td>
 						<td>
 							{{ purchase.serial_no }}
@@ -166,7 +169,7 @@
 							{{ purchase.quantity_sum }}
 						</td>
 						<td class="text-center">
-							￥{{ purchase.total_amount }}
+							{{ purchase.total_amount }} {{ current_site.currency }}
 						</td>
 						<td class="text-right">
 							{{ purchase.created_at|timestamp2string }}

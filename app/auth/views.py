@@ -18,7 +18,7 @@ def login():
             login_user(user, form.remember_me.data)
             return redirect(request.args.get('next') or url_for('main.index'))
 
-        flash(gettext('账号或密码不正确.'))
+        flash(gettext('Account or Password is Error!'))
 
     return render_template('auth/login.html',
                            form=form)

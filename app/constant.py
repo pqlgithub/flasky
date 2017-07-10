@@ -74,7 +74,7 @@ PURCHASE_STATUS = (
 
 # 采购付款状态
 PURCHASE_PAYED = (
-    (1, gettext('Available to Apply'), 'default'),
+    (1, gettext('Available to Apply'), 'danger'),
     (2, gettext('Unpaid'), 'warning'),
     (3, gettext('Finished Paid '), 'success')
 )
@@ -105,7 +105,8 @@ WAREHOUSE_OPERATION_TYPE = (
     (16, gettext('Exchange Storage')), # 调仓入库
     (19, gettext('Manual Storage')), # 手动入库
     (20, gettext('Manual Out')), # 手动出库
-    (24, gettext('Returned Out')), # 退货出库
+    (21, gettext('Order Out')), # 订单出库
+    (30, gettext('Returned Out')), # 退货出库
 )
 
 # 排序代码简称
@@ -136,3 +137,10 @@ DEFAULT_ACLIST = (
     ('admin_setting', gettext('Admin Setting')),
     ('admin_dashboard', gettext('Admin Dashboard'))
 )
+
+# 默认图片
+DEFAULT_IMAGES = {
+    'cover': {
+        'view_url': '/static/img/no_image-100x100.png'
+    }
+}

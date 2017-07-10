@@ -4,14 +4,33 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required, current_user
 from . import main
 from .. import db
-from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK
+from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
     TransactDetail, InWarehouse, StockHistory, ProductStock
-from app.forms import PurchaseForm
+from app.forms import PurchaseForm, PurchaseExpressForm
 
-top_menu = 'purchases'
+
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    pending_review_count = Purchase.query.filter_by(master_uid=Master.master_uid(), status=1).count()
+    pending_arrival_count = Purchase.query.filter_by(master_uid=Master.master_uid(), status=5).count()
+    pending_storage_count = Purchase.query.filter_by(master_uid=Master.master_uid(), status=10).count()
+    unpaid_count = Purchase.query.filter_by(master_uid=Master.master_uid(), payed=2).count()
+    applyable_count = Purchase.query.filter_by(master_uid=Master.master_uid(), payed=1).count()
+
+    return {
+        'pending_review_count': pending_review_count,
+        'pending_arrival_count': pending_arrival_count,
+        'pending_storage_count': pending_storage_count,
+        'applyable_count': applyable_count,
+        'unpaid_count': unpaid_count,
+        'top_menu': 'purchases'
+    }
+
 
 @main.route('/purchases')
 @main.route('/purchases/<int:page>')
@@ -20,20 +39,19 @@ top_menu = 'purchases'
 def show_purchases(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
+    query = Purchase.query.filter_by(master_uid=Master.master_uid())
     if status:
-        query = Purchase.query.filter_by(status=status)
-    else:
-        query = Purchase.query
+        query = query.filter_by(status=status)
+
     paginated_purchases = query.order_by('created_at desc').paginate(page, per_page)
 
     return render_template('purchases/show_list.html',
                             paginated_purchases=paginated_purchases,
-                            top_menu=top_menu,
                             sub_menu='purchases',
                             purchase_status=PURCHASE_STATUS,
                             purchase_payed=PURCHASE_PAYED,
-                            status=status
-                           )
+                            status=status,
+                            **load_common_data())
 
 
 @main.route('/purchases/payments')
@@ -44,16 +62,17 @@ def payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('f', 1, type=int)
 
-    paginated_purchases = Purchase.query.filter_by(payed=status).order_by('created_at asc').paginate(page, per_page)
+    query = Purchase.query.filter_by(master_uid=Master.master_uid(), payed=status)
+
+    paginated_purchases = query.order_by('created_at asc').paginate(page, per_page)
 
     return render_template('purchases/pay_list.html',
                            paginated_purchases=paginated_purchases,
-                           top_menu=top_menu,
                            sub_menu='purchases',
                            purchase_status=PURCHASE_STATUS,
                            purchase_payed=PURCHASE_PAYED,
-                           f=status
-                           )
+                           f=status,
+                           **load_common_data())
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
 @login_required
@@ -76,6 +95,7 @@ def create_purchase():
             sku_row = ProductSku.query.get_or_404(sku_id)
 
             sku['product_sku_id'] = sku_id
+            sku['sku_serial_no'] = sku_row.serial_no
             sku['cost_price'] = float(sku_row.cost_price)
             sku['quantity'] = int(request.form.get('sku[%d][quantity]' % sku_id))
 
@@ -116,14 +136,13 @@ def create_purchase():
     return render_template('purchases/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='purchases',
                            purchase=None,
                            suppliers=suppliers,
                            warehouses=warehouses,
                            purchase_status=PURCHASE_STATUS,
-                           purchase_payed=PURCHASE_PAYED
-                           )
+                           purchase_payed=PURCHASE_PAYED,
+                           **load_common_data())
 
 
 @main.route('/purchases/<int:id>/edit', methods=['GET', 'POST'])
@@ -153,6 +172,7 @@ def edit_purchase(id):
             sku_row = ProductSku.query.get_or_404(sku_id)
 
             sku['product_sku_id'] = sku_id
+            sku['sku_serial_no'] = sku_row.serial_no
             sku['cost_price'] = float(sku_row.cost_price)
             sku['quantity'] = int(request.form.get('sku[%d][quantity]' % sku_id))
 
@@ -194,14 +214,13 @@ def edit_purchase(id):
     return render_template('purchases/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='purchases',
                            purchase=purchase,
                            suppliers=suppliers,
                            warehouses=warehouses,
                            purchase_status=PURCHASE_STATUS,
-                           purchase_payed=PURCHASE_PAYED
-                           )
+                           purchase_payed=PURCHASE_PAYED,
+                           **load_common_data())
 
 
 @main.route('/purchases/delete', methods=['POST'])
@@ -225,6 +244,32 @@ def delete_purchase():
         flash('Delete purchase is fail!', 'danger')
 
     return redirect(url_for('.show_purchases'))
+
+
+@main.route('/purchases/delete_item', methods=['POST'])
+@login_required
+@user_has('admin_purchase')
+def delete_purchase_item():
+    item_id = request.form.get('item_id')
+    purchase_item = PurchaseProduct.query.get(int(item_id))
+    if not purchase_item:
+        return custom_status('Purchase item is not exist!')
+
+    sku_id = purchase_item.product_sku_id
+    purchase_id = purchase_item.purchase_id
+    purchase = Purchase.query.get(purchase_id)
+    if not purchase:
+        return custom_status('Purchase is not exist!')
+
+    # 更新采购单数量、总金额
+    purchase.sku_count -= 1
+    purchase.quantity_sum -= purchase_item.quantity
+    purchase.total_amount -= purchase_item.quantity*purchase_item.cost_price
+
+    db.session.delete(purchase_item)
+    db.session.commit()
+
+    return full_response(True, R200_OK, {'sku_id': sku_id})
 
 
 @main.route('/purchases/ajax_verify', methods=['POST'])
@@ -281,6 +326,7 @@ def ajax_arrival(id):
                 master_uid=current_user.id,
                 warehouse_id=purchase.warehouse_id,
                 product_sku_id=sku_id,
+                sku_serial_no=item_product.sku_serial_no,
                 type=1,
                 operation_type=10,
                 original_quantity=ori_stock,
@@ -295,7 +341,9 @@ def ajax_arrival(id):
             product_stock = ProductStock.validate_is_exist(purchase.warehouse_id, sku_id)
             if not product_stock:
                 new_stock = ProductStock(
+                    master_uid=Master.master_uid(),
                     product_sku_id=sku_id,
+                    sku_serial_no=item_product.sku_serial_no,
                     warehouse_id=purchase.warehouse_id,
                     total_count=quantity,
                     current_count=quantity
@@ -373,3 +421,25 @@ def ajax_apply_pay():
         return status_response(False, custom_status('Apply purchase is fail!'))
 
     return full_response(True, R200_OK, selected_ids)
+
+
+@main.route('/purchases/<int:id>/add_express_no', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_purchase')
+def purchase_express_no(id):
+    purchase = Purchase.query.get(id)
+    form = PurchaseExpressForm()
+    if form.validate_on_submit():
+        purchase.express_name = form.express_name.data
+        purchase.express_no = form.express_no.data
+
+        db.session.commit()
+
+        return status_response(True, R200_OK)
+
+    form.express_name.data = purchase.express_name
+    form.express_no.data = purchase.express_no
+    return render_template('purchases/_modal_express.html',
+                           purchase=purchase,
+                           form=form,
+                           post_url=url_for('.purchase_express_no', id=id))

@@ -5,6 +5,8 @@ from flask_login import current_user, login_required
 from . import main
 from .. import db, babel
 from ..constant import SUPPORT_LANGUAGES
+from ..utils import Master
+from app.models import Site
 
 # 针对程序全局请求的钩子，
 @main.after_app_request
@@ -87,6 +89,13 @@ def choose_locale(lang):
 @main.context_processor
 def include_init_data():
     """注入共用的变量"""
+
+    current_site = None
+    if current_user.is_authenticated:
+        # 注入站点信息
+        current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
     return {
-        'support_languages': SUPPORT_LANGUAGES
+        'support_languages': SUPPORT_LANGUAGES,
+        'current_site': current_site
     }

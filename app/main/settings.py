@@ -2,7 +2,6 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
-from flask_sqlalchemy import get_debug_queries
 from . import main
 from .. import db
 from app.models import Store, Asset, Site, User, Role, Ability
@@ -93,7 +92,7 @@ def setting_site():
 @user_has('admin_setting')
 def show_stores():
     per_page = request.args.get('per_page', 20, type=int)
-    paginated_stores = Store.query.order_by(Store.id.asc()).paginate(1, per_page)
+    paginated_stores = Store.query.filter_by(master_uid=Master.master_uid()).order_by(Store.id.asc()).paginate(1, per_page)
 
     return render_template('stores/show_list.html',
                            sub_menu='stores',
@@ -110,7 +109,7 @@ def create_store():
         store = Store(
             name=form.name.data,
             platform=form.platform.data,
-            master_uid=current_user.id
+            master_uid=Master.master_uid()
         )
         db.session.add(store)
         db.session.commit()
@@ -177,7 +176,7 @@ def delete_store():
 @user_has('admin_setting')
 def show_assets(page=1):
     per_page = request.args.get('per_page', 20, type=int)
-    paginated_assets = Asset.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_assets = Asset.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
 
     return render_template('settings/show_assets.html',
                            sub_menu='assets',
@@ -189,7 +188,23 @@ def show_assets(page=1):
 @login_required
 @user_has('admin_setting')
 def delete_asset():
-    pass
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash('Delete asset is null!', 'danger')
+        abort(404)
+
+    try:
+        for id in selected_ids:
+            asset = Asset.query.get_or_404(int(id))
+            db.session.delete(asset)
+        db.session.commit()
+
+        flash('Delete asset is ok!', 'success')
+    except:
+        db.session.rollback()
+        flash('Delete asset is fail!', 'danger')
+
+    return redirect(url_for('.show_assets'))
 
 
 @main.route('/roles')

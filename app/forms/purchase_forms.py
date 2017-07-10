@@ -15,3 +15,8 @@ class PurchaseForm(Form):
     extra_charge = DecimalField('Extra Charge', default=0.00)
     arrival_date = DateField('Arrival Date')
     description = TextAreaField('Description')
+
+
+class PurchaseExpressForm(Form):
+    express_name = StringField('Express Name')
+    express_no = TextAreaField('Express No.')

@@ -3,7 +3,7 @@ from flask import current_app
 
 from app import db
 from ..utils import timestamp
-from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE
+from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES
 from .purchase import Purchase
 
 __all__ = [
@@ -46,6 +46,15 @@ class Warehouse(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+
+    @property
+    def default_shelve(self):
+        """返回默认货架"""
+        default_shelve = self.shelves.filter_by(is_default=True).first()
+        if not default_shelve:
+            return self.shelves.first()
+        return default_shelve
 
     # warehouse to shelves => 1 to N
     shelves = db.relationship(
@@ -106,6 +115,8 @@ class WarehouseShelve(db.Model):
     # 类型 1：良品 2：次品
     type = db.Column(db.SmallInteger, default=1)
     description = db.Column(db.String(255), nullable=True)
+    # 默认货架位
+    is_default = db.Column(db.Boolean, default=False)
 
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
 
@@ -212,10 +223,6 @@ class OutWarehouse(db.Model):
     )
 
     @property
-    def target(self):
-        return None
-
-    @property
     def target_label(self):
         if self.target_type == 1:
             return 'Order'
@@ -235,6 +242,7 @@ class StockHistory(db.Model):
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
     warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
 
     # 出库单/入库单 编号
     serial_no = db.Column(db.String(20), index=True, nullable=False)
@@ -259,6 +267,14 @@ class StockHistory(db.Model):
     sku = db.relationship(
         'ProductSku', backref='stock_history', uselist=False
     )
+
+    @property
+    def cover(self):
+        """获取对应产品的封面图"""
+        sku = self.sku
+        if not sku:
+            return DEFAULT_IMAGES['cover']
+        return sku.cover
 
     @property
     def symbol(self):

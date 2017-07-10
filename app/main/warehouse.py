@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app
 from flask_login import login_required, current_user
+from flask_babelex import gettext
 from sqlalchemy.sql import func
 from . import main
 from .. import db
@@ -36,7 +37,7 @@ def show_stocks(page=1):
     q_k = request.values.get('q_k')
 
     sort_type = SORT_TYPE_CODE.get(s_t, 'created_at')
-    query = ProductStock.query
+    query = ProductStock.query.filter_by(master_uid=Master.master_uid())
     if wh_id:
         query = query.filter_by(warehouse_id=wh_id)
     if q_k:
@@ -91,7 +92,7 @@ def show_inout(page=1):
     """显示库存变化明细"""
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
-    paginated_inout_list = StockHistory.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_inout_list = StockHistory.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
 
     return render_template('warehouses/show_inout.html',
                            paginated_inout_list=paginated_inout_list,
@@ -192,7 +193,7 @@ def show_in_warehouses(page=1):
     """显示入库单列表"""
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
-    paginated_inwarehouses = InWarehouse.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_inwarehouses = InWarehouse.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
 
     if request.method == 'POST':
         return render_template('warehouses/in_table.html',
@@ -229,7 +230,7 @@ def show_out_warehouses(page=1):
     """显示出库单列表"""
     per_page = request.args.get('per_page', 10, type=int)
     status = request.args.get('s', 0, type=int)
-    paginated_outwarehouses = OutWarehouse.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_outwarehouses = OutWarehouse.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
 
     if request.method == 'POST':
         return render_template('warehouses/out_table.html',
@@ -262,7 +263,7 @@ def edit_in_warehouse(id):
 @user_has('admin_warehouse')
 def show_warehouses(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    paginated_warehouses = Warehouse.query.order_by(Warehouse.id.asc()).paginate(page, per_page)
+    paginated_warehouses = Warehouse.query.filter_by(master_uid=Master.master_uid()).order_by(Warehouse.id.asc()).paginate(page, per_page)
     return render_template('warehouses/show_list.html',
                            paginated_warehouses=paginated_warehouses,
                            sub_menu='warehouses', **load_common_data())
@@ -274,28 +275,39 @@ def show_warehouses(page=1):
 def create_warehouse():
     form = WarehouseForm()
     if form.validate_on_submit():
-        warehouse = Warehouse(
-            user_id = current_user.id,
-            name = form.name.data,
-            address = form.address.data,
-            en_address = form.en_address.data,
-            description = form.description.data,
-            username = form.username.data,
-            phone = form.phone.data,
-            email = form.email.data,
-            qq = form.qq.data,
-            type = int(form.type.data),
-            is_default = bool(form.is_default.data),
-            status = int(form.status.data)
-        )
-        db.session.add(warehouse)
-        db.session.commit()
-
         try:
+            warehouse = Warehouse(
+                master_uid=Master.master_uid(),
+                name=form.name.data,
+                address=form.address.data,
+                en_address=form.en_address.data,
+                description=form.description.data,
+                username=form.username.data,
+                phone=form.phone.data,
+                email=form.email.data,
+                qq=form.qq.data,
+                type=int(form.type.data),
+                is_default=bool(form.is_default.data),
+                status=int(form.status.data)
+            )
+            db.session.add(warehouse)
+
+            # 添加默认货架
+            default_shelve = WarehouseShelve(
+                warehouse=warehouse,
+                name=gettext('Default Shelve'),
+                type=1,
+                description=gettext("default shelve, can't delete!"),
+                is_default=True
+            )
+            db.session.add(default_shelve)
+
+            db.session.commit()
+
             flash('Create warehouse is ok!', 'success')
-        except:
+        except Exception as ex:
             db.session.rollback()
-            flash('Create warehouse is fail!', 'danger')
+            flash('Create warehouse is fail [%s]!' % ex, 'danger')
 
         return redirect(url_for('.show_warehouses'))
     else:
@@ -400,6 +412,9 @@ def ajax_delete_shelve():
         return full_response(False, custom_status('Delete shelve id is null!'))
 
     shelve = WarehouseShelve.query.get(int(shelve_id))
+    if shelve.is_default: # 默认货架
+        return custom_response(False, "Default shelve can't delete!")
+
     db.session.delete(shelve)
     db.session.commit()
 

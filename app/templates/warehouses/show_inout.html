@@ -163,6 +163,7 @@
 				</thead>
 				<tbody>
 					{% for item in paginated_inout_list.items %}
+					{% if item.sku %}
 					<tr id="tr_{{ item.id }}">
 						<td class="text-center">
 							<input name="selected[]" class="check-one" value="{{ item.id }}" type="checkbox">
@@ -197,10 +198,10 @@
 							{{ item.warehouse_shelve.name }}
 						</td>
 						<td class="text-center">
-							{{ item.ori_price }}
+							{{ item.ori_price }} {{ current_site.currency }}
 						</td>
 						<td class="text-center">
-							{{ item.price }}
+							{{ item.price }} {{ current_site.currency }}
 						</td>
 						<td>
 							{% if item.type == 1 %}
@@ -223,6 +224,7 @@
 							</div>
 						</td>
 					</tr>
+					{% endif %}
 					{% endfor %}
 				</tbody>
 			</table>
