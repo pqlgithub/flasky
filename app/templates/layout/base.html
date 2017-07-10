@@ -67,8 +67,8 @@
 						<li {% if top_menu == 'logistics' %}class="active"{% endif %}>
 							<a href="{{ url_for('main.show_expresses') }}">{{ _('Logistics') }}</a>
 						</li>
-						<li>
-							<a href="../customize/">{{ _('Service') }}</a>
+						<li {% if top_menu == 'service' %}class="active"{% endif %}>
+							<a href="{{ url_for('main.show_blacklist') }}">{{ _('Service') }}</a>
 						</li>
 						<li {% if top_menu == 'finances' %}class="active"{% endif %}>
 							<a href="{{ url_for('main.show_payments') }}">{{ _('Finance') }}</a>

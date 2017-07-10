@@ -1,0 +1,12 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Common service') }}
+	</div>
+	<a href="{{ url_for('main.show_blacklist') }}" class="list-group-item {% if sub_menu == 'blacklist'%} active{% endif %}">
+		{{ _('Black List') }}
+	</a>
+	<a href="" class="list-group-item {% if sub_menu == 'replies'%} active{% endif %}">
+		{{ _('Reply Templates') }}
+	</a>
+
+</div>
