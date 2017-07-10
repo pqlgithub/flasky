@@ -155,7 +155,6 @@ class InWarehouse(db.Model):
     # 类型：1. 采购；2.订单退货；3.调拔
     target_type = db.Column(db.SmallInteger, default=1)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
-    warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
 
     total_quantity = db.Column(db.Integer, default=0)
     # 入库状态： 1、未入库 2、入库中 3、入库完成
@@ -239,8 +238,10 @@ class StockHistory(db.Model):
     __tablename__ = 'warehouse_stock_history'
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
+
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
     warehouse_shelve_id = db.Column(db.Integer, db.ForeignKey('warehouse_shelves.id'))
+
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
     sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
 

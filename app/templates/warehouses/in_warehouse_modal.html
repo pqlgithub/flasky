@@ -25,12 +25,13 @@
 					<div class="col-sm-4 m-b-10">
 						<select name="operation_type" id="operation_type" class="form-control select2">
 							<option value="0">{{ _('Select type') }}</option>
-							<option value="20">{{ _('Manual Out') }}</option>
-							<option value="24">{{ _('Returned Out') }}</option>
+							{% for type in in_types %}
+							<option value="{{ type[0] }}">{{ type[1] }}</option>
+							{% endfor %}
 						</select>
 					</div>
 					<div class="col-sm-6 text-right">
-						<a class="btn btn-primary m-t-10" href="{{ url_for('main.ajax_select_products') }}" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+						<a class="btn btn-primary m-t-10" href="{{ url_for('main.ajax_select_purchase') }}" id="add-purchase-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Purchases') }}">
 							<i class="glyphicon glyphicon-plus" aria-hidden="true"></i> {{ _('Select Purchases') }}
 						</a>
 					</div>
@@ -40,13 +41,14 @@
 					<thead>
 						<tr>
 							<th>{{ _('Product Info') }}</th>
-							<th class="text-center">{{ _('Warehouse') }}</th>
-							<th class="text-center">{{ _('Total Stock') }}</th>
+							<th class="text-center">{{ _('Warehouse Shelve') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Total / Arrival') }}</th>
 							<th class="text-center">{{ _('Quantity') }}</th>
 							<th class="text-right">{{ _('Action') }}</th>
 						</tr>
 					</thead>
-					<tbody id="choose-products">
+					<tbody id="choose-purchases">
 					</tbody>
 				</table>
 
@@ -61,7 +63,7 @@
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
-			<button type="button" id="stock-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+			<button type="button" id="inwarehouse-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
 		</div>
 	</div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
@@ -71,21 +73,22 @@
 		'width': '100%'
 	});
 
-	$('#stock-submit-btn').click(function (e) {
+	$('#inwarehouse-submit-btn').click(function (e) {
 		$.ajax({
-			url: "{{ url_for('main.create_ex_warehouse') }}",
+			url: "{{ url_for('main.create_in_warehouse') }}",
 			type: 'post',
 			data: $('#stock-form').serialize(),
 			dataType: 'json',
 			beforeSend: function () {
-				$('#sku-submit-btn').prop('disabled', true);
+				$('#inwarehouse-submit-btn').prop('disabled', true);
 			},
 			complete: function() {
-				$('#sku-submit-btn').prop('disabled', false);
+				$('#inwarehouse-submit-btn').prop('disabled', false);
 			},
 			success: function (result) {
 				if (result.success) {
-					$('#out-stock-modal').modal('hide');
+					$('#in-stock-modal').modal('hide');
+
 					$('.btn-refresh').trigger('click');
 				} else {
 					$('#stock-form').prepend(display_alert(result.status.message))
@@ -97,13 +100,13 @@
 		});
 	});
 
-	$('#add-product-btn').click(function (e) {
+	$('#add-purchase-btn').click(function (e) {
 		var $btn = $(this), post_url=$(this).attr('href');
 		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
 		if (warehouse_id == 0) {
 			swal({
 				title: "Warning",
-				text: "Please first choose the warehouse to ship？",
+				text: "Please first choose the warehouse to storage？",
 				type: "warning",
 				showCancelButton: false,
 				confirmButtonClass: 'btn-warning',
@@ -113,7 +116,7 @@
 			return false;
 		}
 
-		$('#sku-modal').remove();
+		$('#purchase-modal').remove();
 		$.ajax({
 			url: post_url,
 			type: 'post',
@@ -126,9 +129,9 @@
 				$btn.prop('disabled', false);
 			},
 			success: function(html) {
-				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+				$('body').append('<div id="purchase-modal" role="dialog" class="modal">' + html + '</div>');
 
-				$('#sku-modal').modal('show');
+				$('#purchase-modal').modal('show');
 			}
 		});
 

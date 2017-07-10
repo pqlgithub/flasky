@@ -6,11 +6,12 @@ from flask_babelex import gettext
 from sqlalchemy.sql import func
 from . import main
 from .. import db
-from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, StockHistory, ProductStock, ProductSku
+from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, StockHistory, ProductStock, ProductSku,\
+    Purchase, PurchaseProduct
 from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
     gen_serial_no
-from ..constant import SORT_TYPE_CODE
+from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE
 from ..decorators import user_has, user_is
 
 
@@ -37,21 +38,21 @@ def show_stocks(page=1):
     q_k = request.values.get('q_k')
 
     sort_type = SORT_TYPE_CODE.get(s_t, 'created_at')
-    query = ProductStock.query.filter_by(master_uid=Master.master_uid())
+    builder = ProductStock.query.filter_by(master_uid=Master.master_uid())
     if wh_id:
-        query = query.filter_by(warehouse_id=wh_id)
+        builder = builder.filter_by(warehouse_id=wh_id)
     if q_k:
-        query = query.filter_by(sku_serial_no=q_k)
+        builder = builder.filter_by(sku_serial_no=q_k)
 
     sort_by = '%s desc' % sort_type
 
-    paginated_stocks = query.order_by(sort_by).paginate(page, per_page)
+    paginated_stocks = builder.order_by(sort_by).paginate(page, per_page)
 
     # 当前库存总数
-    total_quantity = ProductStock.query.with_entities(func.sum(ProductStock.current_count)).one()
+    total_quantity = builder.with_entities(func.sum(ProductStock.current_count)).one()
 
     # 库存总金额
-    total_amount = ProductStock.query.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
+    total_amount = builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
         .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
 
     if request.method == 'POST':
@@ -143,6 +144,7 @@ def create_ex_warehouse():
                 warehouse_id=warehouse_id,
                 warehouse_shelve_id=warehouse_shelve_id,
                 product_sku_id=sku_id,
+                sku_serial_no=item_product.serial_no,
                 type=2, # 出库
                 operation_type=operation_type,
                 original_quantity=ori_quantity,
@@ -209,10 +211,168 @@ def show_in_warehouses(page=1):
 @login_required
 @user_has('admin_warehouse')
 def create_in_warehouse():
+    if request.method == 'POST':
+        remark = request.form.get('remark')
+        purchase_id = request.form.get('purchase_id', type=int)
+        if purchase_id is None:
+            return custom_response(False, 'No purchase is match!')
+
+        current_purchase = Purchase.query.get(purchase_id)
+
+        warehouse_id = request.form.get('warehouse_id', type=int)
+        operation_type = request.form.get('operation_type', type=int)
+        if warehouse_id is None or operation_type is None:
+            return custom_response(False, 'Warehouse or Type is Null!')
+
+        items = request.form.getlist('items[]')
+        if not items or items is None:
+            return custom_response(False, "In-warehouse has't products!")
+
+        total_quantity = 0
+        stock_items = []
+        items = [int(sku_id) for sku_id in items]
+        for sku_id in items:
+            offset_quantity = request.form.get('quantity[%s]' % sku_id, 0, type=int)
+            if offset_quantity == 0:
+                continue # skip
+            shelve_id = request.form.get('shelve[%s]' % sku_id, 0, type=int)
+            if shelve_id == 0:
+                continue # skip
+
+            item_product = ProductSku.query.get(sku_id)
+            if not item_product:
+                return custom_response(False, 'Sku is not found!')
+
+            # 更新采购明细
+            purchase_product = PurchaseProduct.query.filter_by(purchase_id=purchase_id, product_sku_id=sku_id).first()
+            if not purchase_product:
+                return custom_response(False, 'Purchase product not match!')
+            if purchase_product.quantity > purchase_product.in_quantity + offset_quantity:
+                return custom_response(False, 'Quantity larger than purchase！')
+            # 更新入库数量
+            purchase_product.in_quantity += offset_quantity
+
+
+            # 验证库存数量
+            stock = ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).first()
+            if not stock: # 添加
+                new_stock = ProductStock(
+                    master_uid = Master.master_uid(),
+                    product_sku_id = sku_id,
+                    sku_serial_no = item_product.serial_no,
+                    warehouse_id = warehouse_id,
+                    warehouse_shelve_id = shelve_id,
+                    total_count = offset_quantity,
+                    current_count = offset_quantity
+                )
+                db.session.add(new_stock)
+
+                ori_quantity = 0
+            else: # 更新库存
+                ori_quantity = stock.current_count
+
+                stock.total_count += offset_quantity
+                stock.current_count += offset_quantity
+
+
+            # 入库记录明细
+            stock_history = StockHistory(
+                master_uid=Master.master_uid(),
+                warehouse_id=warehouse_id,
+                warehouse_shelve_id=shelve_id,
+                product_sku_id=sku_id,
+                sku_serial_no=item_product.serial_no,
+                type=1,  # 出库
+                operation_type=operation_type,
+                original_quantity=ori_quantity,
+                quantity=offset_quantity,
+                current_quantity=ori_quantity + offset_quantity,
+                ori_price=item_product.cost_price,
+                price=item_product.cost_price
+            )
+            stock_items.append(stock_history)
+
+            total_quantity += offset_quantity
+
+        # 更新采购单数量
+        if current_purchase.in_quantity + total_quantity == current_purchase.quantity_sum:
+            current_purchase.in_quantity += total_quantity
+            # 完成入库
+            current_purchase.update_status(15)
+
+        # 添加入库单
+        in_serial_no = gen_serial_no('RK')
+        in_warehouse = InWarehouse(
+            master_uid = Master.master_uid(),
+            serial_no = in_serial_no,
+            target_serial_no = current_purchase.serial_no,
+            target_type = 1,
+            warehouse_id = warehouse_id,
+            total_quantity = total_quantity,
+            in_status = 1,
+            status = 1,
+            remark = remark
+        )
+        db.session.add(in_warehouse)
+
+        # 保存入库明细
+        for sh in stock_items:
+            sh.serial_no = in_serial_no
+            db.session.add(sh)
+
+        db.session.commit()
+
+        return status_response(True, R201_CREATED)
     # 获取仓库列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+
+    in_types = [type for type in WAREHOUSE_OPERATION_TYPE if type[0] in [10,13,16,19]]
+
     return render_template('warehouses/in_warehouse_modal.html',
-                           warehouses=warehouse_list)
+                           warehouses=warehouse_list,
+                           in_types=in_types)
+
+
+
+@main.route('/inwarehouses/ajax_select_purchase', methods=['POST'])
+@login_required
+@user_has('admin_warehouse')
+def ajax_select_purchase():
+    """搜索待入库的采购单"""
+    paginated_purchases = None
+    wh_id = request.form.get('wh_id')
+    page = request.values.get('page', 1, type=int)
+
+    builder = Purchase.query.filter_by(master_uid=Master.master_uid()).filter(Purchase.status.in_((5,10)))
+
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+        paginated_purchases = builder.order_by('created_at desc').paginate(page, 10)
+
+    return render_template('warehouses/select_purchase_modal.html',
+                           paginated_purchases=paginated_purchases,
+                           wh_id=wh_id)
+
+@main.route('/inwarehouse/ajax_submit_purchase', methods=['POST'])
+@login_required
+@user_has('admin_warehouse')
+def ajax_submit_purchase():
+    """获取选定的采购单明细"""
+    selected_id = request.form.get('selected_id')
+    if not selected_id:
+        return "Missing request parameters"
+
+    purchase = Purchase.query.get(int(selected_id))
+    if purchase.master_uid != Master.master_uid():
+        return "You haven't permission"
+
+    # 获取仓库信息
+    warehouse_id = purchase.warehouse_id
+    warehouse= Warehouse.query.get(warehouse_id)
+
+    return render_template('warehouses/purchase_item.html',
+                           purchase=purchase,
+                           warehouse=warehouse)
 
 
 @main.route('/inwarehouses/<int:id>/preview')

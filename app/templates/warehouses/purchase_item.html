@@ -1,0 +1,37 @@
+{% for item in purchase.products %}
+<tr id="purchase_item_{{ item.id }}">
+	<td>
+		<img src="{{ item.cover.view_url }}" width="60px" class="pull-left">
+		<div class="product-info">
+			<label>{{ item.sku_serial_no }}</label> <br>
+			<span>{{ item.sku.product.name }}</span> <br>
+		</div>
+	</td>
+	<td>
+		<select name="shelve[{{ item.product_sku_id }}]" class="select2">
+			{% for shelve in warehouse.shelves %}
+			<option value="{{ shelve.id }}">{{ shelve.name }}</option>
+			{% endfor %}
+		</select>
+	</td>
+	<td class="text-center">{{ item.cost_price }} {{ current_site.currency }}</td>
+	<td class="text-center">{{ item.quantity }} / {{ item.in_quantity }}</td>
+	<td class="text-center">
+		<input type="text" name="quantity[{{ item.product_sku_id }}]" class="form-control input-quantity">
+		<input type="hidden" name="items[]" value="{{ item.product_sku_id }}">
+	</td>
+	<td class="text-right">
+		<a href="javascript:void(0);" data-id="{{ item.id }}" class="btn btn-link btn-remove">{{ _('Remove') }}</a>
+	</td>
+</tr>
+{% endfor %}
+
+<input type="hidden" name="purchase_id" value="{{ purchase.id }}">
+
+<script type="text/javascript"><!--
+	$('a.btn-remove').click(function () {
+		var item_id = $(this).data('id');
+		$('#purchase_item_' + item_id).remove();
+	});
+//-->
+</script>

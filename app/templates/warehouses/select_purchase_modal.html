@@ -1,0 +1,76 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Select Purchases') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="purchase-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th class="text-center">{{ _('Purchase Serial No') }}</th>
+							<th class="text-center">{{ _('Express No') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="choose-purchases">
+						{% for purchase in paginated_purchases.items %}
+						<tr>
+							<td class="text-center">
+								<span class="text-danger">{{ purchase.serial_no }}</span>
+							</td>
+							<td class="text-center">{{ purchase.express_no }}</td>
+							<td class="text-right">
+								<a class="btn btn-link btn-select" data-id="{{ purchase.id }}" role="button">
+									{{ _('Select') }}
+								</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	$('a.btn-select').click(function () {
+		var selected_id = $(this).data('id'), $btn = $(this);
+
+		$.ajax({
+			url: "{{ url_for('main.ajax_submit_purchase') }}",
+			type: 'post',
+			data: {'selected_id': selected_id, csrf_token: csrf_token},
+			dataType: 'html',
+			beforeSend: function () {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function (result) {
+				$('#purchase-modal').modal('hide');
+
+				// 解析结果
+				$('#choose-purchases')
+					.append(result)
+					.find('.select2')
+					.select2({
+						'width': '100%'
+					});
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

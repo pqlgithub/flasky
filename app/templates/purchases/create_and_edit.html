@@ -28,7 +28,7 @@
 			tr_html.push('<td>'+ skus[i].serial_no +'</td>');
 			tr_html.push('<td class="text-center"><label class="label label-warning">'+ skus[i].s_model +'</label></td>');
 			tr_html.push('<td class="text-center"><label id="cost_price_'+ skus[i].id +'">'+ skus[i].cost_price +'</label></td>');
-			tr_html.push('<td class="text-center"><input type="text" class="form-control quantity" data-id="'+ skus[i].id +'" name="sku['+ skus[i].id +'][quantity]" size="5" value="1"></td>');
+			tr_html.push('<td class="text-center"><input type="text" class="form-control quantity input-quantity" data-id="'+ skus[i].id +'" name="sku['+ skus[i].id +'][quantity]" size="5" value="1"></td>');
 			tr_html.push('<td class="text-right"><span id="amount_'+ skus[i].id +'">'+ (skus[i].cost_price*1).toFixed(2) +'</span></td>');
 			tr_html.push('<td class="text-right"><a data-id="'+ skus[i].id +'" data-item-id="0" class="btn ajax-delete-sku btn-link">'+
 				'{{ _("Remove") }}</a>'+
@@ -160,7 +160,7 @@
 			</div>
 			<div class="col-sm-7 text-right">
 				<label class="control-label">
-					SKU种类：<span id="sku_count" class="text-danger">{{ purchase.sku_count|default(0) }}</span>， 采购数量：<span id="purchase_quantity" class="text-danger">{{ purchase.quantity_sum|default(0) }}</span>， 总价：<span id="total_amount" class="text-danger">￥{{ purchase.total_amount|default(0) }}</span>
+					SKU种类：<span id="sku_count" class="text-danger">{{ purchase.sku_count|default(0) }}</span>， 采购数量：<span id="purchase_quantity" class="text-danger">{{ purchase.quantity_sum|default(0) }}</span>， 总价：<span id="total_amount" class="text-danger">{{ purchase.total_amount|default(0.0) }} {{ current_site.currency }}</span>
 				</label>
 			</div>
 		</div>
