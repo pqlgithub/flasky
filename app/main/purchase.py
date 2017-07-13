@@ -457,5 +457,5 @@ def print_purchase_pdf():
 
     html = render_template('pdf/purchase.html',
                            purchase_list=purchase_list)
-    
+
     #return render_pdf(HTML(string=html))

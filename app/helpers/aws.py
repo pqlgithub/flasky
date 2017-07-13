@@ -41,4 +41,4 @@ def upload_file_to_s3(s3, file, bucket_name, acl='public-read'):
     if current_app.config['FLASKS3_USE_HTTPS']:
         proto = 'https://'
 
-    return '{}{}/{}'.format(proto, current_app.config['FLASKS3_CDN_DOMAIN'], file.filename)
+    return '{}{}/{}'.format(proto, current_app.config['THUMB_CDN_DOMAIN'], file.filename)

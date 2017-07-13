@@ -58,7 +58,7 @@ class Asset(db.Model):
             proto = 'https://'
 
         if not current_app.config['DEBUG']:
-            url = '{}{}/{}'.format(proto, current_app.config['FLASKS3_CDN_DOMAIN'], self.filepath)
+            url = '{}{}/{}'.format(proto, current_app.config['THUMB_CDN_DOMAIN'], self.filepath)
         else:
             url = uploader.url(self.filepath)
 

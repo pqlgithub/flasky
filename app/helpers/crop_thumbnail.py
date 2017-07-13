@@ -35,8 +35,8 @@ def handler(event, context):
     for record in event['Records']:
         bucket = record['s3']['bucket']['name']
         key = record['s3']['object']['key']
-        download_path = '/tmp/{}{}'.format(uuid.uuid4(), key)
-        upload_path = '/tmp/im-{}'.format(key)
+        download_path = '/tmp/{}/{}'.format(uuid.uuid4(), key)
+        upload_path = '/tmp/im/{}'.format(key)
 
         s3_client.download_file(bucket, key, download_path)
         crop_image(download_path, upload_path)

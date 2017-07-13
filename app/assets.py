@@ -12,6 +12,7 @@ bundles = {
         'js/jquery.cookie.js',
         'js/sweet-alert.min.js',
         'js/select2.js',
+        'js/moxie.min.js',
         'js/plupload.full.min.js',
         'js/jquery.plupload.queue.js',
         output='js/admin.min.js'

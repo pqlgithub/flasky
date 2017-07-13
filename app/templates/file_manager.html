@@ -3,7 +3,10 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h4 class="modal-title" id="myLargeModalLabel">{{ _('Image Manager') }}</h4>
+			<h4 class="modal-title" id="myLargeModalLabel">
+				{{ _('Image Manager') }}
+				<small class="text-default m-l-10">* {{ _('Upload the image, must be at least 480*480px.') }}</small>
+			</h4>
 		</div>
 		<div class="modal-body">
 			<div class="row">
@@ -29,6 +32,7 @@
 				</div>
 			</div>
 			<hr>
+			<div class="row" id="upload-container"></div>
 			<div class="row" id="uploader_result">
 				{% for d in all_directory %}
 				<div class="col-sm-3 col-xs-6 text-center">
@@ -51,11 +55,10 @@
 					</a>
 					<label>
 						<input name="path[]" value="{{ a.filepath }}" type="checkbox">
-						{{ a.filename }}
+						{{ a.filename|short_filename }}
 					</label>
 				</div>
 				{% endfor %}
-
 			</div>
 		</div>
 		<div class="modal-footer">
@@ -160,9 +163,11 @@
 		});
 	});
 
+	var total_image_count = 0;
+	var files_to_remove = [];
+
 	$("#uploader").pluploadQueue({
         // General settings
-        runtimes : 'html5,flash,silverlight,html4',
         url : '{{ url_for("main.flupload") }}',
 
         chunk_size : '1mb',
@@ -179,7 +184,9 @@
             // Specify what files to browse for
             mime_types: [
                 {title : 'Image files', extensions : 'jpg,jpeg,gif,png'}
-            ]
+            ],
+			prevent_duplicates : true //不允许选取重复文件
+
         },
 
         flash_swf_url : "{{ url_for('static', filename='js/Moxie.swf', _external=True) }}",

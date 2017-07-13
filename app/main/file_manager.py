@@ -123,7 +123,7 @@ def flupload():
         if not current_app.config['DEBUG']:
             # Upload to s3
             f.filename = filename
-            out_result = aws.upload_file_to_s3(s3, f, current_app.config['FLASKS3_BUCKET_NAME'])
+            out_result = aws.upload_file_to_s3(s3, f, current_app.config['ASSET_BUCKET_NAME'])
             # response = s3.head_object(Bucket=current_app.config['FLASKS3_BUCKET_NAME'], Key=filename)
         else:
             # Upload to local

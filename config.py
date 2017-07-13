@@ -47,6 +47,7 @@ class Config:
     MAIL_SENDER = os.environ.get('MAIL_SENDER') or DEFAULT_MAIL_SENDER
 
     # Can not compress the CSS/JS on Dev environment.
+    IMAGE_SIZE = (480, 480)
     ASSETS_DEBUG = True
 
     # Use Amazon S3
@@ -56,6 +57,11 @@ class Config:
     FLASKS3_BUCKET_NAME = 's3.michose.com'
     FLASKS3_CDN_DOMAIN = 's3.michose.com'
     FLASKS3_FORCE_MIMETYPE = True
+
+    # Asset Bucket
+    ASSET_BUCKET_NAME = 'g3.michose.com'
+    ASSET_CDN_DOMAIN = 'g3.michose.com'
+    THUMB_CDN_DOMAIN = 'img3.michose.com'
 
     AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
     AWS_ACCESS_SECRET = 'wVsAPB5ZwxJpGaCXabUFjs0xs6hEM1kUcg9CwW90'
@@ -83,7 +89,7 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
+    DEBUG = False
 
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
