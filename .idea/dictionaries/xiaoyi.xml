@@ -7,6 +7,7 @@
       <w>applyable</w>
       <w>asctime</w>
       <w>autoescape</w>
+      <w>croped</w>
       <w>cssmin</w>
       <w>endassets</w>
       <w>errorlog</w>
@@ -39,9 +40,11 @@
       <w>presale</w>
       <w>purpen</w>
       <w>pymysql</w>
+      <w>resized</w>
       <w>saled</w>
       <w>shopee</w>
       <w>signin</w>
+      <w>simsun</w>
       <w>skus</w>
       <w>sqlite</w>
       <w>supervisord</w>

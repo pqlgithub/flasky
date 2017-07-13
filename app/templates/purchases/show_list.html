@@ -11,7 +11,7 @@
 	$('button.verify-all').click(function () {
 		var form_id = $(this).data('form-id');
 		// 检测是否选中
-		selected = [];
+		var selected = [];
 		$('#' + form_id).find('.check-one:checked').each(function () {
 			var id = $(this).val();
 			selected.push(id);
@@ -31,6 +31,25 @@
 		} else {
 			swal("Error", "First to selected the one!!!", "error");
 		}
+	});
+
+	// 打印采购单
+	$('.ajax-print').click(function () {
+		var form_id = $(this).data('form-id'), href = $(this).data('href');
+		// 检测是否选中
+		var selected = [];
+		$('#' + form_id).find('.check-one:checked').each(function () {
+			var id = $(this).val();
+			selected.push(id);
+		});
+		if (selected.length == 0){
+			swal('Error', 'First to selected the one!', 'error');
+			return false;
+		}
+		var wd = window.open('about:blank', '_blank');
+		wd.location.href = href + '?rid=' + selected.toString();
+
+		return false;
 	});
 
 	$('.ajax-arrival').click(function (e) {
@@ -76,7 +95,7 @@
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
-					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Print') }}</a></li>
+					<li><a href="javascript:void(0);" data-href="{{ url_for('main.print_purchase_pdf') }}" class="ajax-print" data-form-id="purchases-form">{{ _('Print') }}</a></li>
 					<li class="divider" role="separator"></li>
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Import Purchase') }}</a></li>
 					<li>
@@ -218,7 +237,7 @@
 					{% for purchase in paginated_purchases.items %}
 					<tr id="tr_{{ purchase.id }}_parent">
 						<td colspan="3">
-							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox" id="purchase-id-{{ purchase.id }}"> <label for="purchase-id-{{ purchase.id }}">{{ purchase.serial_no }}</label>
+							<input name="selected[]" class="check-one" value="{{ purchase.serial_no }}" type="checkbox" id="purchase-id-{{ purchase.id }}"> <label for="purchase-id-{{ purchase.id }}">{{ purchase.serial_no }}</label>
 						</td>
 						<td colspan="3">
 							{{ _('Warehouse') }}: <label>{{ purchase.warehouse.name }}</label>

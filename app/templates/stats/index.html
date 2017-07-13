@@ -4,6 +4,42 @@
 	{% include 'stats/_sub_menu.html' %}
 {% endblock %}
 
+{% block private_js %}
+<!-- 引入 ECharts 文件 -->
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	// 基于准备好的dom，初始化echarts实例
+	var world_map_chart = echarts.init(document.getElementById('world-map'));
+
+	// 指定图表的配置项和数据
+	var option = {
+		title: {
+			text: 'Order for the last 30 days'
+		},
+		tooltip: {},
+		legend: {
+			data:['销量']
+		},
+		xAxis: {
+			data: ["消费电子",'智能产品', '家居', '厨房', "衬衫", "羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+		},
+		yAxis: {},
+		series: [{
+			name: '销量',
+			type: 'bar',
+			data: [5, 20, 24, 18, 50, 34, 36, 10, 5, 20, 24, 18, 50, 18, 50, 34, 36, 10, 34, 36, 10, 10, 20, 18, 50, 34, 36, 10, 10, 20]
+		}]
+	};
+
+	// 使用刚指定的配置项和数据显示图表。
+	// world_map_chart.setOption(option);
+
+{#</script>#}
+{% endblock %}
+
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
@@ -15,8 +51,26 @@
 		</span>
 	</h2>
 
-	<div class="table-responsive">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card m-b-20">
+				<div class="card-block">
+					<h3 class="card-title">{{ _('World Map') }}</h3>
+					{{ config.SQLALCHEMY_DATABASE_URI }}
+					{{ request.url }}
+				</div>
+			</div>
 
+			<div class="card m-b-20">
+				<div class="card-block">
+					<h3 class="card-title">{{ _('Sales Analytics') }}</h3>
+
+
+				</div>
+			</div>
+
+		</div>
 	</div>
+
 </div>
 {% endblock %}

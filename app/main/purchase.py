@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app
+    current_app, make_response
 from flask_login import login_required, current_user
 from . import main
 from .. import db
@@ -443,3 +444,18 @@ def purchase_express_no(id):
                            purchase=purchase,
                            form=form,
                            post_url=url_for('.purchase_express_no', id=id))
+
+
+@main.route('/purchases/print_purchase_pdf')
+@login_required
+@user_has('admin_purchase')
+def print_purchase_pdf():
+    """输出pdf，并打印"""
+    rid = request.args.get('rid')
+    rids = rid.split(',')
+    purchase_list = Purchase.query.filter(Purchase.serial_no.in_(rids)).all()
+
+    html = render_template('pdf/purchase.html',
+                           purchase_list=purchase_list)
+    
+    #return render_pdf(HTML(string=html))
