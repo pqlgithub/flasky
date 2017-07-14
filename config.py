@@ -89,7 +89,7 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = False
+    DEBUG = True
 
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'

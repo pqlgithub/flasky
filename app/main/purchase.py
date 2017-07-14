@@ -3,14 +3,20 @@ from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
+from flask_babelex import gettext
+from io import BytesIO
+import xhtml2pdf.pisa as pisa
+import barcode
+from barcode.writer import ImageWriter
 from . import main
 from .. import db
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
-    TransactDetail, InWarehouse, StockHistory, ProductStock
+    TransactDetail, InWarehouse, StockHistory, ProductStock, Site
 from app.forms import PurchaseForm, PurchaseExpressForm
+from .filters import supress_none, timestamp2string, break_line
 
 
 def load_common_data():
@@ -446,6 +452,18 @@ def purchase_express_no(id):
                            post_url=url_for('.purchase_express_no', id=id))
 
 
+
+@main.route('/purchases/output_purchase')
+@login_required
+@user_has('admin_purchase')
+def output_purchase():
+    rid = request.args.get('rid')
+    rids = rid.split(',')
+    purchase_list = Purchase.query.filter(Purchase.serial_no.in_(rids)).all()
+    return render_template('pdf/purchase.html',
+                           purchase_list=purchase_list)
+
+
 @main.route('/purchases/print_purchase_pdf')
 @login_required
 @user_has('admin_purchase')
@@ -455,7 +473,59 @@ def print_purchase_pdf():
     rids = rid.split(',')
     purchase_list = Purchase.query.filter(Purchase.serial_no.in_(rids)).all()
 
-    html = render_template('pdf/purchase.html',
-                           purchase_list=purchase_list)
+    env = Environment(loader=PackageLoader(current_app.name, 'templates'))
+    env.filters['supress_none'] = supress_none
+    env.filters['timestamp2string'] = timestamp2string
+    env.filters['break_line'] = break_line
+    template = env.get_template('pdf/purchase.html')
 
-    #return render_pdf(HTML(string=html))
+    current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
+    title_attrs = {
+        'serial_no': gettext('Purchase Serial'),
+        'status': gettext('Status'),
+        'supplier' : gettext('Supplier'),
+        'supplier_info': gettext('Supplier Info'),
+        'warehouse_name' : gettext('Warehouse Name'),
+        'date' : gettext('Date'),
+        'contact_name' : gettext('Contact name'),
+        'address': gettext('Address'),
+        'phone': gettext('Phone'),
+        'email': gettext('E-mail'),
+        'remark': gettext('Remark'),
+        'sn': gettext('Serial Number'),
+        'product_info': gettext('Product Info'),
+        'price': gettext('Price'),
+        'quantity': gettext('Purchase Quantity'),
+        'in_quantity': gettext('Arrival Quantity'),
+        'subtotal': gettext('Subtotal'),
+        'express_no': gettext('Express No.'),
+        'freight': gettext('Freight'),
+        'other_charge': gettext('Other Charge'),
+        'total_amount': gettext('Total Amount')
+    }
+
+    code_bars = {}
+    options = dict(text_distance=2,font_size=16)
+    root_path = current_app.root_path + '/static/code_bars/'
+    for sn in rids:
+        ean = barcode.get('code39', sn, writer=ImageWriter())
+        filename = 'serial_no_' + sn
+        code_bars[sn] = ean.save(root_path + filename, options)
+    
+    html = template.render(
+        current_site=current_site,
+        title_attrs=title_attrs,
+        code_bars=code_bars,
+        font_path=current_app.root_path + '/static/fonts/simsun.ttf',
+        purchase_list=purchase_list,
+    ).encode('utf-8')
+
+    result = BytesIO()
+    pdf = pisa.CreatePDF(BytesIO(html), result)
+    resp = make_response(result.getvalue())
+    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format('test.pdf'))
+    resp.headers['Content-Type'] = 'application/pdf'
+
+    return resp
+

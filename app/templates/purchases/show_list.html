@@ -261,7 +261,7 @@
 						</td>
 						<td class="text-center">
 							<a href="{{ url_for('main.purchase_express_no', id=purchase.id) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-								{% if purchase.express_no %} {{ purchase.express_no }} {% else %} {{ _('Add Express') }} {% endif %}
+								{% if purchase.express_no %} {{ purchase.express_no|supress_none }} {% else %} {{ _('Add Express') }} {% endif %}
 							</a>
 						</td>
 						<td class="text-center">

@@ -95,9 +95,10 @@ def create_app(config_name):
     #app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 
 
-    from .main.filters import timestamp2string, short_filename
+    from .main.filters import timestamp2string, short_filename, supress_none
     app.add_template_filter(timestamp2string, 'timestamp2string')
     app.add_template_filter(short_filename, 'short_filename')
+    app.add_template_filter(supress_none, 'supress_none')
 
     # Jinja2 导入我们的类作为所有模板的一个全局变量
     app.jinja_env.globals['momentjs'] = Momentjs

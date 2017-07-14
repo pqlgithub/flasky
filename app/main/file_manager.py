@@ -116,7 +116,8 @@ def flupload():
         file_ext = splitext(f.filename)[1].lower()
         name_prefix = 'mis' + str(time.time())
         name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
-        filename = '%s/%s/%s%s' % (root_folder, sub_folder, name_prefix, file_ext)
+        #filename = '%s/%s/%s%s' % (root_folder, sub_folder, name_prefix, file_ext)
+        filename = '%s%s' % (name_prefix, file_ext)
 
         current_app.logger.debug('File length: %s,%s' % (f.content_length, f.mimetype))
 

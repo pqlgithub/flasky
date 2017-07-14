@@ -6,6 +6,7 @@
       <w>addon</w>
       <w>applyable</w>
       <w>asctime</w>
+      <w>attrs</w>
       <w>autoescape</w>
       <w>croped</w>
       <w>cssmin</w>
@@ -49,6 +50,7 @@
       <w>skus</w>
       <w>sqlite</w>
       <w>supervisord</w>
+      <w>supress</w>
       <w>tabpanel</w>
       <w>todc</w>
       <w>urknow</w>
