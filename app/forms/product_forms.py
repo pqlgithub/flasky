@@ -9,7 +9,7 @@ from app.models import Product, Supplier, BUSINESS_MODE, DANGEROUS_GOODS_TYPES
 
 class SupplierForm(Form):
     type = SelectField('Business Mode', choices=BUSINESS_MODE, coerce=str)
-    name = StringField('Short Name', validators=[DataRequired()])
+    short_name = StringField('Short Name', validators=[DataRequired()])
     full_name = StringField('Full Name', validators=[DataRequired()])
     start_date = StringField('Start date')
     end_date = StringField('End date')

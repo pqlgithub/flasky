@@ -28,6 +28,10 @@ class OrderStatus:
     PENDING_SHIPMENT = 10
     # 已发货
     SHIPPED = 15
+    # 已签收
+    SIGNED = 17
+    # 已退款
+    REFUND = 18
     # 订单完成
     FINISHED = 20
     # 待评分
@@ -43,6 +47,8 @@ ORDER_STATUS = [
     (OrderStatus.PENDING_CHECK, gettext('Pending Check'), 'danger'),
     (OrderStatus.PENDING_SHIPMENT, gettext('Pending Shipment'), 'primary'),
     (OrderStatus.SHIPPED, gettext('Shipped'), 'warning'),
+    (OrderStatus.SIGNED, gettext('Signed'), 'success'),
+    (OrderStatus.REFUND, gettext('Refund'), 'warning'),
     (OrderStatus.FINISHED, gettext('Pending Finished'), 'success'),
     (OrderStatus.PENDING_RATING, gettext('Pending Rating'), 'success'),
     (OrderStatus.RATED, gettext('Rated'), 'success')
@@ -114,6 +120,10 @@ class Order(db.Model):
     payed_at = db.Column(db.Integer, default=0)
     # 发货时间
     express_at = db.Column(db.Integer, default=0)
+    # 收货时间
+    received_at = db.Column(db.Integer, default=0)
+    # 完成时间
+    finished_at = db.Column(db.Integer, default=0)
     # 关闭或取消时间
     closed_at = db.Column(db.Integer, default=0)
 
@@ -178,6 +188,7 @@ class Order(db.Model):
             if Order.query.filter_by(serial_no=new_serial_no).first() == None:
                 break
         return new_serial_no
+
 
 
     def __repr__(self):

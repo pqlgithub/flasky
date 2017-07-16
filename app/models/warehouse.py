@@ -105,6 +105,12 @@ class Warehouse(db.Model):
     def __repr__(self):
         return '<Warehouse %r>' % self.name
 
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        return {
+            c.name: getattr(self, c.name, None) for c in self.__table__.columns
+        }
+
 
 class WarehouseShelve(db.Model):
     """仓库 / 货架"""

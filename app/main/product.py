@@ -429,7 +429,7 @@ def create_supplier():
         supplier = Supplier(
             master_uid=current_user.id,
             type=form.type.data,
-            name=form.name.data,
+            short_name=form.short_name.data,
             full_name=form.full_name.data,
             start_date=form.start_date.data,
             end_date=form.end_date.data,
@@ -466,7 +466,7 @@ def edit_supplier(id):
 
     mode = 'edit'
     form.type.data = supplier.type
-    form.name.data = supplier.name
+    form.short_name.data = supplier.short_name
     form.full_name.data = supplier.full_name
     form.start_date.data = supplier.start_date
     form.end_date.data = supplier.end_date

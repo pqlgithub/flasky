@@ -47,6 +47,9 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
 
+    # 系统默认管理员
+    is_admin = db.Column(db.Boolean, default=False)
+
     # 真实资料信息
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
@@ -124,7 +127,7 @@ class User(UserMixin, db.Model):
     def mark_as_setting(self):
         """设置已配置站点信息"""
         self.is_setting = True
-
+    
 
     def confirm(self, token):
         """检验令牌，如果检验通过，则把新添加的confirmed 属性设为True."""

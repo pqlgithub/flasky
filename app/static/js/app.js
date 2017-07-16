@@ -37,6 +37,34 @@ var checked_items_status = function () {
 	}
 };
 
+function hook_dropdown_menu (callback) {
+	$('.dropdown-select-menu .option').on('click', function (cb) {
+		var $this=$(this), label=$(this).text(), v=$(this).data('id'),
+			target=$(this).parent().parent().data('target');
+
+		$(this)
+			.parent()
+			.siblings('.active').removeClass('active')
+			.end()
+			.addClass('active');
+
+		$('input[name='+ target +']').val(v);
+
+		$(this).parent().parent().prev().find('b').text(label);
+
+		callback();
+	});
+}
+
+function hook_filter_search (callback) {
+	$('input.input-search').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			callback();
+		}
+	});
+}
+
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip({
 		container: 'body',

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, send_file
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from io import BytesIO
 import xhtml2pdf.pisa as pisa
 import barcode
 from barcode.writer import ImageWriter
+from openpyxl.workbook import Workbook
 from . import main
 from .. import db
-from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master
-from ..constant import PURCHASE_STATUS, PURCHASE_PAYED
+from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp
+from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
     TransactDetail, InWarehouse, StockHistory, ProductStock, Site
@@ -29,12 +30,18 @@ def load_common_data():
     unpaid_count = Purchase.query.filter_by(master_uid=Master.master_uid(), payed=2).count()
     applyable_count = Purchase.query.filter_by(master_uid=Master.master_uid(), payed=1).count()
 
+    # 库房列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+
     return {
         'pending_review_count': pending_review_count,
         'pending_arrival_count': pending_arrival_count,
         'pending_storage_count': pending_storage_count,
         'applyable_count': applyable_count,
         'unpaid_count': unpaid_count,
+        'purchase_status': PURCHASE_STATUS,
+        'purchase_payed': PURCHASE_PAYED,
+        'warehouse_list': warehouse_list,
         'top_menu': 'purchases'
     }
 
@@ -55,8 +62,35 @@ def show_purchases(page=1):
     return render_template('purchases/show_list.html',
                             paginated_purchases=paginated_purchases,
                             sub_menu='purchases',
-                            purchase_status=PURCHASE_STATUS,
-                            purchase_payed=PURCHASE_PAYED,
+                            status=status,
+                            **load_common_data())
+
+
+@main.route('/purchases')
+@main.route('/purchases/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_purchase')
+def search_purchases(page=1):
+    per_page = request.args.get('per_page', 10, type=int)
+    status = request.args.get('s', 0, type=int)
+    wh_id = request.args.get('wh_id', type=int)
+    date = request.args.get('d', 0, type=int)
+    s_t = request.values.get('s_t', 'ad')
+    q_k = request.values.get('q_k')
+
+    builder = Purchase.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+    if status:
+        builder = builder.filter_by(status=status)
+    if date:
+        pass # todo
+
+    paginated_purchases = builder.order_by('created_at desc').paginate(page, per_page)
+
+    return render_template('purchases/purchase_table.html',
+                            paginated_purchases=paginated_purchases,
+                            sub_menu='purchases',
                             status=status,
                             **load_common_data())
 
@@ -76,8 +110,6 @@ def payments(page=1):
     return render_template('purchases/pay_list.html',
                            paginated_purchases=paginated_purchases,
                            sub_menu='purchases',
-                           purchase_status=PURCHASE_STATUS,
-                           purchase_payed=PURCHASE_PAYED,
                            f=status,
                            **load_common_data())
 
@@ -139,16 +171,13 @@ def create_purchase():
 
     mode = 'create'
     suppliers = Supplier.query.order_by('created_at desc').all()
-    warehouses = Warehouse.query.all()
+
     return render_template('purchases/create_and_edit.html',
                            form=form,
                            mode=mode,
                            sub_menu='purchases',
                            purchase=None,
                            suppliers=suppliers,
-                           warehouses=warehouses,
-                           purchase_status=PURCHASE_STATUS,
-                           purchase_payed=PURCHASE_PAYED,
                            **load_common_data())
 
 
@@ -209,7 +238,6 @@ def edit_purchase(id):
 
     mode = 'edit'
     suppliers = Supplier.query.order_by('created_at desc').all()
-    warehouses = Warehouse.query.all()
 
     form.warehouse_id.data = purchase.warehouse_id
     form.supplier_id.data = purchase.supplier_id
@@ -224,9 +252,6 @@ def edit_purchase(id):
                            sub_menu='purchases',
                            purchase=purchase,
                            suppliers=suppliers,
-                           warehouses=warehouses,
-                           purchase_status=PURCHASE_STATUS,
-                           purchase_payed=PURCHASE_PAYED,
                            **load_common_data())
 
 
@@ -380,6 +405,7 @@ def ajax_arrival(id):
         if purchase.validate_finished(quantity_offset):
             # 入库完成
             purchase.update_status(15)
+            purchase.arrival_at = timestamp()
         purchase.in_quantity += quantity_offset
 
         db.session.commit()
@@ -512,7 +538,7 @@ def print_purchase_pdf():
         ean = barcode.get('code39', sn, writer=ImageWriter())
         filename = 'serial_no_' + sn
         code_bars[sn] = ean.save(root_path + filename, options)
-    
+
     html = template.render(
         current_site=current_site,
         title_attrs=title_attrs,
@@ -524,8 +550,122 @@ def print_purchase_pdf():
     result = BytesIO()
     pdf = pisa.CreatePDF(BytesIO(html), result)
     resp = make_response(result.getvalue())
-    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format('test.pdf'))
+    export_file = 'Purchase-{}'.format(int(timestamp()))
+    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
     resp.headers['Content-Type'] = 'application/pdf'
 
     return resp
 
+
+@main.route('/purchases/export_purchase', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_purchase')
+def export_purchase():
+    per_page = request.args.get('per_page', 30, type=int)
+    if request.method == 'POST':
+        wh_id = request.form.get('wh_id', 0, type=int)
+        status = request.form.getlist('status[]')
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+
+        builder = Purchase.query.filter_by(master_uid=Master.master_uid())
+        if wh_id:
+            builder = builder.filter_by(warehouse_id=wh_id)
+        if status and len(status):
+            status = [int(s) for s in status]
+            builder = builder.filter(Purchase.status.in_(status))
+
+        purchase_list = builder.order_by('created_at desc').all()
+
+        dest_filename = r'mic_purchase_list.xlsx'
+        export_path = current_app.root_path + '/static/'
+
+        # 新建文件
+        wb = Workbook()
+
+        # 第一个sheet
+        ws = wb.active
+        ws.title = 'Purchase List'
+
+        current_app.logger.debug('Purchase count: %d' % len(purchase_list))
+
+        purchase_columns = [key for key in PURCHASE_EXCEL_FIELDS.keys()]
+        current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
+        # 写入数据
+        for row in xrange(1, len(purchase_list) + 1):
+            if row > 1:
+                purchase = purchase_list[row - 1]
+                warehouse = purchase.warehouse
+                supplier = purchase.supplier
+
+            current_app.logger.debug('Current row: %d' % row)
+            for col in xrange(1, len(purchase_columns) + 1):
+                field = purchase_columns[col - 1]
+                current_app.logger.debug('Current col: %s' % field)
+                if row == 1: # 表头
+                    ws.cell(row=row, column=col, value=_rebuild_header_value(field, current_site))
+                else:
+                    if field == 'warehouse':
+                        cell_value = warehouse.to_json().get('name')
+                    elif field == 'supplier':
+                        cell_value = supplier.to_json().get('name')
+                    elif field in ['contact_name', 'phone']:
+                        cell_value = supplier.to_json().get(field)
+                    elif field == ['created_at', 'arrival_at']:
+                        cell_value = timestamp2string(purchase[field]) if purchase[field] > 0 else ''
+                    elif field == 'product_name':
+                        cell_value = purchase.product_name
+                    elif field == 'product_sku':
+                        cell_value = purchase.product_sku
+                    elif field == 'status':
+                        cell_value = purchase.status_label[1]
+                    else:
+                        cell_value = purchase.to_json().get(field)
+
+                    ws.cell(row=row, column=col, value=cell_value)
+
+        export_file = '{}{}'.format(export_path, dest_filename)
+        wb.save(filename=export_file)
+
+        resp = make_response(send_file(export_file))
+        resp.headers['Content-Disposition'] = 'attachment; filename={};'.format(dest_filename)
+
+        return resp
+
+    # 库房列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+
+    return render_template('purchases/_modal_export.html',
+                           warehouse_list=warehouse_list,
+                           purchase_status=PURCHASE_STATUS)
+
+
+def _rebuild_header_value(key, current_site):
+    """重建Excel表头标题"""
+    if key in ['freight','extra_charge','total_amount',]:
+        return '{}({})'.format(PURCHASE_EXCEL_FIELDS[key], current_site.currency)
+    return PURCHASE_EXCEL_FIELDS[key]
+
+
+@main.route('/purchases/import_purchase', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_purchase')
+def import_purchase():
+    # 库房列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+    return render_template('purchases/_modal_import.html',
+                           warehouse_list=warehouse_list)
+
+
+@main.route('/purchases/download_template')
+@login_required
+def download_purchase_tpl():
+    dest_filename = r'mic_template_purchasing.xlsx'
+    export_path = current_app.root_path + '/static/tpl/'
+    export_file = '{}{}'.format(export_path, dest_filename)
+
+    resp = make_response(send_file(export_file))
+    resp.headers['Content-Disposition'] = 'attachment; filename={};'.format(dest_filename)
+
+    return resp

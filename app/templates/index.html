@@ -63,12 +63,12 @@
 		<div class="col-md-3">
 			<div class="card">
 				<div class="card-block">
-					<h2 class="card-title text-danger">
-						{{ total_revenue[0]|default(0)|round(2) }}
+					<h3 class="card-title text-danger">
+						{{ total_revenue[0]|default(0)|round(2) if total_revenue[0] }}
 						<span class="rate text-default">
 							{{ current_site.currency }}
 						</span>
-					</h2>
+					</h3>
 					<h5 class="m-b-10">Total Revenue</h5>
 				</div>
 			</div>
@@ -76,12 +76,12 @@
 		<div class="col-md-3">
 			<div class="card">
 				<div class="card-block">
-					<h2 class="card-title text-danger">
+					<h3 class="card-title text-danger">
 						{{ total_order_count }}
 						<span class="rate hidden text-danger">
 							<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
 						</span>
-					</h2>
+					</h3>
 					<h5 class="m-b-10">Total Orders</h5>
 				</div>
 			</div>
@@ -89,12 +89,12 @@
 		<div class="col-md-3">
 			<div class="card">
 				<div class="card-block">
-					<h2 class="card-title text-danger">
+					<h3 class="card-title text-danger">
 						{{ total_product_count }}
 						<span class="rate hidden text-success">
 							<i class="glyphicon glyphicon-arrow-down"></i> 22.5%
 						</span>
-					</h2>
+					</h3>
 					<h5 class="m-b-10">Total Products</h5>
 				</div>
 			</div>
@@ -102,12 +102,12 @@
 		<div class="col-md-3">
 			<div class="card">
 				<div class="card-block">
-					<h2 class="card-title text-danger">
+					<h3 class="card-title text-danger">
 						{{ total_stock_quantity[0] }}
 						<span class="rate hidden text-danger">
 							<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
 						</span>
-					</h2>
+					</h3>
 					<h5 class="m-b-10">Total Stocks</h5>
 				</div>
 			</div>

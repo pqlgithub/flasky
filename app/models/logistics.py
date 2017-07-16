@@ -20,6 +20,8 @@ class Express(db.Model):
     contact_mobile = db.Column(db.String(11))
     contact_phone = db.Column(db.String(20))
     description = db.Column(db.String(255))
+    # 默认物流公司
+    is_default = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)

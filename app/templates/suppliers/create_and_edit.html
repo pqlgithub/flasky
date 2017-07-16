@@ -38,10 +38,10 @@
 		</div>
 
 		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-			{{ form.name.label(class="col-sm-2 control-label") }}
+			{{ form.short_name.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-5">
-				{{ form.name(id="name", class="form-control") }}
-				{% for error in form.errors.name %}
+				{{ form.short_name(id="short_name", class="form-control") }}
+				{% for error in form.errors.short_name %}
 				<span class="help-block">{{ error }}</span>
 				{% endfor %}
 			</div>

@@ -5,10 +5,9 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db
-from app.models import Order, Product, ProductStock
+from app.models import Order, Product, ProductStock, Site
 from ..utils import Master
 from ..decorators import user_has, user_is
-
 
 
 @main.route('/')

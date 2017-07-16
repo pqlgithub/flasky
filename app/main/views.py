@@ -66,7 +66,7 @@ def before_request():
 
         # 验证是否设置初始信息
         if not current_user.is_setting:
-            if request.path[:8] != '/static/' and request.endpoint[5:17] != 'setting_site':
+            if request.path[:8] != '/static/' and request.endpoint[5:] != 'logout' and request.endpoint[5:17] != 'setting_site':
                 return redirect(url_for('main.setting_site'))
 
 

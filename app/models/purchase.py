@@ -37,6 +37,8 @@ class Purchase(db.Model):
 
     # 预计到货时间
     arrival_date = db.Column(db.Date)
+    # 实际到货时间
+    arrival_at = db.Column(db.Integer, default=0)
     description = db.Column(db.String(255))
     # 状态
     status = db.Column(db.Integer, default=1)
@@ -64,6 +66,25 @@ class Purchase(db.Model):
         if not sku:
             return DEFAULT_IMAGES['cover']
         return sku.cover
+
+    @property
+    def product_name(self):
+        """返回采购产品的名称"""
+        product_name = []
+        for item in self.products:
+            sku = item.sku
+            if sku:
+                product_name.append(sku.product.name)
+        return ';'.join(product_name)
+
+    @property
+    def product_sku(self):
+        """返回采购SKU"""
+        product_sku = []
+        for item in self.products:
+            product_sku.append(item.sku_serial_no)
+        return ';'.join(product_sku)
+
 
     @property
     def payable_amount(self):
@@ -112,6 +133,11 @@ class Purchase(db.Model):
 
     def __repr__(self):
         return '<Purchase %r>' % self.serial_no
+
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
 
 
 class PurchaseProduct(db.Model):

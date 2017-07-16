@@ -10,7 +10,7 @@ from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, Stoc
     Purchase, PurchaseProduct
 from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
-    gen_serial_no
+    gen_serial_no, timestamp
 from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE
 from ..decorators import user_has, user_is
 
@@ -299,6 +299,7 @@ def create_in_warehouse():
             current_purchase.in_quantity += total_quantity
             # 完成入库
             current_purchase.update_status(15)
+            current_purchase.arrival_at = timestamp()
 
         # 添加入库单
         in_serial_no = gen_serial_no('RK')

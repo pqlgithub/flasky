@@ -1,0 +1,84 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Import Orders') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="export-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label">{{ _('Warehouse') }}</label>
+					<div class="col-sm-6">
+						<select name="wh_id" class="select2">
+							<option value="0">{{ _('Select Warehouse') }}</option>
+							{% for wh in warehouse_list %}
+							<option value="{{ wh.id }}">{{ wh.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label">{{ _('Upload File') }}</label>
+					<div class="col-sm-9">
+
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<span class="pull-left">
+				<a href="{{ url_for('main.download_purchase_tpl') }}" target="_blank" class="btn btn-link">
+					{{ _('Download Template') }}
+				</a>
+			</span>
+
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="export-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+
+	$('.select2').select2({
+		'width': '100%'
+	});
+
+	$('#export-submit-btn').click(function (e) {
+		data = $('#export-form').serialize();
+
+		$.ajax({
+			url: "{{ post_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#export-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#export-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#export-form')
+						.parents('.modal').modal('hide');
+
+					// 自动刷新
+					window.location.reload();
+				} else {
+					$('#export-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

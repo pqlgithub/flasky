@@ -499,6 +499,9 @@ div.required .control-label:not(span)::before, td.required::before {
 	margin: 0 auto;
 	text-align: center;
 }
+.input-short {
+	width: 150px;
+}
 .table .product-info {
     display: block;
     margin-left: 60px;

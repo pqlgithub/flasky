@@ -18,6 +18,7 @@ class Directory(db.Model):
     parent_id = db.Column(db.Integer, default=0)
     top = db.Column(db.SmallInteger, default=0)
     type = db.Column(db.SmallInteger, default=1)
+    is_default = db.Column(db.Boolean, default=False)
 
     # directory and asset, 1 to N
     assets = db.relationship(
@@ -45,6 +46,8 @@ class Asset(db.Model):
     height = db.Column(db.Integer, default=0)
     mime = db.Column(db.String(64), nullable=True)
     type = db.Column(db.SmallInteger, default=1)
+
+    is_default = db.Column(db.Boolean, default=False)
 
     state = db.Column(db.SmallInteger, default=1)
     created_at = db.Column(db.Integer, default=timestamp)

@@ -63,6 +63,45 @@ SUPPORT_PLATFORM = (
     },
 )
 
+# 默认物流
+DEFAULT_EXPRESS = {
+    'name': 'Default Express',
+    'contact_name': 'Michose',
+    'contact_mobile': '13866666666',
+    'contact_phone': '13866666666',
+    'description': 'This is default express!',
+    'is_default': True
+}
+
+# 默认供应商
+DEFAULT_SUPPLIER = {
+    'short_name': 'Default Supplier',
+    'full_name': 'Default Supplier Full Name',
+    'start_date': '2017-01-01',
+    'end_date': '2027-01-01',
+    'contact_name': 'Michose',
+    'address': "Michose's address",
+    'phone': '13866666666',
+    'remark': 'This is default supplier!',
+    'is_default': True,
+}
+
+# 默认附件
+DEFAULT_ASSET = {
+    'filepath': '/static/img/mic_logo180x180.jpg',
+    'filename': 'mic_logo180x180.jpg',
+    'width': 180,
+    'height': 180,
+    'mime': 'image/jpeg',
+    'is_default': True
+}
+
+# 默认目录
+DEFAULT_DIRECTORY = {
+    'name': 'Default Directory',
+    'is_default': True
+}
+
 # 采购到货状态
 PURCHASE_STATUS = (
     (1, gettext('Pending Review'), 'warning'),
@@ -144,3 +183,84 @@ DEFAULT_IMAGES = {
         'view_url': '/static/img/no_image-100x100.png'
     }
 }
+
+# 导出采购单头格式 / 采购单对应的字段
+PURCHASE_EXCEL_FIELDS = {
+    'serial_no': gettext('Purchase Serial'),
+    'product_name': gettext('Product Name'),
+    'product_sku': gettext('Product SKU'),
+    'quantity_sum': gettext('Purchase Quantity'),
+    'in_quantity': gettext('Arrival Quantity'),
+    'freight': gettext('Freight'),
+    'extra_charge': gettext('Other Charge'),
+    'total_amount': gettext('Total Amount'),
+    'warehouse':gettext('Warehouse'),
+    'supplier': gettext('Supplier'),
+    'contact_name': gettext('Contact Name'),
+    'phone': gettext('Contact Phone'),
+    'express_no': gettext('Express No'),
+    'created_at': gettext('Add Date'),
+    'arrival_at': gettext('Arrival Date'),
+    'status': gettext('Arrival Status'),
+    'remark': gettext('Remark')
+}
+
+# 导入/导出订单格式对应
+ORDER_EXCEL_FIELDS = {
+    'store_name': '店铺',
+    'store_id': '店铺ID',
+    'order_serial_no': '订单号',
+    'order_status': '订单状态',
+    'order_product_list': '订单商品清单',
+    'order_product_id':  'Item ID',
+    'order_product_name': '商品名称',
+    's_model': '商品规格',
+    'product_status': '商品状态',
+    'outside_product_serial': 'hmall商品编号',
+    'shop_product_id': '商城产品ID',
+    'shop_goods_id': '商城商品ID',
+    'cost_price': '成本单价',
+    'sale_price': '商品销售单价',
+    'freight' : '运费',
+    'quantity' : '商品数量',
+    'deal_quantity' : '实际成交数量',
+    'total_amount' : '商品销售总额',
+    'use_discount' : '使用优惠券',
+    'platform_discount_amount' : '平台优惠金额',
+    'store_discount_amount' : '店铺优惠金额',
+    'discount_total_amount' : '优惠总金额',
+    'point' : '积分',
+    'voice_amount' : '开票金额',
+    'category_level1_id' : '一类ID',
+    'category_level2_id' : '二类ID',
+    'category_level3_id' : '三类ID',
+    'category_level1_name' : '一类',
+    'category_level2_name' : '二类',
+    'category_level3_name' : '三类',
+    'pay_away' : '支付类型',
+    'ordered_at' : '下单时间',
+    'payed_at' : '支付时间',
+    'express_at' : '发货时间',
+    'received_at' : '收货时间',
+    'finished_at' : '订单完成时间',
+    'buyer_phone' : '购买人手机',
+    'buyer_name' : '收件人',
+    'buyer_mobile' : '收件人手机',
+    'buyer_address' : '收件人地址',
+    'express_id' : '物流服务商',
+    'express_no' : '快递单号',
+    'buyer_remark' : '买家留言',
+    'store_goods_id' : '店铺商品ID',
+    'voice_info' : '发票信息',
+    'store_product_id' : '店铺产品ID'
+}
+
+# 华住订单状态
+HUAZHU_ORDER_STATUS = [
+    (-1, '订单已取消'),
+    (15, '已发货'),
+    (5, '已付款请耐心等待'),
+    (17, '已签收'),
+    (18, '已退款'),
+    (20, '已完成'),
+]

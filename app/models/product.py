@@ -139,6 +139,9 @@ class ProductSku(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp)
 
+    # 第三方平台编号
+    outside_serial_no = db.Column(db.String(20), index=True, nullable=True)
+
     # sku and stock => 1 to N
     stocks = db.relationship(
         'ProductStock', backref='product_sku', lazy='dynamic'
@@ -290,7 +293,7 @@ class Supplier(db.Model):
     # master user id
     master_uid = db.Column(db.Integer, index=True, default=0)
     # 简称
-    name = db.Column(db.String(10), unique=True, nullable=False)
+    short_name = db.Column(db.String(100), unique=True, nullable=False)
     # 全称
     full_name = db.Column(db.String(50), unique=True, nullable=False)
     # 合作方式
@@ -307,6 +310,8 @@ class Supplier(db.Model):
     phone = db.Column(db.String(20))
     # 备注
     remark = db.Column(db.String(255))
+    # 默认供应商
+    is_default = db.Column(db.Boolean, default=False)
 
     time_limit = db.Column(db.String(50), nullable=True)
     business_scope = db.Column(db.Text(), nullable=True)
@@ -339,6 +344,12 @@ class Supplier(db.Model):
     def __repr__(self):
         return '<Supplier %r>' % self.full_name
 
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        return {
+            c.name: getattr(self, c.name, None) for c in self.__table__.columns
+        }
 
 
 class Brand(db.Model):

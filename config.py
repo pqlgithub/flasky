@@ -33,7 +33,7 @@ class Config:
     DATABASE_QUERY_TIMEOUT = 0.5
 
     # 管理员
-    ADMINS = ('admin@qq.com')
+    ADMINS = ('purpen.w@gmail.com',)
 
     # 邮件服务
     DEFAULT_MAIL_SENDER = 'support@qq.com'
