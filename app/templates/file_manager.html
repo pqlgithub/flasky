@@ -70,6 +70,12 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
+	$('[data-toggle="tooltip"]').tooltip({
+		container: 'body',
+		html: true,
+		trigger: 'hover'
+	});
+
 	var hock_thumbnail = function () {
 		$('a.thumbnail').on('click', function(e) {
 			e.preventDefault();
@@ -186,8 +192,13 @@
                 {title : 'Image files', extensions : 'jpg,jpeg,gif,png'}
             ],
 			prevent_duplicates : true //不允许选取重复文件
-
         },
+		resize: {
+        	width: 480,
+		  	height: 480,
+		  	crop: true,
+		  	quality: 90
+		},
 
         flash_swf_url : "{{ url_for('static', filename='js/Moxie.swf', _external=True) }}",
 

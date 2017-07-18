@@ -89,7 +89,7 @@
 					{{ form.category_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<select name="category_id" id="category_id" class="form-control select2">
-							<option value="0">Select category...</option>
+							<option value="0">{{ _('Select category...') }}</option>
 							{% for cate in paginated_categories %}
 							<option value="{{ cate.id }}" {% if cate.id == product.id %}selected="selected"{% endif %}>{{ cate.name|safe }}</option>
 							{% endfor %}
@@ -101,7 +101,7 @@
 					{{ form.supplier_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<select name="supplier_id" id="supplier_id" class="form-control select2">
-							<option value="0">Select supplier...</option>
+							<option value="0">{{ _('Select supplier...') }}</option>
 							{% for supplier in paginated_suppliers.items %}
 							<option value="{{ supplier.id }}" {% if supplier.id == product.supplier_id %}selected="selected"{% endif %}>{{ supplier.short_name|safe }}</option>
 							{% endfor %}
@@ -218,7 +218,7 @@
 						<div class="input-group">
 							{{ form.from_url(id="from_url", class="form-control", placeholder="http://") }}
 							<span class="input-group-addon">
-								<a href="javascript:void(0);" target="_blank">View</a>
+								<a href="javascript:void(0);" target="_blank">{{ _('View') }}</a>
 							</span>
 						</div>
 					</div>

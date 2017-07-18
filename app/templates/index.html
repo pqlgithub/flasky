@@ -103,7 +103,7 @@
 			<div class="card">
 				<div class="card-block">
 					<h3 class="card-title text-danger">
-						{{ total_stock_quantity[0] }}
+						{% if total_stock_quantity[0] == None %}0{% else %}{{ total_stock_quantity[0] }}{% endif %}
 						<span class="rate hidden text-danger">
 							<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
 						</span>
@@ -136,7 +136,7 @@
 								<span class="text-danger">{{ order.serial_no }}</span>
 							</td>
 							<td class="text-center">
-								{{ order.buyer_name }} {% if order.buyer_country %}{{ order.buyer_country }}{% endif %}
+								{{ order.buyer_name }} {% if order.buyer_country %}「{{ order.buyer_country }}」{% endif %}
 							</td>
 							<td class="text-right">
 								{{ order.created_at|timestamp2string() }}
@@ -166,7 +166,7 @@
 				<div class="card-block">
 					<h4 class="card-title">{{ new_products.name }}</h4>
 					<p class="card-text">{{ new_products.supplier.name }} - {{ new_products.cost_price }} {{ current_site.currency }}</p>
-					<a href="#" class="card-link">View</a>
+					<a href="#" class="card-link">{{ _('View') }}</a>
 				</div>
 			</div>
 			{% endif %}

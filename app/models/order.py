@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask_babelex import gettext
+from flask_babelex import lazy_gettext
 from app import db
 from .product import ProductSku
 from ..utils import timestamp, gen_serial_no
@@ -42,16 +42,16 @@ class OrderStatus:
 
 # 订单状态
 ORDER_STATUS = [
-    (OrderStatus.CANCELED, gettext('Canceled'), 'default'),
-    (OrderStatus.PENDING_PAYMENT, gettext('Pending Payment'), 'danger'),
-    (OrderStatus.PENDING_CHECK, gettext('Pending Check'), 'danger'),
-    (OrderStatus.PENDING_SHIPMENT, gettext('Pending Shipment'), 'primary'),
-    (OrderStatus.SHIPPED, gettext('Shipped'), 'warning'),
-    (OrderStatus.SIGNED, gettext('Signed'), 'success'),
-    (OrderStatus.REFUND, gettext('Refund'), 'warning'),
-    (OrderStatus.FINISHED, gettext('Pending Finished'), 'success'),
-    (OrderStatus.PENDING_RATING, gettext('Pending Rating'), 'success'),
-    (OrderStatus.RATED, gettext('Rated'), 'success')
+    (OrderStatus.CANCELED, lazy_gettext('Canceled'), 'info'),
+    (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment'), 'danger'),
+    (OrderStatus.PENDING_CHECK, lazy_gettext('Pending Check'), 'danger'),
+    (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Pending Shipment'), 'primary'),
+    (OrderStatus.SHIPPED, lazy_gettext('Shipped'), 'warning'),
+    (OrderStatus.SIGNED, lazy_gettext('Signed'), 'success'),
+    (OrderStatus.REFUND, lazy_gettext('Refund'), 'warning'),
+    (OrderStatus.FINISHED, lazy_gettext('Pending Finished'), 'success'),
+    (OrderStatus.PENDING_RATING, lazy_gettext('Pending Rating'), 'success'),
+    (OrderStatus.RATED, lazy_gettext('Rated'), 'success')
 ]
 
 class Order(db.Model):

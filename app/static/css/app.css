@@ -478,7 +478,7 @@ div.required .control-label:not(span)::before, td.required::before {
     font-weight: bold;
 }
 .radio-group {
-	padding-top: 10px;
+	padding-top: 6px;
 }
 .list-inline.radio-group {
 	margin-bottom: 0;

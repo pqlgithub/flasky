@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import current_app
-
+from flask_babelex import lazy_gettext
 from app import db
 from ..utils import timestamp
 from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES
@@ -18,8 +18,8 @@ __all__ = [
 
 
 WAREHOUSE_TYPES = [
-    (1, 'Private'),
-    (2, 'Leased')
+    (1, lazy_gettext('Private Build')),
+    (2, lazy_gettext('Leased'))
 ]
 
 class Warehouse(db.Model):

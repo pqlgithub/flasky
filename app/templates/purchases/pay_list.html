@@ -52,21 +52,27 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="Search products sku or name...">
+			<input type="text" class="form-control" size="60" placeholder="{{ _('Search purchase serial_no or name...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Warehouse: All
+				<input type="hidden" name="wh_id" value="{{ wh_id }}">
+				<button class="btn btn-default dropdown-toggle" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-warehouse">
+				<ul class="dropdown-menu dropdown-select-menu" data-target="wh_id" aria-labelledby="filter-warehouse">
 					<li class="dropdown-header">{{ _('Search Warehouse')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('WH Name') }}</a>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
+					{% for w in warehouse_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}</a>
+					</li>
+					{% endfor %}
 				</ul>
 			</div>
 		</div>
@@ -74,7 +80,7 @@
 		<div class="form-group m-l-5">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Date: All
+					{{ _('Date') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-date">
@@ -106,10 +112,9 @@
 		<div class="form-group pull-right">
 			<div class="dropdown">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: Add Date
-					<span class="caret"></span>
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>

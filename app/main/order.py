@@ -32,10 +32,14 @@ def load_common_data():
     pending_review_count = Order.query.filter_by(master_uid=Master.master_uid(),status=OrderStatus.PENDING_CHECK).count()
     pending_ship_count = Order.query.filter_by(master_uid=Master.master_uid(),status=OrderStatus.PENDING_SHIPMENT).count()
 
+    # 库房列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+
     return {
         'pending_pay_count': pending_pay_count,
         'pending_review_count': pending_review_count,
         'pending_ship_count': pending_ship_count,
+        'warehouse_list': warehouse_list,
         'top_menu': 'orders'
     }
 

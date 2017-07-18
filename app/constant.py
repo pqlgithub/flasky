@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask_babelex import gettext
+from flask_babelex import gettext, lazy_gettext
 
 
 # 开通的国家
@@ -45,23 +45,23 @@ DEPARTMENT = (
 SUPPORT_PLATFORM = (
     {
         'id'  : 1,
-        'name': 'Michose'
+        'name': lazy_gettext('Michose')
     },
     {
         'id'  : 2,
-        'name': gettext('JD')
-    },
-    {
-        'id'  : 3,
-        'name': 'Lazada'
+        'name': lazy_gettext('JD')
     },
     {
         'id'  : 5,
-        'name': 'Amazon'
+        'name': lazy_gettext('Amazon')
     },
     {
         'id'  : 6,
-        'name': gettext('Aliexpress')
+        'name': lazy_gettext('Aliexpress')
+    },
+    {
+        'id': 3,
+        'name': 'Lazada'
     },
     {
         'id'  : 7,
@@ -118,25 +118,25 @@ DEFAULT_DIRECTORY = {
 
 # 采购到货状态
 PURCHASE_STATUS = (
-    (1, gettext('Pending Review'), 'warning'),
-    (5, gettext('Pending Arrival'), 'danger'),
-    (10, gettext('Pending Storage'), 'primary'),
-    (15, gettext('Finished'), 'success'),
-    (-1, gettext('Canceled'), 'default')
+    (1, lazy_gettext('Pending Review'), 'warning'),
+    (5, lazy_gettext('Pending Arrival'), 'danger'),
+    (10, lazy_gettext('Pending Storage'), 'primary'),
+    (15, lazy_gettext('Finished'), 'success'),
+    (-1, lazy_gettext('Canceled'), 'default')
 )
 
 # 采购付款状态
 PURCHASE_PAYED = (
-    (1, gettext('Available to Apply'), 'danger'),
-    (2, gettext('Unpaid'), 'warning'),
-    (3, gettext('Finished Paid '), 'success')
+    (1, lazy_gettext('Available to Apply'), 'danger'),
+    (2, lazy_gettext('Unpaid'), 'warning'),
+    (3, lazy_gettext('Finished Paid '), 'success')
 )
 
 # 入库状态
 INWAREHOUSE_STATUS = (
-    (1, gettext('Waiting In'), 'danger'),
-    (2, gettext('Part'), 'warning'),
-    (6, gettext('Finished'), 'success'),
+    (1, lazy_gettext('Waiting In'), 'danger'),
+    (2, lazy_gettext('Part'), 'warning'),
+    (6, lazy_gettext('Finished'), 'success'),
 )
 
 # 收支类型
@@ -147,19 +147,19 @@ TRANSACT_TYPE = (
 
 # 收支相关单据
 TRANSACT_TARGET_TYPE = (
-    (1, gettext('Purchase')),
-    (2, gettext('Order'))
+    (1, lazy_gettext('Purchase')),
+    (2, lazy_gettext('Order'))
 )
 
 # 仓库出入库操作类型
 WAREHOUSE_OPERATION_TYPE = (
-    (10, gettext('Purchase Storage')), # 采购入库
-    (13, gettext('Returned Storage')), # 退货入库
-    (16, gettext('Exchange Storage')), # 调仓入库
-    (19, gettext('Manual Storage')), # 手动入库
-    (20, gettext('Manual Out')), # 手动出库
-    (21, gettext('Order Out')), # 订单出库
-    (30, gettext('Returned Out')), # 退货出库
+    (10, lazy_gettext('Purchase Storage')), # 采购入库
+    (13, lazy_gettext('Returned Storage')), # 退货入库
+    (16, lazy_gettext('Exchange Storage')), # 调仓入库
+    (19, lazy_gettext('Manual Storage')), # 手动入库
+    (20, lazy_gettext('Manual Out')), # 手动出库
+    (21, lazy_gettext('Order Out')), # 订单出库
+    (30, lazy_gettext('Returned Out')), # 退货出库
 )
 
 # 排序代码简称
@@ -171,8 +171,8 @@ SORT_TYPE_CODE = {
 
 # 行业范围
 SUPPORT_DOMAINS = (
-    (1, gettext('Retail')),
-    (2, gettext('Services'))
+    (1, lazy_gettext('Retail')),
+    (2, lazy_gettext('Services'))
 )
 
 # 默认权限列表

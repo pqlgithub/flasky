@@ -41,7 +41,7 @@
 			{{ form.pid.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-6">
 				<select name="pid" id="pid" class="form-control select2">
-					<option value="0">Select ...</option>
+					<option value="0">{{ _('Select Parent...') }}</option>
 					{% for cate in paginated_categories %}
 					<option value="{{ cate.id }}" {% if cate.id == category.pid %}selected="selected"{% endif %}>{{ cate.name|safe }}</option>
 					{% endfor %}

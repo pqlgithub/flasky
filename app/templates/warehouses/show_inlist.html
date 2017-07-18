@@ -66,7 +66,7 @@
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Stock List') }}
+		{{ _('InWarehouse List') }}
 		<span class="pull-right">
 			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
 				0 items selected
@@ -84,14 +84,14 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="Search serial no...">
+			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="{{ _('Search serial no...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
 				<input type="hidden" name="wh_id" value="{{ wh_id }}">
 				<button class="btn btn-default dropdown-toggle" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Warehouse: <b>All</b>
+					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="wh_id" aria-labelledby="filter-warehouse">
@@ -113,7 +113,7 @@
 			<div class="dropdown">
 				<input type="hidden" name="s_t" value="{{ sort_type }}">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> Sort: <b>All</b>
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="s_t" aria-labelledby="filter-type">

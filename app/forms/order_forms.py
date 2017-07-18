@@ -1,35 +1,35 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
-from flask_babelex import gettext
+from flask_babelex import lazy_gettext
 from wtforms import StringField, TextAreaField, IntegerField, DecimalField, SelectField, RadioField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
 class OrderForm(Form):
-    serial_no = StringField('Serial No.')
-    outside_target_id = StringField('Out Serial No.')
-    store_id = IntegerField('From Store', validators=[DataRequired("From store can't empty!")])
-    express_id = IntegerField('Express')
-    warehouse_id = IntegerField('From Warehouse', validators=[DataRequired("From warehouse can't empty!")])
-    pay_amount = DecimalField('Pay Amount')
-    freight = DecimalField('Freight', default=0.00)
-    remark = TextAreaField('Remark')
+    serial_no = StringField(lazy_gettext('Serial No.'))
+    outside_target_id = StringField(lazy_gettext('Out Serial No.'))
+    store_id = IntegerField(lazy_gettext('From Store'), validators=[DataRequired("From store can't empty!")])
+    express_id = IntegerField(lazy_gettext('Express'))
+    warehouse_id = IntegerField(lazy_gettext('From Warehouse'), validators=[DataRequired("From warehouse can't empty!")])
+    pay_amount = DecimalField(lazy_gettext('Pay Amount'))
+    freight = DecimalField(lazy_gettext('Freight'), default=0.00)
+    remark = TextAreaField(lazy_gettext('Remark'))
 
-    buyer_name = StringField('Buyer Name', validators=[
+    buyer_name = StringField(lazy_gettext('Buyer Name'), validators=[
         DataRequired('Buyer name is Null!'),
         Length(min=2, max=30, message='Name format is error!')])
-    buyer_tel = StringField('Telephone', )
-    buyer_phone = StringField('Mobile')
-    buyer_zipcode = StringField('Zipcode')
-    buyer_address = StringField('Address', validators=[
+    buyer_tel = StringField(lazy_gettext('Telephone'))
+    buyer_phone = StringField(lazy_gettext('Mobile'))
+    buyer_zipcode = StringField(lazy_gettext('Zipcode'))
+    buyer_address = StringField(lazy_gettext('Address'), validators=[
         DataRequired('Buyer address is Null!')])
-    buyer_country = StringField('Country')
-    buyer_province = StringField('Province')
-    buyer_city = StringField('City')
+    buyer_country = StringField(lazy_gettext('Country'))
+    buyer_province = StringField(lazy_gettext('Province'))
+    buyer_city = StringField(lazy_gettext('City'))
     # 买家备注
-    buyer_remark = TextAreaField('Buyer Remark')
+    buyer_remark = TextAreaField(lazy_gettext('Buyer Remark'))
 
 
 
 class OrderExpressForm(Form):
-    express_id = IntegerField('Express')
-    express_no = StringField('Express No.')
+    express_id = IntegerField(lazy_gettext('Express'))
+    express_no = StringField(lazy_gettext('Express No.'))

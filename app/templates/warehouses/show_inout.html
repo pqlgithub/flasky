@@ -57,13 +57,13 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="Search products sku or name...">
+			<input type="text" class="form-control" size="60" placeholder="{{ _('Search products sku or name...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Warehouse: All
+					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-warehouse">
@@ -81,7 +81,7 @@
 		<div class="form-group m-l-5">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Type: All
+					{{ _('Type') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-type">
@@ -106,7 +106,7 @@
 		<div class="form-group m-l-5">
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Date: All
+					{{ _('Date') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="filter-date">

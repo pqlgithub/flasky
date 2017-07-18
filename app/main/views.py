@@ -29,7 +29,7 @@ def get_locale():
     """
     # 优先当前选择语言
     if session.get('locale'):
-        current_app.logger.debug('Locale: %s --------|||--------' % session.get('locale'))
+        current_app.logger.debug('Locale: %s --------|||---------' % session.get('locale'))
         return session['locale']
 
     # 其次，获取用户设置语言
@@ -38,7 +38,7 @@ def get_locale():
         return user.locale
 
     # 最后，使用默认语言
-    return request.accept_languages.best_match([lang[1] for lang in SUPPORT_LANGUAGES])
+    return request.accept_languages.best_match([lang[1].lower() for lang in SUPPORT_LANGUAGES])
 
 @babel.timezoneselector
 def get_timezone():
@@ -74,7 +74,8 @@ def before_request():
 @main.route('/<string:lang>')
 def choose_locale(lang):
     """切换语言"""
-    if lang not in [lang[1] for lang in SUPPORT_LANGUAGES]:
+    lang = lang.lower()
+    if lang not in [lang[1].lower() for lang in SUPPORT_LANGUAGES]:
         # 设置默认语言
         lang = current_app.config['BABEL_DEFAULT_LOCALE']
 
