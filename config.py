@@ -114,7 +114,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@prodbmixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/ProdbMixSaaS?charset=utf8'
 
     ERROR_LOG = '/var/log/mic-error.log'
-    
+
 
 config = {
     'development': DevelopmentConfig,

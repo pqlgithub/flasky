@@ -24,3 +24,6 @@ Erp for mic
 
 
 ## Mysql命令行下连接
+
+
+sudo gunicorn -c deploy/gun.py manage:app -u apps
