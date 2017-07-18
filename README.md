@@ -21,3 +21,6 @@ Erp for mic
 ./tr_init.py en
 有更新时，
 ./tr_update.py
+
+
+## Mysql命令行下连接

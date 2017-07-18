@@ -92,7 +92,8 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@mixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixSaaS?charset=utf8'
 
 
 class TestingConfig(Config):
@@ -110,7 +111,7 @@ class ProductionConfig(Config):
     FLASKS3_CDN_DOMAIN = 's3.michose.com'
 
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://michose:Mix2017Cc@mishoply.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixDBShop'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@prodbmixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/ProdbMixSaaS?charset=utf8'
 
     ERROR_LOG = '/var/log/mic-error.log'
 

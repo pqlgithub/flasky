@@ -271,7 +271,7 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
 @user_has('admin_order')
 def import_orders():
     """导入订单"""
-    if request.method == 'POST' or request.method == 'GET':
+    if request.method == 'POST':
         wh_id = request.args.get('wh_id', 5, type=int)
         st_id = request.args.get('st_id', 4, type=int)
 
