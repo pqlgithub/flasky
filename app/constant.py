@@ -5,7 +5,7 @@ from flask_babelex import gettext
 # 开通的国家
 SUPPORT_COUNTRIES = (
     (1, 'zh', gettext('China')),
-    (2, 'en', gettext('USA'))
+    (2, 'en', gettext('USA')),
 )
 
 # 支持的币种 currencies
@@ -22,8 +22,10 @@ SUPPORT_CURRENCIES = (
 
 # 支持的语言 Language
 SUPPORT_LANGUAGES = (
-    (1, 'zh', 'Chinese'),
-    (2, 'en', 'English')
+    (1, 'zh', '简体中文'),
+    (2, 'en', 'English'),
+    (3, 'th', 'Thailand'),
+    (9, 'zh_TW', '繁體中文')
 )
 
 
@@ -43,11 +45,11 @@ DEPARTMENT = (
 SUPPORT_PLATFORM = (
     {
         'id'  : 1,
-        'name': 'Mic'
+        'name': 'Michose'
     },
     {
         'id'  : 2,
-        'name': 'JD京东'
+        'name': gettext('JD')
     },
     {
         'id'  : 3,
@@ -55,11 +57,23 @@ SUPPORT_PLATFORM = (
     },
     {
         'id'  : 5,
-        'name': 'Shopee'
+        'name': 'Amazon'
     },
     {
         'id'  : 6,
-        'name': '速卖通'
+        'name': gettext('Aliexpress')
+    },
+    {
+        'id'  : 7,
+        'name': 'Wish'
+    },
+    {
+        'id': 8,
+        'name': 'eBay'
+    },
+    {
+        'id'  : 10,
+        'name': 'Shopee'
     },
 )
 

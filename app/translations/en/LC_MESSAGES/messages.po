@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-17 00:15+0800\n"
+"POT-Creation-Date: 2017-07-18 17:05+0800\n"
 "PO-Revision-Date: 2017-06-12 20:37+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -26,151 +26,159 @@ msgstr ""
 msgid "USA"
 msgstr ""
 
-#: app/constant.py:107 app/templates/orders/_sub_menu.html:18
+#: app/constant.py:51
+msgid "JD"
+msgstr ""
+
+#: app/constant.py:63
+msgid "Aliexpress"
+msgstr ""
+
+#: app/constant.py:120 app/templates/orders/_sub_menu.html:18
 msgid "Pending Review"
 msgstr ""
 
-#: app/constant.py:108 app/templates/orders/preview_order.html:57
+#: app/constant.py:121 app/templates/orders/preview_order.html:57
 #: app/templates/orders/show_list.html:158
 msgid "Pending Arrival"
 msgstr ""
 
-#: app/constant.py:109
+#: app/constant.py:122
 msgid "Pending Storage"
 msgstr ""
 
-#: app/constant.py:110 app/constant.py:125
+#: app/constant.py:123 app/constant.py:138
 #: app/templates/finances/_sub_menu.html:10
 #: app/templates/orders/_sub_menu.html:29
 msgid "Finished"
 msgstr ""
 
-#: app/constant.py:111 app/models/order.py:45
+#: app/constant.py:124 app/models/order.py:45
 #: app/templates/orders/_sub_menu.html:32
 #: app/templates/orders/show_list.html:312
 #: app/templates/purchases/purchase_table.html:80
 msgid "Canceled"
 msgstr ""
 
-#: app/constant.py:116
+#: app/constant.py:129
 msgid "Available to Apply"
 msgstr ""
 
-#: app/constant.py:117
+#: app/constant.py:130
 msgid "Unpaid"
 msgstr ""
 
-#: app/constant.py:118
+#: app/constant.py:131
 msgid "Finished Paid "
 msgstr ""
 
-#: app/constant.py:123
+#: app/constant.py:136
 msgid "Waiting In"
 msgstr ""
 
-#: app/constant.py:124
+#: app/constant.py:137
 msgid "Part"
 msgstr ""
 
-#: app/constant.py:136 app/templates/layout/base.html:62
+#: app/constant.py:149 app/templates/layout/base.html:63
 msgid "Purchase"
 msgstr ""
 
-#: app/constant.py:137
+#: app/constant.py:150
 msgid "Order"
 msgstr ""
 
-#: app/constant.py:142
+#: app/constant.py:155
 msgid "Purchase Storage"
 msgstr ""
 
-#: app/constant.py:143
+#: app/constant.py:156
 msgid "Returned Storage"
 msgstr ""
 
-#: app/constant.py:144
+#: app/constant.py:157
 msgid "Exchange Storage"
 msgstr ""
 
-#: app/constant.py:145
+#: app/constant.py:158
 msgid "Manual Storage"
 msgstr ""
 
-#: app/constant.py:146 app/templates/warehouses/ex_warehouse_modal.html:28
+#: app/constant.py:159 app/templates/warehouses/ex_warehouse_modal.html:28
 msgid "Manual Out"
 msgstr ""
 
-#: app/constant.py:147
+#: app/constant.py:160
 msgid "Order Out"
 msgstr ""
 
-#: app/constant.py:148 app/templates/warehouses/ex_warehouse_modal.html:29
+#: app/constant.py:161 app/templates/warehouses/ex_warehouse_modal.html:29
 msgid "Returned Out"
 msgstr ""
 
-#: app/constant.py:160
+#: app/constant.py:173
 msgid "Retail"
 msgstr ""
 
-#: app/constant.py:161
+#: app/constant.py:174
 msgid "Services"
 msgstr ""
 
-#: app/constant.py:166
+#: app/constant.py:179
 msgid "Admin Store"
 msgstr ""
 
-#: app/constant.py:167
+#: app/constant.py:180
 msgid "Admin Supplier"
 msgstr ""
 
-#: app/constant.py:168
+#: app/constant.py:181
 msgid "Admin Purchase"
 msgstr ""
 
-#: app/constant.py:169
+#: app/constant.py:182
 msgid "Admin Warehouse"
 msgstr ""
 
-#: app/constant.py:170
+#: app/constant.py:183
 msgid "Admin Logistics"
 msgstr ""
 
-#: app/constant.py:171
+#: app/constant.py:184
 msgid "Admin Product"
 msgstr ""
 
-#: app/constant.py:172
+#: app/constant.py:185
 msgid "Admin Order"
 msgstr ""
 
-#: app/constant.py:173
+#: app/constant.py:186
 msgid "Admin Service"
 msgstr ""
 
-#: app/constant.py:174
+#: app/constant.py:187
 msgid "Admin Finance"
 msgstr ""
 
-#: app/constant.py:175
+#: app/constant.py:188
 msgid "Admin Reports"
 msgstr ""
 
-#: app/constant.py:176
+#: app/constant.py:189
 msgid "Admin Setting"
 msgstr ""
 
-#: app/constant.py:177
+#: app/constant.py:190
 msgid "Admin Dashboard"
 msgstr ""
 
-#: app/constant.py:189 app/main/order.py:80 app/main/purchase.py:511
+#: app/constant.py:202 app/main/order.py:80 app/main/purchase.py:511
 #: app/templates/purchases/_modal_express.html:12
 #: app/templates/purchases/pay_list.html:141
 msgid "Purchase Serial"
 msgstr ""
 
-#: app/constant.py:190 app/templates/products/show_list.html:94
+#: app/constant.py:203 app/templates/products/show_list.html:94
 #: app/templates/purchases/_modal_arrival.html:45
 #: app/templates/purchases/create_and_edit.html:172
 #: app/templates/purchases/purchase_modal.html:30
@@ -178,28 +186,28 @@ msgstr ""
 msgid "Product Name"
 msgstr ""
 
-#: app/constant.py:191
+#: app/constant.py:204
 msgid "Product SKU"
 msgstr ""
 
-#: app/constant.py:192 app/main/order.py:94 app/main/purchase.py:525
+#: app/constant.py:205 app/main/order.py:94 app/main/purchase.py:525
 #: app/templates/purchases/create_and_edit.html:175
 msgid "Purchase Quantity"
 msgstr ""
 
-#: app/constant.py:193 app/main/order.py:95 app/main/purchase.py:526
+#: app/constant.py:206 app/main/order.py:95 app/main/purchase.py:526
 msgid "Arrival Quantity"
 msgstr ""
 
-#: app/constant.py:194 app/main/order.py:98 app/main/purchase.py:529
+#: app/constant.py:207 app/main/order.py:98 app/main/purchase.py:529
 msgid "Freight"
 msgstr ""
 
-#: app/constant.py:195 app/main/order.py:99 app/main/purchase.py:530
+#: app/constant.py:208 app/main/order.py:99 app/main/purchase.py:530
 msgid "Other Charge"
 msgstr ""
 
-#: app/constant.py:196 app/main/order.py:100 app/main/purchase.py:531
+#: app/constant.py:209 app/main/order.py:100 app/main/purchase.py:531
 #: app/templates/index.html:127 app/templates/orders/show_list.html:235
 #: app/templates/purchases/_modal_express.html:26
 #: app/templates/purchases/create_and_edit.html:176
@@ -207,7 +215,7 @@ msgstr ""
 msgid "Total Amount"
 msgstr ""
 
-#: app/constant.py:197 app/templates/layout/base.html:65
+#: app/constant.py:210 app/templates/layout/base.html:66
 #: app/templates/orders/_modal_export.html:12
 #: app/templates/orders/_modal_import.html:12
 #: app/templates/purchases/_modal_arrival.html:24
@@ -224,7 +232,7 @@ msgstr ""
 msgid "Warehouse"
 msgstr ""
 
-#: app/constant.py:198 app/main/order.py:82 app/main/purchase.py:513
+#: app/constant.py:211 app/main/order.py:82 app/main/purchase.py:513
 #: app/templates/products/show_list.html:93
 #: app/templates/purchases/_modal_express.html:19
 #: app/templates/purchases/pay_list.html:142
@@ -232,19 +240,19 @@ msgstr ""
 msgid "Supplier"
 msgstr ""
 
-#: app/constant.py:199
+#: app/constant.py:212
 msgid "Contact Name"
 msgstr ""
 
-#: app/constant.py:200
+#: app/constant.py:213
 msgid "Contact Phone"
 msgstr ""
 
-#: app/constant.py:201 app/templates/warehouses/select_purchase_modal.html:15
+#: app/constant.py:214 app/templates/warehouses/select_purchase_modal.html:15
 msgid "Express No"
 msgstr ""
 
-#: app/constant.py:202 app/templates/finances/show_payments.html:77
+#: app/constant.py:215 app/templates/finances/show_payments.html:77
 #: app/templates/orders/preview_order.html:105
 #: app/templates/orders/show_list.html:206
 #: app/templates/orders/show_list.html:260
@@ -264,15 +272,15 @@ msgstr ""
 msgid "Add Date"
 msgstr ""
 
-#: app/constant.py:203
+#: app/constant.py:216
 msgid "Arrival Date"
 msgstr ""
 
-#: app/constant.py:204
+#: app/constant.py:217
 msgid "Arrival Status"
 msgstr ""
 
-#: app/constant.py:205 app/main/order.py:90 app/main/purchase.py:521
+#: app/constant.py:218 app/main/order.py:90 app/main/purchase.py:521
 #: app/templates/finances/show_payments.html:83
 #: app/templates/orders/show_list.html:314
 #: app/templates/purchases/_modal_arrival.html:35
@@ -521,6 +529,22 @@ msgstr ""
 
 #: app/templates/index.html:54
 msgid "Logs"
+msgstr ""
+
+#: app/templates/index.html:72
+msgid "Total Revenue"
+msgstr ""
+
+#: app/templates/index.html:85
+msgid "Total Orders"
+msgstr ""
+
+#: app/templates/index.html:98
+msgid "Total Products"
+msgstr ""
+
+#: app/templates/index.html:111
+msgid "Total Stocks"
 msgstr ""
 
 #: app/templates/index.html:119
@@ -790,56 +814,56 @@ msgstr ""
 msgid "Confirm Payed"
 msgstr ""
 
-#: app/templates/layout/base.html:53
+#: app/templates/layout/base.html:54
 msgid "Index"
 msgstr ""
 
-#: app/templates/layout/base.html:56
+#: app/templates/layout/base.html:57
 msgid "Orders"
 msgstr ""
 
-#: app/templates/layout/base.html:59
+#: app/templates/layout/base.html:60
 #: app/templates/orders/create_and_edit.html:270
 msgid "Products"
 msgstr ""
 
-#: app/templates/layout/base.html:68
+#: app/templates/layout/base.html:69
 msgid "Logistics"
 msgstr ""
 
-#: app/templates/layout/base.html:71
+#: app/templates/layout/base.html:72
 msgid "Service"
 msgstr ""
 
-#: app/templates/layout/base.html:74
+#: app/templates/layout/base.html:75
 msgid "Finance"
 msgstr ""
 
-#: app/templates/layout/base.html:77
+#: app/templates/layout/base.html:78
 msgid "Reports"
 msgstr ""
 
-#: app/templates/layout/base.html:80
+#: app/templates/layout/base.html:81
 msgid "Settings"
 msgstr ""
 
-#: app/templates/layout/base.html:84
+#: app/templates/layout/base.html:85
 msgid "System"
 msgstr ""
 
-#: app/templates/layout/base.html:91
+#: app/templates/layout/base.html:92
 msgid "Select languages"
 msgstr ""
 
-#: app/templates/layout/base.html:115
+#: app/templates/layout/base.html:116
 msgid "Site info"
 msgstr ""
 
-#: app/templates/layout/base.html:116
+#: app/templates/layout/base.html:117
 msgid "Update password"
 msgstr ""
 
-#: app/templates/layout/base.html:118
+#: app/templates/layout/base.html:119
 msgid "Logout"
 msgstr ""
 
@@ -1712,7 +1736,7 @@ msgstr ""
 msgid "World Map"
 msgstr ""
 
-#: app/templates/stats/index.html:66
+#: app/templates/stats/index.html:64
 msgid "Sales Analytics"
 msgstr ""
 
