@@ -57,25 +57,16 @@ function hook_dropdown_menu (callback) {
 }
 
 function hook_filter_search (callback) {
-	$('input.input-search').on('keydown', function (e) {
+	$('input.searcher').on('keydown', function (e) {
 		var ev = window.event||e;
 		if (ev.keyCode == 13) {
 			callback();
+			return false;
 		}
 	});
 }
 
-$(function () {
-	$('[data-toggle="tooltip"]').tooltip({
-		container: 'body',
-		html: true,
-		trigger: 'hover'
-	});
-
-	$('.select2').select2({
-		'width': '100%'
-	});
-
+function hook_all_check() {
 	// 全选 or 反选
 	$('input.check-all').bind('click', function() {
 		if ($(this).is(':checked')){
@@ -100,6 +91,20 @@ $(function () {
 		}
 		checked_items_status();
 	});
+}
+
+$(function () {
+	$('[data-toggle="tooltip"]').tooltip({
+		container: 'body',
+		html: true,
+		trigger: 'hover'
+	});
+
+	$('.select2').select2({
+		'width': '100%'
+	});
+
+	hook_all_check();
 
 	// 删除 全部 or 单个
 	$('button.delete-all').click(function () {

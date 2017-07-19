@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import text
 from sqlalchemy.sql import func
+from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db, uploader
 from ..utils import timestamp, gen_serial_no
 from .asset import Asset
@@ -289,6 +290,10 @@ class Supplier(db.Model):
     """供应商信息"""
 
     __tablename__ = 'suppliers'
+
+    __searchable__ = ['short_name', 'full_name', 'contact_name', 'address', 'phone']
+    __analyzer__ = ChineseAnalyzer()
+
     id = db.Column(db.Integer, primary_key=True)
     # master user id
     master_uid = db.Column(db.Integer, index=True, default=0)

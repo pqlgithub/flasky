@@ -83,6 +83,11 @@ class Config:
     # csrf protected
     WTF_CSRF_ENABLED = True
 
+    # Whoose Index of Full Text Search
+    WHOOSH_BASE = '/Users/xiaoyi/Project/micku/whooses'
+    MAX_SEARCH_RESULTS = 50
+
+
     @staticmethod
     def init_app(app):
         pass
@@ -114,6 +119,9 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@prodbmixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/ProdbMixSaaS?charset=utf8'
 
     ERROR_LOG = '/var/log/mic-error.log'
+
+    # Whoose Index of Full Text Search
+    WHOOSH_BASE = '/opt/project/whoose'
 
 
 config = {

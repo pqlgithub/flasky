@@ -166,7 +166,8 @@ WAREHOUSE_OPERATION_TYPE = (
 SORT_TYPE_CODE = {
     'ad': 'created_at',
     'ud': 'updated_at',
-    'sq': 'current_count'
+    'sq': 'current_count',
+    'ed': 'end_date'
 }
 
 # 行业范围

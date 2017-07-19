@@ -1,0 +1,57 @@
+<div class="table-responsive">
+	<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th>{{ _('Supplier Name') }}</th>
+				<th class="text-center">{{ _('Business Mode') }}</th>
+				<th class="text-center">{{ _('Contact') }}</th>
+				<th class="text-center">{{ _('Phone') }}</th>
+				<th class="text-center">{{ _('End Date') }}</th>
+				<th>{{ _('Remark') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for supplier in suppliers %}
+				{% include 'suppliers/table_supplier.html' %}
+			{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>
+
+{% import "block/_macros.html" as macros %}
+<div class="pages-box ajax">
+	<div class="pull-left">
+		<nav aria-label="Page navigation">
+			{{ macros.pagination_widget(pagination, '.search_suppliers', qk=qk, sk=sk) }}
+		</nav>
+	</div>
+</div>
+
+<script type="text/javascript">
+	hook_all_check();
+
+	$('[data-toggle="tooltip"]').tooltip({
+		container: 'body',
+		html: true,
+		trigger: 'hover'
+	});
+
+	$('.select2').select2({
+		'width': '100%'
+	});
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('#table-refresh-box').load($(this).attr('href'));
+			return false;
+		});
+</script>

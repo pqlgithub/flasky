@@ -9,6 +9,7 @@ from app.models import Product, Supplier, Category, ProductSku, ProductStock, Wa
 from app.forms import ProductForm, SupplierForm, CategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
+from ..constant import SORT_TYPE_CODE
 
 top_menu = 'products'
 
@@ -287,19 +288,6 @@ def delete_sku(s_id):
         return full_response(True, custom_status('Delete sku is failed!', 500))
 
 
-@main.route('/suppliers', methods=['GET', 'POST'])
-@main.route('/suppliers/<int:page>', methods=['GET', 'POST'])
-@login_required
-@user_has('admin_product')
-def show_suppliers(page=1):
-    per_page = request.args.get('per_page', 10, type=int)
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
-    return render_template('suppliers/show_list.html',
-                           top_menu=top_menu,
-                           sub_menu='suppliers',
-                           paginated_suppliers=paginated_suppliers)
-
-
 @main.route('/categories')
 @main.route('/categories/<int:page>')
 @login_required
@@ -418,6 +406,59 @@ def delete_category():
 
     return redirect(url_for('.show_categories'))
 
+
+
+@main.route('/suppliers/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def search_suppliers():
+    """搜索供应商"""
+    per_page = request.values.get('per_page', 2, type=int)
+    page = request.values.get('page', 1, type=int)
+    qk = request.values.get('qk')
+    sk = request.values.get('sk', type=str, default='ad')
+
+    current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
+
+    builder = Supplier.query.filter_by(master_uid=Master.master_uid())
+    if qk:
+        builder = builder.whoosh_search(qk)
+
+    suppliers = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    suppliers = suppliers[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('suppliers/search_result.html',
+                           sub_menu='suppliers',
+                           pagination=pagination,
+                           qk=qk,
+                           sk=sk,
+                           suppliers=suppliers)
+
+
+@main.route('/suppliers', methods=['GET', 'POST'])
+@main.route('/suppliers/<int:page>', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def show_suppliers(page=1):
+    per_page = request.args.get('per_page', 10, type=int)
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
+    return render_template('suppliers/show_list.html',
+                           top_menu=top_menu,
+                           sub_menu='suppliers',
+                           paginated_suppliers=paginated_suppliers)
 
 
 @main.route('/suppliers/create', methods=['GET', 'POST'])

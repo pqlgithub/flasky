@@ -1,9 +1,34 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+	var submit_filter_form = function () {
+		var data = $('#filter-supplier-form').serialize();
+
+		$.post("{{ url_for('main.search_suppliers') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+		return false;
+	};
+
+	$('input.searcher').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			submit_filter_form();
+			return false;
+		}
+	});
+
+	hook_dropdown_menu(function(){
+		submit_filter_form();
+	});
+{#</script>#}
+{% endblock %}
+
 
 {% block mainbar %}
 <div class="list-page">
@@ -25,52 +50,34 @@
 		</span>
 	</h2>
 
-	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+	<form class="form-inline" id="filter-supplier-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="{{ _('Search name...') }}">
-		</div>
-
-		<div class="form-group m-l-5">
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Type') }}: <b>{{ _('All') }}</b>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
-					<li class="dropdown-header">{{ _('Search Type')}}</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="#">{{ _('Supplier Name') }}</a>
-					</li>
-					<li>
-						<a href="#">{{ _('Contact') }}</a>
-					</li>
-					<li>
-						<a href="#">{{ _('Phone') }}</a>
-					</li>
-				</ul>
-			</div>
+			<input type="text" class="form-control searcher" size="60" name="qk" autocomplete="off" placeholder="{{ _('Search name...') }}">
 		</div>
 
 		<div class="form-group pull-right">
 			<div class="dropdown">
-				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('Add Date') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Business Mode') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Phone') }}</a>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ed" class="option">{{ _('End Date') }}</a>
 					</li>
 				</ul>
 			</div>
@@ -78,12 +85,13 @@
 
 	</form>
 
-	<div class="table-responsive m-t-20">
-		<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<div id="table-refresh-box" class="m-t-20">
+		<div class="table-responsive">
+			<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
 					<tr>
 						<th class="text-center">
 							<input name="check_all" type="checkbox" class="check-all">
@@ -96,61 +104,25 @@
 						<th>{{ _('Remark') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
-				</thead>
-				<tbody>
+					</thead>
+					<tbody>
 					{% for supplier in paginated_suppliers.items %}
-					<tr>
-						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ supplier.id }}" type="checkbox">
-						</td>
-						<td>
-							{{ supplier.short_name }}
-						</td>
-						<td class="text-center">
-							{% if supplier.type == 'C' %}
-							<span class="label label-primary">
-								{{ supplier.desc_type[1] }}
-							</span>
-							{% elif supplier.type == 'Q'%}
-							<span class="label label-warning">
-								{{ supplier.desc_type[1] }}
-							</span>
-							{% else %}
-							<span class="label label-info">
-								{{ supplier.desc_type[1] }}
-							</span>
-							{% endif %}
-						</td>
-						<td class="text-center">
-							{{ supplier.contact_name }}
-						</td>
-						<td class="text-center">
-							{{ supplier.phone }}
-						</td>
-						<td class="text-center">
-							{{ supplier.end_date }}
-						</td>
-						<td>
-							{{ supplier.remark }}
-						</td>
-						<td class="text-right">
-							<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								{{ _('Edit') }}
-							</a>
-						</td>
-					</tr>
+						{% include 'suppliers/table_supplier.html' %}
 					{% endfor %}
-				</tbody>
-			</table>
-		</form>
-	</div>
+					</tbody>
+				</table>
+			</form>
+		</div>
 
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_suppliers, '.show_suppliers') }}
-			</nav>
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(paginated_suppliers, '.show_suppliers') }}
+				</nav>
+			</div>
 		</div>
 	</div>
+
 </div>
 {% endblock %}

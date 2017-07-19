@@ -1,0 +1,40 @@
+<tr>
+	<td class="text-center">
+		<input name="selected[]" class="check-one" value="{{ supplier.id }}" type="checkbox">
+	</td>
+	<td>
+		{{ supplier.short_name }}
+	</td>
+	<td class="text-center">
+		{% if supplier.type == 'C' %}
+		<span class="label label-primary">
+									{{ supplier.desc_type[1] }}
+								</span>
+		{% elif supplier.type == 'Q'%}
+		<span class="label label-warning">
+									{{ supplier.desc_type[1] }}
+								</span>
+		{% else %}
+		<span class="label label-info">
+									{{ supplier.desc_type[1] }}
+								</span>
+		{% endif %}
+	</td>
+	<td class="text-center">
+		{{ supplier.contact_name }}
+	</td>
+	<td class="text-center">
+		{{ supplier.phone }}
+	</td>
+	<td class="text-center">
+		{{ supplier.end_date }}
+	</td>
+	<td>
+		{{ supplier.remark }}
+	</td>
+	<td class="text-right">
+		<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			{{ _('Edit') }}
+		</a>
+	</td>
+</tr>

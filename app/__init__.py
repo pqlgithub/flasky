@@ -21,6 +21,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 # 国际化和本地化
 from flask_babelex import Babel
+# 全文检索
+import flask_whooshalchemyplus as whooshalchemyplus
 # 导入上传
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_wtf.csrf import CSRFProtect
@@ -61,6 +63,7 @@ def create_app(config_name):
     mail.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+    whooshalchemyplus.init_app(app)
 
     assets_env.init_app(app)
     assets_env.register(bundles)
