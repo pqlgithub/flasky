@@ -5,14 +5,43 @@
 {% block content %}
 <div class="card card-signin">
 	<img class="img-circle profile-img" src="{{ url_for('static', filename='img/avatar.png') }}">
+
 	<form class="form-signin" action="{{ url_for('auth.login') }}" method="post" name="login">
 		{{ form.hidden_tag() }}
 
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			<div class="flashes">
+				{% for category, message in messages %}
+				<div class="alert alert-{{ category }} alert-dismissable">
+					<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+					{% if category == 'success' %}
+					<strong>Well done!</strong>
+					{% endif %}
+
+					{% if category == 'danger' %}
+					<strong>Oh snap!</strong>
+					{% endif %}
+
+					{{ message }}
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+		{% endwith %}
+
 		<label for="email" class="sr-only">{{ _('Account') }}</label>
 		<input type="email" id="email" name="email" class="form-control" placeholder="{{ _('Email') }}" required autofocus>
+		{% for error in form.errors.email %}
+		<span class="help-block">{{ error }}</span><br>
+		{% endfor %}
+
 
 		<label for="password" class="sr-only">{{ _('Password') }}</label>
 		<input type="password" id="password" name="password" class="form-control" placeholder="{{ _('Password') }}" required>
+		{% for error in form.errors.password %}
+		<span class="help-block">{{ error }}</span><br>
+		{% endfor %}
 
 		<button class="btn btn-lg btn-primary btn-block" type="submit">{{ _('Login in') }}</button>
 

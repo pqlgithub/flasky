@@ -49,3 +49,9 @@ class AbilityForm(Form):
     def validate_name(self, filed):
         if Ability.query.filter_by(name=filed.data).first():
             return ValidationError('Ability [%s] already exist!' % filed.data)
+
+
+class PasswdForm(Form):
+    password = PasswordField(lazy_gettext('Password'),
+                             validators=[DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField(lazy_gettext('Confirm password'), validators=[DataRequired()])

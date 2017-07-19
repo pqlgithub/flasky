@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from . import main
 from .. import db
 from app.models import User, Role, Ability, Site
-from app.forms import RoleForm, AbilityForm, SiteForm, UserForm
+from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm
 import app.constant as constant
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
@@ -98,4 +98,17 @@ def set_role(user_id):
 @user_has('admin_setting')
 def passwd():
     """更新密码"""
-    return render_template('users/passwd.html')
+    form = PasswdForm()
+    if form.validate_on_submit():
+        current_user.password = form.password.data
+
+        db.session.commit()
+        # 强制退出
+        logout_user()
+
+        flash('Update password is ok!', 'success')
+
+        return redirect(url_for('auth.login'))
+
+    return render_template('users/passwd.html',
+                           form=form)
