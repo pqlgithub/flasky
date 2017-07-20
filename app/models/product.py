@@ -52,6 +52,10 @@ class Product(db.Model):
     """产品信息"""
 
     __tablename__ = 'products'
+
+    __searchable__ = ['serial_no', 'name', 'description', 'supplier_name', 'all_sku']
+    __analyzer__ = ChineseAnalyzer()
+
     id = db.Column(db.Integer, primary_key=True)
     # 产品编号
     serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
@@ -78,7 +82,7 @@ class Product(db.Model):
     description = db.Column(db.Text())
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     # product and sku => 1 to N
     skus = db.relationship(
@@ -91,6 +95,17 @@ class Product(db.Model):
     )
 
     @property
+    def supplier_name(self):
+        current_supplier = self.supplier
+        return '{} {}'.format(current_supplier.short_name, current_supplier.full_name)
+
+    @property
+    def all_sku(self):
+        """全部SKU"""
+        sku_list = [sku.serial_no for sku in self.skus]
+        return ' '.join(sku_list)
+
+    @property
     def status_label(self):
         for s in PRODUCT_STATUS:
             if s[0] == self.status:
@@ -100,6 +115,23 @@ class Product(db.Model):
     def cover(self):
         """cover asset info"""
         return Asset.query.get(self.cover_id) if self.cover_id else None
+
+    @property
+    def category_ids(self):
+        """获取所属的分类ID"""
+        return [category.id for category in self.categories]
+
+    def add_categories(self, *categories):
+        """追加所属分类"""
+        self.categories.extend([category for category in categories if category not in self.categories])
+
+    def update_categories(self, *categories):
+        """更新所属分类"""
+        self.categories = [category for category in categories]
+
+    def remove_categories(self, *categories):
+        """删除所属分类"""
+        self.categories = [category for category in self.categories if category not in categories]
 
     @staticmethod
     def make_unique_serial_no(serial_no):
@@ -138,7 +170,7 @@ class ProductSku(db.Model):
     # 状态：-1、取消或缺省状态； 1、正常（默认）
     status = db.Column(db.SmallInteger, default=1)
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     # 第三方平台编号
     outside_serial_no = db.Column(db.String(20), index=True, nullable=True)
@@ -207,7 +239,7 @@ class ProductStock(db.Model):
     max_count = db.Column(db.Integer, default=0)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     # stock and product_sku => 1 to 1
     sku = db.relationship(
@@ -280,7 +312,7 @@ class CustomsDeclaration(db.Model):
     # 海关编码
     customs_code = db.Column(db.String(64), nullable=True)
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     def __repr__(self):
         return '<Customs %r>' % self.local_name
@@ -322,7 +354,7 @@ class Supplier(db.Model):
     business_scope = db.Column(db.Text(), nullable=True)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     # supplier and brand => 1 to N
     brands = db.relationship(
@@ -379,7 +411,7 @@ class Brand(db.Model):
     is_recommended = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 
     def __repr__(self):

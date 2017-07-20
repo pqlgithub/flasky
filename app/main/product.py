@@ -5,13 +5,20 @@ from flask_sqlalchemy import Pagination
 from . import main
 from .. import db
 from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve
+from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE
 
-top_menu = 'products'
+
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'products'
+    }
 
 @main.route('/products')
 @main.route('/products/<int:page>')
@@ -19,15 +26,54 @@ top_menu = 'products'
 @user_has('admin_product')
 def show_products(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    query = Product.query.filter_by(master_uid=Master.master_uid())
+    builder = Product.query.filter_by(master_uid=Master.master_uid())
 
-    paginated_products = query.order_by('created_at desc').paginate(page, per_page)
+    paginated_result = builder.order_by('created_at desc').paginate(page, per_page)
 
     return render_template('products/show_list.html',
-                           top_menu=top_menu,
                            sub_menu='products',
-                           paginated_products=paginated_products
-                        )
+                           paginated_products=paginated_result.items,
+                           pagination=paginated_result,
+                           **load_common_data())
+
+
+@main.route('/products/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def search_products():
+    """支持全文索引搜索产品"""
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    qk = request.values.get('qk')
+    sk = request.values.get('sk', type=str, default='ad')
+
+    current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
+
+    builder = Product.query.filter_by(master_uid=Master.master_uid())
+    if qk:
+        builder = builder.whoosh_search(qk, like=True)
+
+    products = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_products = products[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('products/search_result.html',
+                           qk=qk,
+                           sk=sk,
+                           paginated_products=paginated_products,
+                           pagination=pagination)
 
 
 @main.route('/products/ajax_search', methods=['GET', 'POST'])
@@ -112,6 +158,11 @@ def ajax_submit_result():
 def create_product():
     form = ProductForm()
     if form.validate_on_submit():
+        # 设置默认值
+        if not form.cover_id.data:
+            default_cover = Asset.query.filter_by(is_default=True).first()
+            form.cover_id.data = default_cover.id
+
         product = Product(
             master_uid=current_user.id,
             serial_no=Product.make_unique_serial_no(form.serial_no.data),
@@ -129,6 +180,14 @@ def create_product():
             description=form.description.data
         )
         db.session.add(product)
+
+        # 更新所属分类
+        if form.category_id.data:
+            categories = []
+            categories.append(Category.query.get(form.category_id.data))
+
+            product.update_categories(*categories)
+
         db.session.commit()
 
         return redirect(url_for('.show_products'))
@@ -138,17 +197,17 @@ def create_product():
     mode = 'create'
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
 
-    paginated_categories = Category.always_category(path=0, page=1, per_page=1000)
-    paginated_suppliers = Supplier.query.order_by('created_at desc').paginate(1, 1000)
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
 
     return render_template('products/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='products',
                            product=None,
                            paginated_categories=paginated_categories,
-                           paginated_suppliers=paginated_suppliers)
+                           paginated_suppliers=paginated_suppliers,
+                           **load_common_data())
 
 
 @main.route('/products/<int:id>/edit', methods=['GET', 'POST'])
@@ -159,6 +218,14 @@ def edit_product(id):
     form = ProductForm()
     if form.validate_on_submit():
         form.populate_obj(product)
+
+        # 更新所属分类
+        if form.category_id.data:
+            categories = []
+            categories.append(Category.query.get(form.category_id.data))
+
+            product.update_categories(*categories)
+
         db.session.commit()
 
         return redirect(url_for('.show_products'))
@@ -181,17 +248,17 @@ def edit_product(id):
     form.status.data = product.status
     form.description.data = product.description
 
-    paginated_categories = Category.always_category(path=0, page=1, per_page=1000)
-    paginated_suppliers = Supplier.query.order_by('created_at desc').paginate(1, 1000)
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
 
     return render_template('products/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='products',
                            product=product,
                            paginated_categories=paginated_categories,
-                           paginated_suppliers=paginated_suppliers)
+                           paginated_suppliers=paginated_suppliers,
+                           **load_common_data())
 
 
 @main.route('/products/delete', methods=['POST'])
@@ -313,8 +380,8 @@ def show_categories(page=1):
     return render_template('categories/show_list.html',
                            paginated_categories=paginated_categories,
                            pagination=pagination,
-                           top_menu=top_menu,
-                           sub_menu='categories')
+                           sub_menu='categories',
+                           **load_common_data())
 
 
 @main.route('/categories/create', methods=['GET', 'POST'])
@@ -344,10 +411,10 @@ def create_category():
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='categories',
                            category=None,
-                           paginated_categories=paginated_categories)
+                           paginated_categories=paginated_categories,
+                           **load_common_data())
 
 
 @main.route('/categories/<int:id>/edit', methods=['GET', 'POST'])
@@ -363,7 +430,7 @@ def edit_category(id):
 
         # rebuild category path
         Category.repair_categories(category.pid)
-        
+
         return redirect(url_for('.show_categories'))
     else:
         current_app.logger.debug(form.errors)
@@ -379,10 +446,10 @@ def edit_category(id):
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            sub_menu='categories',
                            category=category,
-                           paginated_categories=paginated_categories)
+                           paginated_categories=paginated_categories,
+                           **load_common_data())
 
 
 @main.route('/categories/delete', methods=['POST'])
@@ -414,7 +481,7 @@ def delete_category():
 @user_has('admin_product')
 def search_suppliers():
     """搜索供应商"""
-    per_page = request.values.get('per_page', 2, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
     sk = request.values.get('sk', type=str, default='ad')
@@ -437,16 +504,15 @@ def search_suppliers():
 
     current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
 
-    suppliers = suppliers[start:end]
+    paginated_suppliers = suppliers[start:end]
 
     pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
 
     return render_template('suppliers/search_result.html',
-                           sub_menu='suppliers',
-                           pagination=pagination,
                            qk=qk,
                            sk=sk,
-                           suppliers=suppliers)
+                           paginated_suppliers=paginated_suppliers,
+                           pagination=pagination)
 
 
 @main.route('/suppliers', methods=['GET', 'POST'])
@@ -457,9 +523,9 @@ def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
     return render_template('suppliers/show_list.html',
-                           top_menu=top_menu,
                            sub_menu='suppliers',
-                           paginated_suppliers=paginated_suppliers)
+                           paginated_suppliers=paginated_suppliers,
+                           **load_common_data())
 
 
 @main.route('/suppliers/create', methods=['GET', 'POST'])
@@ -489,9 +555,9 @@ def create_supplier():
     return render_template('suppliers/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           top_menu=top_menu,
                            supplier=None,
-                           sub_menu='suppliers')
+                           sub_menu='suppliers',
+                           **load_common_data())
 
 
 @main.route('/suppliers/<int:id>/edit', methods=['GET', 'POST'])
@@ -520,8 +586,8 @@ def edit_supplier(id):
                            form=form,
                            mode=mode,
                            supplier=supplier,
-                           top_menu=top_menu,
-                           sub_menu='suppliers')
+                           sub_menu='suppliers',
+                           **load_common_data())
 
 
 @main.route('/suppliers/delete', methods=['POST'])

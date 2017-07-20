@@ -1,0 +1,63 @@
+<div class="table-responsive">
+	<form id="warehouses-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th class="text-center">{{ _('Image') }}</th>
+				<th class="text-center">{{ _('Serial No') }}</th>
+				<th class="text-center">{{ _('Supplier') }}</th>
+				<th>{{ _('Product Name') }}</th>
+				<th class="text-center">{{ _('Sku Count') }}</th>
+				<th class="text-right">{{ _('Cost Price') }}</th>
+				<th class="text-right">{{ _('Sale Price') }}</th>
+
+				<th class="text-right">{{ _('Status') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for product in paginated_products %}
+			<tr>
+				<td class="text-center">
+					<input name="selected[]" class="check-one" value="{{ product.id }}" type="checkbox">
+				</td>
+				<td class="text-center">
+					<img src="{{ product.cover.view_url }}" width="60px">
+				</td>
+				<td class="text-center">
+					{{ product.serial_no }}
+				</td>
+				<td class="text-center">
+					{{ product.supplier.short_name }}
+				</td>
+				<td>
+					{{ product.name|safe }}
+				</td>
+				<td class="text-center">
+					{{ product.skus.count() }}
+				</td>
+				<td class="text-right">
+					{{ product.cost_price|round(precision=2) }} {{ current_site.currency }}
+				</td>
+				<td class="text-right">
+					{{ product.sale_price|round(precision=2) }} {{ current_site.currency }}
+				</td>
+				<td class="text-right">
+					<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
+				</td>
+				<td class="text-right">
+					<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						{{ _('Edit') }}
+					</a>
+				</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>
