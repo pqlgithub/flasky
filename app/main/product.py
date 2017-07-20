@@ -6,7 +6,7 @@ from . import main
 from .. import db
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve
-from app.forms import ProductForm, SupplierForm, CategoryForm, ProductSkuForm
+from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE
@@ -340,7 +340,7 @@ def create_category():
         return redirect(url_for('.show_categories'))
 
     mode = 'create'
-    paginated_categories = Category.always_category(path=0, page=1, per_page=1000)
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
@@ -355,14 +355,15 @@ def create_category():
 @user_has('admin_product')
 def edit_category(id):
     category = Category.query.get_or_404(id)
-    form = CategoryForm()
+    form = EditCategoryForm(category)
     if form.validate_on_submit():
         form.populate_obj(category)
+
         db.session.commit()
 
         # rebuild category path
         Category.repair_categories(category.pid)
-
+        
         return redirect(url_for('.show_categories'))
     else:
         current_app.logger.debug(form.errors)
@@ -374,7 +375,7 @@ def edit_category(id):
     form.description.data = category.description
     form.status.data = category.status
 
-    paginated_categories = Category.always_category(path=0, page=1, per_page=1000)
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,

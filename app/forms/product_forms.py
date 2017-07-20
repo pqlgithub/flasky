@@ -5,7 +5,8 @@ from flask_babelex import lazy_gettext
 from wtforms.fields import StringField, TextAreaField, IntegerField, FloatField, SelectField, RadioField, BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
-from app.models import BUSINESS_MODE, DANGEROUS_GOODS_TYPES
+from app.models import Category, BUSINESS_MODE, DANGEROUS_GOODS_TYPES
+from ..utils import Master
 
 class SupplierForm(Form):
     type = SelectField(lazy_gettext('Business Mode'), choices=BUSINESS_MODE, coerce=str)
@@ -27,6 +28,26 @@ class CategoryForm(Form):
     status = SelectField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
     ], coerce=int)
+
+
+    def validate_name(self, field):
+        """验证分类名称是否唯一"""
+        if Category.query.filter_by(master_uid=Master.master_uid(), name=field.data).first():
+            raise ValidationError(lazy_gettext('Category name is already exist!'))
+
+
+class EditCategoryForm(CategoryForm):
+
+    def __init__(self, category, *args, **kwargs):
+        super(EditCategoryForm, self).__init__(*args, **kwargs)
+
+        self.category = category
+
+    def validate_name(self, field):
+        """验证分类名称是否唯一"""
+        if field.data != self.category.name and \
+            Category.query.filter_by(master_uid=Master.master_uid(), name=field.data).first():
+            raise ValidationError(lazy_gettext('Category name is already exist!'))
 
 
 class ProductForm(Form):

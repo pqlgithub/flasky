@@ -397,13 +397,18 @@ class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
-    name = db.Column(db.String(32), unique=True, index=True)
+    name = db.Column(db.String(32), index=True)
     pid = db.Column(db.Integer, default=0)
     sort_order = db.Column(db.SmallInteger, default=0)
     description = db.Column(db.Text, nullable=True)
     status = db.Column(db.SmallInteger, default=1)
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    __table_args__ = (
+        db.UniqueConstraint('master_uid', 'name', name='uix_master_uid_name'),
+        db.Index('ix_master_uid_pid', 'master_uid', 'pid')
+    )
 
     # category and product => N to N
     products = db.relationship(
