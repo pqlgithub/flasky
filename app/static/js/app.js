@@ -93,6 +93,19 @@ function hook_all_check() {
 	});
 }
 
+function hook_ajax_modal() {
+	// 自动绑定ajax的链接
+	$('a.ajax-modal').click(function () {
+		var url = $(this).attr('href'), modal_name = $(this).data('modal');
+		$.get(url, function (html) {
+			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
+
+			$('#'+ modal_name).modal('show');
+		});
+		return false;
+	});
+}
+
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip({
 		container: 'body',
@@ -105,6 +118,8 @@ $(function () {
 	});
 
 	hook_all_check();
+
+	hook_ajax_modal();
 
 	// 删除 全部 or 单个
 	$('button.delete-all').click(function () {
@@ -127,17 +142,6 @@ $(function () {
 				}
 			}
 		});
-	});
-
-	// 自动绑定ajax的链接
-	$('a.ajax-modal').click(function () {
-		var url = $(this).attr('href'), modal_name = $(this).data('modal');
-		$.get(url, function (html) {
-			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
-
-			$('#'+ modal_name).modal('show');
-		});
-		return false;
 	});
 
 	$('.alert-dismissable').fadeTo(2000, 500).fadeOut(500, function(){

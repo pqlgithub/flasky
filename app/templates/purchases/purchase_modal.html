@@ -55,7 +55,7 @@
 							{{ sku.cost_price }} {{ current_site.currency }}
 						</td>
 						<td class="text-right">
-							{{ sku.stock_count }}
+							<strong class="text-danger">{{ sku.stock_count }}</strong>
 						</td>
 					</tr>
 					{% endfor %}

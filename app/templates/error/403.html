@@ -4,13 +4,21 @@
 <div class="row">
 	<div class="col-sm-8 col-sm-offset-2">
 
-		<div class="page-one">
-			<div class="alert alert-danger" role="alert">
-				<strong>Oh snap!</strong>
+		<div class="page-one text-center">
+			<h4 class="p-30 bg-default">
+				<i class="glyphicon glyphicon-warning-sign"></i>
+				<strong>Oh Snap!</strong>
 				你没有权限访问此页面，请返回重试！
-			</div>
+			</h4>
 		</div>
 
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-2 col-sm-offset-5">
+		<a href="{{url_for('main.index')}}" class="btn btn-danger btn-lg btn-block m-t-20">
+			{{ _('Go Back') }}
+		</a>
 	</div>
 </div>
 {% endblock %}

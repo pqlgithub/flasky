@@ -11,14 +11,16 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Purchase Serial') }}</label>
 					<div class="col-sm-4">
-						<p class="form-control-static">{{ purchase.serial_no }}</p>
+						<p class="form-control-static">
+							<strong class="text-danger">{{ purchase.serial_no }}</strong>
+						</p>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Supplier') }}</label>
 					<div class="col-sm-4">
-						<p class="form-control-static">{{ purchase.supplier.name }}</p>
+						<p class="form-control-static">{{ purchase.supplier.short_name }}</p>
 					</div>
 				</div>
 

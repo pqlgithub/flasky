@@ -51,7 +51,7 @@ def signup():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.')
+    flash('You have been logged out.', 'success')
     return redirect(url_for('main.index'))
 
 
@@ -63,9 +63,9 @@ def confirm(token):
         return redirect(url_for('main.index'))
 
     if current_user.confirm(token):
-        flash('You have confirmed your account. Thanks!')
+        flash('You have confirmed your account. Thanks!', 'success')
     else:
-        flash('The confirmation link is invalid or has expired.')
+        flash('The confirmation link is invalid or has expired.', 'danger')
 
     return redirect(url_for('main.index'))
 
@@ -78,7 +78,7 @@ def resend_confirmation():
     send_email(current_user.email, 'Confirm Your Account',
 			   'auth/email/confirm', user=current_user, token=token)
 
-    flash('A new confirmation email has been sent to you by email.')
+    flash('A new confirmation email has been sent to you by email.', 'danger')
 
     return redirect(url_for('main.index'))
 

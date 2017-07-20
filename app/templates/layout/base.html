@@ -170,6 +170,18 @@
 		{% block private_js %}{% endblock %}
 		<script type="text/javascript">
 			$(function(){
+				$(".form_datetime").datetimepicker({
+					minView: "month",
+					language: "{{ g.locale|default('en') }}",
+					format: "yyyy-mm-dd",
+					autoclose: true,
+					todayBtn: true,
+					pickerPosition: "bottom-left"
+				});
+				$('.form-date span.input-group-addon').click(function () {
+					$('.form_datetime').datetimepicker('show');
+				});
+
 				// Image Manager
 				$(document).on('click', 'a[data-toggle=\'image\']', function(e) {
 					var $element = $(this);

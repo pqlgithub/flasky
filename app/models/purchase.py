@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import url_for
+from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
 from ..utils import timestamp, gen_serial_no
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, DEFAULT_IMAGES
@@ -15,6 +15,10 @@ class Purchase(db.Model):
     """采购单"""
 
     __tablename__ = 'purchases'
+
+    __searchable__ = ['serial_no', 'express_no', 'product_name', 'product_sku', 'supplier_name']
+    __analyzer__ = ChineseAnalyzer()
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(16), unique=True, index=True, nullable=False)
@@ -84,6 +88,11 @@ class Purchase(db.Model):
         for item in self.products:
             product_sku.append(item.sku_serial_no)
         return ';'.join(product_sku)
+
+    @property
+    def supplier_name(self):
+        current_supplier = self.supplier
+        return '{} {}'.format(current_supplier.short_name, current_supplier.full_name)
 
 
     @property

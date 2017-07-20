@@ -47,7 +47,11 @@
 		var $btn = $(this), post_url=$(this).attr('href');
 		var supplier_id = $('#supplier_id').find(':selected').eq(0).val();
 		if (supplier_id == 0) {
-			alert('请先选择供应商');
+			swal(
+				'{{ _("Oops...") }}',
+			  	'{{ _("Please select the supplier first!") }}',
+			  	'error'
+			);
 			return false;
 		}
 		$('#sku-modal').remove();
@@ -143,7 +147,7 @@
 				<select name="supplier_id" id="supplier_id" class="form-control select2">
 					<option value="0">{{ _('Select suppliers') }}</option>
 					{% for s in suppliers %}
-					<option value="{{ s.id }}" {% if s.id == purchase.supplier_id %}selected="selected"{% endif %}>{{ s.name }}</option>
+					<option value="{{ s.id }}" {% if s.id == purchase.supplier_id %}selected="selected"{% endif %}>{{ s.short_name }}</option>
 					{% endfor  %}
 				</select>
 				{% for error in form.errors.supplier_id %}
@@ -230,13 +234,12 @@
 			</div>
 			{{ form.arrival_date.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-3">
-				<div class="input-group">
-					{{ form.arrival_date(id="arrival_date", class="form-control") }}
+				<div class="input-group form-date">
+					{{ form.arrival_date(id="arrival_date", class="form-control form_datetime", placeholder="select date") }}
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-calendar"></i>
 					</span>
 				</div>
-
 			</div>
 		</div>
 

@@ -299,6 +299,9 @@ def add_sku(id):
 
     mode = 'create'
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
+    form.cost_price.data = product.cost_price
+    form.sale_price.data = product.sale_price
+    form.s_weight.data = product.s_weight
     return render_template('products/modal_sku.html',
                            form=form,
                            mode=mode,
@@ -325,6 +328,7 @@ def edit_sku(id, s_id):
         return full_response(True, R201_CREATED, sku.to_json())
 
     mode = 'edit'
+
     form.serial_no.data = sku.serial_no
     form.sku_cover_id.data = sku.cover_id
     form.cost_price.data = sku.cost_price

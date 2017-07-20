@@ -15,6 +15,7 @@ bundles = {
         'js/moxie.min.js',
         'js/plupload.full.min.js',
         'js/jquery.plupload.queue.js',
+        'js/bootstrap-datetimepicker.js',
         output='js/admin.min.js'
     ),
     'app_js': Bundle(
@@ -28,6 +29,7 @@ bundles = {
         'css/sweet-alert.css',
         'css/select2.css',
         'css/jquery.plupload.queue.css',
+        'css/bootstrap-datetimepicker.css',
         filters='cssmin',
         output='css/admin.min.css'
     ),

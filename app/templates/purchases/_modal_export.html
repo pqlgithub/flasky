@@ -11,7 +11,7 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label">{{ _('Warehouse') }}</label>
 					<div class="col-sm-6">
-						<select name="wh_id" class="select2">
+						<select name="wh_id" class="form-control select2">
 							<option value="0">{{ _('Select Warehouse') }}</option>
 							{% for wh in warehouse_list %}
 							<option value="{{ wh.id }}">{{ wh.name }}</option>
@@ -51,8 +51,12 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	$('.select2').select2({
-		'width': '100%'
+	$('.select2').each(function (i, obj) {
+		if (!$(obj).data("select2")) {
+			$(obj).select2({
+				'width': '100%'
+			});
+		}
 	});
 
 	$('#export-submit-btn').click(function (e) {

@@ -64,11 +64,11 @@
 					<div class="col-sm-10">
 						{% if mode == 'create' %}
 						<a href="javascript:void(0);" id="sku_cover_thumb_image" data-target="sku_cover" data-toggle="image" class="img-thumbnail">
-							<img src="{{ url_for('static', filename='img/no_image-100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_image-100x100.png') }}">
+							<img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
 						</a>
 						{% else %}
 						<a href="javascript:void(0);" id="sku_cover_thumb_image" data-target="sku_cover" data-toggle="image" class="img-thumbnail">
-							<img src="{{ sku.cover.view_url|default(url_for('static', filename='img/no_image-100x100.png')) }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_image-100x100.png') }}">
+							<img src="{{ sku.cover.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
 						</a>
 						{% endif %}
 						<input id="sku_cover_id" name="sku_cover_id" value="{{ form.sku_cover_id.data }}" type="hidden">

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import datetime
 from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
+from flask_sqlalchemy import Pagination
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from io import BytesIO
@@ -11,8 +13,8 @@ from barcode.writer import ImageWriter
 from openpyxl.workbook import Workbook
 from . import main
 from .. import db
-from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp
-from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS
+from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response
+from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS, SORT_TYPE_CODE
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
     TransactDetail, InWarehouse, StockHistory, ProductStock, Site
@@ -60,39 +62,63 @@ def show_purchases(page=1):
     paginated_purchases = query.order_by('created_at desc').paginate(page, per_page)
 
     return render_template('purchases/show_list.html',
-                            paginated_purchases=paginated_purchases,
+                            paginated_purchases=paginated_purchases.items,
+                            pagination=paginated_purchases,
                             sub_menu='purchases',
                             status=status,
                             **load_common_data())
 
 
-@main.route('/purchases')
 @main.route('/purchases/search', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_purchase')
-def search_purchases(page=1):
-    per_page = request.args.get('per_page', 10, type=int)
-    status = request.args.get('s', 0, type=int)
-    wh_id = request.args.get('wh_id', type=int)
-    date = request.args.get('d', 0, type=int)
-    s_t = request.values.get('s_t', 'ad')
-    q_k = request.values.get('q_k')
+def search_purchases():
+    """支持全文索引搜索采购单"""
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    qk = request.values.get('qk')
+    wh_id = request.values.get('wh_id', type=int)
+    status = request.values.get('s', type=int, default=0)
+    days = request.values.get('d', 0, type=int)
+    sk = request.values.get('sk', type=str, default='ad')
+
+    current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
     builder = Purchase.query.filter_by(master_uid=Master.master_uid())
+    if qk:
+        builder = builder.whoosh_search(qk, like=True)
     if wh_id:
         builder = builder.filter_by(warehouse_id=wh_id)
     if status:
         builder = builder.filter_by(status=status)
-    if date:
-        pass # todo
+    if days:
+        offset_days_ago = datetime.date.today() - datetime.timedelta(days)
+        builder = builder.filter(Purchase.created_at >= offset_days_ago)
 
-    paginated_purchases = builder.order_by('created_at desc').paginate(page, per_page)
+    purchases = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
 
-    return render_template('purchases/purchase_table.html',
-                            paginated_purchases=paginated_purchases,
-                            sub_menu='purchases',
-                            status=status,
-                            **load_common_data())
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_purchases = purchases[start:end]
+    print(paginated_purchases)
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('purchases/search_result.html',
+                           qk=qk,
+                           wh_id=wh_id,
+                           s=status,
+                           d=days,
+                           sk=sk,
+                           pagination=pagination,
+                           paginated_purchases=paginated_purchases)
 
 
 @main.route('/purchases/payments')
@@ -112,6 +138,23 @@ def payments(page=1):
                            sub_menu='purchases',
                            f=status,
                            **load_common_data())
+
+
+@main.route('/purchases/<string:rid>/preview')
+@login_required
+@user_has('admin_purchase')
+def preview_purchase(rid):
+    """预览或查看采购单详情"""
+    purchase = Purchase.query.filter_by(serial_no=rid).first()
+    # 限制权限
+    if purchase is None or purchase.master_uid != Master.master_uid():
+        abort(403)
+
+    return render_template('purchases/view_detail.html',
+                           purchase=purchase,
+                           f=purchase.payed,
+                           **load_common_data())
+
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
 @login_required
@@ -170,7 +213,7 @@ def create_purchase():
         current_app.logger.debug(form.errors)
 
     mode = 'create'
-    suppliers = Supplier.query.order_by('created_at desc').all()
+    suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').all()
 
     return render_template('purchases/create_and_edit.html',
                            form=form,
@@ -181,13 +224,15 @@ def create_purchase():
                            **load_common_data())
 
 
-@main.route('/purchases/<int:id>/edit', methods=['GET', 'POST'])
+@main.route('/purchases/<string:rid>/edit', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_purchase')
-def edit_purchase(id):
-    purchase = Purchase.query.get_or_404(id)
-    current_app.logger.debug(request.form)
-    current_app.logger.debug(request.form.getlist('sku[]'))
+def edit_purchase(rid):
+    purchase = Purchase.query.filter_by(serial_no=rid).first()
+    # 限制权限
+    if purchase is None or purchase.master_uid != Master.master_uid():
+        abort(403)
+
     form = PurchaseForm()
     if form.validate_on_submit():
         # 获取选中的sku
@@ -237,7 +282,7 @@ def edit_purchase(id):
         current_app.logger.debug(form.errors)
 
     mode = 'edit'
-    suppliers = Supplier.query.order_by('created_at desc').all()
+    suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').all()
 
     form.warehouse_id.data = purchase.warehouse_id
     form.supplier_id.data = purchase.supplier_id
@@ -265,8 +310,11 @@ def delete_purchase():
         abort(404)
 
     try:
-        for id in selected_ids:
-            purchase = Purchase.query.get_or_404(int(id))
+        for rid in selected_ids:
+            purchase = Purchase.query.filter_by(serial_no=rid).first()
+            # 验证权限
+            if purchase.master_uid != Master.master_uid():
+                continue
             db.session.delete(purchase)
         db.session.commit()
 
@@ -310,29 +358,32 @@ def delete_purchase_item():
 def ajax_verify():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
-        return status_response(False, custom_status('Delete purchase id is NULL!'))
+        return custom_response(False, gettext('Verify purchase id is NULL!'))
 
     try:
         for id in selected_ids:
-            purchase = Purchase.query.get(int(id))
+            purchase = Purchase.query.filter_by(serial_no=id).first()
             if purchase is None:
-                return status_response(False, custom_status('Delete purchase id[%s] is NULL!' % id))
+                return custom_response(False, gettext('Verify purchase is Null!'))
+            if purchase.master_uid != Master.master_uid():
+                return custom_response(False, gettext('You do not have permission to operate'))
+
             # 审批完毕，待到货状态
             purchase.update_status(5)
 
         db.session.commit()
     except:
         db.session.rollback()
-        return status_response(False, custom_status('Delete purchase is fail!'))
+        return status_response(False, custom_status('Verify purchase is fail!'))
 
     return full_response(True, R200_OK, selected_ids)
 
 
-@main.route('/purchases/<int:id>/ajax_arrival', methods=['GET', 'POST'])
+@main.route('/purchases/<string:rid>/ajax_arrival', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_purchase')
-def ajax_arrival(id):
-    purchase = Purchase.query.get(id)
+def ajax_arrival(rid):
+    purchase = Purchase.query.filter_by(serial_no=rid).first()
     if request.method == 'POST':
         quantity_offset = 0
         detail_products = []
@@ -414,7 +465,7 @@ def ajax_arrival(id):
 
     return render_template('purchases/_modal_arrival.html',
                            purchase=purchase,
-                           post_url=url_for('.ajax_arrival', id=id))
+                           post_url=url_for('.ajax_arrival', rid=rid))
 
 
 @main.route('/purchases/ajax_apply_pay', methods=['POST'])
@@ -426,12 +477,14 @@ def ajax_apply_pay():
         return status_response(False, custom_status('Apply purchase pay, id is NULL!'))
 
     try:
-        for id in selected_ids:
-            purchase = Purchase.query.get(int(id))
+        for rid in selected_ids:
+            purchase = Purchase.query.filter_by(serial_no=rid).first()
             if purchase is None:
                 return status_response(False, custom_status('Apply purchase pay, id[%s] is NULL!' % id))
             if purchase.payed != 1:
                 return status_response(False, custom_status('Purchase[%s] is already payed!' % id))
+            if purchase.master_uid != Master.master_uid():
+                return custom_response(False, gettext('You do not have permission to operate'))
 
             # 申请付款，进入待付款流程
             purchase.update_payed(2)
@@ -456,11 +509,14 @@ def ajax_apply_pay():
     return full_response(True, R200_OK, selected_ids)
 
 
-@main.route('/purchases/<int:id>/add_express_no', methods=['GET', 'POST'])
+@main.route('/purchases/<string:rid>/add_express_no', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_purchase')
-def purchase_express_no(id):
-    purchase = Purchase.query.get(id)
+def purchase_express_no(rid):
+    purchase = Purchase.query.filter_by(serial_no=rid).first()
+    if purchase is None or purchase.master_uid != Master.master_uid():
+        return gettext('You do not have permission to operate')
+
     form = PurchaseExpressForm()
     if form.validate_on_submit():
         purchase.express_name = form.express_name.data
@@ -475,8 +531,7 @@ def purchase_express_no(id):
     return render_template('purchases/_modal_express.html',
                            purchase=purchase,
                            form=form,
-                           post_url=url_for('.purchase_express_no', id=id))
-
+                           post_url=url_for('.purchase_express_no', rid=rid))
 
 
 @main.route('/purchases/output_purchase')
@@ -528,7 +583,8 @@ def print_purchase_pdf():
         'express_no': gettext('Express No.'),
         'freight': gettext('Freight'),
         'other_charge': gettext('Other Charge'),
-        'total_amount': gettext('Total Amount')
+        'total_amount': gettext('Total Amount'),
+        'arrival_quantity': gettext('Arrival Quantity')
     }
 
     code_bars = {}

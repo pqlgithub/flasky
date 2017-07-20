@@ -167,7 +167,8 @@ SORT_TYPE_CODE = {
     'ad': 'created_at',
     'ud': 'updated_at',
     'sq': 'current_count',
-    'ed': 'end_date'
+    'ed': 'end_date',
+    'dd': 'arrival_date'
 }
 
 # 行业范围

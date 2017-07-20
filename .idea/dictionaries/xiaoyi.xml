@@ -9,9 +9,11 @@
       <w>applyable</w>
       <w>asctime</w>
       <w>attrs</w>
+      <w>autoclose</w>
       <w>autoescape</w>
       <w>croped</w>
       <w>cssmin</w>
+      <w>datetimepicker</w>
       <w>endassets</w>
       <w>endwith</w>
       <w>errorlog</w>
@@ -69,6 +71,7 @@
       <w>whooses</w>
       <w>whooshalchemyplus</w>
       <w>wsgi</w>
+      <w>yyyy</w>
     </words>
   </dictionary>
 </component>

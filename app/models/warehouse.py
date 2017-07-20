@@ -117,7 +117,7 @@ class WarehouseShelve(db.Model):
     __tablename__ = 'warehouse_shelves'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), unique=True, nullable=False)
+    name = db.Column(db.String(32), index=True, nullable=False)
     # 类型 1：良品 2：次品
     type = db.Column(db.SmallInteger, default=1)
     description = db.Column(db.String(255), nullable=True)

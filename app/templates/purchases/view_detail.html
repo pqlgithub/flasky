@@ -1,0 +1,138 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'purchases/_sub_menu.html' %}
+{% endblock %}
+
+{% block jquery %}
+{#<script type="text/javascript">#}
+
+{#</script>#}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Preview Purchase') }}
+		<span class="pull-right">
+			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form id="purchase-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Purchase serial') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					<strong class="text-danger">{{ purchase.serial_no }}</strong>
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Arrival Date') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					<strong class="text-danger">{{ purchase.arrival_date }}</strong>
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Warehouse') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					{{ purchase.warehouse.name }}
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Supplier') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					{{ purchase.supplier.short_name }}
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Freight') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					{{ purchase.freight }} {{ current_site.currency }}
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Extra Charge') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					{{ purchase.extra_charge }} {{ current_site.currency }}
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group form-group-lg">
+			<div class="col-sm-12 text-right">
+				<label class="control-label">
+					SKU种类：<span id="sku_count" class="text-danger">{{ purchase.sku_count|default(0) }}</span>， 采购数量：<span id="purchase_quantity" class="text-danger">{{ purchase.quantity_sum|default(0) }}</span>， 总价：<span id="total_amount" class="text-danger">{{ purchase.total_amount|default(0.0) }} {{ current_site.currency }}</span>
+				</label>
+			</div>
+		</div>
+
+		<table class="table table-bordered m-t-20 m-b-30">
+			<thead>
+				<tr>
+					<th class="text-center">{{ _('Product Image') }}</th>
+					<th>{{ _('Product Name') }}</th>
+					<th class="text-center">{{ _('Product Model') }}</th>
+					<th class="text-center">{{ _('Purchase Price') }}</th>
+					<th class="text-center">{{ _('Purchase Quantity') }}</th>
+					<th class="text-right">{{ _('Total Amount') }}</th>
+				</tr>
+			</thead>
+			<tbody id="choose-products">
+				{% for item in purchase.products %}
+				<tr id="tr_sku_{{ item.product_sku_id }}">
+					<td class="text-center">
+						<img src="{{ item.cover.view_url }}" width="60px">
+					</td>
+					<td>
+						{{ item.sku.serial_no }}
+					</td>
+					<td class="text-center">
+						<label class="label label-warning">{{ item.sku.s_model }}</label>
+					</td>
+					<td class="text-center">
+						<label id="cost_price_{{ item.product_sku_id }}">{{ item.cost_price }}</label> {{ current_site.currency }}
+					</td>
+					<td class="text-center">
+						<strong class="text-danger">{{ item.quantity }}</strong>
+					</td>
+					<td class="text-right">
+						<span id="amount_{{ item.product_sku_id }}">{{ item.cost_price*item.quantity }}</span> {{ current_site.currency }}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<div class="form-group form-group-lg">
+			<label class="col-sm-2 control-label">{{ _('Description') }}</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					{{ purchase.description }}
+				</p>
+			</div>
+		</div>
+
+	</form>
+
+</div>
+{% endblock %}
