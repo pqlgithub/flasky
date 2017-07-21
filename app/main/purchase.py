@@ -188,7 +188,7 @@ def create_purchase():
             purchase_products.append(sku)
 
         purchase = Purchase(
-            master_uid=current_user.id,
+            master_uid=Master.master_uid(),
             serial_no=Purchase.make_unique_serial_no(gen_serial_no('CG')),
             warehouse_id=form.warehouse_id.data,
             supplier_id=form.supplier_id.data,
@@ -407,7 +407,7 @@ def ajax_arrival(rid):
             # 入库单明细
             ori_stock = ProductStock.get_stock_quantity(purchase.warehouse_id, sku_id)
             stock_history = StockHistory(
-                master_uid=current_user.id,
+                master_uid=Master.master_uid(),
                 warehouse_id=purchase.warehouse_id,
                 product_sku_id=sku_id,
                 sku_serial_no=item_product.sku_serial_no,
@@ -492,7 +492,7 @@ def ajax_apply_pay():
 
             # 自动同步产生待付款单
             transaction = TransactDetail(
-                master_uid=current_user.id,
+                master_uid=Master.master_uid(),
                 serial_no=gen_serial_no('FK'),
                 type=2,
                 transact_user=purchase.supplier.name,

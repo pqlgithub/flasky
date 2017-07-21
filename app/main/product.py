@@ -164,7 +164,7 @@ def create_product():
             form.cover_id.data = default_cover.id
 
         product = Product(
-            master_uid=current_user.id,
+            master_uid=Master.master_uid(),
             serial_no=Product.make_unique_serial_no(form.serial_no.data),
             supplier_id=form.supplier_id.data,
             name=form.name.data,
@@ -395,7 +395,7 @@ def create_category():
     form = CategoryForm()
     if form.validate_on_submit():
         category = Category(
-            master_uid=current_user.id,
+            master_uid=Master.master_uid(),
             name=form.name.data,
             pid=form.pid.data,
             sort_order=form.sort_order.data,
