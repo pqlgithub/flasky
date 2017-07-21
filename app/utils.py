@@ -41,6 +41,12 @@ def string_to_timestamp(str_value):
     return timestamp
 
 
+def datestr_to_timestamp(str_value):
+    """字符串日期转换成时间戳"""
+    dt = datetime.strptime(str_value, "%Y-%m-%d")
+    return time.mktime(dt.timetuple())
+
+
 def gen_serial_no(prefix='1'):
     """生成产品编号"""
     serial_no = prefix

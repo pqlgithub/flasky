@@ -13,6 +13,8 @@
       <w>autoescape</w>
       <w>croped</w>
       <w>cssmin</w>
+      <w>datestr</w>
+      <w>datestring</w>
       <w>datetimepicker</w>
       <w>endassets</w>
       <w>endwith</w>

@@ -118,11 +118,11 @@ DEFAULT_DIRECTORY = {
 
 # 采购到货状态
 PURCHASE_STATUS = (
-    (1, lazy_gettext('Pending Review'), 'warning'),
-    (5, lazy_gettext('Pending Arrival'), 'danger'),
-    (10, lazy_gettext('Pending Storage'), 'primary'),
-    (15, lazy_gettext('Finished'), 'success'),
-    (-1, lazy_gettext('Canceled'), 'default')
+    (1, gettext('Pending Review'), lazy_gettext('Pending Review'), 'warning'),
+    (5, gettext('Pending Arrival'), lazy_gettext('Pending Arrival'), 'danger'),
+    (10, gettext('Pending Storage'), lazy_gettext('Pending Storage'), 'primary'),
+    (15, gettext('Finished'), lazy_gettext('Finished'), 'success'),
+    (-1, gettext('Canceled'), lazy_gettext('Canceled'), 'default')
 )
 
 # 采购付款状态

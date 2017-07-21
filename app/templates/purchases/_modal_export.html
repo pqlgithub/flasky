@@ -33,11 +33,21 @@
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label">{{ _('Date') }}</label>
-					<div class="col-sm-3">
-						<input type="text" name="start_date " class="form-control input-short" placeholder="start date">
+					<div class="col-sm-4">
+						<div class="input-group form-date">
+							<input type="text" name="start_date" class="form-control input-short form_datetime" placeholder="start date">
+							<span class="input-group-addon">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</span>
+						</div>
 					</div>
-					<div class="col-sm-3">
-						<input type="text" name="end_date" class="form-control input-short m-l-20" placeholder="end date">
+					<div class="col-sm-4">
+						<div class="input-group form-date">
+							<input type="text" name="end_date" class="form-control input-short form_datetime m-l-20" placeholder="end date">
+							<span class="input-group-addon">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</span>
+						</div>
 					</div>
 				</div>
 
@@ -57,6 +67,18 @@
 				'width': '100%'
 			});
 		}
+	});
+
+	$(".form_datetime").datetimepicker({
+		minView: "month",
+		language: "{{ g.locale|default('en') }}",
+		format: "yyyy-mm-dd",
+		autoclose: true,
+		todayBtn: true,
+		pickerPosition: "bottom-left"
+	});
+	$('.form-date span.input-group-addon').click(function () {
+		$('.form_datetime').datetimepicker('show');
 	});
 
 	$('#export-submit-btn').click(function (e) {

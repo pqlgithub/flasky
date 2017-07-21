@@ -13,7 +13,8 @@ from barcode.writer import ImageWriter
 from openpyxl.workbook import Workbook
 from . import main
 from .. import db
-from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response
+from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response,\
+    datestr_to_timestamp
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS, SORT_TYPE_CODE
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
@@ -631,11 +632,18 @@ def export_purchase():
             status = [int(s) for s in status]
             builder = builder.filter(Purchase.status.in_(status))
 
+        if start_date:
+            builder = builder.filter(Purchase.created_at >= datestr_to_timestamp(start_date))
+
+        if end_date:
+            builder = builder.filter(Purchase.created_at <= datestr_to_timestamp(end_date))
+
+
         purchase_list = builder.order_by('created_at desc').all()
 
-        dest_filename = r'mic_purchase_list.xlsx'
+        dest_filename = r'mic_purchase_list_{}.xlsx'.format(datetime.datetime.now().strftime('%Y%m%d'))
         export_path = current_app.root_path + '/static/'
-
+        
         # 新建文件
         wb = Workbook()
 
@@ -648,38 +656,42 @@ def export_purchase():
         purchase_columns = [key for key in PURCHASE_EXCEL_FIELDS.keys()]
         current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
 
-        # 写入数据
-        for row in xrange(1, len(purchase_list) + 1):
-            if row > 1:
-                purchase = purchase_list[row - 1]
-                warehouse = purchase.warehouse
-                supplier = purchase.supplier
+        # 写入表头
+        for col in xrange(1, len(purchase_columns) + 1):
+            field = purchase_columns[col - 1]
+            ws.cell(row=1, column=col, value=_rebuild_header_value(field, current_site))
+
+        # 写入数据, 从第2行开始写入
+        for row in xrange(2, len(purchase_list) + 2):
+            purchase = purchase_list[row - 2]
+            warehouse = purchase.warehouse
+            supplier = purchase.supplier
 
             current_app.logger.debug('Current row: %d' % row)
+
             for col in xrange(1, len(purchase_columns) + 1):
                 field = purchase_columns[col - 1]
-                current_app.logger.debug('Current col: %s' % field)
-                if row == 1: # 表头
-                    ws.cell(row=row, column=col, value=_rebuild_header_value(field, current_site))
-                else:
-                    if field == 'warehouse':
-                        cell_value = warehouse.to_json().get('name')
-                    elif field == 'supplier':
-                        cell_value = supplier.to_json().get('name')
-                    elif field in ['contact_name', 'phone']:
-                        cell_value = supplier.to_json().get(field)
-                    elif field == ['created_at', 'arrival_at']:
-                        cell_value = timestamp2string(purchase[field]) if purchase[field] > 0 else ''
-                    elif field == 'product_name':
-                        cell_value = purchase.product_name
-                    elif field == 'product_sku':
-                        cell_value = purchase.product_sku
-                    elif field == 'status':
-                        cell_value = purchase.status_label[1]
-                    else:
-                        cell_value = purchase.to_json().get(field)
 
-                    ws.cell(row=row, column=col, value=cell_value)
+                current_app.logger.debug('Current col: %s' % field)
+
+                if field == 'warehouse':
+                    cell_value = warehouse.to_json().get('name')
+                elif field == 'supplier':
+                    cell_value = supplier.to_json().get('short_name')
+                elif field in ['contact_name', 'phone']:
+                    cell_value = supplier.to_json().get(field)
+                elif field in ['created_at', 'arrival_at']:
+                    cell_value = timestamp2string(purchase.to_json().get(field)) if purchase.to_json().get(field) > 0 else ''
+                elif field == 'product_name':
+                    cell_value = purchase.product_name
+                elif field == 'product_sku':
+                    cell_value = purchase.product_sku
+                elif field == 'status':
+                    cell_value = purchase.status_label[1]
+                else:
+                    cell_value = purchase.to_json().get(field)
+
+                ws.cell(row=row, column=col, value=cell_value)
 
         export_file = '{}{}'.format(export_path, dest_filename)
         wb.save(filename=export_file)
