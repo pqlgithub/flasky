@@ -502,7 +502,7 @@ def search_suppliers():
 
     builder = Supplier.query.filter_by(master_uid=Master.master_uid())
     if qk:
-        builder = builder.whoosh_search(qk)
+        builder = builder.whoosh_search(qk, like=True)
 
     suppliers = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
 
