@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-21 12:05+0800\n"
-"PO-Revision-Date: 2017-07-19 00:51+0800\n"
+"POT-Creation-Date: 2017-07-21 13:42+0800\n"
+"PO-Revision-Date: 2017-07-21 13:43+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
+"X-Generator: Poedit 2.0.2\n"
 
 #: app/constant.py:7
 msgid "China"
@@ -343,7 +344,7 @@ msgstr "密码"
 
 #: app/auth/forms.py:13
 msgid "Remember me"
-msgstr ""
+msgstr "记住我"
 
 #: app/auth/forms.py:18 app/forms/user_forms.py:23
 #: app/forms/warehouse_forms.py:16 app/templates/users/add_child_user.html:26
@@ -561,18 +562,20 @@ msgid "Status"
 msgstr "状态"
 
 #: app/forms/product_forms.py:29 app/forms/product_forms.py:69
-#: app/forms/warehouse_forms.py:24 app/templates/categories/show_list.html:50
+#: app/forms/warehouse_forms.py:24 app/models/product.py:41
+#: app/templates/categories/show_list.html:50
 msgid "Enabled"
 msgstr "正常"
 
 #: app/forms/product_forms.py:29 app/forms/product_forms.py:69
-#: app/forms/warehouse_forms.py:24 app/templates/categories/show_list.html:52
+#: app/forms/warehouse_forms.py:24 app/models/product.py:42
+#: app/templates/categories/show_list.html:52
 msgid "Disabled"
 msgstr "禁用"
 
 #: app/forms/product_forms.py:36 app/forms/product_forms.py:50
 msgid "Category name is already exist!"
-msgstr ""
+msgstr "分类名称已被占用！"
 
 #: app/forms/product_forms.py:56
 msgid "Category"
@@ -769,15 +772,15 @@ msgstr "小计"
 
 #: app/main/purchase.py:362
 msgid "Verify purchase id is NULL!"
-msgstr ""
+msgstr "审核采购单为空！"
 
 #: app/main/purchase.py:368
 msgid "Verify purchase is Null!"
-msgstr ""
+msgstr "审核采购单为空！"
 
 #: app/main/purchase.py:370 app/main/purchase.py:488 app/main/purchase.py:519
 msgid "You do not have permission to operate"
-msgstr ""
+msgstr "你没有权限进行此项操作"
 
 #: app/main/warehouse.py:459
 msgid "Default Shelve"
@@ -822,6 +825,34 @@ msgstr "待评价"
 #: app/models/order.py:54
 msgid "Rated"
 msgstr "已评价"
+
+#: app/models/product.py:26
+msgid "No"
+msgstr "无"
+
+#: app/models/product.py:27
+msgid "Electricity"
+msgstr "含电"
+
+#: app/models/product.py:28
+msgid "Liquid"
+msgstr "液体"
+
+#: app/models/product.py:29
+msgid "Powder"
+msgstr "粉末"
+
+#: app/models/product.py:34
+msgid "Direct purchasing"
+msgstr "直采"
+
+#: app/models/product.py:35
+msgid "Proxy"
+msgstr "代理经销"
+
+#: app/models/product.py:36
+msgid "Exclusive"
+msgstr "独家"
 
 #: app/models/warehouse.py:21
 msgid "Private Build"
@@ -1727,7 +1758,7 @@ msgstr "系统默认设置，不建议修改"
 
 #: app/templates/products/create_and_edit.html:188
 msgid "Product Size（LxWxH）"
-msgstr ""
+msgstr "产品尺寸（长x宽x高）"
 
 #: app/templates/products/create_and_edit.html:303
 #: app/templates/products/modal_sku.html:5
@@ -1778,7 +1809,7 @@ msgstr "搜索产品SKU或名称..."
 #: app/templates/purchases/show_list.html:241
 #: app/templates/suppliers/show_list.html:71
 msgid "Default"
-msgstr ""
+msgstr "默认"
 
 #: app/templates/products/show_list.html:76
 #: app/templates/purchases/show_list.html:247
@@ -1862,11 +1893,11 @@ msgstr "采购付款"
 
 #: app/templates/purchases/create_and_edit.html:51
 msgid "Oops..."
-msgstr ""
+msgstr "哇哦"
 
 #: app/templates/purchases/create_and_edit.html:52
 msgid "Please select the supplier first!"
-msgstr ""
+msgstr "请先选定供应商！"
 
 #: app/templates/purchases/create_and_edit.html:111
 msgid "Add Purchase"
@@ -1927,11 +1958,11 @@ msgstr "已到货"
 
 #: app/templates/purchases/view_detail.html:16
 msgid "Preview Purchase"
-msgstr ""
+msgstr "查看"
 
 #: app/templates/purchases/view_detail.html:28
 msgid "Purchase serial"
-msgstr ""
+msgstr "采购单号"
 
 #: app/templates/service/_sub_menu.html:3
 msgid "Common service"
@@ -2446,12 +2477,5 @@ msgstr "标记次品"
 #~ msgid "此昵称已被占用。"
 #~ msgstr "此昵称已被占用。"
 
-#~ msgid "新增"
-#~ msgstr ""
-
-#~ msgid "删除"
-#~ msgstr ""
-
 #~ msgid "Product Size"
 #~ msgstr "产品尺寸"
-

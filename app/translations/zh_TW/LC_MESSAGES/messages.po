@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-21 12:05+0800\n"
+"POT-Creation-Date: 2017-07-21 13:42+0800\n"
 "PO-Revision-Date: 2017-07-18 21:24+0800\n"
 "Last-Translator: \n"
 "Language: zh_Hant_TW\n"
@@ -561,12 +561,14 @@ msgid "Status"
 msgstr ""
 
 #: app/forms/product_forms.py:29 app/forms/product_forms.py:69
-#: app/forms/warehouse_forms.py:24 app/templates/categories/show_list.html:50
+#: app/forms/warehouse_forms.py:24 app/models/product.py:41
+#: app/templates/categories/show_list.html:50
 msgid "Enabled"
 msgstr ""
 
 #: app/forms/product_forms.py:29 app/forms/product_forms.py:69
-#: app/forms/warehouse_forms.py:24 app/templates/categories/show_list.html:52
+#: app/forms/warehouse_forms.py:24 app/models/product.py:42
+#: app/templates/categories/show_list.html:52
 msgid "Disabled"
 msgstr ""
 
@@ -821,6 +823,34 @@ msgstr ""
 
 #: app/models/order.py:54
 msgid "Rated"
+msgstr ""
+
+#: app/models/product.py:26
+msgid "No"
+msgstr ""
+
+#: app/models/product.py:27
+msgid "Electricity"
+msgstr ""
+
+#: app/models/product.py:28
+msgid "Liquid"
+msgstr ""
+
+#: app/models/product.py:29
+msgid "Powder"
+msgstr ""
+
+#: app/models/product.py:34
+msgid "Direct purchasing"
+msgstr ""
+
+#: app/models/product.py:35
+msgid "Proxy"
+msgstr ""
+
+#: app/models/product.py:36
+msgid "Exclusive"
 msgstr ""
 
 #: app/models/warehouse.py:21

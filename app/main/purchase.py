@@ -643,7 +643,7 @@ def export_purchase():
 
         dest_filename = r'mic_purchase_list_{}.xlsx'.format(datetime.datetime.now().strftime('%Y%m%d'))
         export_path = current_app.root_path + '/static/'
-        
+
         # 新建文件
         wb = Workbook()
 

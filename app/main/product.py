@@ -479,6 +479,14 @@ def delete_category():
     return redirect(url_for('.show_categories'))
 
 
+@main.route('/suppliers/supply_list', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def supply_list():
+    return render_template('suppliers/supply_list.html',
+                           sub_menu='supply',
+                           **load_common_data())
+
 
 @main.route('/suppliers/search', methods=['GET', 'POST'])
 @login_required
@@ -539,7 +547,7 @@ def create_supplier():
     form = SupplierForm()
     if form.validate_on_submit():
         supplier = Supplier(
-            master_uid=current_user.id,
+            master_uid=Master.master_uid(),
             type=form.type.data,
             short_name=form.short_name.data,
             full_name=form.full_name.data,
@@ -552,6 +560,8 @@ def create_supplier():
         )
         db.session.add(supplier)
         db.session.commit()
+
+        flash('Add supplier is ok!', 'success')
 
         return redirect(url_for('.show_suppliers'))
 
@@ -573,6 +583,8 @@ def edit_supplier(id):
     if form.validate_on_submit():
         form.populate_obj(supplier)
         db.session.commit()
+
+        flash('Edit supplier is ok!', 'success')
 
         return redirect(url_for('.show_suppliers'))
 

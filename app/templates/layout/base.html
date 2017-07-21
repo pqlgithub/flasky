@@ -175,11 +175,10 @@
 					language: "{{ g.locale|default('en') }}",
 					format: "yyyy-mm-dd",
 					autoclose: true,
-					todayBtn: true,
-					pickerPosition: "bottom-left"
+					todayBtn: true
 				});
 				$('.form-date span.input-group-addon').click(function () {
-					$('.form_datetime').datetimepicker('show');
+					$(this).prev('.form_datetime').focus();
 				});
 
 				// Image Manager

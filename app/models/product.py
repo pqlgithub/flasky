@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import text
 from sqlalchemy.sql import func
+from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db, uploader
 from ..utils import timestamp, gen_serial_no
@@ -15,6 +16,7 @@ __all__ = [
     'CustomsDeclaration',
     'Brand',
     'Supplier',
+    'SupplyStats',
     'Category',
     'CategoryPath'
 ]
@@ -22,23 +24,23 @@ __all__ = [
 
 # 海关危险品
 DANGEROUS_GOODS_TYPES = [
-    ('N', '无'),
-    ('D', '含电'),
-    ('Y', '液体'),
-    ('F', '粉末')
+    ('N', gettext('No')),
+    ('D', gettext('Electricity')), # 含电
+    ('Y', gettext('Liquid')), # 液体
+    ('F', gettext('Powder')) # 粉末
 ]
 
 # 供应商合作方式
 BUSINESS_MODE = [
-    ('C', '采销'),
-    ('D', '代销'),
-    ('Q', '独家')
+    ('C', gettext('Direct purchasing')), # 直采
+    ('D', gettext('Proxy')), # 代理
+    ('Q', gettext('Exclusive')) # 独家
 ]
 
 # 产品的状态
 PRODUCT_STATUS = [
-    (1, 'Enabled', 'success'),
-    (-1, 'Disabled', 'danger')
+    (1, gettext('Enabled'), 'success'),
+    (-1, gettext('Disabled'), 'danger')
 ]
 
 # product and category => N to N
@@ -330,9 +332,9 @@ class Supplier(db.Model):
     # master user id
     master_uid = db.Column(db.Integer, index=True, default=0)
     # 简称
-    short_name = db.Column(db.String(100), unique=True, nullable=False)
+    short_name = db.Column(db.String(100), index=True, nullable=False)
     # 全称
-    full_name = db.Column(db.String(50), unique=True, nullable=False)
+    full_name = db.Column(db.String(50), index=True, nullable=False)
     # 合作方式
     type = db.Column(db.String(1), index=True, default='C')
     # 合作开始日期
@@ -387,6 +389,43 @@ class Supplier(db.Model):
         return {
             c.name: getattr(self, c.name, None) for c in self.__table__.columns
         }
+
+
+class SupplyStats(db.Model):
+    """供货关系"""
+
+    __tablename__ = 'supply_stats'
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('master_uid', 'supplier_id'),
+    )
+
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    sku_count = db.Column(db.Integer, default=0)
+    purchase_times = db.Column(db.Integer, default=0)
+    purchase_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    latest_trade_at = db.Column(db.Integer, default=0)
+
+    created_at = db.Column(db.Integer, index=True, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+
+    @staticmethod
+    def on_sync_change(mapper, connection, target):
+        """同步数据事件"""
+        # 1、统计sku count
+
+        # 2、统计purchase
+
+        # 3、同步数据
+        pass
+
+
+
+    def __repr__(self):
+        return '<SupplyStats %r>' % self.supplier_id
+
 
 
 class Brand(db.Model):
@@ -519,3 +558,7 @@ class CategoryPath(db.Model):
 
     def __repr__(self):
         return '<CategoryPath %r>' % self.category_id
+
+
+# 添加监听事件, 实现触发器
+# db.session.event(ProductSku, 'after_insert', SupplyStats.on_sync_change)
