@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import enum, time, random
 from datetime import datetime
-from flask import jsonify
+from flask import jsonify, current_app
 from flask_login import current_user
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
@@ -24,6 +24,25 @@ class Master:
             return current_user.id
         else:
             return current_user.master_uid if current_user else None
+
+class DBEnum(enum.Enum):
+
+    @classmethod
+    def get_enum_labels(cls):
+        return [i.value for i in cls]
+
+def create_db_session():
+    # create a new session
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import scoped_session, sessionmaker
+
+    psql_url = current_app.config['SQLALCHEMY_DATABASE_URI']
+    some_engine = create_engine(psql_url)
+
+    # create a configured 'Session' class
+    session = scoped_session(sessionmaker(bind=some_engine))
+
+    return session
 
 
 def timestamp():
@@ -95,8 +114,3 @@ def custom_status(message, code=400):
     }
 
 
-class DBEnum(enum.Enum):
-
-    @classmethod
-    def get_enum_labels(cls):
-        return [i.value for i in cls]

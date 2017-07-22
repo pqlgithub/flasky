@@ -127,9 +127,9 @@ PURCHASE_STATUS = (
 
 # 采购付款状态
 PURCHASE_PAYED = (
-    (1, lazy_gettext('Available to Apply'), 'danger'),
-    (2, lazy_gettext('Unpaid'), 'warning'),
-    (3, lazy_gettext('Finished Paid '), 'success')
+    (1, gettext('Available to Apply'), lazy_gettext('Available to Apply'), 'danger'),
+    (2, gettext('Unpaid'), lazy_gettext('Unpaid'), 'warning'),
+    (3, gettext('Finished Paid '), lazy_gettext('Finished Paid '), 'success')
 )
 
 # 入库状态
@@ -168,7 +168,10 @@ SORT_TYPE_CODE = {
     'ud': 'updated_at',
     'sq': 'current_count',
     'ed': 'end_date',
-    'dd': 'arrival_date'
+    'dd': 'arrival_date',
+    'sc': 'sku_count',
+    'pt': 'purchase_times',
+    'pa': 'purchase_amount'
 }
 
 # 行业范围

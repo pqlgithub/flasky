@@ -35,17 +35,25 @@ def make_shell_context():
 
 
 @manager.command
+def upload_files_s3():
+    """静态文件同步至S3"""
+    create_all(app, user=app.config['AWS_ACCESS_KEY'], password=app.config['AWS_ACCESS_SECRET'],
+               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1')
+
+
+@manager.command
+def update_index_all():
+    """手动建立索引"""
+    from flask_whooshalchemyplus import index_all
+    index_all(app)
+
+
+@manager.command
 def test():
     """Run the unit test."""
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
-
-
-@manager.command
-def upload_files_s3():
-    create_all(app, user=app.config['AWS_ACCESS_KEY'], password=app.config['AWS_ACCESS_SECRET'],
-               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1')
 
 
 @manager.command
@@ -64,16 +72,22 @@ def run_sql():
 
 
 
+# 常用操作命令
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
+
+# 更新API doc文档
 manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',
                                              output_path='public/docs'))
 
+# css/js 静态文件压缩
 manager.add_command('assets', ManageAssets(assets_env))
+
 # 初始化系统命令
 manager.add_command('initial', InitialData())
 
 # 项目的代理设置
 app.wsgi_app = ProxyFix(app.wsgi_app)
+
 if __name__ == '__main__':
     manager.run()

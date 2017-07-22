@@ -22,7 +22,7 @@ backlog = 2048
 # 工作模式为gevent
 workers_class = 'gunicorn.workers.ggevent.GeventWorker'
 
-debug = True
+debug = False
 
 # 如果不使用supervisord之类的进程管理工具可以是进程成为守护进程，否则会出问题
 daemon = True

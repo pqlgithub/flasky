@@ -82,6 +82,7 @@ def search_purchases():
     status = request.values.get('s', type=int, default=0)
     days = request.values.get('d', 0, type=int)
     sk = request.values.get('sk', type=str, default='ad')
+    ref = request.values.get('ref')
 
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
@@ -91,7 +92,10 @@ def search_purchases():
     if wh_id:
         builder = builder.filter_by(warehouse_id=wh_id)
     if status:
-        builder = builder.filter_by(status=status)
+        if ref == 'pay':
+            builder = builder.filter_by(payed=status)
+        else:
+            builder = builder.filter_by(status=status)
     if days:
         offset_days_ago = datetime.date.today() - datetime.timedelta(days)
         builder = builder.filter(Purchase.created_at >= offset_days_ago)
@@ -112,12 +116,14 @@ def search_purchases():
     print(paginated_purchases)
     pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
 
-    return render_template('purchases/search_result.html',
+    tpl = 'purchases/search_pay_result.html' if ref == 'pay' else 'purchases/search_result.html'
+    return render_template(tpl,
                            qk=qk,
                            wh_id=wh_id,
                            s=status,
                            d=days,
                            sk=sk,
+                           ref=ref,
                            pagination=pagination,
                            paginated_purchases=paginated_purchases)
 
@@ -135,7 +141,8 @@ def payments(page=1):
     paginated_purchases = query.order_by('created_at asc').paginate(page, per_page)
 
     return render_template('purchases/pay_list.html',
-                           paginated_purchases=paginated_purchases,
+                           paginated_purchases=paginated_purchases.items,
+                           pagination=paginated_purchases,
                            sub_menu='purchases',
                            f=status,
                            **load_common_data())
@@ -480,10 +487,11 @@ def ajax_apply_pay():
     try:
         for rid in selected_ids:
             purchase = Purchase.query.filter_by(serial_no=rid).first()
+
             if purchase is None:
-                return status_response(False, custom_status('Apply purchase pay, id[%s] is NULL!' % id))
+                return status_response(False, custom_status('Apply purchase pay, id[%s] is NULL!' % rid))
             if purchase.payed != 1:
-                return status_response(False, custom_status('Purchase[%s] is already payed!' % id))
+                return status_response(False, custom_status('Purchase[%s] is already payed!' % rid))
             if purchase.master_uid != Master.master_uid():
                 return custom_response(False, gettext('You do not have permission to operate'))
 
@@ -495,7 +503,7 @@ def ajax_apply_pay():
                 master_uid=Master.master_uid(),
                 serial_no=gen_serial_no('FK'),
                 type=2,
-                transact_user=purchase.supplier.name,
+                transact_user=purchase.supplier.short_name,
                 amount=purchase.total_amount,
                 target_id=purchase.id,
                 target_type=1
@@ -503,8 +511,9 @@ def ajax_apply_pay():
             db.session.add(transaction)
 
         db.session.commit()
-    except:
+    except Exception as ex:
         db.session.rollback()
+        current_app.logger.debug('Apply purchase is fail [%s]!' % ex)
         return status_response(False, custom_status('Apply purchase is fail!'))
 
     return full_response(True, R200_OK, selected_ids)

@@ -13,7 +13,7 @@
 	</div>
 	{% if g.user.is_master %}
 	<a href="{{ url_for('main.child_users') }}" class="list-group-item {% if sub_menu == 'child_users'%} active{% endif %}">
-		{{ _('Add Child User') }}
+		{{ _('Child User') }}
 	</a>
 	{% endif %}
 	<a href="{{ url_for('main.setting_roles') }}" class="list-group-item {% if sub_menu == 'roles'%} active{% endif %}">

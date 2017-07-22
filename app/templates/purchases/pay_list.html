@@ -1,8 +1,19 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
 	{% include 'purchases/_sub_menu.html' %}
+{% endblock %}
+
+{% block private_js %}
+<script type="text/javascript">
+	var submit_filter_form = function () {
+		var data = $('#filter-purchase-form').serialize();
+
+		$.post("{{ url_for('main.search_purchases') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+	};
+</script>
 {% endblock %}
 
 {% block jquery %}
@@ -31,6 +42,15 @@
 			swal("Error", "First to selected the one!!!", "error");
 		}
 	});
+
+	hook_dropdown_menu(function(){
+		submit_filter_form();
+	});
+
+	hook_filter_search(function(){
+		submit_filter_form();
+	});
+
 {#</script>#}
 {% endblock %}
 
@@ -48,16 +68,17 @@
 		</span>
 	</h2>
 
-	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+	<form class="form-inline" method="post" id="filter-purchase-form">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="ref" value="pay">
 
 		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="{{ _('Search purchase serial_no or name...') }}">
+			<input type="text" class="form-control searcher" name="qk" size="60" placeholder="{{ _('Search purchase serial_no or name...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<input type="hidden" name="wh_id" value="{{ wh_id }}">
+				<input type="hidden" name="wh_id" value="{{ wh_id|default(0) }}">
 				<button class="btn btn-default dropdown-toggle" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
@@ -79,31 +100,54 @@
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
+				<input type="hidden" name="s" value="{{ s|default(0) }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Status') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="s" aria-labelledby="filter-status">
+					<li class="dropdown-header">{{ _('Filter Status')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for s in purchase_payed %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ s[0] }}" class="option">{{ s[2] }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="d" value="{{ d|default(0) }}">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Date') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-date">
+				<ul class="dropdown-menu dropdown-select-menu" data-target="d" aria-labelledby="filter-date">
 					<li class="dropdown-header">{{ _('Filter Date')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('All') }}</a>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Today') }}</a>
+						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Today') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Yesterday') }}</a>
+						<a href="javascript:void(0);" data-id="2" class="option">{{ _('Yesterday') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('7 Days') }}</a>
+						<a href="javascript:void(0);" data-id="7" class="option">{{ _('7 Days') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('30 Days') }}</a>
+						<a href="javascript:void(0);" data-id="30" class="option">{{ _('30 Days') }}</a>
 					</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('Custom Date') }}</a>
+						<a href="javascript:void(0);">{{ _('Custom Date') }}</a>
 					</li>
 				</ul>
 			</div>
@@ -111,20 +155,25 @@
 
 		<div class="form-group pull-right">
 			<div class="dropdown">
-				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('Add Date') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Business Mode') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Phone') }}</a>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="dd" class="option">{{ _('Arrival Date') }}</a>
 					</li>
 				</ul>
 			</div>
@@ -132,70 +181,16 @@
 
 	</form>
 
-	<div class="table-responsive m-t-20">
-		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<div id="table-refresh-box" class="m-t-20">
+		{% include "purchases/purchase_pay_table.html" %}
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
-					<tr>
-						<th class="text-center">
-							<input name="check_all" type="checkbox" class="check-all">
-						</th>
-						<th class="text-center">{{ _('Status') }}</th>
-						<th class="text-center">{{ _('Purchase Serial') }}</th>
-						<th>{{ _('Supplier') }}</th>
-						<th>{{ _('Warehouse') }}</th>
-						<th class="text-center">{{ _('Quantity') }}</th>
-						<th class="text-center">{{ _('Amount') }}</th>
-						<th class="text-right">{{ _('Add Date') }}</th>
-						<th class="text-right">{{ _('Action') }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for purchase in paginated_purchases.items %}
-					<tr id="tr_{{ purchase.id }}">
-						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ purchase.id }}" type="checkbox">
-						</td>
-						<td class="text-center">
-							<span class="indicator {{ purchase.payed_label[2] }}">{{ purchase.payed_label[1] }}</span>
-						</td>
-						<td class="text-center">
-							{{ purchase.serial_no }}
-						</td>
-						<td>
-							{{ purchase.supplier.short_name }}
-						</td>
-						<td>
-							{{ purchase.warehouse.name }}
-						</td>
-						<td class="text-center">
-							{{ purchase.quantity_sum }}
-						</td>
-						<td class="text-center">
-							{{ purchase.total_amount }} {{ current_site.currency }}
-						</td>
-						<td class="text-right">
-							{{ purchase.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
-						</td>
-						<td class="text-right">
-							<a href="{{ url_for('main.preview_purchase', rid=purchase.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								{{ _('View') }}
-							</a>
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</form>
-	</div>
-
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_purchases, '.payments') }}
-			</nav>
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(pagination, '.payments') }}
+				</nav>
+			</div>
 		</div>
 	</div>
 </div>

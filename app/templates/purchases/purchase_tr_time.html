@@ -1,0 +1,25 @@
+{% for sku in paginated_skus %}
+<tr id="tr_sku_{{ sku.id }}">
+	<td class="text-center">
+		<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
+	</td>
+	<td class="text-center">
+		<img src="{{ sku.cover.view_url }}" width="60px">
+	</td>
+	<td class="text-center">
+		{{ sku.serial_no }}
+	</td>
+	<td>
+		{{ sku.product.name }}
+	</td>
+	<td class="text-center">
+		{{ sku.s_model }}
+	</td>
+	<td class="text-right">
+		{{ sku.cost_price }} {{ current_site.currency }}
+	</td>
+	<td class="text-right">
+		<strong class="text-danger">{{ sku.stock_count }}</strong>
+	</td>
+</tr>
+{% endfor %}

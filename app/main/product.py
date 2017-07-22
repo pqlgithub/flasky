@@ -5,7 +5,7 @@ from flask_sqlalchemy import Pagination
 from . import main
 from .. import db
 from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset
+from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
@@ -81,11 +81,39 @@ def search_products():
 @user_has('admin_product')
 def ajax_search_products():
     """搜索产品,满足采购等选择产品"""
-    supplier_id = request.form.get('supplier_id')
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    supplier_id = request.values.get('supplier_id')
+    qk = request.values.get('qk')
+    if request.method == 'POST':
+        builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
+        if qk:
+            builder = builder.whoosh_search(qk, like=True)
+
+        skus = builder.order_by('created_at desc').all()
+
+        # 构造分页
+        total_count = builder.count()
+        if page == 1:
+            start = 0
+        else:
+            start = (page - 1) * per_page
+        end = start + per_page
+
+        current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+        paginated_skus = skus[start:end]
+
+        pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+        return render_template('purchases/purchase_tr_time.html',
+                               paginated_skus=paginated_skus,
+                               pagination=pagination)
 
     skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by('created_at desc').all()
 
     return render_template('purchases/purchase_modal.html',
+                           supplier_id=supplier_id,
                            skus=skus)
 
 
@@ -281,8 +309,14 @@ def add_sku(id):
     product = Product.query.get_or_404(id)
     form = ProductSkuForm()
     if form.validate_on_submit():
+        # 设置默认值
+        if not form.sku_cover_id.data:
+            default_cover = Asset.query.filter_by(is_default=True).first()
+            form.sku_cover_id.data = default_cover.id
+
         sku = ProductSku(
             product_id=id,
+            supplier_id=product.supplier_id,
             master_uid=Master.master_uid(),
             serial_no=Product.make_unique_serial_no(form.serial_no.data),
             cover_id=form.sku_cover_id.data,
@@ -293,6 +327,7 @@ def add_sku(id):
             remark=form.remark.data
         )
         db.session.add(sku)
+
         db.session.commit()
 
         return full_response(True, R201_CREATED, sku.to_json())
@@ -408,6 +443,8 @@ def create_category():
         # rebuild category path
         Category.repair_categories(category.pid)
 
+        flash('Add category is ok!', 'success')
+
         return redirect(url_for('.show_categories'))
 
     mode = 'create'
@@ -435,6 +472,8 @@ def edit_category(id):
         # rebuild category path
         Category.repair_categories(category.pid)
 
+        flash('Edit category is ok!', 'success')
+
         return redirect(url_for('.show_categories'))
     else:
         current_app.logger.debug(form.errors)
@@ -447,6 +486,7 @@ def edit_category(id):
     form.status.data = category.status
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
@@ -479,13 +519,65 @@ def delete_category():
     return redirect(url_for('.show_categories'))
 
 
+@main.route('/suppliers/search_supply', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def search_supply():
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    qk = request.values.get('qk')
+    sk = request.values.get('sk', type=str, default='ad')
+
+    builder = SupplyStats.query.filter_by(master_uid=Master.master_uid())
+    qk = qk.strip()
+    if qk:
+        builder = builder.whoosh_search(qk, like=True)
+
+    supply = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_supply = supply[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('suppliers/search_supply.html',
+                           qk=qk,
+                           sk=sk,
+                           paginated_supply=paginated_supply,
+                           pagination=pagination)
+
+
 @main.route('/suppliers/supply_list', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_product')
 def supply_list():
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    paginated_supply = SupplyStats.query.filter_by(master_uid=Master.master_uid()).order_by(SupplyStats.created_at.desc()).paginate(
+        page, per_page)
     return render_template('suppliers/supply_list.html',
                            sub_menu='supply',
+                           paginated_supply=paginated_supply.items,
+                           pagination=paginated_supply,
                            **load_common_data())
+
+
+def get_order_key(key):
+    switch_dict = {
+        'ad': Supplier.created_at.desc,
+        'ud': Supplier.updated_at.desc,
+        'ed': Supplier.end_date.desc
+    }
+    return switch_dict.get(key)() if switch_dict.get(key) else Supplier.created_at.desc()
 
 
 @main.route('/suppliers/search', methods=['GET', 'POST'])
@@ -501,10 +593,11 @@ def search_suppliers():
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
     builder = Supplier.query.filter_by(master_uid=Master.master_uid())
+    qk = qk.strip()
     if qk:
         builder = builder.whoosh_search(qk, like=True)
 
-    suppliers = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+    suppliers = builder.order_by(get_order_key(sk)).all()
 
     # 构造分页
     total_count = builder.count()
@@ -533,7 +626,7 @@ def search_suppliers():
 @user_has('admin_product')
 def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by(Supplier.created_at.desc()).paginate(page, per_page)
     return render_template('suppliers/show_list.html',
                            sub_menu='suppliers',
                            paginated_suppliers=paginated_suppliers,

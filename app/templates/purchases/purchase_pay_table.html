@@ -1,0 +1,58 @@
+<div class="table-responsive">
+	<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th class="text-center">{{ _('Status') }}</th>
+				<th class="text-center">{{ _('Purchase Serial') }}</th>
+				<th>{{ _('Supplier') }}</th>
+				<th>{{ _('Warehouse') }}</th>
+				<th class="text-center">{{ _('Quantity') }}</th>
+				<th class="text-center">{{ _('Amount') }}</th>
+				<th class="text-right">{{ _('Add Date') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for purchase in paginated_purchases %}
+			<tr id="tr_{{ purchase.serial_no }}">
+				<td class="text-center">
+					<input name="selected[]" class="check-one" value="{{ purchase.serial_no }}" type="checkbox">
+				</td>
+				<td class="text-center">
+					<span class="indicator {{ purchase.payed_label[3] }}">{{ purchase.payed_label[2] }}</span>
+				</td>
+				<td class="text-center">
+					{{ purchase.serial_no }}
+				</td>
+				<td>
+					{{ purchase.supplier.short_name }}
+				</td>
+				<td>
+					{{ purchase.warehouse.name }}
+				</td>
+				<td class="text-center">
+					{{ purchase.quantity_sum }}
+				</td>
+				<td class="text-center">
+					{{ purchase.total_amount }} {{ current_site.currency }}
+				</td>
+				<td class="text-right">
+					{{ purchase.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
+				</td>
+				<td class="text-right">
+					<a href="{{ url_for('main.preview_purchase', rid=purchase.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						{{ _('View') }}
+					</a>
+				</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>

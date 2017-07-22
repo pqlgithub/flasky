@@ -427,7 +427,8 @@ def show_warehouses(page=1):
     paginated_warehouses = Warehouse.query.filter_by(master_uid=Master.master_uid()).order_by(Warehouse.id.asc()).paginate(page, per_page)
     return render_template('warehouses/show_list.html',
                            paginated_warehouses=paginated_warehouses,
-                           sub_menu='warehouses', **load_common_data())
+                           sub_menu='warehouses',
+                           **load_common_data())
 
 
 @main.route('/warehouses/create', methods=['GET', 'POST'])

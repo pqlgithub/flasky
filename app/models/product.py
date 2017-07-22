@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import text
+from sqlalchemy import text, event
 from sqlalchemy.sql import func
 from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db, uploader
-from ..utils import timestamp, gen_serial_no
+from ..utils import timestamp, gen_serial_no, create_db_session
 from .asset import Asset
 from ..constant import DEFAULT_IMAGES
-
+from .purchase import Purchase
 
 __all__ = [
     'Product',
@@ -32,15 +32,15 @@ DANGEROUS_GOODS_TYPES = [
 
 # 供应商合作方式
 BUSINESS_MODE = [
-    ('C', gettext('Direct purchasing')), # 直采
-    ('D', gettext('Proxy')), # 代理
-    ('Q', gettext('Exclusive')) # 独家
+    ('C', gettext('Direct purchasing'), lazy_gettext('Direct purchasing')), # 直采
+    ('D', gettext('Proxy'), lazy_gettext('Proxy')), # 代理
+    ('Q', gettext('Exclusive'), lazy_gettext('Exclusive')) # 独家
 ]
 
 # 产品的状态
 PRODUCT_STATUS = [
-    (1, gettext('Enabled'), 'success'),
-    (-1, gettext('Disabled'), 'danger')
+    (1, lazy_gettext('Enabled'), 'success'),
+    (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
 # product and category => N to N
@@ -153,6 +153,10 @@ class ProductSku(db.Model):
     """产品的SKU"""
 
     __tablename__ = 'product_skus'
+
+    __searchable__ = ['serial_no', 'product_name', 'supplier_name']
+    __analyzer__ = ChineseAnalyzer()
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
@@ -181,6 +185,17 @@ class ProductSku(db.Model):
     stocks = db.relationship(
         'ProductStock', backref='product_sku', lazy='dynamic'
     )
+
+    @property
+    def product_name(self):
+        """product name"""
+        return self.product.name
+
+    @property
+    def supplier_name(self):
+        """supplier name"""
+        return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
+
 
     @property
     def cover(self):
@@ -367,12 +382,20 @@ class Supplier(db.Model):
     products = db.relationship(
         'Product', backref='supplier', lazy='dynamic'
     )
+    # supplier and product sku => 1 to N
+    skus = db.relationship(
+        'ProductSku', backref='supplier', lazy='dynamic'
+    )
 
     # supplier and purchase => 1 to N
     purchases = db.relationship(
         'Purchase', backref='supplier', lazy='dynamic'
     )
 
+    # supplier and stats => 1 to N
+    supply_stats = db.relationship(
+        'SupplyStats', backref='supplier', lazy='dynamic'
+    )
 
     @property
     def desc_type(self):
@@ -394,12 +417,16 @@ class Supplier(db.Model):
 class SupplyStats(db.Model):
     """供货关系"""
 
-    __tablename__ = 'supply_stats'
+    __tablename__ = 'supply_relevance'
+
+    __searchable__ = ['supplier_name']
+    __analyzer__ = ChineseAnalyzer()
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('master_uid', 'supplier_id'),
+        db.UniqueConstraint('master_uid', 'supplier_id', name='uix_supply_master_uid_supplier_id'),
     )
 
+    id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     sku_count = db.Column(db.Integer, default=0)
@@ -411,16 +438,54 @@ class SupplyStats(db.Model):
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
 
+    @property
+    def supplier_name(self):
+        return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
+
+
     @staticmethod
     def on_sync_change(mapper, connection, target):
         """同步数据事件"""
-        # 1、统计sku count
+        master_uid = target.master_uid
+        supplier_id = target.supplier_id
 
-        # 2、统计purchase
+        session = create_db_session()
+        # session.query(User).limit(n).all()
+        # session.execute('select * from user where id = :id', {'id': 1}).first()
+
+        # 1、统计sku count
+        sku_count = ProductSku.query.filter_by(master_uid=master_uid, supplier_id=supplier_id).count()
+
+        # 2、统计purchase / 总收入
+        purchase_result = Purchase.query.filter_by(master_uid=master_uid, supplier_id=supplier_id)\
+            .with_entities(func.count(Purchase.id), func.sum(Purchase.total_amount), func.max(Purchase.created_at))\
+            .one()
+
+        purchase_amount = purchase_result[1] if purchase_result[1] is not None else 0
+        latest_trade_at = purchase_result[2] if purchase_result[2] is not None else 0
 
         # 3、同步数据
-        pass
+        supply_stats = session.query(SupplyStats).filter_by(master_uid=master_uid, supplier_id=supplier_id).first()
+        if supply_stats:
+            query = session.query(SupplyStats).filter_by(master_uid=master_uid, supplier_id=supplier_id)
+            query.update({
+                SupplyStats.sku_count: sku_count,
+                SupplyStats.purchase_times: purchase_result[0],
+                SupplyStats.purchase_amount: purchase_amount,
+                SupplyStats.latest_trade_at: latest_trade_at
+            })
+        else:
+            supply_stats = SupplyStats(
+                master_uid = master_uid,
+                supplier_id = supplier_id,
+                sku_count = sku_count,
+                purchase_times = purchase_result[0],
+                purchase_amount = purchase_amount,
+                latest_trade_at = latest_trade_at
+            )
+            session.add(supply_stats)
 
+        session.commit()
 
 
     def __repr__(self):
@@ -561,4 +626,5 @@ class CategoryPath(db.Model):
 
 
 # 添加监听事件, 实现触发器
-# db.session.event(ProductSku, 'after_insert', SupplyStats.on_sync_change)
+event.listen(ProductSku, 'after_insert', SupplyStats.on_sync_change)
+event.listen(Purchase, 'after_insert', SupplyStats.on_sync_change)

@@ -7,12 +7,13 @@
 		<div class="modal-body">
 			<form class="form" action="" method="post" id="sku-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="supplier_id" value="{{ supplier_id }}">
 
 				<div class="form-group">
 					<div class="input-group">
-						<input type="text" name="q" value="" class="form-control" placeholder="Search sku or name..." >
+						<input type="text" name="qk" class="form-control searcher" placeholder="Search sku or name..." >
 						<div class="input-group-btn">
-							<button class="btn btn-primary" type="button">
+							<button class="btn btn-primary btn-search" type="button">
 								<i class="glyphicon glyphicon-search"></i>
 							</button>
 						</div>
@@ -33,7 +34,7 @@
 							<th class="text-right">{{ _('Total Stock') }}</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="purchase-items">
 					{% for sku in skus %}
 					<tr id="tr_sku_{{ sku.id }}">
 						<td class="text-center">
@@ -49,7 +50,7 @@
 							{{ sku.product.name }}
 						</td>
 						<td class="text-center">
-							{{ sku.s_model }}
+							<label class="label label-warning">{{ sku.s_model }}</label>
 						</td>
 						<td class="text-right">
 							{{ sku.cost_price }} {{ current_site.currency }}
@@ -73,6 +74,27 @@
 
 <script type="text/javascript"><!--
 	var data = {};
+
+	var submit_search_handler = function () {
+		var supplier_id = $('input[name=supplier_id]').val();
+		var qk = $('input[name=qk]').val();
+
+		$.post("{{ url_for('main.ajax_search_products') }}", {
+			'supplier_id': supplier_id, 'qk': qk, 'csrf_token': csrf_token
+		}, function (result) {
+			$('#purchase-items').html(result);
+		}, 'html');
+	};
+	$('input.searcher').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			submit_search_handler();
+			return false;
+		}
+	});
+	$('.btn-search').click(function () {
+		submit_search_handler();
+	});
 
 	// 全选 or 反选
 	$('#sku-form').find('input.check-all').bind('click', function() {

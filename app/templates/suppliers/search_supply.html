@@ -1,0 +1,57 @@
+<div class="table-responsive">
+	<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th>{{ _('Supplier Name') }}</th>
+				<th class="text-center">{{ _('Relation Sku Count') }}</th>
+				<th class="text-center">{{ _('Purchase Times') }}</th>
+				<th class="text-center">{{ _('Purchase Amount') }}</th>
+				<th class="text-right">{{ _('Last Time') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for supply in paginated_supply %}
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th>
+					{{ supply.supplier.short_name }}
+				</th>
+				<th class="text-center">
+					{{ supply.sku_count }}
+				</th>
+				<th class="text-center">
+					{{ supply.purchase_times }}
+				</th>
+				<th class="text-center">
+					{{ supply.purchase_amount }}
+				</th>
+				<th class="text-right">
+					{{ supply.latest_trade_at|timestamp2string(format='%Y-%m-%d %H:%M') if supply.latest_trade_at }}
+				</th>
+				<th class="text-right">
+
+				</th>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>
+
+{% import "block/_macros.html" as macros %}
+<div class="pages-box">
+	<div class="pull-left">
+		<nav aria-label="Page navigation">
+			{{ macros.pagination_widget(pagination, '.supply_list') }}
+		</nav>
+	</div>
+</div>

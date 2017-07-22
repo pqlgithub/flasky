@@ -9,7 +9,7 @@ from app.models import Category, BUSINESS_MODE, DANGEROUS_GOODS_TYPES
 from ..utils import Master
 
 class SupplierForm(Form):
-    type = SelectField(lazy_gettext('Business Mode'), choices=BUSINESS_MODE, coerce=str)
+    type = SelectField(lazy_gettext('Business Mode'), choices=[(mode[0], mode[2]) for mode in BUSINESS_MODE], coerce=str)
     short_name = StringField(lazy_gettext('Short Name'), validators=[DataRequired()])
     full_name = StringField(lazy_gettext('Full Name'), validators=[DataRequired()])
     start_date = StringField(lazy_gettext('Start date'))
