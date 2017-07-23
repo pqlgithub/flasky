@@ -133,7 +133,7 @@
 						{{ form.outside_target_id(class="form-control") }}
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group required">
 					{{ form.store_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<select class="form-control select2" name="store_id">
@@ -157,7 +157,12 @@
 					</div>
 					{{ form.freight.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
-						{{ form.freight(class="form-control") }}
+						<div class="input-group">
+							{{ form.freight(id="freight", class="form-control") }}
+							<span class="input-group-addon">
+								{{ current_site.currency }}
+							</span>
+						</div>
 					</div>
 				</div>
 
@@ -172,19 +177,23 @@
 					{{ form.buyer_country.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<select class="form-control select2" name="store_id">
-							<option value="1">Apple</option>
+							<option value="1">{{ _('China') }}</option>
 						</select>
 					</div>
 					<label class="col-sm-2 control-label">{{ _('币种') }}</label>
 					<div class="col-sm-4">
-						<input type="email" class="form-control" placeholder="{{ current_site.currency }}">
+						<input type="text" class="form-control" readonly="readonly" placeholder="{{ current_site.currency }}">
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group required">
 					{{ form.buyer_name.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						{{ form.buyer_name(class="form-control", placeholder="") }}
+					</div>
+					{{ form.buyer_phone.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.buyer_phone(class="form-control", placeholder="") }}
 					</div>
 				</div>
 
@@ -192,10 +201,6 @@
 					{{ form.buyer_tel.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						{{ form.buyer_tel(class="form-control", placeholder="") }}
-					</div>
-					{{ form.buyer_phone.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.buyer_phone(class="form-control", placeholder="") }}
 					</div>
 				</div>
 
@@ -210,14 +215,14 @@
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group required">
 					{{ form.buyer_address.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
 						{{ form.buyer_address(class="form-control", placeholder="") }}
 					</div>
 					{{ form.buyer_zipcode.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-2">
-						{{ form.buyer_zipcode(class="form-control", placeholder="Zipcode") }}
+						{{ form.buyer_zipcode(class="form-control") }}
 					</div>
 				</div>
 

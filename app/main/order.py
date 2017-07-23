@@ -70,7 +70,7 @@ def print_order_pdf():
     """打印订单"""
     rid = request.args.get('rid')
     rids = rid.split(',')
-    order_list = Order.query.filter(Order.serial_no.in_(rids)).all()
+    order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
 
     env = Environment(loader=PackageLoader(current_app.name, 'templates'))
     env.filters['supress_none'] = supress_none
@@ -100,7 +100,7 @@ def print_order_pdf():
         'subtotal': gettext('Subtotal'),
         'express_no': gettext('Express No.'),
         'freight': gettext('Freight'),
-        'other_charge': gettext('Other Charge'),
+        'discount': gettext('Discount Amount'),
         'total_amount': gettext('Total Amount')
     }
 
@@ -436,7 +436,7 @@ def create_order():
     # 获取仓库列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
     # 获取快递类型
-    express_list = Express.query.all()
+    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
     # 添加默认订单号
     form.serial_no.data = gen_serial_no('C')
 
@@ -445,7 +445,7 @@ def create_order():
                            mode=mode,
                            store_list=store_list,
                            express_list=express_list,
-                           warehouse_list=warehouse_list, **load_common_data())
+                           **load_common_data())
 
 
 @main.route('/orders/<string:sn>/edit', methods=['GET', 'POST'])
@@ -615,7 +615,7 @@ def order_express_no(rid):
     form.express_no.data = order.express_no
 
     # get express
-    express_list = Express.query.all()
+    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
     return render_template('orders/_modal_express.html',
                            order=order,
                            form=form,

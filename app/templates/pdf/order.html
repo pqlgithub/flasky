@@ -80,7 +80,7 @@
 </head>
 
 <body>
-	{% for purchase in purchase_list %}
+	{% for order in order_list %}
 	<div id="content_{{ loop.index }}">
 		<div class="site-logo">
 			{{ current_site.company_name }}
@@ -94,101 +94,14 @@
 					</div>
 				</td>
 				<td>
-					<img src="{{ code_bars[purchase.serial_no] }}" width="260px">
+					<img src="{{ code_bars[order.serial_no] }}" width="260px">
 				</td>
 				<td class="add-date">
-					<label>{{ title_attrs.date }}:</label> {{ purchase.created_at|timestamp2string }} <br>
-					<label>{{ title_attrs.status }}:</label> {{ purchase.status_label[1] }}
+					<label>{{ title_attrs.date }}:</label> {{ order.created_at|timestamp2string }} <br>
+					<label>{{ title_attrs.status }}:</label> {{ order.status_label[1] }}
 				</td>
 			</tr>
 		</table>
-
-		<table class="table">
-			<tr>
-				<td colspan="2" class="table-header">
-					<label>{{ title_attrs.supplier_info }}</label>
-				</td>
-				<td colspan="2" class="table-header">
-					Warehouse Info
-				</td>
-			</tr>
-			<tr>
-				<td class="title-label">
-					<label>{{ title_attrs.supplier }}：</label>
-				</td>
-				<td>
-					{{ purchase.supplier.name }}
-				</td>
-				<td class="title-label">
-					<label>{{ title_attrs.warehouse_name }}：</label>
-				</td>
-				<td>
-					{{ purchase.warehouse.name }}
-				</td>
-			</tr>
-			<tr>
-				<td class="title-label">
-					<label>{{ title_attrs.contact_name }}：</label>
-				</td>
-				<td>
-					{{ purchase.supplier.contact_name }}
-				</td>
-				<td class="title-label">
-					<label>{{ title_attrs.contact_name }}：</label>
-				</td>
-				<td>
-					{{ purchase.warehouse.username }}
-				</td>
-			</tr>
-			<tr>
-				<td class="title-label">
-					<label>{{ title_attrs.phone }}：</label>
-				</td>
-				<td>
-					{{ purchase.supplier.phone }}
-				</td>
-				<td class="title-label">
-					<label>{{ title_attrs.phone }}：</label>
-				</td>
-				<td>
-					{{ purchase.warehouse.phone }}
-				</td>
-			</tr>
-			<tr>
-				<td class="title-label">
-					<label>{{ title_attrs.address }}：</label>
-				</td>
-				<td>
-					{{ purchase.supplier.address|break_line(15) }}
-				</td>
-				<td class="title-label">
-					<label>{{ title_attrs.address }}：</label>
-				</td>
-				<td>
-					{{ purchase.warehouse.address|break_line(15) }}
-				</td>
-			</tr>
-			<tr>
-				<td class="title-label">
-					<label>{{ title_attrs.email }}：</label>
-				</td>
-				<td>
-
-				</td>
-				<td class="title-label">
-					<label>{{ title_attrs.email }}:</label>
-				</td>
-				<td>
-					{{ purchase.warehouse.email }}
-				</td>
-			</tr>
-			<tr>
-				<td colspan="4">
-					<label>{{ title_attrs.remark }}：</label> {{ purchase.remark }}
-				</td>
-			</tr>
-		</table>
-
 
 		<table class="table ph">
 			<tr>
@@ -205,13 +118,10 @@
 					{{ title_attrs.quantity }}
 				</td>
 				<td class="center">
-					{{ title_attrs.arrival_quantity }}
-				</td>
-				<td class="center">
 					{{ title_attrs.subtotal }}
 				</td>
 			</tr>
-			{% for item in purchase.products %}
+			{% for item in order.products %}
 			<tr>
 				<td class="center" width="80px">
 					{{ loop.index }}
@@ -227,9 +137,6 @@
 					{{ item.quantity }}
 				</td>
 				<td class="center">
-					{{ item.in_quantity }}
-				</td>
-				<td class="center">
 					{{ item.cost_price*item.quantity  }} {{ current_site.currency }}
 				</td>
 			</tr>
@@ -239,12 +146,12 @@
 		<table class="ph">
 			<tr>
 				<td class="center amount">
-					<label>{{ title_attrs.express_no }}：</label> {{ purchase.express_name|supress_none }} {{ purchase.express_no|supress_none }}
+					<label>{{ title_attrs.express_no }}：</label> {{ order.express_name|supress_none }} {{ order.express_no|supress_none }}
 				</td>
 				<td class="right amount">
-					<label>{{ title_attrs.freight }}：</label> {{ purchase.freight }} {{ current_site.currency }}<br>
-					<label>{{ title_attrs.other_charge }}：</label> {{ purchase.extra_charge }} {{ current_site.currency }}<br>
-					<label>{{ title_attrs.total_amount }}：</label> {{ purchase.total_amount+purchase.freight+purchase.extra_charge }} {{ current_site.currency }}
+					<label>{{ title_attrs.freight }}：</label> {{ order.freight }} {{ current_site.currency }}<br>
+					<label>{{ title_attrs.discount }}：</label> -{{ order.discount_amount }} {{ current_site.currency }}<br>
+					<label>{{ title_attrs.total_amount }}：</label> {{ order.total_amount+order.freight }} {{ current_site.currency }}
 				</td>
 			</tr>
 		</table>

@@ -75,7 +75,9 @@
 		{{ _('Order List') }}
 
 		<span class="pull-right">
-			{% include 'block/_select_items.html' %}
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
 			{% if status == 1 or status == 5 %}
 			<button class="btn btn-success verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
