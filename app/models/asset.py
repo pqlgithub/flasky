@@ -13,7 +13,7 @@ class Directory(db.Model):
     __tablename__ = 'directories'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, index=True)
+    name = db.Column(db.String(50), index=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     parent_id = db.Column(db.Integer, default=0)
     top = db.Column(db.SmallInteger, default=0)

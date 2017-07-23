@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 import os, time, hashlib, re
+from urllib import parse
 from os.path import splitext,getsize
 from PIL import Image
 from flask import current_app, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
+from flask_babelex import gettext
 from wtforms import ValidationError
 
 from app import db, uploader
 from app.models import Asset, Directory
 from . import main
 
-from ..decorators import user_has, user_is
-from app.utils import full_response, status_response, Master
+from app.utils import full_response, status_response, Master, custom_response
 from app.helpers import aws
 
 @main.route('/file_manager/folder', methods=['POST'])
@@ -26,17 +27,34 @@ def folder(page=1):
         sub_folder = request.form.get('folder')
         parent_directory = request.form.get('parent_directory', '')
 
+        # 验证目录
+        if sub_folder is None:
+            return custom_response(False, gettext("Directory name isn't empty!"))
+
+        sub_folder = parse.unquote(sub_folder)
+
+        if not re.match(r'^[0-9a-zA-Z_]+$', sub_folder):
+            return custom_response(False, gettext("Directory name only character or underline!"))
+
+        if Directory.query.filter_by(master_uid=Master.master_uid(), name=sub_folder).first():
+            return custom_response(False, gettext("Directory name is already exist!"))
+
+
         if parent_directory != '':
             directories = parent_directory.split('/')
             # pop last item
             last_directory_name = directories.pop()
-            last_directory = Directory.query.filter_by(name=last_directory_name).first()
+            last_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory_name).first()
 
             parent_id = last_directory.id
             top = 1
 
         try:
-            directory = Directory(name=sub_folder, master_uid=current_user.id, parent_id=parent_id, top=top)
+            directory = Directory(
+                name=sub_folder,
+                master_uid=Master.master_uid(),
+                parent_id=parent_id,
+                top=top)
 
             db.session.add(directory)
             db.session.commit()
@@ -52,28 +70,32 @@ def folder(page=1):
 def show_asset(page=1):
     per_page = 20
     parent_directory = ''
-    all_directory = None
-    paginated_assets = None
+    all_directory = []
+    paginated_assets = []
 
     current_directory = request.args.get('directory', '')
     up_target = request.args.get('up_target', 'mic')
     # top level
     if current_directory == '' or current_directory is None:
-        all_directory = Directory.query.filter_by(top=0).all()
-        paginated_assets = Asset.query.filter_by(directory_id=0).paginate(page, per_page)
+        all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), top=0).all()
+        paginated_assets = Asset.query.filter_by(master_uid=Master.master_uid(), directory_id=0).paginate(page, per_page)
     else:
         directories = current_directory.split('/')
         # pop last item
         last_directory_name = directories.pop()
-        last_directory = Directory.query.filter_by(name=last_directory_name).first()
 
-        all_directory = Directory.query.filter_by(parent_id=last_directory.id).all()
-        paginated_assets = last_directory.assets.paginate(page, per_page)
+        last_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory_name).first()
 
-        # 验证是否存在父级
-        if last_directory.parent_id:
-            # directories.pop()
-            parent_directory = '/'.join(directories)
+        current_app.logger.debug('Directory name: [%s]' % last_directory_name)
+
+        if last_directory:
+            all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=last_directory.id).all()
+            paginated_assets = last_directory.assets.paginate(page, per_page)
+
+            # 验证是否存在父级
+            if last_directory.parent_id:
+                # directories.pop()
+                parent_directory = '/'.join(directories)
 
     return render_template('file_manager.html',
                            up_target=up_target,
@@ -103,7 +125,7 @@ def flupload():
 
     directory = _pop_last_directory()
     if directory:
-        current_directory = Directory.query.filter_by(name=directory).first()
+        current_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=directory).first()
         directory_id = current_directory.id
 
     s3 = aws.connect_s3()
@@ -168,7 +190,7 @@ def pldelete():
             db.session.delete(asset)
         else:
             last_directory = _pop_last_directory(filepath)
-            directory = Directory.query.filter_by(name=last_directory).first()
+            directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory).first()
             if directory:
                 db.session.delete(directory)
 

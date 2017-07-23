@@ -20,7 +20,7 @@
 					<button type="button" data-toggle="tooltip" id="uploader_browse" class="btn btn-primary" data-original-title="{{ _('Upload') }}">
 						<i class="glyphicon glyphicon-upload"></i>
 					</button>
-					<button type="button" data-toggle="tooltip" id="button-folder" class="btn btn-default" data-original-title="{{ _('New Folder') }}">
+					<button type="button" data-toggle="tooltip" id="button-folder" class="btn btn-default" data-original-title="{{ _('New Folder') }}" data-title="{{ _('characters or underscore') }}">
 						<i class="glyphicon glyphicon-folder-open"></i>
 					</button>
 					<button type="button" data-toggle="tooltip" id="button-delete" class="btn btn-danger" data-original-title="{{ _('Delete') }}">
@@ -37,13 +37,13 @@
 				{% for d in all_directory %}
 				<div class="col-sm-3 col-xs-6 text-center">
 					<div class="text-center">
-						<a href="{{ url_for('main.show_asset') }}?up_target={{ up_target }}&directory={% if current_directory %}{{ current_directory }}/{% endif %}{{ d.name }}" class="directory" style="vertical-align: middle;">
+						<a href="{{ url_for('main.show_asset') }}?up_target={{ up_target }}&directory={% if current_directory %}{{ current_directory }}/{% endif %}{{ d.name|safe }}" class="directory" style="vertical-align: middle;">
 							<i class="glyphicon glyphicon-folder-open fa-5x"></i>
 						</a>
 					</div>
 					<label>
 						<input name="path[]" value="{{ d.name }}" type="checkbox">
-						{{ d.name }}
+						{{ d.name|safe }}
 					</label>
 				</div>
 				{% endfor %}
@@ -62,9 +62,11 @@
 			</div>
 		</div>
 		<div class="modal-footer">
+			{% if paginated_assets %}
 			<div class="pull-right">
 				{{ macros.pagination_widget(paginated_assets, '.show_asset', directory=current_directory, up_target=up_target) }}
 			</div>
+			{% endif %}
 		</div>
 	</div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
@@ -112,12 +114,14 @@
 	$('#button-parent').on('click', function(e) {
 		e.preventDefault();
 
+		$('[data-toggle="tooltip"]').tooltip('hide');
+
 		$('#modal-image').load($(this).attr('href'));
 	});
 
 	$('#button-refresh').on('click', function(e) {
 		e.preventDefault();
-
+		$('[data-toggle="tooltip"]').tooltip('hide');
 		$('#modal-image').load($(this).attr('href'));
 	});
 
@@ -128,7 +132,7 @@
 		title: 'directory name',
 		content: function() {
 			var html  = '<div class="input-group">';
-			html += '  <input type="text" name="folder" value="" placeholder="directory name" class="form-control">';
+			html += '  <input type="text" name="folder" placeholder="{{ _('characters or underscore') }}" class="form-control">';
 			html += '  <span class="input-group-btn"><button type="button" title="New directory" id="button-create" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i></button></span>';
 			html += '</div>';
 
@@ -138,6 +142,7 @@
 
 	$('#button-folder').on('shown.bs.popover', function() {
 		$('#button-create').on('click', function() {
+			var $btn = $(this);
 			$.ajax({
 				url: '{{ url_for("main.folder") }}',
 				type: 'post',
@@ -153,13 +158,13 @@
 				complete: function() {
 					$('#button-create').prop('disabled', false);
 				},
-				success: function(json) {
-					if (json['error']) {
-						alert(json['error']);
-					}
-
-					if (json['success']) {
+				success: function(result) {
+					if (result['success']) {
 						$('#button-refresh').trigger('click');
+					} else {
+						$btn
+							.parent().parent()
+							.before(display_alert(result['status']['message']));
 					}
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
