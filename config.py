@@ -61,7 +61,7 @@ class Config:
     # Asset Bucket
     ASSET_BUCKET_NAME = 'g3.michose.com'
     ASSET_CDN_DOMAIN = 'g3.michose.com'
-    THUMB_CDN_DOMAIN = 'img3.michose.com'
+    THUMB_CDN_DOMAIN = 'g3.michose.com'
 
     AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
     AWS_ACCESS_SECRET = 'wVsAPB5ZwxJpGaCXabUFjs0xs6hEM1kUcg9CwW90'
@@ -94,7 +94,7 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
+    DEBUG = False
 
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
