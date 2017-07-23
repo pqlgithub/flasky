@@ -33,9 +33,7 @@
 	<h2 class="page-header">
 		{{ _('Acl List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.create_role') }}" class="btn btn-primary ajax-role" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>

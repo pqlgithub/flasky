@@ -35,16 +35,11 @@
 	<h2 class="page-header">
 		{{ _('Supply List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
-			<button class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Import') }}">
+			{% include 'block/_select_items.html' %}
+			<button class="btn btn-default" type="button" data-toggle="tooltip" data-original-title="{{ _('Import') }}">
 				<i class="glyphicon glyphicon-import"></i>
 			</button>
-			<a href="{{ url_for('main.create_supplier') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
-				<i class="glyphicon glyphicon-plus"></i>
-			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="suppliers-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="suppliers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -87,7 +82,7 @@
 
 	<div id="table-refresh-box" class="m-t-20">
 		<div class="table-responsive">
-			<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
+			<form id="suppliers-form" action="" method="post">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 				<table class="table table-bordered table-striped table-hover">
@@ -108,7 +103,7 @@
 						{% for supply in paginated_supply %}
 						<tr>
 							<th class="text-center">
-								<input name="check_all" type="checkbox" class="check-all">
+								<input name="selected[]" class="check-one" value="{{ supply.id }}" type="checkbox">
 							</th>
 							<th>
 								{{ supply.supplier.short_name }}

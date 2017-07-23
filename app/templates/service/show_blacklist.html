@@ -9,9 +9,7 @@
 	<h2 class="page-header">
 		{{ _('Black List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<button class="btn btn-danger delete-all" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>

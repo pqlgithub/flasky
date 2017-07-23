@@ -29,7 +29,7 @@ var checked_items_status = function () {
 	});
 
 	if (total_count > 0) {
-		$('.checked-items-status').html(total_count + ' items selected').removeClass('hidden');
+		$('.checked-items-status').html(total_count + ' ' + locale_label).removeClass('hidden');
 		$('.btn.delete-all').removeClass('hidden');
 	} else {
 		$('.checked-items-status').addClass('hidden');

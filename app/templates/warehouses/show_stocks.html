@@ -68,9 +68,7 @@
 	<h2 class="page-header">
 		{{ _('Stock List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<button class="btn btn-default" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>

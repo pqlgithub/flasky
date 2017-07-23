@@ -23,11 +23,12 @@ def load_common_data():
 @user_has('admin_logistics')
 def show_expresses(page=1):
     per_page = request.args.get('per_page', 10, type=int)
-    paginated_express = Express.query.order_by('created_at desc').paginate(page, per_page)
+    paginated_express = Express.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
 
     return render_template('logistics/show_list.html',
                            sub_menu='express',
-                           paginated_express=paginated_express, **load_common_data())
+                           paginated_express=paginated_express,
+                           **load_common_data())
 
 
 @main.route('/expresses/create', methods=['GET', 'POST'])

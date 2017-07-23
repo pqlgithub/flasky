@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, InputRequired, Length, ValidationEr
 from app.models import Express
 
 class ExpressForm(Form):
-    name = StringField(lazy_gettext('Name'), validators=[DataRequired("Name can't empty!")])
+    name = StringField(lazy_gettext('Express Name'), validators=[DataRequired("Express Name can't empty!")])
     # 联系人信息
     contact_name = StringField(lazy_gettext('Contact Name'))
     contact_mobile = StringField(lazy_gettext('Contact Mobile'))

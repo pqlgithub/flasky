@@ -1,0 +1,27 @@
+{% include "warehouses/in_table.html" %}
+
+{% import "block/_macros.html" as macros %}
+<div class="pages-box ajax">
+	<div class="pull-left">
+		<nav aria-label="Page navigation">
+			{{ macros.pagination_widget(paginated_inwarehouses, '.show_in_warehouses', qk=qk, wh_id=wh_id, sk=sk) }}
+		</nav>
+	</div>
+</div>
+
+<script type="text/javascript">
+	hook_all_check();
+
+	$('[data-toggle="tooltip"]').tooltip({
+		container: 'body',
+		html: true,
+		trigger: 'hover'
+	});
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('#table-refresh-box').load($(this).attr('href'));
+			return false;
+		});
+</script>

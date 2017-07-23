@@ -31,7 +31,7 @@
 		<script src="{{ url_for('static', filename='js/moment-with-locales.min.js') }}" type="text/javascript"></script>
 		{{ moment.lang(g.locale) }}
 		<script type="text/javascript">
-			var csrf_token = "{{ csrf_token() }}", img_last_open_folder = '';
+			var csrf_token = "{{ csrf_token() }}", img_last_open_folder = '', locale_label="{{ _('items selected') }}";
 		</script>
 	</head>
 

@@ -35,9 +35,7 @@
 	<h2 class="page-header">
 		{{ _('Supplier List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<button class="btn btn-default" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Import') }}">
 				<i class="glyphicon glyphicon-import"></i>
 			</button>

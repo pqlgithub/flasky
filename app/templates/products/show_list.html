@@ -34,9 +34,7 @@
 	<h2 class="page-header">
 		{{ _('Product List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.show_products') }}" data-toggle="tooltip" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
 				<i class="glyphicon glyphicon-refresh"></i>
 			</a>

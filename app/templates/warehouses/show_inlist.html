@@ -34,13 +34,14 @@
 	var submit_filter_form = function () {
 		var data = $('#filter-stocks-form').serialize();
 
-		$.post("{{ url_for('main.show_in_warehouses') }}", data, function (result) {
+		$.post("{{ url_for('main.search_in_warehouses') }}", data, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
 	};
 
 	$('.dropdown-select-menu .option').on('click', function () {
-		var $this=$(this), label=$(this).text(), v=$(this).data('id'), target=$(this).parent().parent().data('target');
+		var $this=$(this), label=$(this).text(), v=$(this).data('id'),
+			target=$(this).parent().parent().data('target');
 		$(this)
 			.parent()
 			.siblings('.active').removeClass('active')
@@ -53,10 +54,11 @@
 		submit_filter_form();
 	});
 
-	$('input.input-search').on('keydown', function (e) {
+	$('input.searcher').on('keydown', function (e) {
 		var ev = window.event||e;
 		if (ev.keyCode == 13) {
 			submit_filter_form();
+			return false;
 		}
 	});
 
@@ -68,10 +70,8 @@
 	<h2 class="page-header">
 		{{ _('InWarehouse List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
-			<button class="btn btn-info" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
+			{% include 'block/_select_items.html' %}
+			<button class="btn btn-default" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
 			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>
@@ -84,7 +84,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="{{ _('Search serial no...') }}">
+			<input type="text" class="form-control searcher" size="60" name="qk" placeholder="{{ _('Search serial no...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
@@ -111,12 +111,12 @@
 
 		<div class="form-group pull-right">
 			<div class="dropdown">
-				<input type="hidden" name="s_t" value="{{ sort_type }}">
+				<input type="hidden" name="sk" value="{{ sort_type }}">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="s_t" aria-labelledby="filter-type">
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-type">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
@@ -128,9 +128,6 @@
 					<li>
 						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
 					</li>
-					<li>
-						<a href="javascript:void(0);" data-id="sq" class="option">{{ _('Stock Quantity') }}</a>
-					</li>
 				</ul>
 			</div>
 		</div>
@@ -139,6 +136,15 @@
 
 	<div id="table-refresh-box">
 		{% include "warehouses/in_table.html" %}
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(paginated_inwarehouses, '.show_in_warehouses') }}
+				</nav>
+			</div>
+		</div>
 	</div>
 
 </div>

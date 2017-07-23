@@ -19,7 +19,7 @@ def load_common_data():
     """
     私有方法，装载共用数据
     """
-    warehouse_list = Warehouse.query.filter_by(status=1).all()
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
     return {
         'top_menu': 'warehouses',
         'warehouse_list': warehouse_list
@@ -187,24 +187,67 @@ def create_ex_warehouse():
                            warehouses=warehouse_list)
 
 
-@main.route('/inwarehouses', methods=['GET', 'POST'])
-@main.route('/inwarehouses/<int:page>', methods=['GET', 'POST'])
+@main.route('/inwarehouses/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_warehouse')
+def search_in_warehouses():
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    wh_id = request.values.get('wh_id', type=int)
+    qk = request.values.get('qk', type=str)
+    sk = request.values.get('sk', 'ad', type=str)
+
+    builder = InWarehouse.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+
+    qk = qk.strip()
+    if qk:
+        builder = builder.filter_by(serial_no=qk)
+
+    if sk == 'ad':
+        builder = builder.order_by(InWarehouse.created_at.desc())
+    if sk == 'ud':
+        builder = builder.order_by(InWarehouse.updated_at.desc())
+
+    paginated_inwarehouses = builder.paginate(page, per_page)
+
+    return render_template('warehouses/search_inwarehouse_result.html',
+                           paginated_inwarehouses=paginated_inwarehouses,
+                           wh_id=wh_id,
+                           qk=qk,
+                           sk=sk)
+
+
+@main.route('/inwarehouses')
+@main.route('/inwarehouses/<int:page>')
 @login_required
 @user_has('admin_warehouse')
 def show_in_warehouses(page=1):
     """显示入库单列表"""
-    per_page = request.args.get('per_page', 10, type=int)
-    status = request.args.get('s', 0, type=int)
-    paginated_inwarehouses = InWarehouse.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
-
-    if request.method == 'POST':
-        return render_template('warehouses/in_table.html',
-                               paginated_inwarehouses=paginated_inwarehouses)
+    per_page = request.values.get('per_page', 10, type=int)
+    paginated_inwarehouses = InWarehouse.query.filter_by(master_uid=Master.master_uid()).order_by(InWarehouse.created_at.desc())\
+        .paginate(page, per_page)
 
     return render_template('warehouses/show_inlist.html',
                            paginated_inwarehouses=paginated_inwarehouses,
                            sub_menu='inlist',
-                           status=status, **load_common_data())
+                           **load_common_data())
+
+
+@main.route('/inwarehouses/print')
+@login_required
+@user_has('admin_warehouse')
+def print_in_warehouses():
+    """打印入库单"""
+    pass
+
+
+@main.route('/inwarehouses/<int:id>/preview')
+@login_required
+@user_has('admin_warehouse')
+def preview_inwarehouse(id):
+    pass
 
 
 @main.route('/inwarehouses/create', methods=['GET', 'POST'])
@@ -376,31 +419,60 @@ def ajax_submit_purchase():
                            warehouse=warehouse)
 
 
-@main.route('/inwarehouses/<int:id>/preview')
+@main.route('/outwarehouses/search', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_warehouse')
-def preview_inwarehouse(id):
-    pass
+def search_out_warehouses():
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    wh_id = request.values.get('wh_id', type=int)
+    qk = request.values.get('qk', type=str)
+    sk = request.values.get('sk', 'ad', type=str)
+
+    builder = OutWarehouse.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+
+    qk = qk.strip()
+    if qk:
+        builder = builder.filter_by(serial_no=qk)
+
+    if sk == 'ad':
+        builder = builder.order_by(OutWarehouse.created_at.desc())
+    if sk == 'ud':
+        builder = builder.order_by(OutWarehouse.updated_at.desc())
+
+    paginated_outwarehouses = builder.paginate(page, per_page)
+
+    return render_template('warehouses/search_outwarehouse_result.html',
+                           paginated_outwarehouses=paginated_outwarehouses,
+                           wh_id=wh_id,
+                           qk=qk,
+                           sk=sk)
 
 
-@main.route('/outwarehouses', methods=['GET', 'POST'])
-@main.route('/outwarehouses/<int:page>', methods=['GET', 'POST'])
+@main.route('/outwarehouses')
+@main.route('/outwarehouses/<int:page>')
 @login_required
 @user_has('admin_warehouse')
 def show_out_warehouses(page=1):
     """显示出库单列表"""
     per_page = request.args.get('per_page', 10, type=int)
-    status = request.args.get('s', 0, type=int)
-    paginated_outwarehouses = OutWarehouse.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
-
-    if request.method == 'POST':
-        return render_template('warehouses/out_table.html',
-                               paginated_outwarehouses=paginated_outwarehouses)
+    paginated_outwarehouses = OutWarehouse.query.filter_by(master_uid=Master.master_uid())\
+        .order_by(OutWarehouse.created_at.desc()).paginate(page, per_page)
 
     return render_template('warehouses/show_outlist.html',
                            paginated_outwarehouses=paginated_outwarehouses,
                            sub_menu='outlist',
-                           status=status, **load_common_data())
+                           **load_common_data())
+
+
+@main.route('/outwarehouses/print')
+@login_required
+@user_has('admin_warehouse')
+def print_out_warehouses():
+    """打印出库单"""
+    pass
 
 
 @main.route('/inwarehouses/<int:id>/edit', methods=['GET', 'POST'])

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-23 17:54+0800\n"
+"POT-Creation-Date: 2017-07-23 21:47+0800\n"
 "PO-Revision-Date: 2017-06-12 20:37+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -372,8 +372,9 @@ msgstr ""
 msgid "确认邮件已发送到你注册的邮箱."
 msgstr ""
 
-#: app/forms/logistics_forms.py:10
-msgid "Name"
+#: app/forms/logistics_forms.py:10 app/forms/purchase_forms.py:18
+#: app/templates/purchases/_modal_express.html:35
+msgid "Express Name"
 msgstr ""
 
 #: app/forms/logistics_forms.py:13
@@ -514,7 +515,7 @@ msgstr ""
 msgid "End date"
 msgstr ""
 
-#: app/forms/product_forms.py:17 app/templates/logistics/show_list.html:63
+#: app/forms/product_forms.py:17 app/templates/logistics/show_list.html:33
 #: app/templates/orders/show_list.html:241
 #: app/templates/stores/show_list.html:34
 #: app/templates/suppliers/search_result.html:13
@@ -547,8 +548,7 @@ msgstr ""
 #: app/forms/product_forms.py:28 app/forms/product_forms.py:68
 #: app/forms/warehouse_forms.py:23 app/main/order.py:85
 #: app/main/purchase.py:577 app/templates/finances/show_payments.html:76
-#: app/templates/index.html:128 app/templates/logistics/show_list.html:34
-#: app/templates/logistics/show_shippers.html:34
+#: app/templates/index.html:128 app/templates/logistics/show_shippers.html:34
 #: app/templates/orders/show_list.html:152
 #: app/templates/products/table_product.html:19
 #: app/templates/purchases/pay_list.html:105
@@ -643,11 +643,6 @@ msgstr ""
 
 #: app/forms/purchase_forms.py:12 app/templates/purchases/view_detail.html:73
 msgid "Extra Charge"
-msgstr ""
-
-#: app/forms/purchase_forms.py:18
-#: app/templates/purchases/_modal_express.html:35
-msgid "Express Name"
 msgstr ""
 
 #: app/forms/setting_forms.py:11 app/templates/stores/show_list.html:32
@@ -867,12 +862,12 @@ msgid "Leased"
 msgstr ""
 
 #: app/models/warehouse.py:26 app/templates/warehouses/create_and_edit.html:15
-#: app/templates/warehouses/create_and_edit.html:228
+#: app/templates/warehouses/create_and_edit.html:227
 msgid "Qualified"
 msgstr ""
 
 #: app/models/warehouse.py:27 app/templates/warehouses/create_and_edit.html:16
-#: app/templates/warehouses/create_and_edit.html:230
+#: app/templates/warehouses/create_and_edit.html:229
 msgid "Defective"
 msgstr ""
 
@@ -901,7 +896,7 @@ msgstr ""
 #: app/templates/categories/show_list.html:18
 #: app/templates/file_manager.html:26
 #: app/templates/finances/show_payments.html:60
-#: app/templates/layout/list.html:19 app/templates/logistics/show_list.html:18
+#: app/templates/layout/list.html:19 app/templates/logistics/show_list.html:16
 #: app/templates/logistics/show_shippers.html:18
 #: app/templates/orders/show_list.html:113
 #: app/templates/products/show_list.html:46
@@ -918,7 +913,7 @@ msgstr ""
 #: app/templates/system/show_list.html:21
 #: app/templates/system/show_roles.html:20
 #: app/templates/users/child_users.html:50
-#: app/templates/warehouses/create_and_edit.html:235
+#: app/templates/warehouses/create_and_edit.html:234
 #: app/templates/warehouses/show_inlist.html:77
 #: app/templates/warehouses/show_inout.html:50
 #: app/templates/warehouses/show_list.html:18
@@ -981,7 +976,7 @@ msgstr ""
 
 #: app/templates/categories/show_list.html:37
 #: app/templates/finances/show_payments.html:84 app/templates/index.html:129
-#: app/templates/layout/list.html:37 app/templates/logistics/show_list.html:64
+#: app/templates/layout/list.html:37 app/templates/logistics/show_list.html:34
 #: app/templates/logistics/show_shippers.html:67
 #: app/templates/orders/create_and_edit.html:261
 #: app/templates/orders/show_list.html:249
@@ -998,7 +993,7 @@ msgstr ""
 #: app/templates/suppliers/supply_list.html:104
 #: app/templates/system/show_abilities.html:35
 #: app/templates/users/child_users.html:69
-#: app/templates/warehouses/create_and_edit.html:219
+#: app/templates/warehouses/create_and_edit.html:218
 #: app/templates/warehouses/ex_warehouse_modal.html:46
 #: app/templates/warehouses/in_table.html:17
 #: app/templates/warehouses/in_warehouse_modal.html:48
@@ -1060,6 +1055,10 @@ msgstr ""
 msgid "I have a account, to login？"
 msgstr ""
 
+#: app/templates/block/_select_items.html:2 app/templates/layout/base.html:173
+msgid "items selected"
+msgstr ""
+
 #: app/templates/categories/create_and_edit.html:12
 msgid "Add Category"
 msgstr ""
@@ -1083,7 +1082,7 @@ msgstr ""
 #: app/templates/users/edit_profile.html:13 app/templates/users/passwd.html:13
 #: app/templates/users/profile.html:13
 #: app/templates/warehouses/create_and_edit.html:18
-#: app/templates/warehouses/create_and_edit.html:93
+#: app/templates/warehouses/create_and_edit.html:92
 #: app/templates/warehouses/edit_in_warehouse.html:25
 msgid "Save"
 msgstr ""
@@ -1102,7 +1101,7 @@ msgstr ""
 #: app/templates/suppliers/create_and_edit.html:20
 #: app/templates/system/create_edit_ability.html:16
 #: app/templates/users/edit_profile.html:16
-#: app/templates/warehouses/create_and_edit.html:96
+#: app/templates/warehouses/create_and_edit.html:95
 #: app/templates/warehouses/edit_in_warehouse.html:28
 msgid "Cancel"
 msgstr ""
@@ -1122,7 +1121,7 @@ msgstr ""
 
 #: app/templates/categories/show_list.html:15
 #: app/templates/finances/show_payments.html:57
-#: app/templates/layout/list.html:16 app/templates/logistics/show_list.html:15
+#: app/templates/layout/list.html:16 app/templates/logistics/show_list.html:13
 #: app/templates/logistics/show_shippers.html:15
 #: app/templates/orders/show_list.html:110
 #: app/templates/products/show_list.html:43
@@ -1142,8 +1141,8 @@ msgstr ""
 #: app/templates/categories/show_list.html:57
 #: app/templates/finances/show_payments.html:123
 #: app/templates/finances/show_payments.html:124
-#: app/templates/layout/list.html:53 app/templates/logistics/show_list.html:80
-#: app/templates/logistics/show_list.html:81
+#: app/templates/layout/list.html:53 app/templates/logistics/show_list.html:50
+#: app/templates/logistics/show_list.html:51
 #: app/templates/logistics/show_shippers.html:92
 #: app/templates/logistics/show_shippers.html:93
 #: app/templates/orders/show_list.html:311
@@ -1269,13 +1268,13 @@ msgid "Logout"
 msgstr ""
 
 #: app/templates/layout/form.html:12
-#: app/templates/warehouses/create_and_edit.html:87
+#: app/templates/warehouses/create_and_edit.html:86
 #: app/templates/warehouses/edit_in_warehouse.html:19
 msgid "Add Warehouse"
 msgstr ""
 
 #: app/templates/layout/form.html:14
-#: app/templates/warehouses/create_and_edit.html:89
+#: app/templates/warehouses/create_and_edit.html:88
 #: app/templates/warehouses/edit_in_warehouse.html:21
 msgid "Edit Warehouse"
 msgstr ""
@@ -1325,14 +1324,15 @@ msgstr ""
 msgid "Select warehouses"
 msgstr ""
 
-#: app/templates/logistics/show_list.html:28
+#: app/templates/logistics/show_list.html:32
+msgid "Logistics Name"
+msgstr ""
+
 #: app/templates/logistics/show_shippers.html:28
 #: app/templates/suppliers/show_list.html:57
 msgid "Search name..."
 msgstr ""
 
-#: app/templates/logistics/show_list.html:34
-#: app/templates/logistics/show_list.html:38
 #: app/templates/logistics/show_shippers.html:34
 #: app/templates/logistics/show_shippers.html:38
 #: app/templates/orders/preview_order.html:51
@@ -1372,18 +1372,12 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: app/templates/logistics/show_list.html:41
 #: app/templates/logistics/show_shippers.html:41
 msgid "Authorized"
 msgstr ""
 
-#: app/templates/logistics/show_list.html:44
 #: app/templates/logistics/show_shippers.html:44
 msgid "Not Authorized"
-msgstr ""
-
-#: app/templates/logistics/show_list.html:62
-msgid "Logistics Name"
 msgstr ""
 
 #: app/templates/logistics/show_shippers.html:62
@@ -2321,35 +2315,35 @@ msgstr ""
 msgid "Warehouse List"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:109
+#: app/templates/warehouses/create_and_edit.html:108
 msgid "General"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:115
+#: app/templates/warehouses/create_and_edit.html:114
 msgid "Shelves"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:145
+#: app/templates/warehouses/create_and_edit.html:144
 msgid "Yes"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:206
+#: app/templates/warehouses/create_and_edit.html:205
 msgid "Add Shelve"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:209
+#: app/templates/warehouses/create_and_edit.html:208
 msgid "Add One"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:210
+#: app/templates/warehouses/create_and_edit.html:209
 msgid "Add Many"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:217
+#: app/templates/warehouses/create_and_edit.html:216
 msgid "Shelve Name"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:218
+#: app/templates/warehouses/create_and_edit.html:217
 msgid "Shelve Type"
 msgstr ""
 
@@ -2719,5 +2713,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Add Child User"
+#~ msgstr ""
+
+#~ msgid "Name"
 #~ msgstr ""
 

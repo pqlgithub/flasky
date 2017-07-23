@@ -1,61 +1,54 @@
+<div class="table-responsive m-t-20">
+	<form id="inwarehouse-form" action="{{ url_for('main.print_in_warehouses') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-	<div class="table-responsive m-t-20">
-		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th>{{ _('Serial No.') }}</th>
+				<th>{{ _('Relation Serial') }}</th>
+				<th class="text-center">{{ _('Warehouse') }}</th>
+				<th class="text-center">{{ _('Quantity') }}</th>
+				<th class="text-right">{{ _('Add Date') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for in_ware in paginated_inwarehouses.items %}
+			<tr id="tr_{{ in_ware.id }}">
+				<td class="text-center">
+					<input name="selected[]" class="check-one" value="{{ in_ware.id }}" type="checkbox">
+				</td>
+				<td>
+					<strong>{{ in_ware.serial_no }}</strong>
+				</td>
+				<td>
+					{% if in_ware.target_label %}
+					<strong class="text-danger">{{ in_ware.target_label }}: {{ in_ware.target_serial_no }}</strong>
+					{% endif %}
+				</td>
+				<td class="text-center">
+					{{ in_ware.warehouse.name }}
+				</td>
+				<td class="text-center">
+					{{ in_ware.total_quantity }}
+				</td>
+				<td class="text-right">
+					{{ in_ware.created_at|timestamp2string() }}
+				</td>
+				<td class="text-right">
+					<a href="{{ url_for('main.preview_inwarehouse', id=in_ware.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
+						{{ _('Show') }}
+					</a>
+				</td>
+			</tr>
+			{% endfor %}
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
-				<tr>
-					<th class="text-center">
-						<input name="check_all" type="checkbox" class="check-all">
-					</th>
-					<th>{{ _('Serial No.') }}</th>
-					<th>{{ _('Relation Serial') }}</th>
-					<th class="text-center">{{ _('Warehouse') }}</th>
-					<th class="text-center">{{ _('Quantity') }}</th>
-					<th class="text-right">{{ _('Add Date') }}</th>
-					<th class="text-right">{{ _('Action') }}</th>
-				</tr>
-				</thead>
-				<tbody>
-				{% for in_ware in paginated_inwarehouses.items %}
-				<tr id="tr_{{ in_ware.id }}">
-					<td class="text-center">
-						<input name="selected[]" class="check-one" value="{{ in_ware.id }}" type="checkbox">
-					</td>
-					<td>
-						<strong>{{ in_ware.serial_no }}</strong>
-					</td>
-					<td>
-						<code>{{ in_ware.target_label }} {{ in_ware.target_serial_no }}</code>
-					</td>
-					<td class="text-center">
-						{{ in_ware.warehouse.name }}
-					</td>
-					<td class="text-center">
-						{{ in_ware.total_quantity }}
-					</td>
-					<td class="text-right">
-						{{ in_ware.created_at|timestamp2string() }}
-					</td>
-					<td class="text-right">
-						<a href="{{ url_for('main.preview_inwarehouse', id=in_ware.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
-							{{ _('Show') }}
-						</a>
-					</td>
-				</tr>
-				{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>
 
-				</tbody>
-			</table>
-		</form>
-	</div>
-
-	{% import "block/_macros.html" as macros %}
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_inwarehouses, '.show_in_warehouses') }}
-			</nav>
-		</div>
-	</div>

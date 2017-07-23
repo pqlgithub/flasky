@@ -9,9 +9,7 @@
 	<h2 class="page-header">
 		{{ _('Express List') }}
 		<span class="pull-right">
-			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
-				0 items selected
-			</span>
+			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.create_express') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
@@ -20,34 +18,6 @@
 			</button>
 		</span>
 	</h2>
-
-	<form class="form-inline" method="post" action="">
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-
-		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="{{ _('Search name...') }}">
-		</div>
-
-		<div class="form-group m-l-5">
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="filter-authorize" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Status') }}: <b>{{ _('All') }}</b>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-authorize">
-					<li class="dropdown-header">{{ _('All')}}</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="#">{{ _('Authorized') }}</a>
-					</li>
-					<li>
-						<a href="#">{{ _('Not Authorized') }}</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-
-	</form>
 
 	<div class="table-responsive m-t-20">
 		<form id="expresses-form" action="{{ url_for('main.delete_express') }}" method="post">
