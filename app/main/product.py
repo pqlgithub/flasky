@@ -50,6 +50,7 @@ def search_products():
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
     builder = Product.query.filter_by(master_uid=Master.master_uid())
+    qk = qk.strip()
     if qk:
         builder = builder.whoosh_search(qk, like=True)
 
@@ -87,6 +88,7 @@ def ajax_search_products():
     qk = request.values.get('qk')
     if request.method == 'POST':
         builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
+        qk = qk.strip()
         if qk:
             builder = builder.whoosh_search(qk, like=True)
 

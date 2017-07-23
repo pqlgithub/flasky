@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-22 22:02+0800\n"
+"POT-Creation-Date: 2017-07-23 17:54+0800\n"
 "PO-Revision-Date: 2017-07-18 20:43+0800\n"
 "Last-Translator: \n"
 "Language: th\n"
@@ -347,7 +347,7 @@ msgid "Remember me"
 msgstr ""
 
 #: app/auth/forms.py:18 app/forms/user_forms.py:23
-#: app/forms/warehouse_forms.py:16 app/templates/users/add_child_user.html:26
+#: app/templates/users/add_child_user.html:26
 #: app/templates/users/child_users.html:65 app/templates/users/passwd.html:23
 msgid "Username"
 msgstr ""
@@ -705,6 +705,10 @@ msgstr ""
 msgid "En Address"
 msgstr ""
 
+#: app/forms/warehouse_forms.py:16
+msgid "Contact Username"
+msgstr ""
+
 #: app/forms/warehouse_forms.py:19
 msgid "QQ"
 msgstr ""
@@ -862,6 +866,16 @@ msgstr ""
 msgid "Leased"
 msgstr ""
 
+#: app/models/warehouse.py:26 app/templates/warehouses/create_and_edit.html:15
+#: app/templates/warehouses/create_and_edit.html:228
+msgid "Qualified"
+msgstr ""
+
+#: app/models/warehouse.py:27 app/templates/warehouses/create_and_edit.html:16
+#: app/templates/warehouses/create_and_edit.html:230
+msgid "Defective"
+msgstr ""
+
 #: app/templates/file_manager.html:7
 msgid "Image Manager"
 msgstr ""
@@ -904,8 +918,7 @@ msgstr ""
 #: app/templates/system/show_list.html:21
 #: app/templates/system/show_roles.html:20
 #: app/templates/users/child_users.html:50
-#: app/templates/warehouses/create_and_edit.html:18
-#: app/templates/warehouses/create_and_edit.html:233
+#: app/templates/warehouses/create_and_edit.html:235
 #: app/templates/warehouses/show_inlist.html:77
 #: app/templates/warehouses/show_inout.html:50
 #: app/templates/warehouses/show_list.html:18
@@ -914,9 +927,12 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/templates/index.html:42 app/templates/index.html:45
-#: app/templates/index.html:61
+#: app/templates/index.html:42
 msgid "Dashboard"
+msgstr ""
+
+#: app/templates/index.html:45 app/templates/index.html:61
+msgid "Overview"
 msgstr ""
 
 #: app/templates/index.html:48
@@ -982,7 +998,7 @@ msgstr ""
 #: app/templates/suppliers/supply_list.html:104
 #: app/templates/system/show_abilities.html:35
 #: app/templates/users/child_users.html:69
-#: app/templates/warehouses/create_and_edit.html:221
+#: app/templates/warehouses/create_and_edit.html:219
 #: app/templates/warehouses/ex_warehouse_modal.html:46
 #: app/templates/warehouses/in_table.html:17
 #: app/templates/warehouses/in_warehouse_modal.html:48
@@ -2313,19 +2329,27 @@ msgstr ""
 msgid "Shelves"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:147
+#: app/templates/warehouses/create_and_edit.html:145
 msgid "Yes"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:208
+#: app/templates/warehouses/create_and_edit.html:206
 msgid "Add Shelve"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:219
+#: app/templates/warehouses/create_and_edit.html:209
+msgid "Add One"
+msgstr ""
+
+#: app/templates/warehouses/create_and_edit.html:210
+msgid "Add Many"
+msgstr ""
+
+#: app/templates/warehouses/create_and_edit.html:217
 msgid "Shelve Name"
 msgstr ""
 
-#: app/templates/warehouses/create_and_edit.html:220
+#: app/templates/warehouses/create_and_edit.html:218
 msgid "Shelve Type"
 msgstr ""
 

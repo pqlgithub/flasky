@@ -13,7 +13,7 @@ class WarehouseForm(Form):
     en_address = TextAreaField(lazy_gettext('En Address'))
     description = TextAreaField(lazy_gettext('Description'))
 
-    username = StringField(lazy_gettext('Username'))
+    username = StringField(lazy_gettext('Contact Username'))
     phone = StringField(lazy_gettext('Phone'))
     email = StringField(lazy_gettext('Email'))
     qq = StringField(lazy_gettext('QQ'))

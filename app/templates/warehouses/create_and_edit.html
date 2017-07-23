@@ -11,11 +11,11 @@
 	var counter = 0;
 	$('.add-row').click(function (e) {
 		var new_row = '<tr id="tr_'+ counter +'">' +
-			'<td><input type="text" name="name_'+ counter +'" class="form-control" placeholder="无货架位"></td>' +
-			'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" value="1"> 良品 </label>' +
-			'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> 次品 </label>' +
+			'<td><input type="text" name="name_'+ counter +'" class="form-control"></td>' +
+			'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" checked="checked" value="1"> {{ _("Qualified") }} </label>' +
+			'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> {{ _("Defective") }} </label>' +
 			'</td>' +
-			'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-primary save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row">{{ _("Delete") }}</button> </td>' +
+			'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-primary save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row"><i class="glyphicon glyphicon-trash"></i></button> </td>' +
 			'</tr>';
 
 		$('#shelves-wrapper').append(new_row);
@@ -42,15 +42,14 @@
 					if (result.success) {
 						var added_row = '<tr>' +
 								'<td>'+ result.data.name +'</td>' +
-								'<td>'+ result.data.type +'</td>' +
+								'<td>'+ result.data.type_label[1] +'</td>' +
 								'<td class="text-center">--</td>' +
 								'</tr>';
 						$this.parent().parent()
 							.before(added_row)
-							.end()
 							.remove();
 					} else {
-						$('#warehouse-form').prepend(display_alert(result.status.message))
+						$('table.table-shelves').before(display_alert(result.status.message))
 					}
 				}
 			});
@@ -137,8 +136,6 @@
 					</div>
 				</div>
 
-
-
 				<div class="form-group">
 					{{ form.is_default.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
@@ -203,17 +200,17 @@
 
 			{% if mode == 'edit' %}
 			<div id="shelves" class="tab-pane fade in" role="tabpanel" aria-labelledby="shelves-tab">
-				<div class="btn-group">
+				<div class="btn-group m-b-10">
 					<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						{{ _('Add Shelve') }} <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="javascript:void(0);" class="add-row">Add One</a></li>
-						<li class="disabled"><a href="#">Add Many</a></li>
+						<li><a href="javascript:void(0);" class="add-row">{{ _('Add One') }}</a></li>
+						<li class="disabled"><a href="#">{{ _('Add Many') }}</a></li>
 					</ul>
 				</div>
 
-				<table class="table table-bordered m-t-20">
+				<table class="table table-bordered table-shelves m-t-10">
 					<thead>
 						<tr>
 							<th>{{ _('Shelve Name') }}</th>
@@ -226,7 +223,11 @@
 						<tr id="tr_{{ shelve.id }}">
 							<td>{{ shelve.name }}</td>
 							<td>
-								{% if shelve.type == 1 %}良品{% else %}次品{% endif %}
+								{% if shelve.type == 1 %}
+									{{ _('Qualified') }}
+								{% else %}
+									{{ _('Defective') }}
+								{% endif %}
 							</td>
 							<td class="text-center">
 								{% if not shelve.is_default %}

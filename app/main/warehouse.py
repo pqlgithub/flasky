@@ -551,7 +551,7 @@ def add_shelve():
     if name is None or name == '':
         return full_response(False, custom_status("Shelve name can't empty!"))
 
-    if WarehouseShelve.query.filter_by(name=name).first():
+    if WarehouseShelve.query.filter_by(warehouse_id=warehouse_id, name=name).first():
         return full_response(False, custom_status("Shelve name already exist!"))
 
     shelve = WarehouseShelve(

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import current_app
-from flask_babelex import lazy_gettext
+from flask_babelex import gettext, lazy_gettext
 from app import db
 from ..utils import timestamp
 from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES
@@ -20,6 +20,11 @@ __all__ = [
 WAREHOUSE_TYPES = [
     (1, lazy_gettext('Private Build')),
     (2, lazy_gettext('Leased'))
+]
+
+SHELVE_TYPES = [
+    (1, gettext('Qualified'), lazy_gettext('Qualified')),
+    (2, gettext('Defective'), lazy_gettext('Defective'))
 ]
 
 class Warehouse(db.Model):
@@ -136,12 +141,20 @@ class WarehouseShelve(db.Model):
         'ProductStock', backref='warehouse_shelve', lazy='dynamic'
     )
 
+    @property
+    def type_label(self):
+        for type in SHELVE_TYPES:
+            if type[0] == self.type:
+                return [type[0], type[1]]
+
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_data = {
             'id': self.id,
             'name': self.name,
-            'type': self.type
+            'type': self.type,
+            'type_label': self.type_label,
         }
         return json_data
 
