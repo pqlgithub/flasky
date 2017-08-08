@@ -60,7 +60,7 @@ class Product(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     # 产品编号
-    # serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
+    serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
 
@@ -162,7 +162,7 @@ class ProductSku(db.Model):
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     # 产品编号sku
-    #serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
+    serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
     s_model = db.Column(db.String(64), nullable=False)
     # 重量
