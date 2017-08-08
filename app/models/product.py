@@ -207,6 +207,15 @@ class ProductSku(db.Model):
         """product sku stock count"""
         return ProductStock.stock_count_of_product(self.id)
 
+    @staticmethod
+    def make_unique_serial_no(serial_no):
+        if ProductSku.query.filter_by(serial_no=serial_no).first() == None:
+            return serial_no
+        while True:
+            new_serial_no = gen_serial_no()
+            if ProductSku.query.filter_by(serial_no=new_serial_no).first() == None:
+                break
+        return new_serial_no
 
     def to_json(self):
         """资源和JSON的序列化转换"""

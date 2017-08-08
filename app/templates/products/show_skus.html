@@ -16,27 +16,27 @@
 		<td class="text-center">
 			<img src="{{ sku.cover.view_url }}" width="60px">
 		</td>
-		<td>
+		<td class="text-center">
 			{{ sku.serial_no }}
 		</td>
-		<td>
+		<td class="text-center">
 			{{ sku.cost_price }}
 		</td>
-		<td>
+		<td class="text-center">
 			<label class="label label-warning">{{ sku.s_model }}</label>
 		</td>
-		<td>
+		<td class="text-center">
 			{{ sku.s_weight}}
 		</td>
 		<td>
 			{{ sku.remark }}
 		</td>
 		<td class="text-right">
-			<a href="{{ url_for('main.edit_sku', id=sku.product_id, s_id=sku.id) }}" class="btn btn-icon ajax-sku btn-primary" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-				<i class="glyphicon glyphicon-edit"></i>
+			<a href="{{ url_for('main.edit_sku', id=sku.product_id, s_id=sku.id) }}" class="btn ajax-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+				{{ _('Edit') }}
 			</a>
-			<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn btn-icon ajax-delete-sku btn-danger" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+			<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				{{ _('Remove') }}
 			</a>
 		</td>
 	</tr>
