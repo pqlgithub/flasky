@@ -14,6 +14,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     # change this in your production settings !!!
+
+    mode = 'dev'
+
     CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'Mic#2018%0110!'
 
@@ -94,7 +97,7 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = False
+    DEBUG = True
 
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/micku_dev'
@@ -107,6 +110,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+
     DEBUG_LOG = False
     DEBUG = False
 

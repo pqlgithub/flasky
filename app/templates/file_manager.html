@@ -20,7 +20,7 @@
 					<button type="button" data-toggle="tooltip" id="uploader_browse" class="btn btn-primary" data-original-title="{{ _('Upload') }}">
 						<i class="glyphicon glyphicon-upload"></i>
 					</button>
-					<button type="button" data-toggle="tooltip" id="button-folder" class="btn btn-default" data-original-title="{{ _('New Folder') }}" data-title="{{ _('characters or underscore') }}">
+					<button type="button" data-toggle="tooltip" id="button-folder" class="btn btn-default" data-original-title="{{ _('New Folder') }}">
 						<i class="glyphicon glyphicon-folder-open"></i>
 					</button>
 					<button type="button" data-toggle="tooltip" id="button-delete" class="btn btn-danger" data-original-title="{{ _('Delete') }}">
@@ -132,7 +132,7 @@
 		title: 'directory name',
 		content: function() {
 			var html  = '<div class="input-group">';
-			html += '  <input type="text" name="folder" placeholder="{{ _('characters or underscore') }}" class="form-control">';
+			html += '  <input type="text" name="folder" class="form-control">';
 			html += '  <span class="input-group-btn"><button type="button" title="New directory" id="button-create" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i></button></span>';
 			html += '</div>';
 

@@ -11,7 +11,7 @@ if os.path.exists('.env'):
         if len(var) == 2:
             os.environ[var[0]] = var[1]
 
-from flask_script import Manager, Shell
+from flask_script import Server, Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 from flask_apidoc.commands import GenerateApiDoc
 from flask_assets import ManageAssets
@@ -75,6 +75,9 @@ def run_sql():
 # 常用操作命令
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
+
+server = Server(host='0.0.0.0', port=9000)
+manager.add_command('runserver', server)
 
 # 更新API doc文档
 manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',

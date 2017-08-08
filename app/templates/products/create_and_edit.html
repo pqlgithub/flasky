@@ -1,5 +1,4 @@
 {% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
@@ -306,13 +305,13 @@
 					<table class="table table-bordered m-t-20">
 						<thead>
 							<tr>
-								<th class="text-center">Image</th>
-								<th class="text-center">Serial No.</th>
-								<th class="text-center">Cost Price</th>
-								<th class="text-center">Model</th>
-								<th class="text-center">Weight</th>
-								<th>Remark</th>
-								<th class="text-right">Action</th>
+								<th class="text-center">{{ _('Image') }}</th>
+								<th class="text-center">{{ _('Serial No.') }}</th>
+								<th class="text-center">{{ _('Cost Price') }}</th>
+								<th class="text-center">{{ _('Model') }}</th>
+								<th class="text-center">{{ _('Weight') }}</th>
+								<th>{{ _('Remark') }}</th>
+								<th class="text-right">{{ _('Action') }}</th>
 							</tr>
 						</thead>
 						<tbody>

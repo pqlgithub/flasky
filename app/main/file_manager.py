@@ -32,9 +32,14 @@ def folder(page=1):
             return custom_response(False, gettext("Directory name isn't empty!"))
 
         sub_folder = parse.unquote(sub_folder)
+        # 截取头尾空格
+        sub_folder = sub_folder.strip()
+        # 替换中间空格符
+        sub_folder = re.sub(r'\s+', '_', sub_folder)
 
-        if not re.match(r'^[0-9a-zA-Z_]+$', sub_folder):
-            return custom_response(False, gettext("Directory name only character or underline!"))
+        pattern = re.compile(r'[!#@\$\/%\?&]')
+        if len(pattern.findall(sub_folder)):
+            return custom_response(False, gettext("Directory name can't contain special characters [!#@$/?&]!"))
 
         if Directory.query.filter_by(master_uid=Master.master_uid(), name=sub_folder).first():
             return custom_response(False, gettext("Directory name is already exist!"))
@@ -54,9 +59,11 @@ def folder(page=1):
                 name=sub_folder,
                 master_uid=Master.master_uid(),
                 parent_id=parent_id,
-                top=top)
+                top=top
+            )
 
             db.session.add(directory)
+
             db.session.commit()
 
         except ValidationError:
