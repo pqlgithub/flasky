@@ -317,10 +317,10 @@ def add_sku(id):
             form.sku_cover_id.data = default_cover.id
 
         sku = ProductSku(
-            product_id=id,
+            product_id=product.id,
             supplier_id=product.supplier_id,
             master_uid=Master.master_uid(),
-            serial_no=ProductSku.make_unique_serial_no(form.serial_no.data),
+            serial_no=form.serial_no.data,
             cover_id=form.sku_cover_id.data,
             s_model=form.s_model.data,
             s_weight=form.s_weight.data,
@@ -335,7 +335,7 @@ def add_sku(id):
         return full_response(True, R201_CREATED, sku.to_json())
 
     mode = 'create'
-    form.serial_no.data = gen_serial_no()
+    form.serial_no.data = ProductSku.make_unique_serial_no(gen_serial_no())
     form.cost_price.data = product.cost_price
     form.sale_price.data = product.sale_price
     form.s_weight.data = product.s_weight

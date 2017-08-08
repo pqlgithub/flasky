@@ -230,7 +230,7 @@ class ProductSku(db.Model):
         return json_asset
 
     def __repr__(self):
-        return '<Product %r>' % self.serial_no
+        return '<ProductSku %r>' % self.serial_no
 
 
 class ProductStock(db.Model):
