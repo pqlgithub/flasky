@@ -193,9 +193,12 @@ def create_product():
             default_cover = Asset.query.filter_by(is_default=True).first()
             form.cover_id.data = default_cover.id
 
+        new_serial_no = form.serial_no.data
+        current_app.logger.warn('Product new serial_no [%s] -----!!!' % new_serial_no)
+
         product = Product(
             master_uid=Master.master_uid(),
-            serial_no=Product.make_unique_serial_no(form.serial_no.data),
+            serial_no=new_serial_no,
             supplier_id=form.supplier_id.data,
             name=form.name.data,
             cover_id=form.cover_id.data,
@@ -316,11 +319,14 @@ def add_sku(id):
             default_cover = Asset.query.filter_by(is_default=True).first()
             form.sku_cover_id.data = default_cover.id
 
+        new_serial_no = form.serial_no.data
+        current_app.logger.warn('Sku new serial_no [%s] -----!!!' % new_serial_no)
+
         sku = ProductSku(
             product_id=product.id,
             supplier_id=product.supplier_id,
             master_uid=Master.master_uid(),
-            serial_no=form.serial_no.data,
+            serial_no=new_serial_no,
             cover_id=form.sku_cover_id.data,
             s_model=form.s_model.data,
             s_weight=form.s_weight.data,

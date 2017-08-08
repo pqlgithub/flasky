@@ -219,7 +219,7 @@ class ProductSku(db.Model):
 
     def to_json(self):
         """资源和JSON的序列化转换"""
-        json_asset = {
+        json_sku = {
             'id': self.id,
             'serial_no': self.serial_no,
             's_model': self.s_model,
@@ -227,7 +227,7 @@ class ProductSku(db.Model):
             'cost_price': str(self.cost_price),
             's_weight': str(self.s_weight)
         }
-        return json_asset
+        return json_sku
 
     def __repr__(self):
         return '<ProductSku %r>' % self.serial_no
