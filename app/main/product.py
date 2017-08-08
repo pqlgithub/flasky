@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, abort, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
+from flask_babelex import gettext
 from . import main
 from .. import db
 from ..utils import gen_serial_no
@@ -298,7 +299,25 @@ def edit_product(id):
 @login_required
 @user_has('admin_product')
 def delete_product():
-    pass
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash(gettext('Delete product is null!'), 'danger')
+        abort(404)
+
+    try:
+        for id in selected_ids:
+            product = Product.query.get_or_404(id)
+            if product:
+                db.session.delete(product)
+
+        db.session.commit()
+
+    except Exception as ex:
+        current_app.logger.debug('Delete product is fail: %s' % ex)
+
+    flash(gettext('Delete product is ok!'), 'success')
+
+    return redirect(url_for('.show_products'))
 
 @main.route('/products/<int:id>/skus')
 @user_has('admin_product')
