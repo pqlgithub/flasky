@@ -34,6 +34,7 @@
 					<th class="text-center">{{ _('Master') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Last Seen') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -64,6 +65,11 @@
 					</td>
 					<td class="text-right">
 						{{ user.last_seen|timestamp2string()}}
+					</td>
+					<td class="text-right">
+						<a href="{{ url_for('main.reset_passwd', uid=user.id) }}" class="btn btn-link ajax-modal" data-modal="password-modal"  data-toggle="tooltip" title="" data-original-title="{{ _('Update Password') }}">
+							{{ _('Update Password') }}
+						</a>
 					</td>
 				</tr>
 				{% endfor %}

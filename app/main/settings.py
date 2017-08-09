@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
+from flask_babelex import gettext
 from . import main
 from .. import db
-from app.models import Store, Asset, Site, User, Role, Ability
+from app.models import Store, Asset, Site, User, Role, Ability, Directory
 from app.forms import StoreForm, SiteForm, RoleForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
@@ -168,6 +170,41 @@ def delete_store():
 
     return redirect(url_for('.show_stores'))
 
+
+@main.route('/directories/<int:id>/modify', methods=['GET', 'POST'])
+@login_required
+def modify_directory(id):
+    """修改目录名称"""
+    directory = Directory.query.get(id)
+    if directory is None:
+        return custom_response(False, gettext("Directory isn't exist!"))
+
+    if request.method == 'POST':
+        sub_folder = request.form.get('folder')
+        # 截取头尾空格
+        sub_folder = sub_folder.strip()
+        # 验证目录
+        if sub_folder is None or sub_folder == '':
+            return custom_response(False, gettext("Directory name isn't empty!"))
+
+        # 替换中间空格符
+        sub_folder = re.sub(r'\s+', '_', sub_folder)
+
+        pattern = re.compile(r'[!#@\$\/%\?&]')
+        if len(pattern.findall(sub_folder)):
+            return custom_response(False, gettext("Directory name can't contain special characters [!#@$/?&]!"))
+
+        if Directory.query.filter_by(master_uid=Master.master_uid(), name=sub_folder).first():
+            return custom_response(False, gettext("Directory name is already exist!"))
+
+        directory.name = sub_folder
+
+        db.session.commit()
+
+        return custom_response(True, gettext('Modify directory is ok!'))
+
+    return render_template('settings/directory_modal.html',
+                           directory=directory)
 
 
 @main.route('/assets')

@@ -45,7 +45,8 @@
 							<img src="{{ asset.view_url }}" width="60px">
 						</td>
 						<td class="text-center">
-							{{ asset.directory.name }}
+							{{ asset.directory.name }} <br>
+							<a href="{{ url_for('main.modify_directory', id=asset.directory.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit Directory') }}</a>
 						</td>
 						<td>
 							{{ asset.filepath }}

@@ -102,9 +102,9 @@ def status_response(success=True, status=R200_OK):
     })
 
 
-def custom_response(success=True, message=None):
+def custom_response(success=True, message=None, code=200):
     """自定义响应结果"""
-    return status_response(success, custom_status(message))
+    return status_response(success, custom_status(message, code))
 
 
 def custom_status(message, code=400):

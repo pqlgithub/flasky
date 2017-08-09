@@ -2,12 +2,13 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app
 from flask_login import login_required, current_user
+from flask_babelex import gettext
 from . import main
 from .. import db
 from app.models import User, Role, Ability, Site
-from app.forms import RoleForm, AbilityForm, SiteForm, UserForm
+from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm
 import app.constant as constant
-from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
+from ..utils import full_response, custom_status, R200_OK, R201_CREATED, R400_BADREQUEST, Master, custom_response
 
 
 def load_common_data():
@@ -36,6 +37,29 @@ def show_users(page=1):
                            paginated_users=paginated_users,
                            sub_menu='users',
                            **load_common_data())
+
+
+@main.route('/system/<int:uid>/reset_passwd', methods=['GET', 'POST'])
+@login_required
+def reset_passwd(uid):
+    """重置密码"""
+    user = User.query.get(uid)
+    if user is None:
+        return custom_response(False, gettext('User is not exist!'))
+
+    form = PasswdForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user.password = form.password.data
+            db.session.commit()
+        else:
+            return full_response(False, R400_BADREQUEST, form.errors)
+
+        return custom_response(True, gettext('Reset password is ok!'))
+
+    return render_template('system/password_modal.html',
+                           user=user,
+                           form=form)
 
 
 @main.route('/system/roles')

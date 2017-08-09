@@ -98,6 +98,8 @@ function hook_ajax_modal() {
 	$('a.ajax-modal').click(function () {
 		var url = $(this).attr('href'), modal_name = $(this).data('modal');
 		$.get(url, function (html) {
+			$('#'+ modal_name).remove();
+
 			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
 
 			$('#'+ modal_name).modal('show');

@@ -27,13 +27,13 @@ def folder(page=1):
         sub_folder = request.form.get('folder')
         parent_directory = request.form.get('parent_directory', '')
 
-        # 验证目录
-        if sub_folder is None:
-            return custom_response(False, gettext("Directory name isn't empty!"))
-
         sub_folder = parse.unquote(sub_folder)
         # 截取头尾空格
         sub_folder = sub_folder.strip()
+        # 验证目录
+        if sub_folder is None or sub_folder == '':
+            return custom_response(False, gettext("Directory name isn't empty!"))
+
         # 替换中间空格符
         sub_folder = re.sub(r'\s+', '_', sub_folder)
 
