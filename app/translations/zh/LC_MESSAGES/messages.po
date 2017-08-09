@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-24 15:39+0800\n"
-"PO-Revision-Date: 2017-07-24 15:39+0800\n"
+"POT-Creation-Date: 2017-08-10 01:00+0800\n"
+"PO-Revision-Date: 2017-08-10 01:04+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
-"X-Generator: Poedit 2.0.2\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: app/constant.py:7 app/templates/orders/create_and_edit.html:180
 msgid "China"
@@ -319,6 +319,8 @@ msgstr "到货状态"
 #: app/main/order.py:94 app/main/purchase.py:586
 #: app/templates/finances/show_payments.html:83
 #: app/templates/orders/show_list.html:315
+#: app/templates/products/create_and_edit.html:313
+#: app/templates/products/show_skus.html:9
 #: app/templates/purchases/_modal_arrival.html:37
 #: app/templates/purchases/purchase_table.html:80
 #: app/templates/suppliers/search_result.html:16
@@ -347,6 +349,7 @@ msgid "Remember me"
 msgstr "记住我"
 
 #: app/auth/forms.py:18 app/forms/user_forms.py:23
+#: app/templates/system/password_modal.html:12
 #: app/templates/users/add_child_user.html:26
 #: app/templates/users/child_users.html:63 app/templates/users/passwd.html:23
 msgid "Username"
@@ -437,7 +440,10 @@ msgid "Address"
 msgstr "地址"
 
 #: app/forms/order_forms.py:8 app/forms/product_forms.py:58
-#: app/forms/product_forms.py:83 app/templates/warehouses/in_table.html:11
+#: app/forms/product_forms.py:83
+#: app/templates/products/create_and_edit.html:309
+#: app/templates/products/show_skus.html:5
+#: app/templates/warehouses/in_table.html:11
 #: app/templates/warehouses/out_table.html:11
 msgid "Serial No."
 msgstr "编号."
@@ -544,8 +550,9 @@ msgstr "父级"
 
 #: app/forms/product_forms.py:28 app/forms/product_forms.py:68
 #: app/forms/warehouse_forms.py:23 app/main/order.py:85
-#: app/main/purchase.py:577 app/templates/finances/show_payments.html:76
-#: app/templates/index.html:128 app/templates/orders/show_list.html:153
+#: app/main/purchase.py:577 app/templates/categories/show_list.html:34
+#: app/templates/finances/show_payments.html:76 app/templates/index.html:128
+#: app/templates/orders/show_list.html:153
 #: app/templates/products/table_product.html:19
 #: app/templates/purchases/pay_list.html:103
 #: app/templates/purchases/purchase_pay_table.html:11
@@ -582,6 +589,8 @@ msgid "Cover"
 msgstr "封面图"
 
 #: app/forms/product_forms.py:61 app/forms/product_forms.py:85
+#: app/templates/products/create_and_edit.html:310
+#: app/templates/products/show_skus.html:6
 #: app/templates/products/table_product.html:16
 msgid "Cost Price"
 msgstr "成本价"
@@ -593,6 +602,8 @@ msgstr "销售价"
 
 #: app/forms/product_forms.py:63 app/forms/product_forms.py:77
 #: app/forms/product_forms.py:88
+#: app/templates/products/create_and_edit.html:312
+#: app/templates/products/show_skus.html:8
 msgid "Weight"
 msgstr "重量"
 
@@ -634,6 +645,8 @@ msgid "Customs Code"
 msgstr "海关编码"
 
 #: app/forms/product_forms.py:87
+#: app/templates/products/create_and_edit.html:311
+#: app/templates/products/show_skus.html:7
 msgid "Model"
 msgstr "型号"
 
@@ -713,15 +726,15 @@ msgstr "仓库类型"
 msgid "Default Warehouse"
 msgstr "默认仓库"
 
-#: app/main/file_manager.py:32
+#: app/main/file_manager.py:35 app/main/settings.py:188
 msgid "Directory name isn't empty!"
 msgstr "目录不能为空！"
 
-#: app/main/file_manager.py:37
-msgid "Directory name only character or underline!"
-msgstr "仅字符串或下划线！"
+#: app/main/file_manager.py:42 app/main/settings.py:195
+msgid "Directory name can't contain special characters [!#@$/?&]!"
+msgstr "目录名称不能含有特殊字符 [!#@$/?&]!"
 
-#: app/main/file_manager.py:40
+#: app/main/file_manager.py:45 app/main/settings.py:198
 msgid "Directory name is already exist!"
 msgstr "目录名称已经存在！"
 
@@ -781,6 +794,14 @@ msgstr "小计"
 msgid "Discount Amount"
 msgstr "优惠金额"
 
+#: app/main/product.py:304
+msgid "Delete product is null!"
+msgstr "删除产品为空！"
+
+#: app/main/product.py:318
+msgid "Delete product is ok!"
+msgstr "删除产品成功！"
+
 #: app/main/purchase.py:369
 msgid "Verify purchase id is NULL!"
 msgstr "审核采购单为空！"
@@ -792,6 +813,22 @@ msgstr "审核采购单为空！"
 #: app/main/purchase.py:377 app/main/purchase.py:496 app/main/purchase.py:528
 msgid "You do not have permission to operate"
 msgstr "你没有权限进行此项操作"
+
+#: app/main/settings.py:180
+msgid "Directory isn't exist!"
+msgstr "目录不存在!"
+
+#: app/main/settings.py:204
+msgid "Modify directory is ok!"
+msgstr "修改目录操作成功！"
+
+#: app/main/system.py:48
+msgid "User is not exist!"
+msgstr "用户不存在！"
+
+#: app/main/system.py:58
+msgid "Reset password is ok!"
+msgstr "重置密码操作成功！"
 
 #: app/main/warehouse.py:532
 msgid "Default Shelve"
@@ -905,10 +942,6 @@ msgstr "上传"
 msgid "New Folder"
 msgstr "新文件夹"
 
-#: app/templates/file_manager.html:23 app/templates/file_manager.html:135
-msgid "characters or underscore"
-msgstr "仅英文字符串或下划线"
-
 #: app/templates/categories/show_list.html:16
 #: app/templates/file_manager.html:26
 #: app/templates/finances/show_payments.html:60
@@ -996,7 +1029,9 @@ msgstr "创建日期"
 #: app/templates/logistics/show_shippers.html:37
 #: app/templates/orders/create_and_edit.html:266
 #: app/templates/orders/show_list.html:250
+#: app/templates/products/create_and_edit.html:314
 #: app/templates/products/select_product_modal.html:33
+#: app/templates/products/show_skus.html:10
 #: app/templates/products/table_product.html:20
 #: app/templates/purchases/purchase_pay_table.html:18
 #: app/templates/purchases/purchase_table.html:17
@@ -1008,6 +1043,7 @@ msgstr "创建日期"
 #: app/templates/suppliers/show_list.html:103
 #: app/templates/suppliers/supply_list.html:99
 #: app/templates/system/show_abilities.html:33
+#: app/templates/system/show_list.html:37
 #: app/templates/users/child_users.html:67
 #: app/templates/warehouses/create_and_edit.html:218
 #: app/templates/warehouses/ex_warehouse_modal.html:46
@@ -1022,7 +1058,7 @@ msgid "Action"
 msgstr "操作"
 
 #: app/templates/index.html:152 app/templates/index.html:169
-#: app/templates/products/create_and_edit.html:221
+#: app/templates/products/create_and_edit.html:220
 #: app/templates/purchases/purchase_pay_table.html:50
 msgid "View"
 msgstr "查看"
@@ -1089,7 +1125,7 @@ msgstr "编辑分类"
 #: app/templates/logistics/create_and_edit.html:17
 #: app/templates/logistics/create_edit_shipper.html:17
 #: app/templates/orders/create_and_edit.html:111
-#: app/templates/products/create_and_edit.html:53
+#: app/templates/products/create_and_edit.html:52
 #: app/templates/purchases/create_and_edit.html:117
 #: app/templates/settings/setting_site.html:13
 #: app/templates/stores/create_and_edit.html:14
@@ -1110,7 +1146,7 @@ msgstr "保存"
 #: app/templates/logistics/create_edit_shipper.html:20
 #: app/templates/orders/create_and_edit.html:114
 #: app/templates/orders/preview_order.html:12
-#: app/templates/products/create_and_edit.html:56
+#: app/templates/products/create_and_edit.html:55
 #: app/templates/purchases/create_and_edit.html:120
 #: app/templates/settings/setting_site.html:16
 #: app/templates/stores/create_and_edit.html:17
@@ -1161,9 +1197,10 @@ msgstr "新增"
 #: app/templates/logistics/show_shippers.html:62
 #: app/templates/logistics/show_shippers.html:63
 #: app/templates/orders/show_list.html:312
+#: app/templates/products/create_and_edit.html:339
 #: app/templates/products/create_and_edit.html:340
-#: app/templates/products/create_and_edit.html:341
 #: app/templates/products/show_skus.html:35
+#: app/templates/products/show_skus.html:36
 #: app/templates/products/table_product.html:54
 #: app/templates/products/table_product.html:55
 #: app/templates/purchases/purchase_pay_table.html:49
@@ -1274,7 +1311,8 @@ msgid "Site Info"
 msgstr "公司信息"
 
 #: app/templates/layout/base.html:119 app/templates/settings/_sub_menu.html:23
-#: app/templates/users/passwd.html:10
+#: app/templates/system/show_list.html:70
+#: app/templates/system/show_list.html:71 app/templates/users/passwd.html:10
 msgid "Update Password"
 msgstr "更新密码"
 
@@ -1383,7 +1421,7 @@ msgstr "模板下载"
 #: app/templates/orders/_modal_export.html:39
 #: app/templates/orders/_modal_express.html:40
 #: app/templates/orders/_modal_import.html:51
-#: app/templates/products/modal_sku.html:81
+#: app/templates/products/modal_sku.html:82
 #: app/templates/products/select_product_modal.html:68
 #: app/templates/purchases/_modal_arrival.html:94
 #: app/templates/purchases/_modal_export.html:57
@@ -1391,7 +1429,9 @@ msgstr "模板下载"
 #: app/templates/purchases/_modal_import.html:39
 #: app/templates/purchases/purchase_modal.html:69
 #: app/templates/settings/create_edit_role.html:33
+#: app/templates/settings/directory_modal.html:21
 #: app/templates/settings/set_ability.html:26
+#: app/templates/system/password_modal.html:35
 #: app/templates/users/add_child_user.html:49
 #: app/templates/users/set_role.html:26
 #: app/templates/warehouses/ex_warehouse_modal.html:56
@@ -1726,52 +1766,61 @@ msgstr "供货关系"
 msgid "Category manage"
 msgstr "分类管理"
 
-#: app/templates/products/create_and_edit.html:47
+#: app/templates/products/create_and_edit.html:46
 msgid "Add Product"
 msgstr "新增产品"
 
-#: app/templates/products/create_and_edit.html:49
+#: app/templates/products/create_and_edit.html:48
 msgid "Edit Product"
 msgstr "编辑产品"
 
-#: app/templates/products/create_and_edit.html:68
+#: app/templates/products/create_and_edit.html:67
 msgid "General Info"
 msgstr "常规信息"
 
-#: app/templates/products/create_and_edit.html:73
+#: app/templates/products/create_and_edit.html:72
 msgid "Customs Declaration"
 msgstr "报关信息"
 
-#: app/templates/products/create_and_edit.html:79
+#: app/templates/products/create_and_edit.html:78
 #: app/templates/purchases/purchase_modal.html:30
 msgid "SKU"
 msgstr "SKU"
 
-#: app/templates/products/create_and_edit.html:92
+#: app/templates/products/create_and_edit.html:91
 msgid "Select category..."
 msgstr "选择分类..."
 
-#: app/templates/products/create_and_edit.html:104
+#: app/templates/products/create_and_edit.html:103
 msgid "Select supplier..."
 msgstr "选择供应商..."
 
-#: app/templates/products/create_and_edit.html:120
+#: app/templates/products/create_and_edit.html:119
 msgid "System defaults are generated, and modifications are not recommended"
 msgstr "系统默认设置，不建议修改"
 
-#: app/templates/products/create_and_edit.html:188
+#: app/templates/products/create_and_edit.html:187
 msgid "Product Size（LxWxH）"
 msgstr "产品尺寸（长x宽x高）"
 
-#: app/templates/products/create_and_edit.html:303
+#: app/templates/products/create_and_edit.html:302
 #: app/templates/products/modal_sku.html:5
 msgid "Add SKU"
 msgstr "新增SKU"
 
+#: app/templates/products/create_and_edit.html:308
+#: app/templates/products/show_skus.html:4
+#: app/templates/products/table_product.html:11
+#: app/templates/purchases/purchase_modal.html:29
+#: app/templates/settings/show_assets.html:32
+msgid "Image"
+msgstr "图片"
+
+#: app/templates/products/create_and_edit.html:342
 #: app/templates/products/create_and_edit.html:343
-#: app/templates/products/create_and_edit.html:344
 #: app/templates/products/select_result.html:25
 #: app/templates/products/select_result_for_order.html:24
+#: app/templates/products/show_skus.html:39
 #: app/templates/purchases/create_and_edit.html:34
 #: app/templates/purchases/create_and_edit.html:206
 #: app/templates/purchases/create_and_edit.html:207
@@ -1779,9 +1828,11 @@ msgstr "新增SKU"
 msgid "Remove"
 msgstr "移除"
 
-#: app/templates/products/modal_sku.html:82
+#: app/templates/products/modal_sku.html:83
 #: app/templates/settings/create_edit_role.html:34
+#: app/templates/settings/directory_modal.html:22
 #: app/templates/settings/set_ability.html:27
+#: app/templates/system/password_modal.html:36
 #: app/templates/users/set_role.html:27
 msgid "Save changes"
 msgstr "提交更新"
@@ -1827,12 +1878,6 @@ msgstr "默认"
 #: app/templates/warehouses/stock_table.html:23
 msgid "Update Date"
 msgstr "更新日期"
-
-#: app/templates/products/table_product.html:11
-#: app/templates/purchases/purchase_modal.html:29
-#: app/templates/settings/show_assets.html:32
-msgid "Image"
-msgstr "图片"
 
 #: app/templates/products/table_product.html:12
 #: app/templates/purchases/_modal_arrival.html:28
@@ -2025,6 +2070,14 @@ msgstr "附件列表"
 msgid "Add role"
 msgstr "新增角色"
 
+#: app/templates/settings/directory_modal.html:5
+msgid "Modify Directory"
+msgstr "修改目录"
+
+#: app/templates/settings/directory_modal.html:12
+msgid "Directory Name"
+msgstr "目录名称"
+
 #: app/templates/settings/set_ability.html:5
 msgid "Set the ability"
 msgstr "设置权限"
@@ -2054,9 +2107,13 @@ msgstr "文件路径"
 msgid "Upload Date"
 msgstr "上传日期"
 
+#: app/templates/settings/show_assets.html:49
+msgid "Edit Directory"
+msgstr "编辑目录"
+
 #: app/templates/settings/show_list.html:9
 msgid "Shop List"
-msgstr ""
+msgstr "店铺列表"
 
 #: app/templates/settings/show_roles.html:57
 #: app/templates/system/show_roles.html:36
@@ -2209,6 +2266,10 @@ msgstr "权限列表"
 msgid "Add ability"
 msgstr "新增权限"
 
+#: app/templates/system/password_modal.html:5
+msgid "Reset Password"
+msgstr "重置密码"
+
 #: app/templates/system/show_abilities.html:10
 msgid "Abilities List"
 msgstr "权限列表"
@@ -2222,16 +2283,16 @@ msgstr "主账号"
 msgid "Last Seen"
 msgstr "上次访问"
 
-#: app/templates/system/show_list.html:51
+#: app/templates/system/show_list.html:52
 msgid "This is the master"
 msgstr "这是一个主账号"
 
-#: app/templates/system/show_list.html:57
+#: app/templates/system/show_list.html:58
 #: app/templates/users/child_users.html:88
 msgid "Confirmed"
 msgstr "已确认"
 
-#: app/templates/system/show_list.html:61
+#: app/templates/system/show_list.html:62
 #: app/templates/users/child_users.html:92
 msgid "Pending Confirm"
 msgstr "待确认"
@@ -2550,3 +2611,9 @@ msgstr "标记次品"
 
 #~ msgid "Not Authorized"
 #~ msgstr "未认证"
+
+#~ msgid "Directory name only character or underline!"
+#~ msgstr "仅字符串或下划线！"
+
+#~ msgid "characters or underscore"
+#~ msgstr "仅英文字符串或下划线"

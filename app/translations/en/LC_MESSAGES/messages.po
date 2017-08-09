@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-24 15:39+0800\n"
+"POT-Creation-Date: 2017-08-10 01:00+0800\n"
 "PO-Revision-Date: 2017-06-12 20:37+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -318,6 +318,8 @@ msgstr ""
 #: app/main/order.py:94 app/main/purchase.py:586
 #: app/templates/finances/show_payments.html:83
 #: app/templates/orders/show_list.html:315
+#: app/templates/products/create_and_edit.html:313
+#: app/templates/products/show_skus.html:9
 #: app/templates/purchases/_modal_arrival.html:37
 #: app/templates/purchases/purchase_table.html:80
 #: app/templates/suppliers/search_result.html:16
@@ -346,6 +348,7 @@ msgid "Remember me"
 msgstr ""
 
 #: app/auth/forms.py:18 app/forms/user_forms.py:23
+#: app/templates/system/password_modal.html:12
 #: app/templates/users/add_child_user.html:26
 #: app/templates/users/child_users.html:63 app/templates/users/passwd.html:23
 msgid "Username"
@@ -436,7 +439,10 @@ msgid "Address"
 msgstr ""
 
 #: app/forms/order_forms.py:8 app/forms/product_forms.py:58
-#: app/forms/product_forms.py:83 app/templates/warehouses/in_table.html:11
+#: app/forms/product_forms.py:83
+#: app/templates/products/create_and_edit.html:309
+#: app/templates/products/show_skus.html:5
+#: app/templates/warehouses/in_table.html:11
 #: app/templates/warehouses/out_table.html:11
 msgid "Serial No."
 msgstr ""
@@ -543,8 +549,9 @@ msgstr ""
 
 #: app/forms/product_forms.py:28 app/forms/product_forms.py:68
 #: app/forms/warehouse_forms.py:23 app/main/order.py:85
-#: app/main/purchase.py:577 app/templates/finances/show_payments.html:76
-#: app/templates/index.html:128 app/templates/orders/show_list.html:153
+#: app/main/purchase.py:577 app/templates/categories/show_list.html:34
+#: app/templates/finances/show_payments.html:76 app/templates/index.html:128
+#: app/templates/orders/show_list.html:153
 #: app/templates/products/table_product.html:19
 #: app/templates/purchases/pay_list.html:103
 #: app/templates/purchases/purchase_pay_table.html:11
@@ -581,6 +588,8 @@ msgid "Cover"
 msgstr ""
 
 #: app/forms/product_forms.py:61 app/forms/product_forms.py:85
+#: app/templates/products/create_and_edit.html:310
+#: app/templates/products/show_skus.html:6
 #: app/templates/products/table_product.html:16
 msgid "Cost Price"
 msgstr ""
@@ -592,6 +601,8 @@ msgstr ""
 
 #: app/forms/product_forms.py:63 app/forms/product_forms.py:77
 #: app/forms/product_forms.py:88
+#: app/templates/products/create_and_edit.html:312
+#: app/templates/products/show_skus.html:8
 msgid "Weight"
 msgstr ""
 
@@ -633,6 +644,8 @@ msgid "Customs Code"
 msgstr ""
 
 #: app/forms/product_forms.py:87
+#: app/templates/products/create_and_edit.html:311
+#: app/templates/products/show_skus.html:7
 msgid "Model"
 msgstr ""
 
@@ -712,15 +725,15 @@ msgstr ""
 msgid "Default Warehouse"
 msgstr ""
 
-#: app/main/file_manager.py:32
+#: app/main/file_manager.py:35 app/main/settings.py:188
 msgid "Directory name isn't empty!"
 msgstr ""
 
-#: app/main/file_manager.py:37
-msgid "Directory name only character or underline!"
+#: app/main/file_manager.py:42 app/main/settings.py:195
+msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr ""
 
-#: app/main/file_manager.py:40
+#: app/main/file_manager.py:45 app/main/settings.py:198
 msgid "Directory name is already exist!"
 msgstr ""
 
@@ -780,6 +793,14 @@ msgstr ""
 msgid "Discount Amount"
 msgstr ""
 
+#: app/main/product.py:304
+msgid "Delete product is null!"
+msgstr ""
+
+#: app/main/product.py:318
+msgid "Delete product is ok!"
+msgstr ""
+
 #: app/main/purchase.py:369
 msgid "Verify purchase id is NULL!"
 msgstr ""
@@ -790,6 +811,22 @@ msgstr ""
 
 #: app/main/purchase.py:377 app/main/purchase.py:496 app/main/purchase.py:528
 msgid "You do not have permission to operate"
+msgstr ""
+
+#: app/main/settings.py:180
+msgid "Directory isn't exist!"
+msgstr ""
+
+#: app/main/settings.py:204
+msgid "Modify directory is ok!"
+msgstr ""
+
+#: app/main/system.py:48
+msgid "User is not exist!"
+msgstr ""
+
+#: app/main/system.py:58
+msgid "Reset password is ok!"
 msgstr ""
 
 #: app/main/warehouse.py:532
@@ -904,10 +941,6 @@ msgstr ""
 msgid "New Folder"
 msgstr ""
 
-#: app/templates/file_manager.html:23 app/templates/file_manager.html:135
-msgid "characters or underscore"
-msgstr ""
-
 #: app/templates/categories/show_list.html:16
 #: app/templates/file_manager.html:26
 #: app/templates/finances/show_payments.html:60
@@ -995,7 +1028,9 @@ msgstr ""
 #: app/templates/logistics/show_shippers.html:37
 #: app/templates/orders/create_and_edit.html:266
 #: app/templates/orders/show_list.html:250
+#: app/templates/products/create_and_edit.html:314
 #: app/templates/products/select_product_modal.html:33
+#: app/templates/products/show_skus.html:10
 #: app/templates/products/table_product.html:20
 #: app/templates/purchases/purchase_pay_table.html:18
 #: app/templates/purchases/purchase_table.html:17
@@ -1007,6 +1042,7 @@ msgstr ""
 #: app/templates/suppliers/show_list.html:103
 #: app/templates/suppliers/supply_list.html:99
 #: app/templates/system/show_abilities.html:33
+#: app/templates/system/show_list.html:37
 #: app/templates/users/child_users.html:67
 #: app/templates/warehouses/create_and_edit.html:218
 #: app/templates/warehouses/ex_warehouse_modal.html:46
@@ -1021,7 +1057,7 @@ msgid "Action"
 msgstr ""
 
 #: app/templates/index.html:152 app/templates/index.html:169
-#: app/templates/products/create_and_edit.html:221
+#: app/templates/products/create_and_edit.html:220
 #: app/templates/purchases/purchase_pay_table.html:50
 msgid "View"
 msgstr ""
@@ -1088,7 +1124,7 @@ msgstr ""
 #: app/templates/logistics/create_and_edit.html:17
 #: app/templates/logistics/create_edit_shipper.html:17
 #: app/templates/orders/create_and_edit.html:111
-#: app/templates/products/create_and_edit.html:53
+#: app/templates/products/create_and_edit.html:52
 #: app/templates/purchases/create_and_edit.html:117
 #: app/templates/settings/setting_site.html:13
 #: app/templates/stores/create_and_edit.html:14
@@ -1109,7 +1145,7 @@ msgstr ""
 #: app/templates/logistics/create_edit_shipper.html:20
 #: app/templates/orders/create_and_edit.html:114
 #: app/templates/orders/preview_order.html:12
-#: app/templates/products/create_and_edit.html:56
+#: app/templates/products/create_and_edit.html:55
 #: app/templates/purchases/create_and_edit.html:120
 #: app/templates/settings/setting_site.html:16
 #: app/templates/stores/create_and_edit.html:17
@@ -1160,9 +1196,10 @@ msgstr ""
 #: app/templates/logistics/show_shippers.html:62
 #: app/templates/logistics/show_shippers.html:63
 #: app/templates/orders/show_list.html:312
+#: app/templates/products/create_and_edit.html:339
 #: app/templates/products/create_and_edit.html:340
-#: app/templates/products/create_and_edit.html:341
 #: app/templates/products/show_skus.html:35
+#: app/templates/products/show_skus.html:36
 #: app/templates/products/table_product.html:54
 #: app/templates/products/table_product.html:55
 #: app/templates/purchases/purchase_pay_table.html:49
@@ -1273,7 +1310,8 @@ msgid "Site Info"
 msgstr ""
 
 #: app/templates/layout/base.html:119 app/templates/settings/_sub_menu.html:23
-#: app/templates/users/passwd.html:10
+#: app/templates/system/show_list.html:70
+#: app/templates/system/show_list.html:71 app/templates/users/passwd.html:10
 msgid "Update Password"
 msgstr ""
 
@@ -1382,7 +1420,7 @@ msgstr ""
 #: app/templates/orders/_modal_export.html:39
 #: app/templates/orders/_modal_express.html:40
 #: app/templates/orders/_modal_import.html:51
-#: app/templates/products/modal_sku.html:81
+#: app/templates/products/modal_sku.html:82
 #: app/templates/products/select_product_modal.html:68
 #: app/templates/purchases/_modal_arrival.html:94
 #: app/templates/purchases/_modal_export.html:57
@@ -1390,7 +1428,9 @@ msgstr ""
 #: app/templates/purchases/_modal_import.html:39
 #: app/templates/purchases/purchase_modal.html:69
 #: app/templates/settings/create_edit_role.html:33
+#: app/templates/settings/directory_modal.html:21
 #: app/templates/settings/set_ability.html:26
+#: app/templates/system/password_modal.html:35
 #: app/templates/users/add_child_user.html:49
 #: app/templates/users/set_role.html:26
 #: app/templates/warehouses/ex_warehouse_modal.html:56
@@ -1725,52 +1765,61 @@ msgstr ""
 msgid "Category manage"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:47
+#: app/templates/products/create_and_edit.html:46
 msgid "Add Product"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:49
+#: app/templates/products/create_and_edit.html:48
 msgid "Edit Product"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:68
+#: app/templates/products/create_and_edit.html:67
 msgid "General Info"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:73
+#: app/templates/products/create_and_edit.html:72
 msgid "Customs Declaration"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:79
+#: app/templates/products/create_and_edit.html:78
 #: app/templates/purchases/purchase_modal.html:30
 msgid "SKU"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:92
+#: app/templates/products/create_and_edit.html:91
 msgid "Select category..."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:104
+#: app/templates/products/create_and_edit.html:103
 msgid "Select supplier..."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:120
+#: app/templates/products/create_and_edit.html:119
 msgid "System defaults are generated, and modifications are not recommended"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:188
+#: app/templates/products/create_and_edit.html:187
 msgid "Product Size（LxWxH）"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:303
+#: app/templates/products/create_and_edit.html:302
 #: app/templates/products/modal_sku.html:5
 msgid "Add SKU"
 msgstr ""
 
+#: app/templates/products/create_and_edit.html:308
+#: app/templates/products/show_skus.html:4
+#: app/templates/products/table_product.html:11
+#: app/templates/purchases/purchase_modal.html:29
+#: app/templates/settings/show_assets.html:32
+msgid "Image"
+msgstr ""
+
+#: app/templates/products/create_and_edit.html:342
 #: app/templates/products/create_and_edit.html:343
-#: app/templates/products/create_and_edit.html:344
 #: app/templates/products/select_result.html:25
 #: app/templates/products/select_result_for_order.html:24
+#: app/templates/products/show_skus.html:39
 #: app/templates/purchases/create_and_edit.html:34
 #: app/templates/purchases/create_and_edit.html:206
 #: app/templates/purchases/create_and_edit.html:207
@@ -1778,9 +1827,11 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: app/templates/products/modal_sku.html:82
+#: app/templates/products/modal_sku.html:83
 #: app/templates/settings/create_edit_role.html:34
+#: app/templates/settings/directory_modal.html:22
 #: app/templates/settings/set_ability.html:27
+#: app/templates/system/password_modal.html:36
 #: app/templates/users/set_role.html:27
 msgid "Save changes"
 msgstr ""
@@ -1825,12 +1876,6 @@ msgstr ""
 #: app/templates/warehouses/show_stocks.html:143
 #: app/templates/warehouses/stock_table.html:23
 msgid "Update Date"
-msgstr ""
-
-#: app/templates/products/table_product.html:11
-#: app/templates/purchases/purchase_modal.html:29
-#: app/templates/settings/show_assets.html:32
-msgid "Image"
 msgstr ""
 
 #: app/templates/products/table_product.html:12
@@ -2024,6 +2069,14 @@ msgstr ""
 msgid "Add role"
 msgstr ""
 
+#: app/templates/settings/directory_modal.html:5
+msgid "Modify Directory"
+msgstr ""
+
+#: app/templates/settings/directory_modal.html:12
+msgid "Directory Name"
+msgstr ""
+
 #: app/templates/settings/set_ability.html:5
 msgid "Set the ability"
 msgstr ""
@@ -2051,6 +2104,10 @@ msgstr ""
 
 #: app/templates/settings/show_assets.html:35
 msgid "Upload Date"
+msgstr ""
+
+#: app/templates/settings/show_assets.html:49
+msgid "Edit Directory"
 msgstr ""
 
 #: app/templates/settings/show_list.html:9
@@ -2208,6 +2265,10 @@ msgstr ""
 msgid "Add ability"
 msgstr ""
 
+#: app/templates/system/password_modal.html:5
+msgid "Reset Password"
+msgstr ""
+
 #: app/templates/system/show_abilities.html:10
 msgid "Abilities List"
 msgstr ""
@@ -2221,16 +2282,16 @@ msgstr ""
 msgid "Last Seen"
 msgstr ""
 
-#: app/templates/system/show_list.html:51
+#: app/templates/system/show_list.html:52
 msgid "This is the master"
 msgstr ""
 
-#: app/templates/system/show_list.html:57
+#: app/templates/system/show_list.html:58
 #: app/templates/users/child_users.html:88
 msgid "Confirmed"
 msgstr ""
 
-#: app/templates/system/show_list.html:61
+#: app/templates/system/show_list.html:62
 #: app/templates/users/child_users.html:92
 msgid "Pending Confirm"
 msgstr ""
@@ -2716,5 +2777,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "WH Name"
+#~ msgstr ""
+
+#~ msgid "Directory name only character or underline!"
+#~ msgstr ""
+
+#~ msgid "characters or underscore"
 #~ msgstr ""
 
