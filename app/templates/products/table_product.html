@@ -12,7 +12,7 @@
 					<th class="text-center">{{ _('Serial No') }}</th>
 					<th class="text-center">{{ _('Supplier') }}</th>
 					<th>{{ _('Product Name') }}</th>
-					<th class="text-center">{{ _('Sku Count') }}</th>
+					<th class="text-center">{{ _('Mode/Color') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
 					<th class="text-right">{{ _('Sale Price') }}</th>
 
@@ -39,7 +39,9 @@
 						{{ product.name|safe }}
 					</td>
 					<td class="text-center">
-						{{ product.skus.count() }}
+						{% for sku in product.skus %}
+						<span>{{ sku.s_model }}</span><br>
+						{% endfor %}
 					</td>
 					<td class="text-right">
 						{{ product.cost_price|round(precision=2) }} {{ current_site.currency }}

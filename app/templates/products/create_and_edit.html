@@ -298,7 +298,7 @@
 
 			{% if mode == 'edit'%}
 			<div id="sku-group" class="tab-pane fade in" role="tabpanel" aria-labelledby="sku-tab">
-				<a href="{{ url_for('main.add_sku', id=product.id) }}" class="btn btn-primary ajax-sku" role="button">
+				<a href="{{ url_for('main.add_sku', id=product.id) }}" class="btn btn-warning ajax-sku" role="button">
 					<i class="glyphicon glyphicon-plus"></i> {{ _('Add SKU') }}
 				</a>
 				<div id="product-skus">

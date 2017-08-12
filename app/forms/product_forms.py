@@ -84,6 +84,6 @@ class ProductSkuForm(Form):
     sku_cover_id = IntegerField(lazy_gettext('Cover'), default=0)
     cost_price = FloatField(lazy_gettext('Cost Price'), default=0.00)
     sale_price = FloatField(lazy_gettext('Sale Price'), default=0.00)
-    s_model = StringField(lazy_gettext('Model'))
+    s_model = StringField(lazy_gettext('Mode/Color'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0.00)
     remark = TextAreaField(lazy_gettext('Remark'))
