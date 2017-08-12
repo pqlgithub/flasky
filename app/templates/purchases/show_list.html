@@ -109,9 +109,6 @@
 		{{ _('Purchases List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<button class="btn btn-success verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
-				<i class="glyphicon glyphicon-ok"></i>
-			</button>
 			<div class="btn-group">
 				<button class="btn btn-default dropdown-toggle" type="button" id="storage-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Actions') }}
@@ -132,6 +129,9 @@
 					</li>
 				</ul>
 			</div>
+			<button class="btn btn-warning verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
 			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
