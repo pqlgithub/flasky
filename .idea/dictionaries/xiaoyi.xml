@@ -19,6 +19,7 @@
       <w>endassets</w>
       <w>endwith</w>
       <w>errorlog</w>
+      <w>flexslider</w>
       <w>gevent</w>
       <w>ggevent</w>
       <w>glyphicon</w>
@@ -30,6 +31,7 @@
       <w>inwarehouses</w>
       <w>jinja</w>
       <w>jsmin</w>
+      <w>keepfixed</w>
       <w>keydown</w>
       <w>lazada</w>
       <w>levelname</w>
@@ -43,6 +45,7 @@
       <w>mixadmin</w>
       <w>mixsaas</w>
       <w>momentjs</w>
+      <w>navabr</w>
       <w>navbar</w>
       <w>onload</w>
       <w>outlist</w>
@@ -57,15 +60,20 @@
       <w>pymysql</w>
       <w>resized</w>
       <w>saled</w>
+      <w>scrolltotop</w>
+      <w>scrollup</w>
       <w>shopee</w>
       <w>signin</w>
       <w>simsun</w>
       <w>skus</w>
+      <w>slideshow</w>
       <w>sqlite</w>
       <w>supervisord</w>
       <w>supress</w>
       <w>tabpanel</w>
       <w>todc</w>
+      <w>togglecontrol</w>
+      <w>topcontrol</w>
       <w>urknow</w>
       <w>webassets</w>
       <w>werkzeug</w>

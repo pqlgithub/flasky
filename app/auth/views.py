@@ -20,6 +20,10 @@ def login():
 
         flash(gettext('Account or Password is Error!'), 'danger')
 
+    # 如已登录，则自动跳转
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
     return render_template('auth/login.html',
                            form=form)
 

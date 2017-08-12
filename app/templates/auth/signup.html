@@ -3,37 +3,86 @@
 {% block header %}{% endblock %}
 
 {% block content %}
-<div class="card card-signin">
-	<img class="img-circle profile-img" src="{{ url_for('static', filename='img/avatar.png') }}">
+<div class="signup-page has-full-screen-bg">
+	<div class="upper-wrapper">
+		<header class="header">
+			<div class="container">
+				<h1 class="logo">
+					<a href="{{ url_for('main.web_index') }}">
+						<span class="logo-icon"></span>
+						<span class="text">MIXPUS</span>
+					</a>
+				</h1>
+			</div>
+		</header>
+		<section class="signup-section access-section section">
+			<div class="container">
+				<div class="row">
+					<div class="form-box col-md-offset-3 col-sm-offset-0 xs-offset-0 col-xs-12 col-md-6">
+						<div class="form-box-inner">
+							<h2 class="title text-center">{{ _('Sign up now') }}</h2>
+							<p class="intro text-center">It only takes 3 minutes!</p>
+							<div class="row">
+								<div class="col-xs-12 col-md-12">
+									<form class="form-signin" action="" method="post" name="login">
+										{{ form.hidden_tag() }}
 
-	<form class="form-signin" action="" method="post" name="login">
-		{{ form.hidden_tag() }}
+										{% with messages = get_flashed_messages(with_categories=true) %}
+										{% if messages %}
+										<div class="flashes">
+											{% for category, message in messages %}
+											<div class="alert alert-{{ category|default('danger') }} alert-dismissable">
+												<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+												{% if category == 'success' %}
+												<strong>Well done!</strong>
+												{% endif %}
 
-		<div class="form-group">
-			<label for="email" class="sr-only">{{ _('Account') }}</label>
-			<input type="email" id="email" name="email" class="form-control" placeholder="{{ _('Email') }}" required autofocus>
-		</div>
+												{% if category == 'danger' %}
+												<strong>Oh snap!</strong>
+												{% endif %}
 
-		<div class="form-group">
-			<label for="username" class="sr-only">{{ _('Nickname') }}</label>
-			<input type="text" id="username" name="username" class="form-control" placeholder="{{ _('Nickname') }}" required>
-		</div>
+												{{ message }}
+											</div>
+											{% endfor %}
+										</div>
+										{% endif %}
+										{% endwith %}
 
-		<div class="form-group">
-			<label for="password" class="sr-only">{{ _('Password') }}</label>
-			<input type="password" id="password" name="password" class="form-control" placeholder="{{ _('Password') }}" required>
-		</div>
+										<div class="form-group form-group-lg">
+											<label for="email" class="sr-only">{{ _('Account') }}</label>
+											<input type="email" id="email" name="email" class="form-control" placeholder="{{ _('Email') }}" required autofocus>
+										</div>
 
-		<div class="form-group">
-			<label for="password" class="sr-only">{{ _('Confirm Password') }}</label>
-			<input type="password" name="password2" class="form-control" placeholder="{{ _('Confirm Password') }}" required>
-		</div>
+										<div class="form-group form-group-lg">
+											<label for="username" class="sr-only">{{ _('Nickname') }}</label>
+											<input type="text" id="username" name="username" class="form-control" placeholder="{{ _('Nickname') }}" required>
+										</div>
 
-		<button class="btn btn-lg btn-primary btn-block" type="submit">{{ _('Sign up') }}</button>
+										<div class="form-group form-group-lg">
+											<label for="password" class="sr-only">{{ _('Password') }}</label>
+											<input type="password" id="password" name="password" class="form-control" placeholder="{{ _('Password') }}" required>
+										</div>
 
-		<div class="checkbox">
-			<a href="{{ url_for('auth.login') }}" class="pull-right">{{ _('I have a account, to login？') }}</a>
-		</div>
-	</form>
+										<div class="form-group form-group-lg">
+											<label for="password" class="sr-only">{{ _('Confirm Password') }}</label>
+											<input type="password" name="password2" class="form-control" placeholder="{{ _('Confirm Password') }}" required>
+										</div>
+
+										<button class="btn btn-lg btn-cta btn-cta-primary btn-block" type="submit">{{ _('Sign up') }}</button>
+
+										<p class="note">By signing up, you agree to our terms of services and privacy policy.</p>
+
+										<div class="lead">
+											Already have an account？<a href="{{ url_for('auth.login') }}">{{ _('Log in') }}</a>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
 </div>
 {% endblock %}

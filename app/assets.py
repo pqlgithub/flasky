@@ -26,6 +26,7 @@ bundles = {
     'admin_css': Bundle(
         'css/bootstrap.min.css',
         'css/todc-bootstrap.min.css',
+        'css/font-awesome.css',
         'css/sweet-alert.css',
         'css/select2.css',
         'css/jquery.plupload.queue.css',

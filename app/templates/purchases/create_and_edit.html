@@ -114,7 +114,7 @@
 		{% endif %}
 
 		<span class="pull-right">
-			<button type="submit" form="purchase-form" class="btn btn-icon btn-primary" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+			<button type="submit" form="purchase-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_purchases') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
@@ -158,7 +158,7 @@
 
 		<div class="form-group form-group-lg">
 			<div class="col-sm-5">
-				<a href="{{ url_for('main.ajax_search_products') }}" class="btn btn-primary" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+				<a href="{{ url_for('main.ajax_search_products') }}" class="btn btn-warning" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
 					<i class="glyphicon glyphicon-plus"></i> {{ _('Select Products') }}
 				</a>
 			</div>

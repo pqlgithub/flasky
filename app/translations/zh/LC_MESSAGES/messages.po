@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-10 01:00+0800\n"
+"POT-Creation-Date: 2017-08-12 23:11+0800\n"
 "PO-Revision-Date: 2017-08-10 01:04+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
-"X-Generator: Poedit 2.0.3\n"
 
 #: app/constant.py:7 app/templates/orders/create_and_edit.html:180
 msgid "China"
@@ -88,7 +87,7 @@ msgstr "待入库"
 msgid "Part"
 msgstr "部分入库"
 
-#: app/constant.py:150 app/templates/layout/base.html:65
+#: app/constant.py:150 app/templates/layout/base.html:67
 msgid "Purchase"
 msgstr "采购"
 
@@ -222,7 +221,8 @@ msgid "Other Charge"
 msgstr "其他费用"
 
 #: app/constant.py:215 app/main/order.py:104 app/main/purchase.py:596
-#: app/templates/index.html:127 app/templates/orders/show_list.html:236
+#: app/templates/dashboard/index.html:127
+#: app/templates/orders/show_list.html:236
 #: app/templates/purchases/_modal_express.html:28
 #: app/templates/purchases/create_and_edit.html:180
 #: app/templates/purchases/view_detail.html:97
@@ -231,7 +231,7 @@ msgid "Total Amount"
 msgstr "总额"
 
 #: app/constant.py:216 app/forms/logistics_forms.py:35
-#: app/forms/purchase_forms.py:9 app/templates/layout/base.html:68
+#: app/forms/purchase_forms.py:9 app/templates/layout/base.html:70
 #: app/templates/orders/_modal_export.html:12
 #: app/templates/orders/_modal_import.html:12
 #: app/templates/orders/show_list.html:131
@@ -332,15 +332,15 @@ msgid "Remark"
 msgstr "备注"
 
 #: app/auth/forms.py:11 app/auth/forms.py:17 app/forms/user_forms.py:22
-#: app/forms/warehouse_forms.py:18 app/templates/auth/login.html:34
-#: app/templates/auth/signup.html:14
+#: app/forms/warehouse_forms.py:18 app/templates/auth/login.html:53
+#: app/templates/auth/signup.html:53
 msgid "Email"
 msgstr "邮箱"
 
 #: app/auth/forms.py:12 app/auth/forms.py:19 app/forms/user_forms.py:24
-#: app/forms/user_forms.py:55 app/templates/auth/login.html:40
-#: app/templates/auth/login.html:41 app/templates/auth/signup.html:23
-#: app/templates/auth/signup.html:24 app/templates/users/add_child_user.html:33
+#: app/forms/user_forms.py:55 app/templates/auth/login.html:60
+#: app/templates/auth/login.html:61 app/templates/auth/signup.html:62
+#: app/templates/auth/signup.html:63 app/templates/users/add_child_user.html:33
 msgid "Password"
 msgstr "密码"
 
@@ -371,7 +371,7 @@ msgstr "邮箱已被占用！"
 msgid "Account or Password is Error!"
 msgstr "此账号或密码有误！"
 
-#: app/auth/views.py:43
+#: app/auth/views.py:47
 msgid "确认邮件已发送到你注册的邮箱."
 msgstr "确认邮件已发送到你注册的邮箱."
 
@@ -519,7 +519,8 @@ msgstr "开始日期"
 msgid "End date"
 msgstr "结束日期"
 
-#: app/forms/product_forms.py:17 app/templates/logistics/show_list.html:33
+#: app/forms/product_forms.py:17 app/templates/layout/web.html:77
+#: app/templates/logistics/show_list.html:33
 #: app/templates/orders/show_list.html:242
 #: app/templates/stores/show_list.html:32
 #: app/templates/suppliers/search_result.html:13
@@ -551,7 +552,8 @@ msgstr "父级"
 #: app/forms/product_forms.py:28 app/forms/product_forms.py:68
 #: app/forms/warehouse_forms.py:23 app/main/order.py:85
 #: app/main/purchase.py:577 app/templates/categories/show_list.html:34
-#: app/templates/finances/show_payments.html:76 app/templates/index.html:128
+#: app/templates/dashboard/index.html:128
+#: app/templates/finances/show_payments.html:76
 #: app/templates/orders/show_list.html:153
 #: app/templates/products/table_product.html:19
 #: app/templates/purchases/pay_list.html:103
@@ -971,143 +973,51 @@ msgstr "新文件夹"
 msgid "Delete"
 msgstr "删除"
 
-#: app/templates/index.html:42
-msgid "Dashboard"
-msgstr "控制台"
+#: app/templates/auth/login.html:25
+msgid "Log in to Mixpus"
+msgstr ""
 
-#: app/templates/index.html:45 app/templates/index.html:61
-msgid "Overview"
-msgstr "概况"
-
-#: app/templates/index.html:48
-msgid "Tasks"
-msgstr "任务列表"
-
-#: app/templates/index.html:51
-msgid "Helpers"
-msgstr "帮助"
-
-#: app/templates/index.html:54
-msgid "Logs"
-msgstr "日志"
-
-#: app/templates/index.html:72
-msgid "Total Revenue"
-msgstr "总收入"
-
-#: app/templates/index.html:85
-msgid "Total Orders"
-msgstr "总订单数"
-
-#: app/templates/index.html:98
-msgid "Total Products"
-msgstr "总产品数"
-
-#: app/templates/index.html:111
-msgid "Total Stocks"
-msgstr "总库存"
-
-#: app/templates/index.html:119
-msgid "Latest Orders"
-msgstr "最近订单"
-
-#: app/templates/index.html:124
-msgid "Order ID"
-msgstr "订单ID"
-
-#: app/templates/index.html:125 app/templates/orders/show_list.html:239
-msgid "Customer「Country」"
-msgstr "客户「国家」"
-
-#: app/templates/index.html:126
-msgid "Date Added"
-msgstr "创建日期"
-
-#: app/templates/categories/show_list.html:35
-#: app/templates/finances/show_payments.html:84 app/templates/index.html:129
-#: app/templates/layout/list.html:35 app/templates/logistics/show_list.html:34
-#: app/templates/logistics/show_shippers.html:37
-#: app/templates/orders/create_and_edit.html:266
-#: app/templates/orders/show_list.html:250
-#: app/templates/products/create_and_edit.html:314
-#: app/templates/products/select_product_modal.html:33
-#: app/templates/products/show_skus.html:10
-#: app/templates/products/table_product.html:20
-#: app/templates/purchases/purchase_pay_table.html:18
-#: app/templates/purchases/purchase_table.html:17
-#: app/templates/service/show_blacklist.html:31
-#: app/templates/settings/show_roles.html:58
-#: app/templates/stores/show_list.html:34
-#: app/templates/suppliers/search_result.html:17
-#: app/templates/suppliers/search_supply.html:16
-#: app/templates/suppliers/show_list.html:103
-#: app/templates/suppliers/supply_list.html:99
-#: app/templates/system/show_abilities.html:33
-#: app/templates/system/show_list.html:37
-#: app/templates/users/child_users.html:67
-#: app/templates/warehouses/create_and_edit.html:218
-#: app/templates/warehouses/ex_warehouse_modal.html:46
-#: app/templates/warehouses/in_table.html:16
-#: app/templates/warehouses/in_warehouse_modal.html:48
-#: app/templates/warehouses/out_table.html:16
-#: app/templates/warehouses/select_purchase_modal.html:16
-#: app/templates/warehouses/show_inout.html:159
-#: app/templates/warehouses/show_list.html:38
-#: app/templates/warehouses/stock_table.html:24
-msgid "Action"
-msgstr "操作"
-
-#: app/templates/index.html:152 app/templates/index.html:169
-#: app/templates/products/create_and_edit.html:220
-#: app/templates/purchases/purchase_pay_table.html:50
-msgid "View"
-msgstr "查看"
-
-#: app/templates/index.html:163
-msgid "New Items"
-msgstr "最新产品"
-
-#: app/templates/index.html:173
-msgid "Top Stores"
-msgstr "店铺排行"
-
-#: app/templates/index.html:174
-msgid "Monthly Winner"
-msgstr "月度冠军"
-
-#: app/templates/auth/login.html:33 app/templates/auth/signup.html:13
+#: app/templates/auth/login.html:52 app/templates/auth/signup.html:52
 #: app/templates/system/show_list.html:32
 #: app/templates/users/add_child_user.html:19
 #: app/templates/users/child_users.html:62
 msgid "Account"
 msgstr "账号"
 
-#: app/templates/auth/login.html:46
+#: app/templates/auth/login.html:71
 msgid "Login in"
 msgstr "现在登录"
 
-#: app/templates/auth/login.html:49
-msgid "Sign up？"
-msgstr "注册？"
+#: app/templates/auth/login.html:80
+msgid "Don't have a Mixpus account yet? "
+msgstr ""
 
-#: app/templates/auth/signup.html:18 app/templates/auth/signup.html:19
+#: app/templates/auth/login.html:81
+msgid "Create your account now"
+msgstr ""
+
+#: app/templates/auth/signup.html:23
+msgid "Sign up now"
+msgstr ""
+
+#: app/templates/auth/signup.html:57 app/templates/auth/signup.html:58
 msgid "Nickname"
 msgstr "昵称"
 
-#: app/templates/auth/signup.html:28 app/templates/auth/signup.html:29
+#: app/templates/auth/signup.html:67 app/templates/auth/signup.html:68
 #: app/templates/users/add_child_user.html:40
 msgid "Confirm Password"
 msgstr "确认密码"
 
-#: app/templates/auth/signup.html:32
+#: app/templates/auth/signup.html:71
 msgid "Sign up"
 msgstr "现在登录"
 
-#: app/templates/auth/signup.html:35
-msgid "I have a account, to login？"
-msgstr "已有账号，现在登录？"
+#: app/templates/auth/signup.html:76 app/templates/layout/web.html:81
+msgid "Log in"
+msgstr ""
 
-#: app/templates/block/_select_items.html:2 app/templates/layout/base.html:34
+#: app/templates/block/_select_items.html:2 app/templates/layout/base.html:36
 msgid "items selected"
 msgstr "个被选定"
 
@@ -1188,6 +1098,41 @@ msgstr "分类列表"
 msgid "Add New"
 msgstr "新增"
 
+#: app/templates/categories/show_list.html:35
+#: app/templates/dashboard/index.html:129
+#: app/templates/finances/show_payments.html:84
+#: app/templates/layout/list.html:35 app/templates/logistics/show_list.html:34
+#: app/templates/logistics/show_shippers.html:37
+#: app/templates/orders/create_and_edit.html:266
+#: app/templates/orders/show_list.html:250
+#: app/templates/products/create_and_edit.html:314
+#: app/templates/products/select_product_modal.html:33
+#: app/templates/products/show_skus.html:10
+#: app/templates/products/table_product.html:20
+#: app/templates/purchases/purchase_pay_table.html:18
+#: app/templates/purchases/purchase_table.html:17
+#: app/templates/service/show_blacklist.html:31
+#: app/templates/settings/show_roles.html:58
+#: app/templates/stores/show_list.html:34
+#: app/templates/suppliers/search_result.html:17
+#: app/templates/suppliers/search_supply.html:16
+#: app/templates/suppliers/show_list.html:103
+#: app/templates/suppliers/supply_list.html:99
+#: app/templates/system/show_abilities.html:33
+#: app/templates/system/show_list.html:37
+#: app/templates/users/child_users.html:67
+#: app/templates/warehouses/create_and_edit.html:218
+#: app/templates/warehouses/ex_warehouse_modal.html:46
+#: app/templates/warehouses/in_table.html:16
+#: app/templates/warehouses/in_warehouse_modal.html:48
+#: app/templates/warehouses/out_table.html:16
+#: app/templates/warehouses/select_purchase_modal.html:16
+#: app/templates/warehouses/show_inout.html:159
+#: app/templates/warehouses/show_list.html:38
+#: app/templates/warehouses/stock_table.html:24
+msgid "Action"
+msgstr "操作"
+
 #: app/templates/categories/show_list.html:54
 #: app/templates/categories/show_list.html:55
 #: app/templates/finances/show_payments.html:123
@@ -1217,6 +1162,78 @@ msgstr "新增"
 #: app/templates/warehouses/show_list.html:71
 msgid "Edit"
 msgstr "编辑"
+
+#: app/templates/dashboard/index.html:42
+msgid "Dashboard"
+msgstr "控制台"
+
+#: app/templates/dashboard/index.html:45 app/templates/dashboard/index.html:61
+msgid "Overview"
+msgstr "概况"
+
+#: app/templates/dashboard/index.html:48
+msgid "Tasks"
+msgstr "任务列表"
+
+#: app/templates/dashboard/index.html:51
+msgid "Helpers"
+msgstr "帮助"
+
+#: app/templates/dashboard/index.html:54
+msgid "Logs"
+msgstr "日志"
+
+#: app/templates/dashboard/index.html:72
+msgid "Total Revenue"
+msgstr "总收入"
+
+#: app/templates/dashboard/index.html:85
+msgid "Total Orders"
+msgstr "总订单数"
+
+#: app/templates/dashboard/index.html:98
+msgid "Total Products"
+msgstr "总产品数"
+
+#: app/templates/dashboard/index.html:111
+msgid "Total Stocks"
+msgstr "总库存"
+
+#: app/templates/dashboard/index.html:119
+msgid "Latest Orders"
+msgstr "最近订单"
+
+#: app/templates/dashboard/index.html:124
+msgid "Order ID"
+msgstr "订单ID"
+
+#: app/templates/dashboard/index.html:125
+#: app/templates/orders/show_list.html:239
+msgid "Customer「Country」"
+msgstr "客户「国家」"
+
+#: app/templates/dashboard/index.html:126
+msgid "Date Added"
+msgstr "创建日期"
+
+#: app/templates/dashboard/index.html:152
+#: app/templates/dashboard/index.html:169
+#: app/templates/products/create_and_edit.html:220
+#: app/templates/purchases/purchase_pay_table.html:50
+msgid "View"
+msgstr "查看"
+
+#: app/templates/dashboard/index.html:163
+msgid "New Items"
+msgstr "最新产品"
+
+#: app/templates/dashboard/index.html:173
+msgid "Top Stores"
+msgstr "店铺排行"
+
+#: app/templates/dashboard/index.html:174
+msgid "Monthly Winner"
+msgstr "月度冠军"
 
 #: app/templates/error/403.html:20 app/templates/error/404.html:20
 msgid "Go Back"
@@ -1264,59 +1281,59 @@ msgstr "相关单据"
 msgid "Confirm Payed"
 msgstr "确认支付"
 
-#: app/templates/layout/base.html:56
+#: app/templates/layout/base.html:58
 msgid "Index"
 msgstr "控制台"
 
-#: app/templates/layout/base.html:59
+#: app/templates/layout/base.html:61
 msgid "Orders"
 msgstr "订单"
 
-#: app/templates/layout/base.html:62
+#: app/templates/layout/base.html:64
 #: app/templates/orders/create_and_edit.html:275
 msgid "Products"
 msgstr "商品"
 
-#: app/templates/layout/base.html:71
+#: app/templates/layout/base.html:73
 msgid "Logistics"
 msgstr "物流"
 
-#: app/templates/layout/base.html:74
+#: app/templates/layout/base.html:76
 msgid "Service"
 msgstr "客服"
 
-#: app/templates/layout/base.html:77
+#: app/templates/layout/base.html:79
 msgid "Finance"
 msgstr "财务"
 
-#: app/templates/layout/base.html:80
+#: app/templates/layout/base.html:82
 msgid "Reports"
 msgstr "报表"
 
-#: app/templates/layout/base.html:83
+#: app/templates/layout/base.html:85
 msgid "Settings"
 msgstr "设置"
 
-#: app/templates/layout/base.html:87
+#: app/templates/layout/base.html:89
 msgid "System"
 msgstr "系统"
 
-#: app/templates/layout/base.html:94
+#: app/templates/layout/base.html:96
 msgid "Select languages"
 msgstr "选择语言"
 
-#: app/templates/layout/base.html:118 app/templates/settings/_sub_menu.html:6
+#: app/templates/layout/base.html:120 app/templates/settings/_sub_menu.html:6
 #: app/templates/settings/site.html:10
 msgid "Site Info"
 msgstr "公司信息"
 
-#: app/templates/layout/base.html:119 app/templates/settings/_sub_menu.html:23
+#: app/templates/layout/base.html:121 app/templates/settings/_sub_menu.html:23
 #: app/templates/system/show_list.html:70
 #: app/templates/system/show_list.html:71 app/templates/users/passwd.html:10
 msgid "Update Password"
 msgstr "更新密码"
 
-#: app/templates/layout/base.html:121
+#: app/templates/layout/base.html:123
 msgid "Logout"
 msgstr "退出"
 
@@ -1336,6 +1353,38 @@ msgstr "编辑仓库"
 #: app/templates/suppliers/show_list.html:36
 msgid "Supplier List"
 msgstr "供应商列表"
+
+#: app/templates/layout/web.html:61
+msgid "Home"
+msgstr ""
+
+#: app/templates/layout/web.html:64
+msgid "Features"
+msgstr ""
+
+#: app/templates/layout/web.html:67
+msgid "Pricing"
+msgstr ""
+
+#: app/templates/layout/web.html:71
+msgid "Pages"
+msgstr ""
+
+#: app/templates/layout/web.html:74
+msgid "Download Apps"
+msgstr ""
+
+#: app/templates/layout/web.html:75
+msgid "Blog"
+msgstr ""
+
+#: app/templates/layout/web.html:76
+msgid "About Us"
+msgstr ""
+
+#: app/templates/layout/web.html:84
+msgid "Sign Up Free"
+msgstr ""
 
 #: app/templates/logistics/_sub_menu.html:3
 msgid "Logistics Settings"
@@ -2579,6 +2628,26 @@ msgstr "更新"
 msgid "Mark Defective"
 msgstr "标记次品"
 
+#: app/templates/web/features.html:20
+msgid "Product Features"
+msgstr ""
+
+#: app/templates/web/features.html:28 app/templates/web/features.html:51
+msgid "Feature One"
+msgstr ""
+
+#: app/templates/web/features.html:33 app/templates/web/features.html:70
+msgid "Feature Two"
+msgstr ""
+
+#: app/templates/web/features.html:38 app/templates/web/features.html:87
+msgid "Feature Three"
+msgstr ""
+
+#: app/templates/web/features.html:43
+msgid "Feature Four"
+msgstr ""
+
 #~ msgid "Search purchase sku or name..."
 #~ msgstr "搜索采购单号..."
 
@@ -2617,3 +2686,10 @@ msgstr "标记次品"
 
 #~ msgid "characters or underscore"
 #~ msgstr "仅英文字符串或下划线"
+
+#~ msgid "Sign up？"
+#~ msgstr "注册？"
+
+#~ msgid "I have a account, to login？"
+#~ msgstr "已有账号，现在登录？"
+

@@ -10,8 +10,7 @@ from ..utils import Master
 from ..decorators import user_has, user_is
 
 
-@main.route('/')
-@main.route('/index')
+@main.route('/dashboard')
 @login_required
 @user_has('admin_dashboard')
 def index():
@@ -33,7 +32,7 @@ def index():
     total_revenue = Order.query.filter_by(master_uid=Master.master_uid())\
         .with_entities(func.sum(Order.pay_amount)).one()
 
-    return render_template('index.html',
+    return render_template('dashboard/index.html',
                            top_menu='dashboard',
                            top_orders=top_orders,
                            total_revenue=total_revenue,
