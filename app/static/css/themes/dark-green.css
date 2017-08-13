@@ -1615,6 +1615,7 @@ select {
 /* ====== Admin ======= */
 .admin .navbar-header {
 	margin-left: 15px;
+	margin-top: 3px;
 }
 .admin .navbar-collapse.collapse .navbar-nav {
 	margin: 6px 0;
@@ -1622,7 +1623,8 @@ select {
 }
 
 .admin.navbar-masthead .navbar-nav > li > a {
-	padding-bottom: 8px;
+	padding-bottom: 10px;
+	padding-top: 10px;
 }
 
 .admin.navbar-masthead .navbar-nav > li > a:hover,
@@ -1635,7 +1637,8 @@ select {
 	font-weight: 700;
 }
 .admin.navbar-masthead .navbar-brand {
-	 font-size: 14px;
+	font-size: 13px;
+    font-weight: 700;
 }
 .list-group-item.active,
 .list-group-item.active:focus,

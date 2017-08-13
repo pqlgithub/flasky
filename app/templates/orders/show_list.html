@@ -78,11 +78,6 @@
 			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
 				0 items selected
 			</span>
-			{% if status == 1 or status == 5 %}
-			<button class="btn btn-success verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
-				<i class="glyphicon glyphicon-ok"></i>
-			</button>
-			{% endif %}
 			<button class="btn btn-default ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
@@ -108,7 +103,12 @@
 					</li>
 				</ul>
 			</div>
-			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-primary" data-original-title="{{ _('Add New') }}">
+			{% if status == 1 or status == 5 %}
+			<button class="btn btn-warning verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+			{% endif %}
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="orders-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
