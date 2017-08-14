@@ -1,0 +1,109 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+			{{ _('Add Currency') }}
+		{% else %}
+			{{ _('Edit Currency') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="currency-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_currencies') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<div class="row">
+		<div class="col-md-9">
+			<form id="currency-form" class="form-horizontal" action="" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group required {% if form.errors.title %} has-error{% endif %}">
+					{{ form.title.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.title(maxlength=64, class='form-control') }}
+
+						{% for error in form.errors.title %}
+						<span class="help-block">{{ error }}</span><br>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="form-group required {% if form.errors.code %} has-error{% endif %}">
+					<div class="col-md-3 text-right">
+						{{ form.code.label(class="control-label") }}
+						<small data-toggle="tooltip" data-original-title="如果为默认货币，不要改变。">
+							<i class="glyphicon glyphicon-question-sign"></i>
+						</small>
+					</div>
+					<div class="col-md-9">
+						{{ form.code(class='form-control') }}
+
+						{% for error in form.errors.code %}
+						<span class="help-block">{{ error }}</span><br>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.symbol_left.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.symbol_left(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.symbol_right.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.symbol_right(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.decimal_place.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.decimal_place(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-3 text-right">
+						{{ form.value.label(class="control-label") }}
+						<small data-toggle="tooltip" data-original-title="如果是默认货币，将其设置为 1.00000 。">
+							<i class="glyphicon glyphicon-question-sign"></i>
+						</small>
+					</div>
+					<div class="col-md-9">
+						{{ form.value(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.status.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.status(class='form-control select2') }}
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="col-md-3">
+			<div class="alert alert-info">
+				<i class="glyphicon glyphicon-info-sign"></i> 可以在后面的链接中找到所有的 ISO 货币代码及设定列表
+				<a href="http://www.xe.com/iso4217.php" target="_blank" class="btn-link">这里</a>。
+			</div>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

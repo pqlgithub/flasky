@@ -70,6 +70,9 @@ def before_request():
             if request.path[:8] != '/static/' and request.endpoint[5:] != 'logout' and request.endpoint[5:17] != 'setting_site':
                 return redirect(url_for('main.setting_site'))
 
+        # 注入站点信息
+        g.current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
 
 @main.route('/<string:lang>')
 def choose_locale(lang):
@@ -91,12 +94,7 @@ def choose_locale(lang):
 def include_init_data():
     """注入共用的变量"""
 
-    current_site = None
-    if current_user.is_authenticated:
-        # 注入站点信息
-        current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
-
     return {
         'support_languages': SUPPORT_LANGUAGES,
-        'current_site': current_site
+        'current_site': g.current_site
     }

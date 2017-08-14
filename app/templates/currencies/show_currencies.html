@@ -1,0 +1,83 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('Currency List') }}
+
+		<div class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<a href="{{ url_for('main.create_currency') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button type="button" data-form-id="form-currencies" class="btn btn-danger delete-all hidden" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</div>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="form-currencies" action="{{ url_for('main.delete_currency') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-hover" role="grid">
+				<thead>
+				<tr role="row">
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Currency Title') }}</th>
+					<th class="text-center">{{ _('Code') }}</th>
+					<th class="text-center">{{ _('Symbol Left') }}</th>
+					<th class="text-right">{{ _('Value') }}</th>
+					<th class="text-right">{{ _('Last Updated') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				{% for currency in paginated_currencies.items %}
+				<tr role="row">
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ currency.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ currency.title }}
+						{% if currency.id == current_site.currency_id %}
+							<span class="label label-info m-l-5">{{ _('Default Currency') }}</span>
+						{% endif %}
+					</td>
+					<td class="text-center">{{ currency.code }}</td>
+					<td class="text-center">{{ currency.symbol_left }}</td>
+					<td class="text-right">{{ currency.value }}</td>
+					<td class="text-right">
+						{{ currency.last_updated|timestamp2string(format='%Y-%m-%d %H:%M') }}
+					</td>
+					<td class="actions text-right">
+						<a href="{{ url_for('main.edit_currency', id=currency.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							{{ _('Edit') }}
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pagesbar">
+			<div class="pull-left">
+				<div class="pages-entries">
+					Showing {{ paginated_currencies.offset_start }} to {{ paginated_currencies.offset_end }} of {{ paginated_currencies.total }} entries (total {{ paginated_currencies.pages }} pages)
+				</div>
+			</div>
+			<div class="pull-right">
+				{{ macros.pagination_widget(paginated_currencies, '.show_categories') }}
+			</div>
+		</div>
+
+	</div>
+{% endblock %}

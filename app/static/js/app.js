@@ -1,3 +1,36 @@
+
+var mixpus = {
+	author: 'mic',
+	show_ok_message: function (message) {
+		swal({
+		 	title: message,
+			text: null,
+			type: 'success',
+			confirmButtonText: 'Ok',
+			confirmButtonColor: '#28a5a8'
+		 });
+	},
+	show_warning_message: function (message) {
+		swal({
+		 	title: 'Warning!',
+			text: message,
+			type: 'info',
+			confirmButtonText: 'Yes, I Got!',
+			confirmButtonColor: '#faa937'
+		 });
+	},
+	show_error_message: function (message) {
+		 swal({
+		 	title: 'Error!',
+			text: message,
+			type: 'error',
+			confirmButtonText: 'Yes, I Got!',
+			confirmButtonColor: '#c6322a'
+		 });
+	},
+	version: 1.0
+};
+
 var display_alert = function (message) {
 	var html = '<div class="alert alert-warning alert-dismissible fade in" role="alert"> ';
 	html += '<button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';

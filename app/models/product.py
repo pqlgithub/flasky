@@ -8,6 +8,7 @@ from ..utils import timestamp, gen_serial_no, create_db_session
 from .asset import Asset
 from ..constant import DEFAULT_IMAGES
 from .purchase import Purchase
+from .store import Currency
 
 __all__ = [
     'Product',
@@ -68,6 +69,8 @@ class Product(db.Model):
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
     # 识别码
     id_code = db.Column(db.String(16), nullable=True)
+    # 币种
+    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     # 采购价
     cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 零售价
@@ -95,6 +98,12 @@ class Product(db.Model):
     declaration = db.relationship(
         'CustomsDeclaration', backref='product', uselist=False
     )
+
+    @property
+    def currency_unit(self):
+        """当前货币单位"""
+        current_currency = Currency.query.get(self.currency_id)
+        return current_currency.code
 
     @property
     def supplier_name(self):

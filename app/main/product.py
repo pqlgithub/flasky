@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, redirect, url_for, abort, flash, request, current_app
+from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
 from flask_babelex import gettext
 from . import main
 from .. import db
 from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats
+from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
+    Currency
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
 from ..decorators import user_has
@@ -187,7 +188,10 @@ def ajax_submit_result():
 @login_required
 @user_has('admin_product')
 def create_product():
+    currency_list = Currency.query.filter_by(status=1).all()
+
     form = ProductForm()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in currency_list]
     if form.validate_on_submit():
         # 设置默认值
         if not form.cover_id.data:
@@ -203,6 +207,7 @@ def create_product():
             supplier_id=form.supplier_id.data,
             name=form.name.data,
             cover_id=form.cover_id.data,
+            currency_id=form.currency_id.data,
             cost_price=form.cost_price.data,
             sale_price=form.sale_price.data,
             s_weight=form.s_weight.data,
@@ -230,6 +235,8 @@ def create_product():
 
     mode = 'create'
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
+    # 默认为官网默认货币
+    form.currency_id.data = g.current_site.currency_id
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
@@ -238,6 +245,7 @@ def create_product():
                            form=form,
                            mode=mode,
                            sub_menu='products',
+                           current_currency_unit=g.current_site.currency,
                            product=None,
                            paginated_categories=paginated_categories,
                            paginated_suppliers=paginated_suppliers,
@@ -248,8 +256,11 @@ def create_product():
 @login_required
 @user_has('admin_product')
 def edit_product(id):
+    currency_list = Currency.query.filter_by(status=1).all()
     product = Product.query.get_or_404(id)
     form = ProductForm()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+                                currency_list]
     if form.validate_on_submit():
         form.populate_obj(product)
 
@@ -272,6 +283,7 @@ def edit_product(id):
     form.supplier_id.data = product.supplier_id
     form.name.data = product.name
     form.cover_id.data = product.cover_id
+    form.currency_id.data = product.currency_id
     form.cost_price.data = product.cost_price
     form.sale_price.data = product.sale_price
     form.s_weight.data = product.s_weight
@@ -282,6 +294,13 @@ def edit_product(id):
     form.status.data = product.status
     form.description.data = product.description
 
+    # 当前货币类型
+    if product.currency_id:
+        current_currency = Currency.query.get(product.currency_id)
+        current_currency_unit = current_currency.code
+    else:
+        current_currency_unit = g.current_site.currency
+
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
 
@@ -290,6 +309,7 @@ def edit_product(id):
                            mode=mode,
                            sub_menu='products',
                            product=product,
+                           current_currency_unit=current_currency_unit,
                            paginated_categories=paginated_categories,
                            paginated_suppliers=paginated_suppliers,
                            **load_common_data())
@@ -318,6 +338,66 @@ def delete_product():
     flash(gettext('Delete product is ok!'), 'success')
 
     return redirect(url_for('.show_products'))
+
+
+@main.route('/products/<string:rid>/copy')
+@login_required
+@user_has('admin_product')
+def copy_product(rid):
+    """复制产品"""
+    currency_list = Currency.query.filter_by(status=1).all()
+
+    product = Product.query.filter_by(serial_no=rid).first()
+    if product is None:
+        abort(404)
+
+    new_serial_no = Product.make_unique_serial_no(gen_serial_no())
+    copy_product = Product(
+        master_uid=Master.master_uid(),
+        serial_no=new_serial_no,
+        supplier_id=product.supplier_id,
+        name=product.name,
+        cover_id=product.cover_id,
+        currency_id=product.currency_id,
+        cost_price=product.cost_price,
+        sale_price=product.sale_price,
+        s_weight=product.s_weight,
+        s_length=product.s_length,
+        s_width=product.s_width,
+        s_height=product.s_height,
+        from_url=product.from_url,
+        status=product.status,
+        description=product.description
+    )
+    db.session.add(copy_product)
+
+    # 更新所属分类
+    if product.categories:
+        categories = product.categories
+        copy_product.update_categories(*categories)
+
+    # 复制SKU
+    for sku in product.skus:
+        copy_sku = ProductSku(
+            product_id=copy_product.id,
+            supplier_id=copy_product.supplier_id,
+            master_uid=Master.master_uid(),
+            serial_no=ProductSku.make_unique_serial_no(gen_serial_no()),
+            cover_id=sku.cover_id,
+            s_model=sku.s_model,
+            s_weight=sku.s_weight,
+            cost_price=sku.cost_price,
+            sale_price=sku.sale_price,
+            remark=sku.remark
+        )
+        db.session.add(copy_sku)
+
+    db.session.commit()
+
+    flash(gettext('Copy product is ok!'), 'success')
+
+    return redirect(url_for('main.edit_product', id=copy_product.id))
+
 
 @main.route('/products/<int:id>/skus')
 @user_has('admin_product')

@@ -58,6 +58,7 @@ class ProductForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     name = StringField(lazy_gettext('Product Name'), validators=[DataRequired()])
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)
+    currency_id = SelectField(lazy_gettext('Currency'), choices=[], coerce=int)
     cost_price = FloatField(lazy_gettext('Cost Price'))
     sale_price = FloatField(lazy_gettext('Sale Price'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0.0)

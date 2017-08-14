@@ -36,6 +36,18 @@
 		}, 'json');
 		return false;
 	});
+
+	$('.change-currency').change(function () {
+		var current_text = $(this).find('option:selected').text();
+		var ary_currency = current_text.split('-');
+		if (ary_currency.length > 1) {
+			var currency_code = ary_currency[1];
+			$('.current-currency').text(currency_code.trim());
+		} else {
+			mixpus.show_warning_message('Currency text is error!');
+		}
+	});
+
 {#</script>#}
 {% endblock %}
 
@@ -148,14 +160,29 @@
 				</div>
 
 				<div class="form-group">
+					{{ form.currency_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.currency_id(class="form-control change-currency select2") }}
+					</div>
+					<div class="col-sm-5">
+						<p class="form-control-static">
+							<a href="{{ url_for('main.show_currencies') }}" target="_blank">
+								<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Currency exchange rate') }}
+							</a>
+						</p>
+					</div>
+				</div>
+
+				<div class="form-group">
 					{{ form.cost_price.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
 							{{ form.cost_price(id="cost_price", class="form-control") }}
-							<span class="input-group-addon">
-								{{ current_site.currency }}
+							<span class="input-group-addon current-currency">
+								{{ current_currency_unit }}
 							</span>
 						</div>
+						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
 					</div>
 				</div>
 
@@ -164,8 +191,8 @@
 					<div class="col-sm-4">
 						<div class="input-group">
 							{{ form.sale_price(id="sale_price", class="form-control") }}
-							<span class="input-group-addon">
-								{{ current_site.currency }}
+							<span class="input-group-addon current-currency">
+								{{ current_currency_unit }}
 							</span>
 						</div>
 					</div>
@@ -279,10 +306,11 @@
 					<div class="col-sm-4">
 						<div class="input-group">
 							{{ form.amount(id="amount", class="form-control")}}
-							<span class="input-group-addon">
-								{{ current_site.currency }}
+							<span class="input-group-addon current-currency">
+								{{ current_currency_unit }}
 							</span>
 						</div>
+						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
 					</div>
 				</div>
 
@@ -292,7 +320,6 @@
 						{{ form.customs_code(id="customs_code", class="form-control")}}
 					</div>
 				</div>
-
 
 			</div>
 
@@ -308,7 +335,7 @@
 								<th class="text-center">{{ _('Image') }}</th>
 								<th class="text-center">{{ _('Serial No.') }}</th>
 								<th class="text-center">{{ _('Cost Price') }}</th>
-								<th class="text-center">{{ _('Model') }}</th>
+								<th class="text-center">{{ _('Mode / Color') }}</th>
 								<th class="text-center">{{ _('Weight') }}</th>
 								<th>{{ _('Remark') }}</th>
 								<th class="text-right">{{ _('Action') }}</th>
@@ -324,7 +351,7 @@
 									{{ sku.serial_no }}
 								</td>
 								<td class="text-center">
-									{{ sku.cost_price }} {{ current_site.currency }}
+									{{ sku.cost_price }} {{ product.currency_unit }}
 								</td>
 								<td class="text-center">
 									{{ sku.s_model }}

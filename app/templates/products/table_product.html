@@ -44,15 +44,18 @@
 						{% endfor %}
 					</td>
 					<td class="text-right">
-						{{ product.cost_price|round(precision=2) }} {{ current_site.currency }}
+						{{ product.cost_price|round(precision=2) }} {{ product.currency_unit }}
 					</td>
 					<td class="text-right">
-						{{ product.sale_price|round(precision=2) }} {{ current_site.currency }}
+						{{ product.sale_price|round(precision=2) }} {{ product.currency_unit }}
 					</td>
 					<td class="text-right">
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
 					</td>
 					<td class="text-right">
+						<a href="{{ url_for('main.copy_product', rid=product.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Copy') }}">
+							{{ _('Copy') }}
+						</a>
 						<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 							{{ _('Edit') }}
 						</a>

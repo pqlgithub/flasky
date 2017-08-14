@@ -8,6 +8,9 @@
 	<a href="{{ url_for('main.show_stores') }}" class="list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
 		{{ _('Store List') }}
 	</a>
+	<a href="{{ url_for('main.show_currencies') }}" class="list-group-item {% if sub_menu == 'currencies'%} active{% endif %}">
+		{{ _('Currency List') }}
+	</a>
 	<div class="list-group-header">
 		{{ _('Privilege manage') }}
 	</div>

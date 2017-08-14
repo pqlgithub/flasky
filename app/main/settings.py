@@ -6,8 +6,8 @@ from flask_login import login_required, current_user
 from flask_babelex import gettext
 from . import main
 from .. import db
-from app.models import Store, Asset, Site, User, Role, Ability, Directory
-from app.forms import StoreForm, SiteForm, RoleForm
+from app.models import Store, Asset, Site, User, Role, Ability, Directory, Currency
+from app.forms import StoreForm, SiteForm, RoleForm, CurrencyForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
 
@@ -45,7 +45,12 @@ def setting_site():
     mode = 'create',
     master_uid = Master.master_uid()
     site = Site.query.filter_by(master_uid=master_uid).first()
+
+    currency_list = Currency.query.filter_by(status=1).all()
+
     form = SiteForm()
+    form.currency_id.choices = [(currency.id, '%s (%s)' % (currency.title, currency.code)) for currency in
+                                currency_list]
     if form.validate_on_submit():
         if site: # 更新信息
             form.populate_obj(site)
@@ -56,7 +61,7 @@ def setting_site():
                 company_abbr=form.company_abbr.data,
                 locale=form.locale.data,
                 country=form.country.data,
-                currency=form.currency.data,
+                currency_id=form.currency_id.data,
                 domain=form.domain.data,
                 description=form.description.data
             )
@@ -78,7 +83,7 @@ def setting_site():
         form.company_abbr.data = site.company_abbr
         form.locale.data = site.locale
         form.country.data = site.country
-        form.currency.data = site.currency
+        form.currency_id.data = site.currency_id
         form.domain.data = site.domain
         form.description.data = site.description
 
@@ -169,6 +174,104 @@ def delete_store():
         flash('Delete store is fail!', 'danger')
 
     return redirect(url_for('.show_stores'))
+
+
+@main.route('/currencies')
+@main.route('/currencies/<int:page>')
+@login_required
+@user_has('admin_setting')
+def show_currencies(page=1):
+    per_page = request.args.get('per_page', 10, type=int)
+
+    paginated_currencies = Currency.query.order_by(Currency.id.asc()).paginate(page, per_page)
+
+    if paginated_currencies:
+        paginated_currencies.offset_start = 1 if page == 1 else (page - 1) * per_page
+        paginated_currencies.offset_end = paginated_currencies.offset_start + len(paginated_currencies.items) - 1
+
+    return render_template('currencies/show_currencies.html',
+                           paginated_currencies=paginated_currencies,
+                           sub_menu='currencies', **load_common_data())
+
+
+@main.route('/currencies/create', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
+def create_currency():
+    form = CurrencyForm()
+    if form.validate_on_submit():
+        currency = Currency(
+            master_uid=Master.master_uid(),
+            title=form.title.data,
+            code=form.code.data,
+            symbol_left=form.symbol_left.data,
+            symbol_right=form.symbol_right.data,
+            decimal_place=form.decimal_place.data,
+            value=form.value.data,
+            status=form.status.data
+        )
+        db.session.add(currency)
+
+        flash('Add currency is ok!', 'success')
+        return redirect(url_for('.show_currencies'))
+
+    mode = 'create'
+    return render_template('currencies/create_and_edit.html',
+                           mode=mode,
+                           form=form,
+                           sub_menu='currencies', **load_common_data())
+
+
+@main.route('/currencies/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_setting')
+def edit_currency(id):
+    currency = Currency.query.get_or_404(id)
+    form = CurrencyForm()
+    if form.validate_on_submit():
+        form.populate_obj(currency)
+        db.session.commit()
+
+        flash('Edit currency is ok!', 'success')
+        return redirect(url_for('.show_currencies'))
+
+    mode = 'edit'
+
+    form.title.data = currency.title
+    form.code.data = currency.code
+    form.symbol_left.data = currency.symbol_left
+    form.symbol_right.data = currency.symbol_right
+    form.decimal_place.data = currency.decimal_place
+    form.value.data = currency.value
+    form.status.data = currency.status
+
+    return render_template('currencies/create_and_edit.html',
+                           mode=mode,
+                           form=form,
+                           sub_menu='currencies', **load_common_data())
+
+
+@main.route('/currencies/delete', methods=['POST'])
+@login_required
+@user_has('admin_setting')
+def delete_currency():
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash('Delete currency is null!', 'danger')
+        abort(404)
+
+    try:
+        for id in selected_ids:
+            currency = Currency.query.get_or_404(int(id))
+            db.session.delete(currency)
+        db.session.commit()
+
+        flash('Delete currency is ok!', 'success')
+    except:
+        db.session.rollback()
+        flash('Delete currency is error!!!', 'danger')
+
+    return redirect(url_for('.show_currencies'))
 
 
 @main.route('/directories/<int:id>/modify', methods=['GET', 'POST'])

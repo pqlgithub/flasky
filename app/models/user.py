@@ -7,6 +7,7 @@ from hashlib import md5
 from ..utils import timestamp
 from ..constant import SUPPORT_DOMAINS,SUPPORT_LANGUAGES, SUPPORT_COUNTRIES, SUPPORT_CURRENCIES
 from app import db, login_manager
+from .store import Currency
 
 __all__ = [
     'User',
@@ -301,7 +302,7 @@ class Site(db.Model):
 
     locale = db.Column(db.String(4), default='zh')
     country = db.Column(db.String(30), nullable=True)
-    currency = db.Column(db.String(10), default='CNY')
+    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     # 行业范围
     domain = db.Column(db.SmallInteger, default=1)
     description = db.Column(db.Text)
@@ -311,10 +312,21 @@ class Site(db.Model):
 
 
     @property
+    def currency(self):
+        return self.default_currency.code if self.default_currency else ''
+
+
+    @property
+    def default_currency(self):
+        return Currency.query.get(self.currency_id)
+
+
+    @property
     def locale_label(self):
         for l in SUPPORT_LANGUAGES:
             if l[1] == self.locale:
                 return l
+
 
     @property
     def country_label(self):
@@ -322,11 +334,6 @@ class Site(db.Model):
             if c[1] == self.country:
                 return c
 
-    @property
-    def currency_label(self):
-        for c in SUPPORT_CURRENCIES:
-            if c[1] == self.currency:
-                return c
 
     @property
     def domain_label(self):

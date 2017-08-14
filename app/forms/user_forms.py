@@ -8,12 +8,12 @@ from app.models import User, Role, Ability
 from ..constant import SUPPORT_COUNTRIES, SUPPORT_CURRENCIES, SUPPORT_LANGUAGES, SUPPORT_DOMAINS
 
 class SiteForm(Form):
-    company_name = StringField(lazy_gettext('Company Name'), validators=[DataRequired(message="Company name can't empty!"), Length(2, 32)])
-    company_abbr = StringField(lazy_gettext('Company Abbreviation'), validators=[DataRequired(message="Company Abbreviation can't empty!"), Length(1, 10)])
+    company_name = StringField(lazy_gettext('Site Name'), validators=[DataRequired(message="Company name can't empty!"), Length(2, 32)])
+    company_abbr = StringField(lazy_gettext('Site Abbreviation'), validators=[DataRequired(message="Company Abbreviation can't empty!"), Length(1, 10)])
 
     country = SelectField(lazy_gettext('Country'), choices=[(c[1], c[2]) for c in SUPPORT_COUNTRIES], coerce=str)
-    locale = SelectField(lazy_gettext('Language'), choices=[(l[1], l[2]) for l in SUPPORT_LANGUAGES], coerce=str)
-    currency = SelectField(lazy_gettext('Currency'), choices=[(c[1], c[1]) for c in SUPPORT_CURRENCIES], coerce=str, default='CNY')
+    locale = SelectField(lazy_gettext('Default Language'), choices=[(l[1], l[2]) for l in SUPPORT_LANGUAGES], coerce=str)
+    currency_id = SelectField(lazy_gettext('Default Currency'), choices=[], coerce=int)
     domain = SelectField(lazy_gettext('Domain'), choices=SUPPORT_DOMAINS, coerce=int)
     description = TextAreaField(lazy_gettext('Description'))
 
