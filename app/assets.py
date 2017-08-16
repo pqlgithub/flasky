@@ -38,5 +38,10 @@ bundles = {
         'css/app.css',
         filters='cssmin',
         output='css/app.min.css'
+    ),
+    'themes_css': Bundle(
+        'css/themes/dark-green.css',
+        filters='cssmin',
+        output='css/dark-green.min.css'
     )
 }
