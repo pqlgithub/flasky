@@ -102,9 +102,12 @@ class Product(db.Model):
     @property
     def currency_unit(self):
         """当前货币单位"""
-        current_currency = Currency.query.get(self.currency_id)
-        return current_currency.code
-
+        if self.currency_id:
+            current_currency = Currency.query.get(self.currency_id)
+            return current_currency.code
+        else:
+            return None
+    
     @property
     def supplier_name(self):
         current_supplier = self.supplier
