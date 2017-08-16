@@ -318,7 +318,7 @@ class Site(db.Model):
 
     @property
     def default_currency(self):
-        return Currency.query.get(self.currency_id)
+        return Currency.query.get(self.currency_id) if self.currency_id else None
 
 
     @property
