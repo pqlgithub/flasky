@@ -38,7 +38,7 @@ def make_shell_context():
 def upload_files_s3():
     """静态文件同步至S3"""
     create_all(app, user=app.config['AWS_ACCESS_KEY'], password=app.config['AWS_ACCESS_SECRET'],
-               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1')
+               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1', include_hidden=False)
 
 
 @manager.command

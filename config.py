@@ -57,8 +57,8 @@ class Config:
     FLASK_ASSETS_USE_S3 = False
     FLASKS3_ACTIVE = True
     FLASKS3_USE_HTTPS = False
-    FLASKS3_BUCKET_NAME = 's3.michose.com'
-    FLASKS3_CDN_DOMAIN = 's3.michose.com'
+    FLASKS3_BUCKET_NAME = 's3.mixpus.com'
+    FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
     FLASKS3_FORCE_MIMETYPE = True
 
     # Asset Bucket
