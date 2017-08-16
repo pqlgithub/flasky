@@ -58,6 +58,7 @@ def before_request():
     g.locale = get_locale()
 
     g.user = current_user
+
     # 验证用户
     if current_user.is_authenticated:
         # 每次收到用户的请求时都要调用ping()方法
@@ -72,6 +73,9 @@ def before_request():
 
         # 注入站点信息
         g.current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
+    else:
+        g.current_site = None
 
 
 @main.route('/<string:lang>')
