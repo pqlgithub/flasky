@@ -117,7 +117,7 @@ class ProductionConfig(Config):
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
     FLASKS3_USE_HTTPS = False
-    FLASKS3_CDN_DOMAIN = 's3.michose.com'
+    FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
 
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@prodbmixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/ProdbMixSaaS?charset=utf8'
