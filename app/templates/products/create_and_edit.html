@@ -48,6 +48,11 @@
 		}
 	});
 
+	$('.btn-save-continue').click(function () {
+		$('input[name=next_action]').val('continue_save');
+		$('#product-form').submit();
+	});
+
 {#</script>#}
 {% endblock %}
 
@@ -61,8 +66,11 @@
 		{% endif %}
 
 		<span class="pull-right">
-			<button type="submit" form="product-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+			<button type="submit" form="product-form" class="btn btn-icon btn-warning" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<button type="button" class="btn btn-icon btn-save-continue btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
+				<i class="glyphicon glyphicon-floppy-saved"></i>
 			</button>
 			<a href="{{ url_for('main.show_products') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
@@ -72,6 +80,7 @@
 
 	<form id="product-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="next_action" value="finish_save" >
 
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active">
@@ -143,7 +152,7 @@
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group required">
 					{{ form.cover_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-10">
 						{% if mode == 'create' %}
@@ -161,21 +170,23 @@
 
 				<div class="form-group">
 					{{ form.currency_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						{{ form.currency_id(class="form-control change-currency select2") }}
-					</div>
-					<div class="col-sm-5">
-						<p class="form-control-static">
+						<span class="help-block">
 							<a href="{{ url_for('main.show_currencies') }}" target="_blank">
 								<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Currency exchange rate') }}
 							</a>
-						</p>
+						</span>
+					</div>
+					{{ form.region_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-3">
+						{{ form.region_id(class="form-control select2") }}
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group required">
 					{{ form.cost_price.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<div class="input-group">
 							{{ form.cost_price(id="cost_price", class="form-control") }}
 							<span class="input-group-addon current-currency">
@@ -184,11 +195,9 @@
 						</div>
 						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
 					</div>
-				</div>
 
-				<div class="form-group">
 					{{ form.sale_price.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<div class="input-group">
 							{{ form.sale_price(id="sale_price", class="form-control") }}
 							<span class="input-group-addon current-currency">
@@ -200,7 +209,7 @@
 
 				<div class="form-group">
 					{{ form.s_weight.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<div class="input-group">
 							{{ form.s_weight(id="s_weight", class="form-control") }}
 							<span class="input-group-addon">
@@ -251,16 +260,16 @@
 				</div>
 
 				<div class="form-group">
-					{{ form.status.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.status(id="status", class="form-control select2") }}
-					</div>
-				</div>
-
-				<div class="form-group">
 					{{ form.description.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-9">
 						{{ form.description(id="description", class="form-control", rows="8") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.status.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.status(id="status", class="form-control select2") }}
 					</div>
 				</div>
 
@@ -325,7 +334,7 @@
 
 			{% if mode == 'edit'%}
 			<div id="sku-group" class="tab-pane fade in" role="tabpanel" aria-labelledby="sku-tab">
-				<a href="{{ url_for('main.add_sku', id=product.id) }}" class="btn btn-warning ajax-sku" role="button">
+				<a href="{{ url_for('main.add_sku', rid=product.serial_no) }}" class="btn btn-warning ajax-sku" role="button">
 					<i class="glyphicon glyphicon-plus"></i> {{ _('Add SKU') }}
 				</a>
 				<div id="product-skus">
@@ -334,8 +343,9 @@
 							<tr>
 								<th class="text-center">{{ _('Image') }}</th>
 								<th class="text-center">{{ _('Serial No.') }}</th>
+								<th class="text-center">{{ _('Commodity Codes') }}</th>
 								<th class="text-center">{{ _('Cost Price') }}</th>
-								<th class="text-center">{{ _('Mode / Color') }}</th>
+								<th class="text-center">{{ _('Mode/Color') }}</th>
 								<th class="text-center">{{ _('Weight') }}</th>
 								<th>{{ _('Remark') }}</th>
 								<th class="text-right">{{ _('Action') }}</th>
@@ -343,7 +353,7 @@
 						</thead>
 						<tbody>
 							{% for sku in product.skus %}
-							<tr id="tr_sku_{{ sku.id }}">
+							<tr id="tr_sku_{{ sku.serial_no }}">
 								<td class="text-center">
 									<img src="{{ sku.cover.view_url }}" width="60px">
 								</td>
@@ -351,10 +361,22 @@
 									{{ sku.serial_no }}
 								</td>
 								<td class="text-center">
+									<span class="text-mixpus">{{ sku.id_code|supress_none }}</span>
+								</td>
+								<td class="text-center">
 									{{ sku.cost_price }} {{ product.currency_unit }}
 								</td>
 								<td class="text-center">
-									{{ sku.s_model }}
+									{% if sku.s_model %}
+									<label class="label label-warning">
+										{{ sku.s_model }}
+									</label>
+									{% endif %}
+									{% if sku.s_color %}
+									<label class="label label-default">
+										{{ sku.s_color }}
+									</label>
+									{% endif %}
 								</td>
 								<td class="text-center">
 									{{ sku.s_weight}}
@@ -363,10 +385,10 @@
 									{{ sku.remark }}
 								</td>
 								<td class="text-right">
-									<a href="{{ url_for('main.edit_sku', id=product.id, s_id=sku.id) }}" class="btn btn-link ajax-sku" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+									<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn btn-link ajax-sku" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 										{{ _('Edit') }}
 									</a>
-									<a href="{{ url_for('main.delete_sku', s_id=sku.id) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Remove') }}">
+									<a href="{{ url_for('main.delete_sku', rid=sku.serial_no) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Remove') }}">
 										{{ _('Remove') }}
 									</a>
 								</td>

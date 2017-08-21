@@ -77,6 +77,19 @@ SUPPORT_PLATFORM = (
     },
 )
 
+# 区域划分
+DEFAULT_REGIONS = (
+    {
+        'id': 1,
+        'name': lazy_gettext('Overseas')
+    },
+    {
+        'id': 2,
+        'name': lazy_gettext('Domestic')
+    }
+)
+
+
 # 默认物流
 DEFAULT_EXPRESS = {
     'name': 'Default Express',

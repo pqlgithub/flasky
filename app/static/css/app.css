@@ -554,6 +554,11 @@ Rounds
 .round.round-primary {
 	background: #7460ee;
 }
-
+.table .list-group {
+	margin-bottom: 0px;
+}
+.table .list-group .list-group-item {
+	background-color: transparent;
+}
 
 

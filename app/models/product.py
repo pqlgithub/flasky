@@ -6,7 +6,7 @@ from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db, uploader
 from ..utils import timestamp, gen_serial_no, create_db_session
 from .asset import Asset
-from ..constant import DEFAULT_IMAGES
+from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
 from .purchase import Purchase
 from .store import Currency
 
@@ -46,9 +46,9 @@ PRODUCT_STATUS = [
 
 # product and category => N to N
 product_category_table = db.Table('categories_products',
-                    db.Column('product_id', db.Integer, db.ForeignKey('products.id')),
-                    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'))
-                )
+    db.Column('product_id', db.Integer, db.ForeignKey('products.id')),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'))
+)
 
 
 class Product(db.Model):
@@ -62,13 +62,16 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 产品编号
     serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
+
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
 
     name = db.Column(db.String(128), nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
-    # 识别码
+    # commodity codes
     id_code = db.Column(db.String(16), nullable=True)
+    # 区域
+    region_id = db.Column(db.SmallInteger, default=1)
     # 币种
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     # 采购价
@@ -107,7 +110,7 @@ class Product(db.Model):
             return current_currency.code
         else:
             return None
-    
+
     @property
     def supplier_name(self):
         current_supplier = self.supplier
@@ -124,6 +127,12 @@ class Product(db.Model):
         for s in PRODUCT_STATUS:
             if s[0] == self.status:
                 return s
+
+    @property
+    def region_label(self):
+        for r in DEFAULT_REGIONS:
+            if r['id'] == self.region_id:
+                return r
 
     @property
     def cover(self):
@@ -170,15 +179,25 @@ class ProductSku(db.Model):
     __analyzer__ = ChineseAnalyzer()
 
     id = db.Column(db.Integer, primary_key=True)
+
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+
     # 产品编号sku
     serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
+    # 69码 commodity codes
+    id_code = db.Column(db.String(16), nullable=True)
+    # 型号
     s_model = db.Column(db.String(64), nullable=False)
+    # 颜色
+    s_color = db.Column(db.String(32), nullable=True)
     # 重量
     s_weight = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 区域
+    region_id = db.Column(db.SmallInteger, default=1)
     # 采购价
     cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 零售价
@@ -187,6 +206,7 @@ class ProductSku(db.Model):
     remark = db.Column(db.String(255), nullable=True)
     # 状态：-1、取消或缺省状态； 1、正常（默认）
     status = db.Column(db.SmallInteger, default=1)
+
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
@@ -208,7 +228,6 @@ class ProductSku(db.Model):
         """supplier name"""
         return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
 
-
     @property
     def cover(self):
         """cover asset info"""
@@ -218,6 +237,17 @@ class ProductSku(db.Model):
     def stock_count(self):
         """product sku stock count"""
         return ProductStock.stock_count_of_product(self.id)
+
+    @staticmethod
+    def validate_unique_id_code(id_code, region_id=None):
+        """验证id_code是否唯一"""
+        sql = "SELECT s.id,s.id_code FROM `product_skus` AS s LEFT JOIN `products` AS p ON s.product_id=p.id"
+        sql += " WHERE s.id_code=%s" % id_code
+        if region_id is not None:
+            sql += " AND p.region_id=%d" % int(region_id)
+
+        result = db.engine.execute(text(sql))
+        return result.fetchall()
 
     @staticmethod
     def make_unique_serial_no(serial_no):

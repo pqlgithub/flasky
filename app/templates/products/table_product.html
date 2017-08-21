@@ -9,13 +9,12 @@
 						<input name="check_all" type="checkbox" class="check-all">
 					</th>
 					<th class="text-center">{{ _('Image') }}</th>
-					<th class="text-center">{{ _('Serial No') }}</th>
+					<th>{{ _('Product Info') }}</th>
+					<th>{{ _('Mode/Color') }}</th>
 					<th class="text-center">{{ _('Supplier') }}</th>
-					<th>{{ _('Product Name') }}</th>
-					<th class="text-center">{{ _('Mode/Color') }}</th>
+					<th class="text-center">{{ _('Region') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
 					<th class="text-right">{{ _('Sale Price') }}</th>
-
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -24,24 +23,45 @@
 				{% for product in paginated_products %}
 				<tr>
 					<td class="text-center">
-						<input name="selected[]" class="check-one" value="{{ product.id }}" type="checkbox">
+						<input name="selected[]" class="check-one" value="{{ product.serial_no }}" type="checkbox">
 					</td>
 					<td class="text-center">
 						<img src="{{ product.cover.view_url }}" width="60px">
 					</td>
-					<td class="text-center">
-						{{ product.serial_no }}
+					<td>
+						{{ product.name|safe }}<br>
+						{% if product.region_id == 1 %}
+							<span class="text-mixpus">{{ product.serial_no }}</span>
+						{% else %}
+							<span class="text-warning">{{ product.serial_no }}</span>
+						{% endif %}
+					</td>
+					<td>
+						{% for sku in product.skus %}
+							{% if sku.s_model %}
+							<label class="label label-warning">
+								{{ sku.s_model|supress_none }}
+							</label>
+							{% endif %}
+							{% if sku.s_color %}
+							<label class="label label-default">
+								{{ sku.s_color|supress_none }}
+							</label>
+							{% endif %}
+							<br>
+						{% endfor %}
 					</td>
 					<td class="text-center">
 						{{ product.supplier.short_name }}
 					</td>
-					<td>
-						{{ product.name|safe }}
-					</td>
 					<td class="text-center">
-						{% for sku in product.skus %}
-						<span>{{ sku.s_model }}</span><br>
-						{% endfor %}
+						{% if product.region_id == 1 %}
+						<span class="text-mixpus">{{ product.region_label.get('name') }}</span>
+						{% endif %}
+
+						{% if product.region_id == 2 %}
+						<span class="text-warning">{{ product.region_label.get('name') }}</span>
+						{% endif %}
 					</td>
 					<td class="text-right">
 						{{ product.cost_price|round(precision=2) }} {{ product.currency_unit }}
@@ -53,10 +73,7 @@
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.copy_product', rid=product.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Copy') }}">
-							{{ _('Copy') }}
-						</a>
-						<a href="{{ url_for('main.edit_product', id=product.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 							{{ _('Edit') }}
 						</a>
 					</td>

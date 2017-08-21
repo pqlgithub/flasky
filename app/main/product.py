@@ -9,9 +9,10 @@ from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
     Currency
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
-from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT, R500_BADREQUEST
+from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
+    custom_response
 from ..decorators import user_has
-from ..constant import SORT_TYPE_CODE
+from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
 
 
 def load_common_data():
@@ -19,7 +20,8 @@ def load_common_data():
     私有方法，装载共用数据
     """
     return {
-        'top_menu': 'products'
+        'top_menu': 'products',
+        'default_regions': DEFAULT_REGIONS
     }
 
 @main.route('/products')
@@ -47,11 +49,15 @@ def search_products():
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
+    reg_id = request.values.get('reg_id')
     sk = request.values.get('sk', type=str, default='ad')
 
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
     builder = Product.query.filter_by(master_uid=Master.master_uid())
+    if reg_id:
+        builder = builder.filter_by(region_id=reg_id)
+
     qk = qk.strip()
     if qk:
         builder = builder.whoosh_search(qk, like=True)
@@ -75,6 +81,7 @@ def search_products():
     return render_template('products/search_result.html',
                            qk=qk,
                            sk=sk,
+                           reg_id=reg_id,
                            paginated_products=paginated_products,
                            pagination=pagination)
 
@@ -193,6 +200,7 @@ def create_product():
     form = ProductForm()
     form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in currency_list]
     if form.validate_on_submit():
+        next_action = request.form.get('next_action', 'finish_save')
         # 设置默认值
         if not form.cover_id.data:
             default_cover = Asset.query.filter_by(is_default=True).first()
@@ -208,6 +216,7 @@ def create_product():
             name=form.name.data,
             cover_id=form.cover_id.data,
             currency_id=form.currency_id.data,
+            region_id=form.region_id.data,
             cost_price=form.cost_price.data,
             sale_price=form.sale_price.data,
             s_weight=form.s_weight.data,
@@ -229,6 +238,11 @@ def create_product():
 
         db.session.commit()
 
+        if next_action == 'continue_save':
+            flash(gettext('The basic information is complete and continue editing'), 'success')
+            return redirect(url_for('.edit_product', rid=product.serial_no))
+
+        flash(gettext('The basic information is complete'), 'success')
         return redirect(url_for('.show_products'))
     else:
         current_app.logger.debug(form.errors)
@@ -252,12 +266,15 @@ def create_product():
                            **load_common_data())
 
 
-@main.route('/products/<int:id>/edit', methods=['GET', 'POST'])
+@main.route('/products/<string:rid>/edit', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_product')
-def edit_product(id):
+def edit_product(rid):
+    product = Product.query.filter_by(serial_no=rid).first()
+    if product is None:
+        abort(404)
+
     currency_list = Currency.query.filter_by(status=1).all()
-    product = Product.query.get_or_404(id)
     form = ProductForm()
     form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
                                 currency_list]
@@ -273,6 +290,12 @@ def edit_product(id):
 
         db.session.commit()
 
+        next_action = request.form.get('next_action', 'finish_save')
+        if next_action == 'continue_save':
+            flash(gettext('Basic information is complete and continue editing'), 'success')
+            return redirect(url_for('.edit_product', rid=product.serial_no))
+
+        flash(gettext('Basic information is complete'), 'success')
         return redirect(url_for('.show_products'))
     else:
         current_app.logger.debug(form.errors)
@@ -284,6 +307,7 @@ def edit_product(id):
     form.name.data = product.name
     form.cover_id.data = product.cover_id
     form.currency_id.data = product.currency_id
+    form.region_id.data = product.region_id
     form.cost_price.data = product.cost_price
     form.sale_price.data = product.sale_price
     form.s_weight.data = product.s_weight
@@ -340,17 +364,26 @@ def delete_product():
     return redirect(url_for('.show_products'))
 
 
-@main.route('/products/<string:rid>/copy')
+@main.route('/products/copy')
 @login_required
 @user_has('admin_product')
-def copy_product(rid):
+def copy_product():
     """复制产品"""
-    currency_list = Currency.query.filter_by(status=1).all()
+    rid = request.values.get('rid')
+    if rid is None:
+        abort(404)
+
+    new_region_id = request.values.get('reg_id', 0, type=int)
 
     product = Product.query.filter_by(serial_no=rid).first()
     if product is None:
         abort(404)
 
+    if product.region_id == new_region_id:
+        flash(gettext('Product already exists without duplication'), 'danger')
+        return redirect(url_for('.show_products'))
+
+    currency_list = Currency.query.filter_by(status=1).all()
     new_serial_no = Product.make_unique_serial_no(gen_serial_no())
     copy_product = Product(
         master_uid=Master.master_uid(),
@@ -359,6 +392,7 @@ def copy_product(rid):
         name=product.name,
         cover_id=product.cover_id,
         currency_id=product.currency_id,
+        region_id=new_region_id,
         cost_price=product.cost_price,
         sale_price=product.sale_price,
         s_weight=product.s_weight,
@@ -384,7 +418,9 @@ def copy_product(rid):
             master_uid=Master.master_uid(),
             serial_no=ProductSku.make_unique_serial_no(gen_serial_no()),
             cover_id=sku.cover_id,
+            id_code=sku.id_code,
             s_model=sku.s_model,
+            s_color=sku.s_color,
             s_weight=sku.s_weight,
             cost_price=sku.cost_price,
             sale_price=sku.sale_price,
@@ -396,21 +432,27 @@ def copy_product(rid):
 
     flash(gettext('Copy product is ok!'), 'success')
 
-    return redirect(url_for('main.edit_product', id=copy_product.id))
+    return redirect(url_for('main.edit_product', rid=copy_product.serial_no))
 
 
-@main.route('/products/<int:id>/skus')
+@main.route('/products/<string:rid>/skus')
 @user_has('admin_product')
-def show_skus(id):
-    product_skus = ProductSku.query.filter_by(product_id=id).all()
+def show_skus(rid):
+    product = Product.query.filter_by(serial_no=rid).first()
+    if product is None:
+        abort(404)
+
     return render_template('/products/show_skus.html',
-                           product_skus=product_skus)
+                           product_skus=product.skus,
+                           product=product)
 
-
-@main.route('/products/<int:id>/add_sku', methods=['GET', 'POST'])
+@main.route('/products/<string:rid>/add_sku', methods=['GET', 'POST'])
 @user_has('admin_product')
-def add_sku(id):
-    product = Product.query.get_or_404(id)
+def add_sku(rid):
+    product = Product.query.filter_by(serial_no=rid).first()
+    if product is None:
+        abort(404)
+
     form = ProductSkuForm()
     if form.validate_on_submit():
         # 设置默认值
@@ -421,13 +463,21 @@ def add_sku(id):
         new_serial_no = form.serial_no.data
         current_app.logger.warn('Sku new serial_no [%s] -----!!!' % new_serial_no)
 
+        # 验证69码是否重复
+        id_code = form.id_code.data
+        rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
+        if len(rows) >= 1:
+            return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
+
         sku = ProductSku(
             product_id=product.id,
             supplier_id=product.supplier_id,
             master_uid=Master.master_uid(),
             serial_no=new_serial_no,
+            id_code=id_code,
             cover_id=form.sku_cover_id.data,
             s_model=form.s_model.data,
+            s_color=form.s_color.data,
             s_weight=form.s_weight.data,
             cost_price=form.cost_price.data,
             sale_price=form.sale_price.data,
@@ -447,19 +497,30 @@ def add_sku(id):
     return render_template('products/modal_sku.html',
                            form=form,
                            mode=mode,
-                           post_sku_url=url_for('.add_sku', id=id),
+                           post_sku_url=url_for('.add_sku', rid=rid),
                            product=product)
 
 
-@main.route('/products/<int:id>/edit_sku/<int:s_id>', methods=['GET', 'POST'])
+@main.route('/products/<string:rid>/edit_sku/<int:s_id>', methods=['GET', 'POST'])
 @user_has('admin_product')
-def edit_sku(id, s_id):
-    product = Product.query.get_or_404(id)
+def edit_sku(rid, s_id):
+    product = Product.query.filter_by(serial_no=rid).first()
+    if product is None:
+        abort(404)
+
     sku = ProductSku.query.get_or_404(s_id)
     form = ProductSkuForm()
     if form.validate_on_submit():
+        # 验证69码是否重复
+        id_code = form.id_code.data
+        rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
+        if len(rows) > 1 or (len(rows) == 1 and rows[0][0] != s_id):
+            return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
+
         sku.cover_id = form.sku_cover_id.data
+        sku.id_code = form.id_code.data
         sku.s_model = form.s_model.data
+        sku.s_color = form.s_color.data
         sku.s_weight = form.s_weight.data
         sku.cost_price = form.cost_price.data
         sku.sale_price = form.sale_price.data
@@ -473,9 +534,11 @@ def edit_sku(id, s_id):
 
     form.serial_no.data = sku.serial_no
     form.sku_cover_id.data = sku.cover_id
+    form.id_code.data = sku.id_code
     form.cost_price.data = sku.cost_price
     form.sale_price.data = sku.sale_price
     form.s_model.data = sku.s_model
+    form.s_color.data = sku.s_color
     form.s_weight.data = sku.s_weight
     form.remark.data = sku.remark
 
@@ -483,19 +546,22 @@ def edit_sku(id, s_id):
                            form=form,
                            mode=mode,
                            product=product,
-                           post_sku_url=url_for('.edit_sku', id=id, s_id=s_id),
+                           post_sku_url=url_for('.edit_sku', rid=rid, s_id=s_id),
                            sku=sku)
 
 
-@main.route('/products/<int:s_id>/delete_sku', methods=['POST'])
+@main.route('/products/<string:rid>/delete_sku', methods=['POST'])
 @user_has('admin_product')
-def delete_sku(s_id):
+def delete_sku(rid):
     try:
-        sku = ProductSku.query.get_or_404(s_id)
+        sku = ProductSku.query.filter_by(serial_no=rid).first()
+        if sku is None:
+            return custom_response(False, gettext("Product Sku isn't exist!"))
+
         db.session.delete(sku)
         db.session.commit()
 
-        return full_response(True, R204_NOCONTENT, {'id': s_id})
+        return full_response(True, R204_NOCONTENT, {'id': rid})
     except:
         db.session.rollback()
         return full_response(True, custom_status('Delete sku is failed!', 500))

@@ -7,6 +7,8 @@ from wtforms.validators import DataRequired, InputRequired, Length, ValidationEr
 
 from app.models import Category, BUSINESS_MODE, DANGEROUS_GOODS_TYPES
 from ..utils import Master
+from ..constant import DEFAULT_REGIONS
+
 
 class SupplierForm(Form):
     type = SelectField(lazy_gettext('Business Mode'), choices=[(mode[0], mode[2]) for mode in BUSINESS_MODE], coerce=str)
@@ -59,6 +61,7 @@ class ProductForm(Form):
     name = StringField(lazy_gettext('Product Name'), validators=[DataRequired()])
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)
     currency_id = SelectField(lazy_gettext('Currency'), choices=[], coerce=int)
+    region_id = SelectField(lazy_gettext('Region'), choices=[(region['id'], region['name']) for region in DEFAULT_REGIONS], coerce=int)
     cost_price = FloatField(lazy_gettext('Cost Price'))
     sale_price = FloatField(lazy_gettext('Sale Price'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0.0)
@@ -83,8 +86,10 @@ class ProductForm(Form):
 class ProductSkuForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     sku_cover_id = IntegerField(lazy_gettext('Cover'), default=0)
+    id_code = StringField(lazy_gettext('Commodity Codes'))
     cost_price = FloatField(lazy_gettext('Cost Price'), default=0.00)
     sale_price = FloatField(lazy_gettext('Sale Price'), default=0.00)
-    s_model = StringField(lazy_gettext('Mode/Color'))
+    s_model = StringField(lazy_gettext('Mode'))
+    s_color = StringField(lazy_gettext('Color'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0.00)
     remark = TextAreaField(lazy_gettext('Remark'))

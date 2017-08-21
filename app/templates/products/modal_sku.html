@@ -2,7 +2,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Add SKU') }}</h4>
+			<h4 class="modal-title" id="sku-modal-label">{{ _('Add SKU') }}</h4>
 		</div>
 		<div class="modal-body">
 			<form class="form-horizontal" action="" method="post" id="sku-form">
@@ -13,7 +13,21 @@
 					<div class="col-sm-4">
 						{{ form.serial_no(class="form-control", placeholder="serial number", readonly="true") }}
 					</div>
+					{{ form.id_code.label(class="col-sm-2 control-label text-right") }}
+					<div class="col-sm-4">
+						{{ form.id_code(class="form-control") }}
+					</div>
+				</div>
 
+				<div class="form-group">
+					{{ form.s_model.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.s_model(class="form-control") }}
+					</div>
+					{{ form.s_color.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.s_color(class="form-control") }}
+					</div>
 				</div>
 
 				<div class="form-group">
@@ -38,10 +52,6 @@
 				</div>
 
 				<div class="form-group">
-					{{ form.s_model.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.s_model(class="form-control", placeholder="mode/color") }}
-					</div>
 					{{ form.s_weight.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -56,7 +66,7 @@
 				<div class="form-group">
 					{{ form.remark.label(class="col-sm-2 control-label text-right") }}
 					<div class="col-sm-10">
-						{{ form.remark(class="form-control", placeholder="remark") }}
+						{{ form.remark(class="form-control") }}
 					</div>
 				</div>
 
@@ -106,7 +116,7 @@
 				console.log(result);
 				if (result.success) {
 					$('#sku-modal').modal('hide');
-					$('#product-skus').load('{{ url_for("main.show_skus", id=product.id) }}');
+					$('#product-skus').load('{{ url_for("main.show_skus", rid=product.serial_no) }}');
 				} else {
 					$('#sku-form').prepend(display_alert(result.status.message))
 				}

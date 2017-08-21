@@ -26,6 +26,17 @@
 	hook_dropdown_menu(function(){
 		submit_filter_form();
 	});
+
+	$('a.ajax-copy').click(function () {
+		if ($('input.check-one:checked').length != 1) {
+			mixpus.show_error_message("{{ _('Choose one product at a time') }}");
+			return false;
+		}
+		var product_rid = $('input.check-one:checked').val();
+		var toid = $(this).data('toid'), post_url = $(this).attr('href');
+		window.location.href = post_url + '?reg_id='+ toid + '&rid='+ product_rid;
+		return false;
+	});
 {#</script>#}
 {% endblock %}
 
@@ -35,9 +46,21 @@
 		{{ _('Product List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.show_products') }}" data-toggle="tooltip" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
-				<i class="glyphicon glyphicon-refresh"></i>
-			</a>
+			<div class="btn-group">
+				<button class="btn btn-default dropdown-toggle" type="button" id="copy-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Copy') }}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="copy-actions">
+					{% for r in default_regions %}
+					<li>
+						<a href="{{ url_for('main.copy_product') }}" class="ajax-copy" data-toid="{{ r['id'] }}">
+							{{ _('Copy') }} {{ _('to') }} {{ r['name'] }}
+						</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
 			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
@@ -52,6 +75,28 @@
 
 		<div class="form-group">
 			<input type="text" class="form-control searcher" name="qk" size="60" placeholder="{{ _('Search products sku or name...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="reg_id" value="{{ reg_id }}">
+				<button class="btn btn-default dropdown-toggle" id="filter-region" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Region') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="reg_id" aria-labelledby="filter-region">
+					<li class="dropdown-header">{{ _('Search Region')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for r in default_regions %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ r['id'] }}" class="option">{{ r['name'] }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
 		</div>
 
 		<div class="form-group pull-right">
