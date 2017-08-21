@@ -47,6 +47,7 @@
       <w>momentjs</w>
       <w>navabr</w>
       <w>navbar</w>
+      <w>nprogress</w>
       <w>onload</w>
       <w>outlist</w>
       <w>outwarehouses</w>
@@ -85,6 +86,7 @@
       <w>whooshalchemyplus</w>
       <w>wsgi</w>
       <w>yyyy</w>
+      <w>zclip</w>
     </words>
   </dictionary>
 </component>

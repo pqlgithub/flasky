@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-21 19:28+0800\n"
+"POT-Creation-Date: 2017-08-22 00:08+0800\n"
 "PO-Revision-Date: 2017-07-18 21:24+0800\n"
 "Last-Translator: \n"
 "Language: zh_Hant_TW\n"
@@ -290,8 +290,8 @@ msgstr ""
 #: app/templates/orders/show_list.html:201
 #: app/templates/orders/show_list.html:207
 #: app/templates/orders/show_list.html:261
-#: app/templates/products/show_list.html:109
-#: app/templates/products/show_list.html:119
+#: app/templates/products/show_list.html:106
+#: app/templates/products/show_list.html:116
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/pay_list.html:168
 #: app/templates/purchases/purchase_pay_table.html:17
@@ -541,7 +541,7 @@ msgstr ""
 
 #: app/forms/product_forms.py:27 app/templates/categories/show_list.html:33
 #: app/templates/orders/show_list.html:204
-#: app/templates/products/show_list.html:113
+#: app/templates/products/show_list.html:110
 #: app/templates/purchases/pay_list.html:162
 #: app/templates/purchases/show_list.html:236
 #: app/templates/suppliers/show_list.html:66
@@ -602,7 +602,7 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
-#: app/forms/product_forms.py:64 app/templates/products/show_list.html:87
+#: app/forms/product_forms.py:64 app/templates/products/show_list.html:84
 #: app/templates/products/table_product.html:15
 msgid "Region"
 msgstr ""
@@ -920,6 +920,10 @@ msgstr ""
 msgid "Modify directory is ok!"
 msgstr ""
 
+#: app/main/settings.py:362
+msgid "Delete asset is ok!"
+msgstr ""
+
 #: app/main/system.py:48
 msgid "User is not exist!"
 msgstr ""
@@ -1026,8 +1030,8 @@ msgstr ""
 msgid "Upload the image, must be at least 480*480px."
 msgstr ""
 
-#: app/templates/file_manager.html:17 app/templates/products/show_list.html:49
-#: app/templates/stats/index.html:48 app/templates/users/child_users.html:42
+#: app/templates/file_manager.html:17 app/templates/stats/index.html:48
+#: app/templates/users/child_users.html:42
 #: app/templates/warehouses/show_inout.html:22
 msgid "Refresh"
 msgstr ""
@@ -1047,11 +1051,11 @@ msgstr ""
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
 #: app/templates/logistics/show_shippers.html:16
 #: app/templates/orders/show_list.html:114
-#: app/templates/products/show_list.html:70
+#: app/templates/products/show_list.html:67
 #: app/templates/products/show_skus.html:51
 #: app/templates/purchases/show_list.html:138
 #: app/templates/service/show_blacklist.html:13
-#: app/templates/settings/show_assets.html:16
+#: app/templates/settings/show_assets.html:22
 #: app/templates/settings/show_list.html:14
 #: app/templates/settings/show_roles.html:40
 #: app/templates/stores/show_list.html:15
@@ -1186,7 +1190,7 @@ msgstr ""
 #: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
 #: app/templates/logistics/show_shippers.html:13
 #: app/templates/orders/show_list.html:111
-#: app/templates/products/show_list.html:67
+#: app/templates/products/show_list.html:64
 #: app/templates/purchases/show_list.html:135
 #: app/templates/settings/show_list.html:11
 #: app/templates/settings/show_roles.html:37
@@ -1253,6 +1257,7 @@ msgstr ""
 #: app/templates/products/table_product.html:77
 #: app/templates/purchases/purchase_pay_table.html:49
 #: app/templates/purchases/purchase_table.html:78
+#: app/templates/settings/show_assets.html:55
 #: app/templates/settings/show_roles.html:75
 #: app/templates/settings/show_roles.html:76
 #: app/templates/settings/site.html:13 app/templates/stores/show_list.html:62
@@ -1455,6 +1460,10 @@ msgstr ""
 
 #: app/templates/layout/base.html:140
 msgid "Logout"
+msgstr ""
+
+#: app/templates/layout/base.html:193
+msgid "Copy successfully"
 msgstr ""
 
 #: app/templates/layout/form.html:12
@@ -1785,8 +1794,8 @@ msgstr ""
 #: app/templates/orders/show_list.html:138
 #: app/templates/orders/show_list.html:153
 #: app/templates/orders/show_list.html:160
-#: app/templates/products/show_list.html:87
-#: app/templates/products/show_list.html:94
+#: app/templates/products/show_list.html:84
+#: app/templates/products/show_list.html:91
 #: app/templates/purchases/pay_list.html:81
 #: app/templates/purchases/pay_list.html:88
 #: app/templates/purchases/pay_list.html:103
@@ -1882,7 +1891,7 @@ msgid "Custom Date"
 msgstr ""
 
 #: app/templates/orders/show_list.html:201
-#: app/templates/products/show_list.html:109
+#: app/templates/products/show_list.html:106
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/show_list.html:232
 #: app/templates/suppliers/show_list.html:62
@@ -1996,7 +2005,6 @@ msgstr ""
 #: app/templates/products/show_skus.html:4
 #: app/templates/products/table_product.html:11
 #: app/templates/purchases/purchase_modal.html:29
-#: app/templates/settings/show_assets.html:32
 msgid "Image"
 msgstr ""
 
@@ -2047,26 +2055,26 @@ msgstr ""
 msgid "Choose one product at a time"
 msgstr ""
 
-#: app/templates/products/show_list.html:54
-#: app/templates/products/show_list.html:61
+#: app/templates/products/show_list.html:51
+#: app/templates/products/show_list.html:58
 msgid "Copy"
 msgstr ""
 
-#: app/templates/products/show_list.html:61
+#: app/templates/products/show_list.html:58
 msgid "to"
 msgstr ""
 
-#: app/templates/products/show_list.html:80
+#: app/templates/products/show_list.html:77
 #: app/templates/warehouses/show_inout.html:58
 #: app/templates/warehouses/show_stocks.html:101
 msgid "Search products sku or name..."
 msgstr ""
 
-#: app/templates/products/show_list.html:91
+#: app/templates/products/show_list.html:88
 msgid "Search Region"
 msgstr ""
 
-#: app/templates/products/show_list.html:116
+#: app/templates/products/show_list.html:113
 #: app/templates/purchases/pay_list.html:165
 #: app/templates/purchases/show_list.html:239
 #: app/templates/suppliers/show_list.html:69
@@ -2075,7 +2083,7 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: app/templates/products/show_list.html:122
+#: app/templates/products/show_list.html:119
 #: app/templates/purchases/pay_list.html:171
 #: app/templates/purchases/show_list.html:245
 #: app/templates/suppliers/show_list.html:75
@@ -2263,7 +2271,7 @@ msgid "Asset manage"
 msgstr ""
 
 #: app/templates/settings/_sub_menu.html:32
-#: app/templates/settings/show_assets.html:10
+#: app/templates/settings/show_assets.html:16
 msgid "Asset List"
 msgstr ""
 
@@ -2292,28 +2300,24 @@ msgstr ""
 msgid "Choose currencies carefully, and later changes will affect numeric."
 msgstr ""
 
-#: app/templates/settings/show_assets.html:13
+#: app/templates/settings/show_assets.html:19
 msgid "Upload / Delete Files"
 msgstr ""
 
-#: app/templates/settings/show_assets.html:14
+#: app/templates/settings/show_assets.html:20
 msgid "Upload Files"
 msgstr ""
 
-#: app/templates/settings/show_assets.html:33
-msgid "Directory"
+#: app/templates/settings/show_assets.html:40
+msgid "Go to Parent"
 msgstr ""
 
-#: app/templates/settings/show_assets.html:34
-msgid "Filepath"
-msgstr ""
-
-#: app/templates/settings/show_assets.html:35
-msgid "Upload Date"
-msgstr ""
-
-#: app/templates/settings/show_assets.html:49
+#: app/templates/settings/show_assets.html:55
 msgid "Edit Directory"
+msgstr ""
+
+#: app/templates/settings/show_assets.html:67
+msgid "Copy Link"
 msgstr ""
 
 #: app/templates/settings/show_list.html:9
@@ -2881,5 +2885,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Model"
+#~ msgstr ""
+
+#~ msgid "Directory"
+#~ msgstr ""
+
+#~ msgid "Filepath"
+#~ msgstr ""
+
+#~ msgid "Upload Date"
 #~ msgstr ""
 

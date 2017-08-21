@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-21 19:28+0800\n"
-"PO-Revision-Date: 2017-08-21 19:30+0800\n"
+"POT-Creation-Date: 2017-08-22 00:08+0800\n"
+"PO-Revision-Date: 2017-08-22 00:09+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -291,8 +291,8 @@ msgstr "物流单号"
 #: app/templates/orders/show_list.html:201
 #: app/templates/orders/show_list.html:207
 #: app/templates/orders/show_list.html:261
-#: app/templates/products/show_list.html:109
-#: app/templates/products/show_list.html:119
+#: app/templates/products/show_list.html:106
+#: app/templates/products/show_list.html:116
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/pay_list.html:168
 #: app/templates/purchases/purchase_pay_table.html:17
@@ -542,7 +542,7 @@ msgstr "分类名称"
 
 #: app/forms/product_forms.py:27 app/templates/categories/show_list.html:33
 #: app/templates/orders/show_list.html:204
-#: app/templates/products/show_list.html:113
+#: app/templates/products/show_list.html:110
 #: app/templates/purchases/pay_list.html:162
 #: app/templates/purchases/show_list.html:236
 #: app/templates/suppliers/show_list.html:66
@@ -603,7 +603,7 @@ msgstr "封面图"
 msgid "Currency"
 msgstr "币种"
 
-#: app/forms/product_forms.py:64 app/templates/products/show_list.html:87
+#: app/forms/product_forms.py:64 app/templates/products/show_list.html:84
 #: app/templates/products/table_product.html:15
 msgid "Region"
 msgstr "面向区域"
@@ -921,6 +921,10 @@ msgstr "目录不存在!"
 msgid "Modify directory is ok!"
 msgstr "修改目录操作成功！"
 
+#: app/main/settings.py:362
+msgid "Delete asset is ok!"
+msgstr "删除附件成功！"
+
 #: app/main/system.py:48
 msgid "User is not exist!"
 msgstr "用户不存在！"
@@ -1027,8 +1031,8 @@ msgstr "图片管理"
 msgid "Upload the image, must be at least 480*480px."
 msgstr "上传图片，尺寸至少大于 480*480px."
 
-#: app/templates/file_manager.html:17 app/templates/products/show_list.html:49
-#: app/templates/stats/index.html:48 app/templates/users/child_users.html:42
+#: app/templates/file_manager.html:17 app/templates/stats/index.html:48
+#: app/templates/users/child_users.html:42
 #: app/templates/warehouses/show_inout.html:22
 msgid "Refresh"
 msgstr "刷新"
@@ -1048,11 +1052,11 @@ msgstr "新文件夹"
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
 #: app/templates/logistics/show_shippers.html:16
 #: app/templates/orders/show_list.html:114
-#: app/templates/products/show_list.html:70
+#: app/templates/products/show_list.html:67
 #: app/templates/products/show_skus.html:51
 #: app/templates/purchases/show_list.html:138
 #: app/templates/service/show_blacklist.html:13
-#: app/templates/settings/show_assets.html:16
+#: app/templates/settings/show_assets.html:22
 #: app/templates/settings/show_list.html:14
 #: app/templates/settings/show_roles.html:40
 #: app/templates/stores/show_list.html:15
@@ -1187,7 +1191,7 @@ msgstr "分类列表"
 #: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
 #: app/templates/logistics/show_shippers.html:13
 #: app/templates/orders/show_list.html:111
-#: app/templates/products/show_list.html:67
+#: app/templates/products/show_list.html:64
 #: app/templates/purchases/show_list.html:135
 #: app/templates/settings/show_list.html:11
 #: app/templates/settings/show_roles.html:37
@@ -1254,6 +1258,7 @@ msgstr "操作"
 #: app/templates/products/table_product.html:77
 #: app/templates/purchases/purchase_pay_table.html:49
 #: app/templates/purchases/purchase_table.html:78
+#: app/templates/settings/show_assets.html:55
 #: app/templates/settings/show_roles.html:75
 #: app/templates/settings/show_roles.html:76
 #: app/templates/settings/site.html:13 app/templates/stores/show_list.html:62
@@ -1457,6 +1462,10 @@ msgstr "更新密码"
 #: app/templates/layout/base.html:140
 msgid "Logout"
 msgstr "退出"
+
+#: app/templates/layout/base.html:193
+msgid "Copy successfully"
+msgstr "复制成功"
 
 #: app/templates/layout/form.html:12
 #: app/templates/warehouses/create_and_edit.html:86
@@ -1786,8 +1795,8 @@ msgstr "搜索订单编号或客户信息..."
 #: app/templates/orders/show_list.html:138
 #: app/templates/orders/show_list.html:153
 #: app/templates/orders/show_list.html:160
-#: app/templates/products/show_list.html:87
-#: app/templates/products/show_list.html:94
+#: app/templates/products/show_list.html:84
+#: app/templates/products/show_list.html:91
 #: app/templates/purchases/pay_list.html:81
 #: app/templates/purchases/pay_list.html:88
 #: app/templates/purchases/pay_list.html:103
@@ -1883,7 +1892,7 @@ msgid "Custom Date"
 msgstr "自定义日期"
 
 #: app/templates/orders/show_list.html:201
-#: app/templates/products/show_list.html:109
+#: app/templates/products/show_list.html:106
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/show_list.html:232
 #: app/templates/suppliers/show_list.html:62
@@ -1997,7 +2006,6 @@ msgstr "新增SKU"
 #: app/templates/products/show_skus.html:4
 #: app/templates/products/table_product.html:11
 #: app/templates/purchases/purchase_modal.html:29
-#: app/templates/settings/show_assets.html:32
 msgid "Image"
 msgstr "图片"
 
@@ -2048,26 +2056,26 @@ msgstr "选择"
 msgid "Choose one product at a time"
 msgstr "每次请选择一个产品"
 
-#: app/templates/products/show_list.html:54
-#: app/templates/products/show_list.html:61
+#: app/templates/products/show_list.html:51
+#: app/templates/products/show_list.html:58
 msgid "Copy"
 msgstr "复制"
 
-#: app/templates/products/show_list.html:61
+#: app/templates/products/show_list.html:58
 msgid "to"
 msgstr "至"
 
-#: app/templates/products/show_list.html:80
+#: app/templates/products/show_list.html:77
 #: app/templates/warehouses/show_inout.html:58
 #: app/templates/warehouses/show_stocks.html:101
 msgid "Search products sku or name..."
 msgstr "搜索产品SKU或名称..."
 
-#: app/templates/products/show_list.html:91
+#: app/templates/products/show_list.html:88
 msgid "Search Region"
 msgstr "搜索区域"
 
-#: app/templates/products/show_list.html:116
+#: app/templates/products/show_list.html:113
 #: app/templates/purchases/pay_list.html:165
 #: app/templates/purchases/show_list.html:239
 #: app/templates/suppliers/show_list.html:69
@@ -2076,7 +2084,7 @@ msgstr "搜索区域"
 msgid "Default"
 msgstr "默认"
 
-#: app/templates/products/show_list.html:122
+#: app/templates/products/show_list.html:119
 #: app/templates/purchases/pay_list.html:171
 #: app/templates/purchases/show_list.html:245
 #: app/templates/suppliers/show_list.html:75
@@ -2264,7 +2272,7 @@ msgid "Asset manage"
 msgstr "附件管理"
 
 #: app/templates/settings/_sub_menu.html:32
-#: app/templates/settings/show_assets.html:10
+#: app/templates/settings/show_assets.html:16
 msgid "Asset List"
 msgstr "附件列表"
 
@@ -2293,29 +2301,25 @@ msgstr "站点配置"
 msgid "Choose currencies carefully, and later changes will affect numeric."
 msgstr "慎重选择币种，后续修改会造成数值出错."
 
-#: app/templates/settings/show_assets.html:13
+#: app/templates/settings/show_assets.html:19
 msgid "Upload / Delete Files"
 msgstr "上传 / 删除 文件"
 
-#: app/templates/settings/show_assets.html:14
+#: app/templates/settings/show_assets.html:20
 msgid "Upload Files"
 msgstr "上传文件"
 
-#: app/templates/settings/show_assets.html:33
-msgid "Directory"
-msgstr "目录"
+#: app/templates/settings/show_assets.html:40
+msgid "Go to Parent"
+msgstr "返回上一级"
 
-#: app/templates/settings/show_assets.html:34
-msgid "Filepath"
-msgstr "文件路径"
-
-#: app/templates/settings/show_assets.html:35
-msgid "Upload Date"
-msgstr "上传日期"
-
-#: app/templates/settings/show_assets.html:49
+#: app/templates/settings/show_assets.html:55
 msgid "Edit Directory"
 msgstr "编辑目录"
+
+#: app/templates/settings/show_assets.html:67
+msgid "Copy Link"
+msgstr "复制链接"
 
 #: app/templates/settings/show_list.html:9
 msgid "Shop List"
@@ -2874,3 +2878,12 @@ msgstr "特色4"
 
 #~ msgid "Model"
 #~ msgstr "型号"
+
+#~ msgid "Directory"
+#~ msgstr "目录"
+
+#~ msgid "Filepath"
+#~ msgstr "文件路径"
+
+#~ msgid "Upload Date"
+#~ msgstr "上传日期"

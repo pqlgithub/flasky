@@ -4,6 +4,12 @@
 	{% include 'settings/_sub_menu.html' %}
 {% endblock %}
 
+{% block jquery %}
+{#<script type="text/javascript">#}
+
+{#</script>#}
+{% endblock %}
+
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
@@ -23,48 +29,53 @@
 		<form id="assets-form" action="{{ url_for('main.delete_asset') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
-					<tr>
-						<th class="text-center">
-							<input name="check_all" type="checkbox" class="check-all">
-						</th>
-						<th>{{ _('Image') }}</th>
-						<th class="text-center">{{ _('Directory') }}</th>
-						<th>{{ _('Filepath') }}</th>
-						<th class="text-right">{{ _('Upload Date') }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for asset in paginated_assets.items %}
-					<tr>
-						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ asset.id }}" type="checkbox">
-						</td>
-						<td>
-							<img src="{{ asset.view_url }}" width="60px">
-						</td>
-						<td class="text-center">
-							{{ asset.directory.name }} <br>
-							<a href="{{ url_for('main.modify_directory', id=asset.directory.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit Directory') }}</a>
-						</td>
-						<td>
-							{{ asset.filepath }}
-						</td>
-						<td class="text-right">
-							{{ asset.created_at|timestamp2string() }}
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
+			{% if current_directory %}
+			<div class="col-sm-2 col-xs-6 text-center">
+				<div class="text-center">
+					<a href="{{ url_for('main.show_assets') }}?pid={{ current_directory.parent_id|default(0) }}" class="directory">
+						<i class="glyphicon glyphicon-level-up fa-5x"></i>
+					</a>
+				</div>
+				<label>
+					{{ _('Go to Parent') }}
+				</label>
+			</div>
+			{% endif %}
+
+			{% for d in paginated_directory.items %}
+			<div class="col-sm-2 col-xs-6 text-center">
+				<div class="text-center">
+					<a href="{{ url_for('main.show_assets') }}?pid={{ d.id }}" class="directory" style="vertical-align: middle;">
+						<i class="glyphicon glyphicon-folder-close fa-5x"></i>
+					</a>
+				</div>
+				<label>
+					<input name="directories[]" class="check-one" value="{{ d.id }}" type="checkbox">
+					{{ d.name|safe }}
+					<a href="{{ url_for('main.modify_directory', id=d.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit') }}</a>
+				</label>
+			</div>
+			{% endfor %}
+
+			{% for a in all_child_assets %}
+			<div class="col-sm-2 col-xs-6 text-center">
+				<a href="javascript:void(0);" class="thumbnail" data-target="{{ a.id }}">
+					<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
+				</a>
+				<label>
+					<input name="images[]" class="check-one" value="{{ a.id }}" type="checkbox">
+					{{ a.filename|short_filename }} <a href="javascript:void(0);" data-clipboard-text="{{ a.view_url }}" class="zclip" data-toggle="tooltip" data-original-title="{{ _('Copy Link') }}">{{ _('Copy Link') }}</a>
+				</label>
+			</div>
+			{% endfor %}
+
 		</form>
 	</div>
 	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_assets, '.show_assets') }}
+				{{ macros.pagination_widget(paginated_directory, '.show_assets', pid=pid) }}
 			</nav>
 		</div>
 	</div>

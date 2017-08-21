@@ -164,8 +164,8 @@ $(function () {
 			text: "You will not be able to recover!",
 			type: "warning",
 			showCancelButton: true,
-			confirmButtonClass: 'btn-warning',
 			confirmButtonText: "Yes, delete it!",
+			confirmButtonColor: '#28a5a8',
 			closeOnConfirm: true
 		}, function (is_confirm) {
 			if (is_confirm) {
@@ -184,6 +184,19 @@ $(function () {
 		$('.flashes').fadeOut(500, function () {
 			$(this).remove();
 		});
+	});
+
+	// 复制到剪贴板
+	var clipboard = new Clipboard('.zclip');
+
+	clipboard.on('success', function(e) {
+		e.clearSelection();
+		mixpus.show_ok_message(mixpus.copy_ok_message);
+	});
+
+	clipboard.on('error', function(e) {
+		console.error('Action:', e.action);
+		console.error('Trigger:', e.trigger);
 	});
 
 });

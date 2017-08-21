@@ -11,11 +11,13 @@ bundles = {
         'js/bootstrap.min.js',
         'js/jquery.cookie.js',
         'js/sweetalert-dev.js',
+        'js/nprogress.js',
         'js/select2.js',
         'js/moxie.min.js',
         'js/plupload.full.min.js',
         'js/jquery.plupload.queue.js',
         'js/bootstrap-datetimepicker.js',
+        'js/clipboard.js',
         output='js/admin.min.js'
     ),
     'app_js': Bundle(
@@ -27,6 +29,7 @@ bundles = {
         'css/bootstrap.min.css',
         'css/todc-bootstrap.min.css',
         'css/font-awesome.css',
+        'css/nprogress.css',
         'css/sweetalert.css',
         'css/select2.css',
         'css/jquery.plupload.queue.css',

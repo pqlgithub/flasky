@@ -252,7 +252,17 @@ fieldset[disabled] .btn-flat-mixpus.focus {
   color: #2aaeb0;
   background-color: #fff;
 }
-
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+    background-color: #f5f5f5;
+    border-color: #c6c6c6;
+    box-shadow: none;
+    color: #2aaeb0;
+}
 
 .highlight {
 	color: #28A5A8;

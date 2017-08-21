@@ -315,12 +315,26 @@ def modify_directory(id):
 @login_required
 @user_has('admin_setting')
 def show_assets(page=1):
-    per_page = request.args.get('per_page', 20, type=int)
-    paginated_assets = Asset.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
+    per_page = request.args.get('per_page', 30, type=int)
+    pid = request.values.get('pid', 0, type=int)
+    current_directory = None
+    # 当前目录
+    if pid:
+        current_directory = Directory.query.get_or_404(pid)
+
+    # 某文件夹下的子目录
+    paginated_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=pid).order_by(
+        Directory.id.asc()).paginate(page, per_page)
+
+    # 某文件夹下的文件
+    all_child_assets = Asset.query.filter_by(master_uid=Master.master_uid(), directory_id=pid).order_by(Asset.created_at.desc()).all()
 
     return render_template('settings/show_assets.html',
                            sub_menu='assets',
-                           paginated_assets=paginated_assets,
+                           pid=pid,
+                           current_directory=current_directory,
+                           paginated_directory=paginated_directory,
+                           all_child_assets=all_child_assets,
                            **load_common_data())
 
 
@@ -328,21 +342,29 @@ def show_assets(page=1):
 @login_required
 @user_has('admin_setting')
 def delete_asset():
+    # 子文件夹
     selected_ids = request.form.getlist('selected[]')
-    if not selected_ids or selected_ids is None:
-        flash('Delete asset is null!', 'danger')
-        abort(404)
+    # 文件
+    image_ids = request.form.getlist('images[]')
 
     try:
-        for id in selected_ids:
+        # 删除文件
+        for id in image_ids:
             asset = Asset.query.get_or_404(int(id))
             db.session.delete(asset)
+
+        # 删除文件夹
+        for dir_id in selected_ids:
+            directory = Directory.query.get_or_404(int(dir_id))
+            db.session.delete(directory)
+
         db.session.commit()
 
-        flash('Delete asset is ok!', 'success')
-    except:
+        flash(gettext('Delete asset is ok!'), 'success')
+    except Exception as ex:
         db.session.rollback()
-        flash('Delete asset is fail!', 'danger')
+        flash('Delete asset is fail: %s!' % ex, 'danger')
+        current_app.logger.debug('Delete asset is fail: %s!' % ex)
 
     return redirect(url_for('.show_assets'))
 
