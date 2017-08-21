@@ -191,12 +191,13 @@
 		{% block private_js %}{% endblock %}
 		<script type="text/javascript">
 			mixpus.copy_ok_message = "{{ _('Copy successfully') }}";
+
 			// 打开页面时加载进度条。
 			NProgress.start();
 
 			$(function(){
 				NProgress.done();
-
+				
 				$(".form_datetime").datetimepicker({
 					minView: "month",
 					language: "{{ g.locale|default('en') }}",

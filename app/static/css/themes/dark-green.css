@@ -263,7 +263,10 @@ fieldset[disabled] .btn-flat-mixpus.focus {
     box-shadow: none;
     color: #2aaeb0;
 }
-
+#assets-form .thumbnail {
+    margin: 5px auto 3px;
+    width: 60px;
+}
 .highlight {
 	color: #28A5A8;
 }
