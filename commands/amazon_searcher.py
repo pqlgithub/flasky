@@ -1,41 +1,46 @@
 # -*- coding: utf-8 -*-
-import ssl
+import sys, ssl
 from urllib import request, parse, error
 from bs4 import BeautifulSoup
 from openpyxl.reader.excel import load_workbook
 from openpyxl.workbook import Workbook
+from flask_script import Command
 
 
-def searcher():
-    word = parse.quote_plus('power bank')
-    url = 'https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords={}'.format(word)
+class AmazonSearcher(Command):
 
-    headers = {
-        'User-Agent': r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3',
-        'Referer': r'http://www.baidu.com',
-        'Connection': 'keep-alive'
-    }
+    def run(self):
+        word = parse.quote_plus('power bank')
+        url = 'https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords={}'.format(word)
 
-    try:
-        ssl._create_default_https_context = ssl._create_unverified_context
+        headers = {
+            'User-Agent': r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3',
+            'Referer': r'http://www.baidu.com',
+            'Connection': 'keep-alive'
+        }
 
-        print('Start to request [%s]' % url)
+        try:
+            ssl._create_default_https_context = ssl._create_unverified_context
 
-        req = request.Request(url)
+            print('Start to request [%s]' % url)
 
-        response = request.urlopen(req).read()
-        response = response.decode('utf-8')
+            req = request.Request(url)
 
-        print('Request is ok.')
+            response = request.urlopen(req).read()
+            response = response.decode('utf-8')
 
-        soup = BeautifulSoup(response, 'html.parser')
+            print('Request is ok.')
 
-        h2 = soup.find_all(id="s-result-count")
+            soup = BeautifulSoup(response, 'html.parser')
 
-        count_text = h2.string
+            h2 = soup.find_all(id="s-result-count")
 
-        print('Count [%s]' % count_text)
+            count_text = h2[0].get_text()
 
-    except error.HTTPError as ex:
-        print(ex.code())
-        print(ex.read().decode('utf-8'))
+            print('Count [%s]' % count_text)
+
+        except error.HTTPError as ex:
+            print(ex.code())
+            print(ex.read().decode('utf-8'))
+
+        sys.exit(0)
