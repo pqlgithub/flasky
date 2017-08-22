@@ -31,10 +31,11 @@ class AmazonSearcher(Command):
             if cell_value:
                 time.sleep(15)
                 count_text = self.get_page_html(cell_value)
+                print('Count [%s]' % count_text)
                 ws.cell(row=row_idx, column=3, value=count_text)
 
         wb.save(file_path)
-        
+
         sys.exit(0)
 
 
