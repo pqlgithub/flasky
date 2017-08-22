@@ -23,6 +23,7 @@ from app.models import User, Role
 from app.assets import assets_env
 
 from commands.initial_data import InitialData
+from commands.amazon_searcher import searcher
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -46,7 +47,6 @@ def update_index_all():
     """手动建立索引"""
     from flask_whooshalchemyplus import index_all
     index_all(app)
-
 
 @manager.command
 def test():
@@ -88,6 +88,8 @@ manager.add_command('assets', ManageAssets(assets_env))
 
 # 初始化系统命令
 manager.add_command('initial', InitialData())
+
+manager.add_command('amazon', searcher())
 
 # 项目的代理设置
 app.wsgi_app = ProxyFix(app.wsgi_app)
