@@ -23,7 +23,7 @@ from app.models import User, Role
 from app.assets import assets_env
 
 from commands.initial_data import InitialData
-from commands.amazon_searcher import searcher
+from commands.amazon_searcher import AmazonSearcher
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -89,7 +89,7 @@ manager.add_command('assets', ManageAssets(assets_env))
 # 初始化系统命令
 manager.add_command('initial', InitialData())
 
-manager.add_command('amazon', searcher())
+manager.add_command('amazon', AmazonSearcher())
 
 # 项目的代理设置
 app.wsgi_app = ProxyFix(app.wsgi_app)
