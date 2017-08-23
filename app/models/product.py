@@ -156,6 +156,7 @@ class Product(db.Model):
         """删除所属分类"""
         self.categories = [category for category in self.categories if category not in categories]
 
+
     @staticmethod
     def make_unique_serial_no(serial_no):
         if Product.query.filter_by(serial_no=serial_no).first() == None:
@@ -165,6 +166,20 @@ class Product(db.Model):
             if Product.query.filter_by(serial_no=new_serial_no).first() == None:
                 break
         return new_serial_no
+
+    @staticmethod
+    def from_json(json_product, master_uid):
+        # ['name', 'mode', 'color', 'id_code', 'cost_price']
+        return Product(
+            master_uid=master_uid,
+            serial_no=json_product.get('serial_no'),
+            supplier_id=json_product.get('supplier_id'),
+            name=json_product.get('name'),
+            cover_id=json_product.get('cover_id'),
+            currency_id=json_product.get('currency_id'),
+            region_id=json_product.get('reg_id'),
+            cost_price=json_product.get('cost_price')
+        )
 
     def __repr__(self):
         return '<Product %r>' % self.name
@@ -239,10 +254,14 @@ class ProductSku(db.Model):
         return ProductStock.stock_count_of_product(self.id)
 
     @staticmethod
-    def validate_unique_id_code(id_code, region_id=None):
+    def validate_unique_id_code(id_code, region_id=None, master_uid=0):
         """验证id_code是否唯一"""
         sql = "SELECT s.id,s.id_code FROM `product_skus` AS s LEFT JOIN `products` AS p ON s.product_id=p.id"
         sql += " WHERE s.id_code=%s" % id_code
+
+        if master_uid:
+            sql += " AND s.master_uid=%d" % master_uid
+
         if region_id is not None:
             sql += " AND p.region_id=%d" % int(region_id)
 

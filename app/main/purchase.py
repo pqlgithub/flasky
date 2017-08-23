@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+import datetime, time, hashlib
 from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
@@ -12,9 +12,9 @@ import barcode
 from barcode.writer import ImageWriter
 from openpyxl.workbook import Workbook
 from . import main
-from .. import db
+from .. import db, uploader
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response,\
-    datestr_to_timestamp
+    datestr_to_timestamp, import_product_from_excel
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS, SORT_TYPE_CODE
 from ..decorators import user_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
@@ -666,19 +666,19 @@ def export_purchase():
         current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
 
         # 写入表头
-        for col in xrange(1, len(purchase_columns) + 1):
+        for col in range(1, len(purchase_columns) + 1):
             field = purchase_columns[col - 1]
             ws.cell(row=1, column=col, value=_rebuild_header_value(field, current_site))
 
         # 写入数据, 从第2行开始写入
-        for row in xrange(2, len(purchase_list) + 2):
+        for row in range(2, len(purchase_list) + 2):
             purchase = purchase_list[row - 2]
             warehouse = purchase.warehouse
             supplier = purchase.supplier
 
             current_app.logger.debug('Current row: %d' % row)
 
-            for col in xrange(1, len(purchase_columns) + 1):
+            for col in range(1, len(purchase_columns) + 1):
                 field = purchase_columns[col - 1]
 
                 current_app.logger.debug('Current col: %s' % field)
@@ -729,10 +729,82 @@ def _rebuild_header_value(key, current_site):
 @login_required
 @user_has('admin_purchase')
 def import_purchase():
+    if request.method == 'POST':
+        wh_id = request.form.get('wh_id', type=int)
+        f = request.files['excel']
+
+        # start to save
+        sub_folder = str(time.strftime('%y%m%d'))
+        name_prefix = 'admin' + str(time.time())
+        name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
+        filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
+
+        storage_filepath = uploader.path(filename)
+        current_app.logger.debug('Excel file [%s]' % storage_filepath)
+
+        # 读取文档内容
+        product_skus = import_product_from_excel(storage_filepath)
+
+        total_quantity = 0
+        total_amount = 0
+        total_count = 0
+        purchase_products = []
+        supplier_id = 0
+        # fields = ['name', 'mode', 'color', 'id_code', 'cost_price', 'quantity']
+
+        for sku_dict in product_skus:
+            sku_id_code = sku_dict.get('id_code')
+            # 无69码，跳过
+            if sku_id_code is None:
+                continue
+
+            # 通过69码查找匹配的产品
+            sku_row = ProductSku.query.filter_by(master_uid=Master.master_uid(), id_code=sku_id_code).first()
+
+            if sku_row is None:
+                continue
+
+            sku = {}
+            sku['product_sku_id'] = sku_row.id
+            sku['sku_serial_no'] = sku_row.serial_no
+            sku['cost_price'] = float(sku_dict.get('cost_price'))
+            sku['quantity'] = int(sku_dict.get('quantity', 0))
+
+            supplier_id = sku_row.supplier_id
+
+            total_quantity += sku['quantity']
+            total_amount += sku['cost_price'] * sku['quantity']
+            total_count += 1
+
+            purchase_products.append(sku)
+
+        purchase = Purchase(
+            master_uid=Master.master_uid(),
+            serial_no=Purchase.make_unique_serial_no(gen_serial_no('CG')),
+            warehouse_id=wh_id,
+            supplier_id=supplier_id,
+            sku_count=total_count,
+            total_amount=total_amount,
+            quantity_sum=total_quantity
+        )
+
+        db.session.add(purchase)
+
+        for purchase_item in purchase_products:
+            purchase_item = PurchaseProduct(purchase=purchase, **purchase_item)
+            db.session.add(purchase_item)
+
+        db.session.commit()
+
+        return redirect(url_for('.show_purchases'))
+
     # 库房列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(
+        1, 1000)
     return render_template('purchases/_modal_import.html',
-                           warehouse_list=warehouse_list)
+                           warehouse_list=warehouse_list,
+                           paginated_suppliers=paginated_suppliers)
 
 
 @main.route('/purchases/download_template')

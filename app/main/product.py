@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+import time, hashlib
 from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
 from flask_babelex import gettext
 from . import main
-from .. import db
+from .. import db, uploader
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
     Currency
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
-    custom_response
+    custom_response, import_product_from_excel
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
 
@@ -435,6 +436,98 @@ def copy_product():
     return redirect(url_for('main.edit_product', rid=copy_product.serial_no))
 
 
+@main.route('/products/import', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def import_product():
+    if request.method == 'POST' and 'excel' in request.files:
+        reg_id = request.form.get('reg_id', type=int)
+        supplier_id = request.form.get('supplier_id', type=int)
+
+        sub_folder = str(time.strftime('%y%m%d'))
+        for f in request.files.getlist('excel'):
+            # start to save
+            name_prefix = 'admin' + str(time.time())
+            name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
+            filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
+
+            storage_filepath = uploader.path(filename)
+            current_app.logger.debug('Excel file [%s]' % storage_filepath)
+
+            # 读取文档内容
+            products = import_product_from_excel(storage_filepath)
+
+            # 默认封面图
+            default_cover = Asset.query.filter_by(is_default=True).first()
+
+            for product_dict in products:
+                # 69码不存在，跳过
+                if product_dict.get('id_code') is None:
+                    continue
+
+                # 验证sku是否已存在
+                rows = ProductSku.validate_unique_id_code(product_dict['id_code'], region_id=reg_id, master_uid=Master.master_uid())
+                if len(rows) >= 1:
+                    # 已存在，则跳过
+                    continue
+
+                current_app.logger.debug('current product [%s]' % product_dict)
+
+                sku_dict = {
+                    'supplier_id' : supplier_id,
+                    'master_uid' : Master.master_uid(),
+                    'serial_no' : ProductSku.make_unique_serial_no(gen_serial_no()),
+                    'id_code' : product_dict.get('id_code'),
+                    'cover_id' : default_cover.id,
+                    's_model' : product_dict.get('mode'),
+                    's_color' : product_dict.get('color'),
+                    'cost_price' : product_dict.get('cost_price')
+                }
+                current_app.logger.debug('current product sku [%s]' % sku_dict)
+
+                # 验证产品是否存在
+                if product_dict.get('first_id_code'):
+                    first_sku = ProductSku.query.filter_by(master_uid=Master.master_uid(), id_code=product_dict.get('first_id_code')).first()
+                    sku_dict['product_id'] = first_sku.product_id
+
+                    # 同步添加sku
+                    new_sku = ProductSku(**sku_dict)
+                    db.session.add(new_sku)
+                else:
+                    # 新增产品
+                    product_dict['reg_id'] = reg_id
+                    product_dict['supplier_id'] = supplier_id
+                    product_dict['currency_id'] = g.current_site.currency_id
+                    product_dict['cover_id'] = default_cover.id
+                    product_dict['serial_no'] = Product.make_unique_serial_no(gen_serial_no())
+
+                    new_product = Product.from_json(product_dict, master_uid=Master.master_uid())
+                    db.session.add(new_product)
+
+                    # 同步添加sku
+                    new_sku = ProductSku(product=new_product, **sku_dict)
+                    db.session.add(new_sku)
+
+            db.session.commit()
+
+        flash(gettext('Import product is ok!'), 'success')
+
+        return redirect(url_for('.show_products'))
+
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(
+        1, 1000)
+    return render_template('products/_modal_import.html',
+                           paginated_suppliers=paginated_suppliers,
+                           **load_common_data())
+
+
+@main.route('/products/download_template')
+@login_required
+@user_has('admin_product')
+def download_product_tpl():
+    pass
+
+
 @main.route('/products/<string:rid>/skus')
 @user_has('admin_product')
 def show_skus(rid):
@@ -442,7 +535,7 @@ def show_skus(rid):
     if product is None:
         abort(404)
 
-    return render_template('/products/show_skus.html',
+    return render_template('products/show_skus.html',
                            product_skus=product.skus,
                            product=product)
 

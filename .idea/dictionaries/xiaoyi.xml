@@ -12,6 +12,8 @@
       <w>autoclose</w>
       <w>autoescape</w>
       <w>baidu</w>
+      <w>chigh</w>
+      <w>clow</w>
       <w>croped</w>
       <w>cssmin</w>
       <w>datestr</w>
@@ -61,6 +63,8 @@
       <w>purpen</w>
       <w>pymysql</w>
       <w>resized</w>
+      <w>rhigh</w>
+      <w>rlow</w>
       <w>saled</w>
       <w>scrolltotop</w>
       <w>scrollup</w>

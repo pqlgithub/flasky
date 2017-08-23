@@ -26,7 +26,7 @@ class AmazonSearcher(Command):
         # 获取行数
         total_rows = ws.max_row
 
-        for row_idx in xrange(7, total_rows + 1):
+        for row_idx in range(7, total_rows + 1):
             cell_value = ws.cell(row=row_idx, column=2).value
             if cell_value:
                 time.sleep(15)

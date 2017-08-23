@@ -3,7 +3,7 @@
 	__init__.py
 	~~~~~~~~~~~~~~
 
-	:copyright: (c) 2017 by purpen.
+	:copyright: (c) 2017 by mic.
 """
 
 from flask import Flask
@@ -41,7 +41,7 @@ babel = Babel()
 csrf = CSRFProtect()
 s3 = FlaskS3()
 # 创建set
-uploader = UploadSet('photos', IMAGES)
+uploader = UploadSet('photos', extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv'))
 
 # Flask-Login初始化
 login_manager = LoginManager()
