@@ -124,6 +124,8 @@ class ProductionConfig(Config):
 
     ERROR_LOG = '/var/log/mic-error.log'
 
+    UPLOADED_PHOTOS_DEST = '/opt/project/mishoply/public/uploads'
+
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'
 
