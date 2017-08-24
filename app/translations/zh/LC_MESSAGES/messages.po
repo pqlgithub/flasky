@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-24 22:19+0800\n"
-"PO-Revision-Date: 2017-08-24 22:19+0800\n"
+"POT-Creation-Date: 2017-08-25 00:08+0800\n"
+"PO-Revision-Date: 2017-08-25 00:09+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: app/constant.py:7 app/templates/orders/create_and_edit.html:180
 msgid "China"
@@ -609,7 +610,7 @@ msgid "Region"
 msgstr "面向区域"
 
 #: app/forms/product_forms.py:65 app/forms/product_forms.py:90
-#: app/templates/products/create_and_edit.html:347
+#: app/templates/products/create_and_edit.html:348
 #: app/templates/products/show_skus.html:7
 #: app/templates/products/table_product.html:16
 msgid "Cost Price"
@@ -864,48 +865,48 @@ msgstr "小计"
 msgid "Discount Amount"
 msgstr "优惠金额"
 
-#: app/main/product.py:243
+#: app/main/product.py:244
 msgid "The basic information is complete and continue editing"
 msgstr "基本信息已完成，并继续编辑"
 
-#: app/main/product.py:246
+#: app/main/product.py:247
 msgid "The basic information is complete"
 msgstr "基本信息已完成"
 
-#: app/main/product.py:296
+#: app/main/product.py:297
 msgid "Basic information is complete and continue editing"
 msgstr "基本信息已更新，并继续编辑"
 
-#: app/main/product.py:299
+#: app/main/product.py:300
 msgid "Basic information is complete"
 msgstr "基本信息已更新"
 
-#: app/main/product.py:349
+#: app/main/product.py:350
 msgid "Delete product is null!"
 msgstr "删除产品为空！"
 
-#: app/main/product.py:363
+#: app/main/product.py:364
 msgid "Delete product is ok!"
 msgstr "删除产品成功！"
 
-#: app/main/product.py:384
+#: app/main/product.py:385
 msgid "Product already exists without duplication"
 msgstr "产品已存在无需重复复制"
 
-#: app/main/product.py:434
+#: app/main/product.py:435
 msgid "Copy product is ok!"
 msgstr "复制产品成功！"
 
-#: app/main/product.py:513
+#: app/main/product.py:514
 msgid "Import product is ok!"
 msgstr "导入产品成功！"
 
-#: app/main/product.py:563 app/main/product.py:611
+#: app/main/product.py:564 app/main/product.py:612
 #, python-format
 msgid "Commodity Codes [%s] already exist!"
 msgstr "69码 [%s] 已存在！"
 
-#: app/main/product.py:652
+#: app/main/product.py:653
 msgid "Product Sku isn't exist!"
 msgstr "产品sku不存在！"
 
@@ -1123,7 +1124,7 @@ msgstr "确认密码"
 msgid "Sign up"
 msgstr "现在登录"
 
-#: app/templates/auth/signup.html:76 app/templates/layout/web.html:81
+#: app/templates/auth/signup.html:76 app/templates/layout/web.html:94
 msgid "Log in"
 msgstr "登录"
 
@@ -1297,7 +1298,7 @@ msgstr "货币列表"
 msgid "Last Updated"
 msgstr "最近更新"
 
-#: app/templates/dashboard/index.html:42
+#: app/templates/dashboard/index.html:42 app/templates/layout/web.html:87
 msgid "Dashboard"
 msgstr "控制台"
 
@@ -1467,7 +1468,7 @@ msgstr "站点信息"
 msgid "Update Password"
 msgstr "更新密码"
 
-#: app/templates/layout/base.html:140
+#: app/templates/layout/base.html:140 app/templates/layout/web.html:89
 msgid "Logout"
 msgstr "退出"
 
@@ -1520,7 +1521,11 @@ msgstr "博客"
 msgid "About Us"
 msgstr "关于我们"
 
-#: app/templates/layout/web.html:84
+#: app/templates/layout/web.html:88
+msgid "My Account"
+msgstr "我的账号"
+
+#: app/templates/layout/web.html:97
 msgid "Sign Up Free"
 msgstr "免费注册"
 
@@ -1617,7 +1622,7 @@ msgstr "模板下载"
 #: app/templates/purchases/_modal_export.html:57
 #: app/templates/purchases/_modal_express.html:51
 #: app/templates/purchases/_modal_import.html:39
-#: app/templates/purchases/purchase_modal.html:69
+#: app/templates/purchases/purchase_modal.html:78
 #: app/templates/settings/create_edit_role.html:33
 #: app/templates/settings/directory_modal.html:21
 #: app/templates/settings/set_ability.html:26
@@ -1639,7 +1644,7 @@ msgstr "关闭"
 #: app/templates/purchases/_modal_export.html:58
 #: app/templates/purchases/_modal_express.html:52
 #: app/templates/purchases/_modal_import.html:40
-#: app/templates/purchases/purchase_modal.html:70
+#: app/templates/purchases/purchase_modal.html:79
 #: app/templates/users/add_child_user.html:50
 #: app/templates/warehouses/ex_warehouse_modal.html:57
 #: app/templates/warehouses/in_warehouse_modal.html:66
@@ -2031,7 +2036,7 @@ msgstr "新增SKU"
 msgid "Image"
 msgstr "图片"
 
-#: app/templates/products/create_and_edit.html:348
+#: app/templates/products/create_and_edit.html:347
 #: app/templates/products/show_skus.html:8
 #: app/templates/products/table_product.html:13
 msgid "Mode/Color"
@@ -2208,6 +2213,10 @@ msgstr "采购单价"
 #: app/templates/purchases/show_list.html:148
 msgid "Search purchase serial_no or name..."
 msgstr "搜索采购单号..."
+
+#: app/templates/purchases/purchase_modal.html:14
+msgid "Search sku or name..."
+msgstr "搜索编号或产品名称..."
 
 #: app/templates/purchases/purchase_modal.html:32
 msgid "Attributes"
@@ -2912,4 +2921,3 @@ msgstr "特色3"
 
 #~ msgid "Service"
 #~ msgstr "客服"
-

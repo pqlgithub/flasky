@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-24 22:19+0800\n"
+"POT-Creation-Date: 2017-08-25 00:08+0800\n"
 "PO-Revision-Date: 2017-06-12 20:37+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -609,7 +609,7 @@ msgid "Region"
 msgstr ""
 
 #: app/forms/product_forms.py:65 app/forms/product_forms.py:90
-#: app/templates/products/create_and_edit.html:347
+#: app/templates/products/create_and_edit.html:348
 #: app/templates/products/show_skus.html:7
 #: app/templates/products/table_product.html:16
 msgid "Cost Price"
@@ -864,48 +864,48 @@ msgstr ""
 msgid "Discount Amount"
 msgstr ""
 
-#: app/main/product.py:243
+#: app/main/product.py:244
 msgid "The basic information is complete and continue editing"
 msgstr ""
 
-#: app/main/product.py:246
+#: app/main/product.py:247
 msgid "The basic information is complete"
 msgstr ""
 
-#: app/main/product.py:296
+#: app/main/product.py:297
 msgid "Basic information is complete and continue editing"
 msgstr ""
 
-#: app/main/product.py:299
+#: app/main/product.py:300
 msgid "Basic information is complete"
 msgstr ""
 
-#: app/main/product.py:349
+#: app/main/product.py:350
 msgid "Delete product is null!"
 msgstr ""
 
-#: app/main/product.py:363
+#: app/main/product.py:364
 msgid "Delete product is ok!"
 msgstr ""
 
-#: app/main/product.py:384
+#: app/main/product.py:385
 msgid "Product already exists without duplication"
 msgstr ""
 
-#: app/main/product.py:434
+#: app/main/product.py:435
 msgid "Copy product is ok!"
 msgstr ""
 
-#: app/main/product.py:513
+#: app/main/product.py:514
 msgid "Import product is ok!"
 msgstr ""
 
-#: app/main/product.py:563 app/main/product.py:611
+#: app/main/product.py:564 app/main/product.py:612
 #, python-format
 msgid "Commodity Codes [%s] already exist!"
 msgstr ""
 
-#: app/main/product.py:652
+#: app/main/product.py:653
 msgid "Product Sku isn't exist!"
 msgstr ""
 
@@ -1123,7 +1123,7 @@ msgstr ""
 msgid "Sign up"
 msgstr ""
 
-#: app/templates/auth/signup.html:76 app/templates/layout/web.html:81
+#: app/templates/auth/signup.html:76 app/templates/layout/web.html:94
 msgid "Log in"
 msgstr ""
 
@@ -1297,7 +1297,7 @@ msgstr ""
 msgid "Last Updated"
 msgstr ""
 
-#: app/templates/dashboard/index.html:42
+#: app/templates/dashboard/index.html:42 app/templates/layout/web.html:87
 msgid "Dashboard"
 msgstr ""
 
@@ -1467,7 +1467,7 @@ msgstr ""
 msgid "Update Password"
 msgstr ""
 
-#: app/templates/layout/base.html:140
+#: app/templates/layout/base.html:140 app/templates/layout/web.html:89
 msgid "Logout"
 msgstr ""
 
@@ -1520,7 +1520,11 @@ msgstr ""
 msgid "About Us"
 msgstr ""
 
-#: app/templates/layout/web.html:84
+#: app/templates/layout/web.html:88
+msgid "My Account"
+msgstr ""
+
+#: app/templates/layout/web.html:97
 msgid "Sign Up Free"
 msgstr ""
 
@@ -1617,7 +1621,7 @@ msgstr ""
 #: app/templates/purchases/_modal_export.html:57
 #: app/templates/purchases/_modal_express.html:51
 #: app/templates/purchases/_modal_import.html:39
-#: app/templates/purchases/purchase_modal.html:69
+#: app/templates/purchases/purchase_modal.html:78
 #: app/templates/settings/create_edit_role.html:33
 #: app/templates/settings/directory_modal.html:21
 #: app/templates/settings/set_ability.html:26
@@ -1639,7 +1643,7 @@ msgstr ""
 #: app/templates/purchases/_modal_export.html:58
 #: app/templates/purchases/_modal_express.html:52
 #: app/templates/purchases/_modal_import.html:40
-#: app/templates/purchases/purchase_modal.html:70
+#: app/templates/purchases/purchase_modal.html:79
 #: app/templates/users/add_child_user.html:50
 #: app/templates/warehouses/ex_warehouse_modal.html:57
 #: app/templates/warehouses/in_warehouse_modal.html:66
@@ -2031,7 +2035,7 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:348
+#: app/templates/products/create_and_edit.html:347
 #: app/templates/products/show_skus.html:8
 #: app/templates/products/table_product.html:13
 msgid "Mode/Color"
@@ -2207,6 +2211,10 @@ msgstr ""
 #: app/templates/purchases/pay_list.html:74
 #: app/templates/purchases/show_list.html:148
 msgid "Search purchase serial_no or name..."
+msgstr ""
+
+#: app/templates/purchases/purchase_modal.html:14
+msgid "Search sku or name..."
 msgstr ""
 
 #: app/templates/purchases/purchase_modal.html:32
