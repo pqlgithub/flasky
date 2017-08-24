@@ -31,7 +31,7 @@
 							<th>{{ _('Product Name') }}</th>
 							<th class="text-center">{{ _('Attributes') }}</th>
 							<th class="text-right">{{ _('Price') }}</th>
-							<th class="text-right">{{ _('Total Stock') }}</th>
+							<th class="text-right">{{ _('Total Stock / Not Arrived') }}</th>
 						</tr>
 					</thead>
 					<tbody id="purchase-items">
@@ -50,13 +50,22 @@
 							{{ sku.product.name }}
 						</td>
 						<td class="text-center">
-							<label class="label label-warning">{{ sku.s_model }}</label>
+							{% if sku.s_model %}
+							<label class="label label-warning">
+								{{ sku.s_model|supress_none }}
+							</label>
+							{% endif %}
+							{% if sku.s_color %}
+							<label class="label label-default">
+								{{ sku.s_color|supress_none }}
+							</label>
+							{% endif %}
 						</td>
 						<td class="text-right">
-							{{ sku.cost_price }} {{ current_site.currency }}
+							{{ sku.cost_price }} {{ sku.product.currency_unit }}
 						</td>
 						<td class="text-right">
-							<strong class="text-danger">{{ sku.stock_count }}</strong>
+							<strong class="text-mixpus">{{ sku.stock_count }}</strong> / <strong class="text-danger">{{ sku.no_arrival_count }}</strong>
 						</td>
 					</tr>
 					{% endfor %}

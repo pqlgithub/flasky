@@ -70,7 +70,7 @@ class ProductForm(Form):
     s_height = FloatField(lazy_gettext('Height'), default=0.0)
     from_url = StringField(lazy_gettext('View Url'))
     status = SelectField(lazy_gettext('Status'), choices=[
-        (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
+        (1, lazy_gettext('Enabled')), (0, lazy_gettext('Disabled'))
     ], coerce=int)
     description = TextAreaField(lazy_gettext('Description'))
 

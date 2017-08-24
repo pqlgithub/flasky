@@ -58,18 +58,12 @@ def test():
 
 @manager.command
 def run_sql():
-    sql = "SELECT cp.category_id, group_concat(c.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;'), c2.sort_order, c2.status FROM categories_paths AS cp"
-    sql += " LEFT JOIN categories c ON (cp.path_id=c.id)"
-    sql += " LEFT JOIN categories AS c2 ON (cp.category_id=c2.id)"
+    sql = "SELECT SUM(s.quantity) FROM `purchase_product` AS s LEFT JOIN `purchases` AS p ON s.purchase_id=p.id"
+    sql += " WHERE s.product_sku_id=%d AND p.status=5" % 1023
 
-    sql += ' GROUP BY cp.category_id'
-    #sql += ' ORDER BY c2.sort_order ASC'
+    result = db.engine.execute(sql).fetchone()
 
-    result = db.engine.execute(sql)
-
-    for row in result:
-        print(row)
-
+    return result[0] if result[0] is not None else 0
 
 
 # 常用操作命令

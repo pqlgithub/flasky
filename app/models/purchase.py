@@ -40,7 +40,7 @@ class Purchase(db.Model):
     express_no = db.Column(db.String(255), nullable=True)
 
     # 预计到货时间
-    arrival_date = db.Column(db.Date)
+    arrival_date = db.Column(db.Date, nullable=True)
     # 实际到货时间
     arrival_at = db.Column(db.Integer, default=0)
     description = db.Column(db.String(255))

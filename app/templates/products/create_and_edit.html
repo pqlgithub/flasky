@@ -382,7 +382,7 @@
 									{{ sku.s_weight}}
 								</td>
 								<td>
-									{{ sku.remark }}
+									{{ sku.remark|supress_none }}
 								</td>
 								<td class="text-right">
 									<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn btn-link ajax-sku" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">

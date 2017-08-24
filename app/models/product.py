@@ -25,10 +25,10 @@ __all__ = [
 
 # 海关危险品
 DANGEROUS_GOODS_TYPES = [
-    ('N', gettext('No')),
-    ('D', gettext('Electricity')), # 含电
-    ('Y', gettext('Liquid')), # 液体
-    ('F', gettext('Powder')) # 粉末
+    ('N', lazy_gettext('No')),
+    ('D', lazy_gettext('Electricity')), # 含电
+    ('Y', lazy_gettext('Liquid')), # 液体
+    ('F', lazy_gettext('Powder')) # 粉末
 ]
 
 # 供应商合作方式
@@ -41,7 +41,7 @@ BUSINESS_MODE = [
 # 产品的状态
 PRODUCT_STATUS = [
     (1, lazy_gettext('Enabled'), 'success'),
-    (-1, lazy_gettext('Disabled'), 'danger')
+    (0, lazy_gettext('Disabled'), 'danger')
 ]
 
 # product and category => N to N
@@ -178,7 +178,8 @@ class Product(db.Model):
             cover_id=json_product.get('cover_id'),
             currency_id=json_product.get('currency_id'),
             region_id=json_product.get('reg_id'),
-            cost_price=json_product.get('cost_price')
+            cost_price=json_product.get('cost_price'),
+            status=json_product.get('status')
         )
 
     def __repr__(self):
@@ -252,6 +253,11 @@ class ProductSku(db.Model):
     def stock_count(self):
         """product sku stock count"""
         return ProductStock.stock_count_of_product(self.id)
+
+    @property
+    def no_arrival_count(self):
+        """product sku no arrival count"""
+        return ProductStock.stock_count_of_no_arrival(self.id)
 
     @staticmethod
     def validate_unique_id_code(id_code, region_id=None, master_uid=0):
@@ -378,6 +384,17 @@ class ProductStock(db.Model):
         total_quantity = ProductStock.query.filter_by(product_sku_id=sku_id).with_entities(func.sum(ProductStock.current_count)).one()
 
         return total_quantity[0] if (total_quantity and total_quantity[0] is not None) else 0
+
+
+    @staticmethod
+    def stock_count_of_no_arrival(sku_id):
+        """未到货库存数"""
+        sql = "SELECT SUM(s.quantity) FROM `purchase_product` AS s LEFT JOIN `purchases` AS p ON s.purchase_id=p.id"
+        sql += " WHERE s.product_sku_id=%d AND p.status=5" % sku_id
+
+        result = db.engine.execute(sql).fetchone()
+
+        return result[0] if result[0] is not None else 0
 
 
     def __repr__(self):

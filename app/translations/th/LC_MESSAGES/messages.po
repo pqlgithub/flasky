@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-22 00:08+0800\n"
+"POT-Creation-Date: 2017-08-24 22:19+0800\n"
 "PO-Revision-Date: 2017-07-18 20:43+0800\n"
 "Last-Translator: \n"
 "Language: th\n"
@@ -265,6 +265,7 @@ msgstr ""
 
 #: app/constant.py:230 app/forms/product_forms.py:57
 #: app/forms/purchase_forms.py:10 app/main/order.py:86 app/main/purchase.py:578
+#: app/templates/products/_modal_import.html:24
 #: app/templates/products/table_product.html:14
 #: app/templates/purchases/_modal_express.html:21
 #: app/templates/purchases/purchase_pay_table.html:13
@@ -290,8 +291,8 @@ msgstr ""
 #: app/templates/orders/show_list.html:201
 #: app/templates/orders/show_list.html:207
 #: app/templates/orders/show_list.html:261
-#: app/templates/products/show_list.html:106
-#: app/templates/products/show_list.html:116
+#: app/templates/products/show_list.html:114
+#: app/templates/products/show_list.html:124
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/pay_list.html:168
 #: app/templates/purchases/purchase_pay_table.html:17
@@ -310,8 +311,7 @@ msgstr ""
 msgid "Add Date"
 msgstr ""
 
-#: app/constant.py:235 app/forms/purchase_forms.py:13
-#: app/templates/purchases/pay_list.html:174
+#: app/constant.py:235 app/templates/purchases/pay_list.html:174
 #: app/templates/purchases/show_list.html:248
 #: app/templates/purchases/view_detail.html:37
 msgid "Arrival Date"
@@ -541,7 +541,7 @@ msgstr ""
 
 #: app/forms/product_forms.py:27 app/templates/categories/show_list.html:33
 #: app/templates/orders/show_list.html:204
-#: app/templates/products/show_list.html:110
+#: app/templates/products/show_list.html:118
 #: app/templates/purchases/pay_list.html:162
 #: app/templates/purchases/show_list.html:236
 #: app/templates/suppliers/show_list.html:66
@@ -602,7 +602,8 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
-#: app/forms/product_forms.py:64 app/templates/products/show_list.html:84
+#: app/forms/product_forms.py:64 app/templates/products/_modal_import.html:12
+#: app/templates/products/show_list.html:92
 #: app/templates/products/table_product.html:15
 msgid "Region"
 msgstr ""
@@ -679,6 +680,10 @@ msgstr ""
 
 #: app/forms/purchase_forms.py:12 app/templates/purchases/view_detail.html:73
 msgid "Extra Charge"
+msgstr ""
+
+#: app/forms/purchase_forms.py:13
+msgid "Estimated date of arrival"
 msgstr ""
 
 #: app/forms/setting_forms.py:11 app/templates/stores/show_list.html:30
@@ -859,44 +864,48 @@ msgstr ""
 msgid "Discount Amount"
 msgstr ""
 
-#: app/main/product.py:242
+#: app/main/product.py:243
 msgid "The basic information is complete and continue editing"
 msgstr ""
 
-#: app/main/product.py:245
+#: app/main/product.py:246
 msgid "The basic information is complete"
 msgstr ""
 
-#: app/main/product.py:295
+#: app/main/product.py:296
 msgid "Basic information is complete and continue editing"
 msgstr ""
 
-#: app/main/product.py:298
+#: app/main/product.py:299
 msgid "Basic information is complete"
 msgstr ""
 
-#: app/main/product.py:348
+#: app/main/product.py:349
 msgid "Delete product is null!"
 msgstr ""
 
-#: app/main/product.py:362
+#: app/main/product.py:363
 msgid "Delete product is ok!"
 msgstr ""
 
-#: app/main/product.py:383
+#: app/main/product.py:384
 msgid "Product already exists without duplication"
 msgstr ""
 
-#: app/main/product.py:433
+#: app/main/product.py:434
 msgid "Copy product is ok!"
 msgstr ""
 
-#: app/main/product.py:470 app/main/product.py:518
+#: app/main/product.py:513
+msgid "Import product is ok!"
+msgstr ""
+
+#: app/main/product.py:563 app/main/product.py:611
 #, python-format
 msgid "Commodity Codes [%s] already exist!"
 msgstr ""
 
-#: app/main/product.py:559
+#: app/main/product.py:652
 msgid "Product Sku isn't exist!"
 msgstr ""
 
@@ -920,7 +929,7 @@ msgstr ""
 msgid "Modify directory is ok!"
 msgstr ""
 
-#: app/main/settings.py:362
+#: app/main/settings.py:363
 msgid "Delete asset is ok!"
 msgstr ""
 
@@ -1051,7 +1060,7 @@ msgstr ""
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
 #: app/templates/logistics/show_shippers.html:16
 #: app/templates/orders/show_list.html:114
-#: app/templates/products/show_list.html:67
+#: app/templates/products/show_list.html:75
 #: app/templates/products/show_skus.html:51
 #: app/templates/purchases/show_list.html:138
 #: app/templates/service/show_blacklist.html:13
@@ -1190,7 +1199,7 @@ msgstr ""
 #: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
 #: app/templates/logistics/show_shippers.html:13
 #: app/templates/orders/show_list.html:111
-#: app/templates/products/show_list.html:64
+#: app/templates/products/show_list.html:72
 #: app/templates/purchases/show_list.html:135
 #: app/templates/settings/show_list.html:11
 #: app/templates/settings/show_roles.html:37
@@ -1424,7 +1433,7 @@ msgid "Logistics"
 msgstr ""
 
 #: app/templates/layout/base.html:93
-msgid "Service"
+msgid "Customer Service"
 msgstr ""
 
 #: app/templates/layout/base.html:96
@@ -1586,12 +1595,14 @@ msgstr ""
 
 #: app/templates/orders/_modal_export.html:24
 #: app/templates/orders/_modal_import.html:36
+#: app/templates/products/_modal_import.html:36
 #: app/templates/purchases/_modal_import.html:24
 msgid "Upload File"
 msgstr ""
 
 #: app/templates/orders/_modal_export.html:35
 #: app/templates/orders/_modal_import.html:47
+#: app/templates/products/_modal_import.html:47
 #: app/templates/purchases/_modal_import.html:35
 msgid "Download Template"
 msgstr ""
@@ -1599,6 +1610,7 @@ msgstr ""
 #: app/templates/orders/_modal_export.html:39
 #: app/templates/orders/_modal_express.html:40
 #: app/templates/orders/_modal_import.html:51
+#: app/templates/products/_modal_import.html:51
 #: app/templates/products/modal_sku.html:92
 #: app/templates/products/select_product_modal.html:68
 #: app/templates/purchases/_modal_arrival.html:94
@@ -1621,6 +1633,7 @@ msgstr ""
 #: app/templates/orders/_modal_export.html:40
 #: app/templates/orders/_modal_express.html:41
 #: app/templates/orders/_modal_import.html:52
+#: app/templates/products/_modal_import.html:52
 #: app/templates/products/select_product_modal.html:69
 #: app/templates/purchases/_modal_arrival.html:95
 #: app/templates/purchases/_modal_export.html:58
@@ -1758,6 +1771,7 @@ msgid "Print"
 msgstr ""
 
 #: app/templates/orders/show_list.html:86
+#: app/templates/products/show_list.html:51
 #: app/templates/purchases/show_list.html:114
 #: app/templates/warehouses/show_stocks.html:77
 msgid "Actions"
@@ -1794,8 +1808,8 @@ msgstr ""
 #: app/templates/orders/show_list.html:138
 #: app/templates/orders/show_list.html:153
 #: app/templates/orders/show_list.html:160
-#: app/templates/products/show_list.html:84
-#: app/templates/products/show_list.html:91
+#: app/templates/products/show_list.html:92
+#: app/templates/products/show_list.html:99
 #: app/templates/purchases/pay_list.html:81
 #: app/templates/purchases/pay_list.html:88
 #: app/templates/purchases/pay_list.html:103
@@ -1891,7 +1905,7 @@ msgid "Custom Date"
 msgstr ""
 
 #: app/templates/orders/show_list.html:201
-#: app/templates/products/show_list.html:106
+#: app/templates/products/show_list.html:114
 #: app/templates/purchases/pay_list.html:158
 #: app/templates/purchases/show_list.html:232
 #: app/templates/suppliers/show_list.html:62
@@ -1923,6 +1937,19 @@ msgstr ""
 #: app/templates/purchases/purchase_table.html:82
 #: app/templates/warehouses/show_inout.html:220
 msgid "Show Detail"
+msgstr ""
+
+#: app/templates/products/_modal_import.html:5
+msgid "Import Products"
+msgstr ""
+
+#: app/templates/products/_modal_import.html:15
+msgid "Select Region"
+msgstr ""
+
+#: app/templates/products/_modal_import.html:27
+#: app/templates/products/create_and_edit.html:124
+msgid "Select supplier..."
 msgstr ""
 
 #: app/templates/products/_sub_menu.html:3
@@ -1973,10 +2000,6 @@ msgstr ""
 
 #: app/templates/products/create_and_edit.html:112
 msgid "Select category..."
-msgstr ""
-
-#: app/templates/products/create_and_edit.html:124
-msgid "Select supplier..."
 msgstr ""
 
 #: app/templates/products/create_and_edit.html:140
@@ -2041,7 +2064,6 @@ msgid "Search Products"
 msgstr ""
 
 #: app/templates/products/select_product_modal.html:32
-#: app/templates/purchases/purchase_modal.html:34
 #: app/templates/warehouses/ex_warehouse_modal.html:44
 msgid "Total Stock"
 msgstr ""
@@ -2055,26 +2077,30 @@ msgstr ""
 msgid "Choose one product at a time"
 msgstr ""
 
-#: app/templates/products/show_list.html:51
-#: app/templates/products/show_list.html:58
+#: app/templates/products/show_list.html:55
+#: app/templates/products/show_list.html:60
 msgid "Copy"
 msgstr ""
 
-#: app/templates/products/show_list.html:58
+#: app/templates/products/show_list.html:60
 msgid "to"
 msgstr ""
 
-#: app/templates/products/show_list.html:77
+#: app/templates/products/show_list.html:67
+msgid "Import Product"
+msgstr ""
+
+#: app/templates/products/show_list.html:85
 #: app/templates/warehouses/show_inout.html:58
 #: app/templates/warehouses/show_stocks.html:101
 msgid "Search products sku or name..."
 msgstr ""
 
-#: app/templates/products/show_list.html:88
+#: app/templates/products/show_list.html:96
 msgid "Search Region"
 msgstr ""
 
-#: app/templates/products/show_list.html:113
+#: app/templates/products/show_list.html:121
 #: app/templates/purchases/pay_list.html:165
 #: app/templates/purchases/show_list.html:239
 #: app/templates/suppliers/show_list.html:69
@@ -2083,7 +2109,7 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: app/templates/products/show_list.html:119
+#: app/templates/products/show_list.html:127
 #: app/templates/purchases/pay_list.html:171
 #: app/templates/purchases/show_list.html:245
 #: app/templates/suppliers/show_list.html:75
@@ -2185,6 +2211,10 @@ msgstr ""
 
 #: app/templates/purchases/purchase_modal.html:32
 msgid "Attributes"
+msgstr ""
+
+#: app/templates/purchases/purchase_modal.html:34
+msgid "Total Stock / Not Arrived"
 msgstr ""
 
 #: app/templates/purchases/purchase_table.html:12
@@ -2796,20 +2826,16 @@ msgstr ""
 msgid "Product Features"
 msgstr ""
 
-#: app/templates/web/features.html:28 app/templates/web/features.html:51
+#: app/templates/web/features.html:28 app/templates/web/features.html:46
 msgid "Feature One"
 msgstr ""
 
-#: app/templates/web/features.html:33 app/templates/web/features.html:70
+#: app/templates/web/features.html:33 app/templates/web/features.html:65
 msgid "Feature Two"
 msgstr ""
 
-#: app/templates/web/features.html:38 app/templates/web/features.html:87
+#: app/templates/web/features.html:38 app/templates/web/features.html:82
 msgid "Feature Three"
-msgstr ""
-
-#: app/templates/web/features.html:43
-msgid "Feature Four"
 msgstr ""
 
 #~ msgid "Search purchase sku or name..."
@@ -2894,5 +2920,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Upload Date"
+#~ msgstr ""
+
+#~ msgid "Service"
+#~ msgstr ""
+
+#~ msgid "Feature Four"
 #~ msgstr ""
 

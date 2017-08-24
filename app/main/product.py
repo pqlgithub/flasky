@@ -96,13 +96,14 @@ def ajax_search_products():
     page = request.values.get('page', 1, type=int)
     supplier_id = request.values.get('supplier_id')
     qk = request.values.get('qk')
+
     if request.method == 'POST':
         builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
         qk = qk.strip()
         if qk:
             builder = builder.whoosh_search(qk, like=True)
 
-        skus = builder.order_by('created_at desc').all()
+        skus = builder.order_by(ProductSku.created_at.desc()).all()
 
         # 构造分页
         total_count = builder.count()
@@ -122,7 +123,7 @@ def ajax_search_products():
                                paginated_skus=paginated_skus,
                                pagination=pagination)
 
-    skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by('created_at desc').all()
+    skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).all()
 
     return render_template('purchases/purchase_modal.html',
                            supplier_id=supplier_id,
@@ -500,7 +501,7 @@ def import_product():
                     product_dict['currency_id'] = g.current_site.currency_id
                     product_dict['cover_id'] = default_cover.id
                     product_dict['serial_no'] = Product.make_unique_serial_no(gen_serial_no())
-
+                    product_dict['status'] = True
                     new_product = Product.from_json(product_dict, master_uid=Master.master_uid())
                     db.session.add(new_product)
 

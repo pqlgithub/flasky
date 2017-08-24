@@ -195,7 +195,10 @@ def import_product_from_excel(file_path):
                         continue
 
                     if col_idx == 0: # 以产品名称列为主
-                        new_product['first_id_code'] = current_sheet.row(rlow)[3].value.encode('utf-8')
+                        new_product['first_id_code'] = str(current_sheet.row(rlow)[3].value).encode('utf-8')
+
+                if col_idx == 3: # 69码转化为字符串
+                    cell_value = str(cell_value)
 
                 if current_sheet.cell(row_idx, col_idx).ctype == 1:
                     cell_value = cell_value.encode('utf-8')

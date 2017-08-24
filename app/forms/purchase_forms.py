@@ -10,7 +10,7 @@ class PurchaseForm(Form):
     supplier_id = IntegerField(lazy_gettext('Supplier'), validators=[DataRequired()])
     freight = DecimalField(lazy_gettext('Freight'), default=0.00)
     extra_charge = DecimalField(lazy_gettext('Extra Charge'), default=0.00)
-    arrival_date = DateField(lazy_gettext('Arrival Date'))
+    arrival_date = DateField(lazy_gettext('Estimated date of arrival'))
     description = TextAreaField(lazy_gettext('Description'))
 
 
