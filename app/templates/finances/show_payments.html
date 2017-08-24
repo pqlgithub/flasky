@@ -116,7 +116,7 @@
 							{{ trans.target.serial_no }}
 						</td>
 						<td>
-							{{ trans.remark }}
+							{{ trans.remark|supress_none }}
 						</td>
 						<td class="text-right">
 							{% if trans.status != 2 %}
