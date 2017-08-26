@@ -90,6 +90,13 @@ class Config:
     WHOOSH_BASE = '/Users/xiaoyi/Project/micku/whooses'
     MAX_SEARCH_RESULTS = 50
 
+    # Currency API
+    CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
+    CURRENCY_API_HOST = 'http://jisuhuilv.market.alicloudapi.com'
+    CURRENCY_API_SINGLE = '/exchange/single'
+    CURRENCY_API_CONVERT = '/exchange/convert'
+    CURRENCY_API_ALL = '/exchange/currency'
+
 
     @staticmethod
     def init_app(app):

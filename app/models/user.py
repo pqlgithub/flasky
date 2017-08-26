@@ -7,7 +7,7 @@ from hashlib import md5
 from ..utils import timestamp
 from ..constant import SUPPORT_DOMAINS,SUPPORT_LANGUAGES, SUPPORT_COUNTRIES, SUPPORT_CURRENCIES
 from app import db, login_manager
-from .store import Currency
+from app.models.currency import Currency
 
 __all__ = [
     'User',
@@ -190,6 +190,16 @@ class User(UserMixin, db.Model):
             version += 1
         return new_username
 
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_user = {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'master_uid': self.master_uid,
+            'last_seen': self.last_seen
+        }
+        return json_user
 
     def __repr__(self):
         return '<User %r>' % self.username

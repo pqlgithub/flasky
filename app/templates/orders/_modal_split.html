@@ -1,0 +1,126 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{{ _('Split Order') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="order-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Order Serial') }}</label>
+					<div class="col-sm-4">
+						<p class="form-control-static text-danger">{{ current_order.serial_no }}</p>
+					</div>
+				</div>
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th class="text-center">
+								<input name="check_all" type="checkbox" class="check-all">
+							</th>
+							<th>{{ _('Product Info') }}</th>
+							<th class="text-center">{{ _('Mode/Color') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Deal Price') }}</th>
+							<th class="text-center">{{ _('Quantity') }}</th>
+							<th class="text-center">{{ _('Discount') }}</th>
+							<th class="text-right">{{ _('Pay Amount') }}</th>
+						</tr>
+					</thead>
+					<tbody id="choose-products">
+						{% for item in current_order.items %}
+						<tr id="tr_stock_{{ item.sku_id }}">
+							<td class="text-center">
+								<input name="selected[]" class="check-one" value="{{ item.id }}" type="checkbox">
+							</td>
+							<td>
+								<img src="{{ item.sku.cover.view_url }}" width="60px" class="pull-left">
+								<div class="product-info">
+									{{ item.sku.serial_no }}<br>
+									{{ item.sku.product_name }}<br>
+								</div>
+							</td>
+							<td class="text-center">
+								{% if item.sku.s_model %}
+								<label class="label label-warning">
+									{{ item.sku.s_model|supress_none }}
+								</label>
+								{% endif %}
+								{% if item.sku.s_color %}
+								<label class="label label-default">
+									{{ item.sku.s_color|supress_none }}
+								</label>
+								{% endif %}
+							</td>
+							<td class="text-center">
+								<strong id="sale_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
+							</td>
+							<td class="text-center">
+								<strong id="deal_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</strong>
+							</td>
+							<td class="text-center">
+								{{ item.quantity }}
+							</td>
+							<td class="text-center">
+								{{ item.discount_amount }}
+							</td>
+							<td class="text-right">
+								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="order-submit-btn" class="btn btn-primary">{{ _('Submit Split') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	hook_all_check();
+
+	$('.select2').select2({
+		'width': '100%'
+	});
+
+	$('#order-submit-btn').click(function (e) {
+		var $form=$('#order-form'), data=$form.serialize(), $btn=$(this);
+
+		$.ajax({
+			url: "{{ url_for('main.split_order', sn=current_order.serial_no) }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$form
+						.parents('.modal').modal('hide');
+
+					// 自动刷新
+					window.location.reload();
+				} else {
+					$form.prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

@@ -577,6 +577,7 @@ def print_purchase_pdf():
         'status': gettext('Status'),
         'supplier' : gettext('Supplier'),
         'supplier_info': gettext('Supplier Info'),
+        'warehouse_info': gettext('Warehouse Info'),
         'warehouse_name' : gettext('Warehouse Name'),
         'date' : gettext('Date'),
         'contact_name' : gettext('Contact name'),

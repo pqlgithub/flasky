@@ -24,7 +24,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group required {% if form.errors.platform %} has-error{% endif %}">
-			<label for="platform" class="col-sm-2 control-label">{{ form.platform.label }}</label>
+			{{ form.platform.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-4">
 				{{ form.platform(id="platform", class="form-control select2") }}
 				{% for error in form.errors.platform %}
@@ -34,7 +34,7 @@
 		</div>
 
 		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-			<label for="name" class="col-sm-2 control-label">{{ form.name.label }}</label>
+			{{ form.name.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-4">
 				{{ form.name(id="name", class="form-control") }}
 				{% for error in form.errors.name %}
@@ -42,6 +42,28 @@
 				{% endfor %}
 			</div>
 		</div>
+
+		<div class="form-group">
+			{{ form.operator_id.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.operator_id(class="form-control select2") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.status.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.status(class="form-control select2") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.description.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-8">
+				{{ form.description(class="form-control") }}
+			</div>
+		</div>
+
 	</form>
 </div>
 {% endblock %}

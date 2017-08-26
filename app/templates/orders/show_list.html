@@ -256,6 +256,7 @@
 						<td>
 							<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
 							<label for="order-id-{{ order.serial_no }}">{{ order.serial_no }}</label>
+							{% if order.type == 2 %}<small data-toggle="tooltip" title="" data-original-title="{{ _('Split Child Order') }}"><i class="glyphicon glyphicon-duplicate"></i></small> {% endif %}
 						</td>
 						<td colspan="2">
 							{{ _('Add Date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
@@ -272,7 +273,6 @@
 							<img src="{{ order.cover }}" width="60px" class="pull-left">
 							<div class="product-info">
 								{{ _('Product Count') }}： <label>{{ order.items.count() }}</label> <br>
-								<a href="">{{ _('Order Detail') }}</a>
 							</div>
 						</td>
 						<td class="text-center">
@@ -310,6 +310,7 @@
 								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
 									{% if order.status in [1,5] %}
 									<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
+									<li><a href="{{ url_for('main.split_order', sn=order.serial_no) }}" class="ajax-modal" data-modal="split-order-modal">{{ _('Split order') }}</a></li>
 									<li><a href="javascript:void(0);" data-href="{{ url_for('main.ajax_canceled', rid=order.serial_no) }}" class="ajax-canceled">{{ _('Canceled') }}</a></li>
 									{% endif %}
 									<li><a href="#">{{ _('Remark') }}</a></li>

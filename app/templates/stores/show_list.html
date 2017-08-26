@@ -29,7 +29,7 @@
 					</th>
 					<th>{{ _('Store Name') }}</th>
 					<th>{{ _('Platform') }}</th>
-					<th>{{ _('Contact') }}</th>
+					<th class="text-center">{{ _('Operator') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -46,11 +46,11 @@
 					<td>
 						{{ store.platform_name }}
 					</td>
-					<td>
-
+					<td class="text-center">
+						{{ store.operator.username }}
 					</td>
 					<td class="text-right">
-
+						<span class="indicator {{ store.status_label[2] }}">{{ store.status_label[1] }}</span>
 					</td>
 					<td class="text-right">
 						<div class="dropdown">

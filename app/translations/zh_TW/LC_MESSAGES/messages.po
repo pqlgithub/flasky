@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-25 00:08+0800\n"
+"POT-Creation-Date: 2017-08-26 22:02+0800\n"
 "PO-Revision-Date: 2017-07-18 21:24+0800\n"
 "Last-Translator: \n"
 "Language: zh_Hant_TW\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
 
-#: app/constant.py:7 app/templates/orders/create_and_edit.html:180
+#: app/constant.py:7 app/templates/orders/create_and_edit.html:169
 msgid "China"
 msgstr ""
 
@@ -70,7 +70,7 @@ msgstr ""
 
 #: app/constant.py:138 app/models/order.py:45
 #: app/templates/orders/_sub_menu.html:32
-#: app/templates/orders/show_list.html:313
+#: app/templates/orders/show_list.html:314
 #: app/templates/purchases/purchase_table.html:79
 msgid "Canceled"
 msgstr ""
@@ -206,28 +206,28 @@ msgstr ""
 msgid "Product SKU"
 msgstr ""
 
-#: app/constant.py:224 app/main/order.py:98 app/main/purchase.py:590
+#: app/constant.py:224 app/main/order.py:98 app/main/purchase.py:591
 #: app/templates/purchases/create_and_edit.html:179
 #: app/templates/purchases/view_detail.html:96
 msgid "Purchase Quantity"
 msgstr ""
 
-#: app/constant.py:225 app/main/order.py:99 app/main/purchase.py:591
-#: app/main/purchase.py:597
+#: app/constant.py:225 app/main/order.py:99 app/main/purchase.py:592
+#: app/main/purchase.py:598
 msgid "Arrival Quantity"
 msgstr ""
 
-#: app/constant.py:226 app/forms/order_forms.py:14
+#: app/constant.py:226 app/forms/order_forms.py:16
 #: app/forms/purchase_forms.py:11 app/main/order.py:102
-#: app/main/purchase.py:594 app/templates/purchases/view_detail.html:64
+#: app/main/purchase.py:595 app/templates/purchases/view_detail.html:64
 msgid "Freight"
 msgstr ""
 
-#: app/constant.py:227 app/main/purchase.py:595
+#: app/constant.py:227 app/main/purchase.py:596
 msgid "Other Charge"
 msgstr ""
 
-#: app/constant.py:228 app/main/order.py:104 app/main/purchase.py:596
+#: app/constant.py:228 app/main/order.py:104 app/main/purchase.py:597
 #: app/templates/dashboard/index.html:127
 #: app/templates/orders/show_list.html:236
 #: app/templates/purchases/_modal_express.html:28
@@ -290,7 +290,7 @@ msgstr ""
 #: app/constant.py:234 app/templates/finances/show_payments.html:77
 #: app/templates/orders/show_list.html:201
 #: app/templates/orders/show_list.html:207
-#: app/templates/orders/show_list.html:261
+#: app/templates/orders/show_list.html:262
 #: app/templates/products/show_list.html:114
 #: app/templates/products/show_list.html:124
 #: app/templates/purchases/pay_list.html:158
@@ -321,11 +321,11 @@ msgstr ""
 msgid "Arrival Status"
 msgstr ""
 
-#: app/constant.py:237 app/forms/order_forms.py:15
+#: app/constant.py:237 app/forms/order_forms.py:17
 #: app/forms/product_forms.py:22 app/forms/product_forms.py:95
-#: app/main/order.py:94 app/main/purchase.py:586
+#: app/main/order.py:94 app/main/purchase.py:587
 #: app/templates/finances/show_payments.html:83
-#: app/templates/orders/show_list.html:315
+#: app/templates/orders/show_list.html:316
 #: app/templates/products/create_and_edit.html:350
 #: app/templates/products/show_skus.html:10
 #: app/templates/purchases/_modal_arrival.html:37
@@ -393,8 +393,9 @@ msgstr ""
 
 #: app/forms/logistics_forms.py:15 app/forms/product_forms.py:29
 #: app/forms/product_forms.py:75 app/forms/purchase_forms.py:14
-#: app/forms/user_forms.py:18 app/forms/user_forms.py:42
-#: app/forms/warehouse_forms.py:14 app/templates/purchases/view_detail.html:127
+#: app/forms/setting_forms.py:17 app/forms/user_forms.py:18
+#: app/forms/user_forms.py:42 app/forms/warehouse_forms.py:14
+#: app/templates/purchases/view_detail.html:127
 #: app/templates/settings/site.html:63 app/templates/system/show_roles.html:35
 #: app/templates/warehouses/show_list.html:36
 msgid "Description"
@@ -407,19 +408,19 @@ msgstr ""
 
 #: app/forms/logistics_forms.py:37 app/forms/product_forms.py:20
 #: app/forms/warehouse_forms.py:17 app/main/order.py:92
-#: app/main/purchase.py:584 app/templates/logistics/show_shippers.html:35
+#: app/main/purchase.py:585 app/templates/logistics/show_shippers.html:35
 #: app/templates/orders/show_list.html:213
 #: app/templates/suppliers/search_result.html:14
 #: app/templates/suppliers/show_list.html:100
 msgid "Phone"
 msgstr ""
 
-#: app/forms/logistics_forms.py:38 app/forms/order_forms.py:21
+#: app/forms/logistics_forms.py:38 app/forms/order_forms.py:23
 #: app/templates/system/show_list.html:33
 msgid "Mobile"
 msgstr ""
 
-#: app/forms/logistics_forms.py:39 app/forms/order_forms.py:22
+#: app/forms/logistics_forms.py:39 app/forms/order_forms.py:24
 msgid "Zipcode"
 msgstr ""
 
@@ -427,11 +428,11 @@ msgstr ""
 msgid "From City"
 msgstr ""
 
-#: app/forms/logistics_forms.py:42 app/forms/order_forms.py:26
+#: app/forms/logistics_forms.py:42 app/forms/order_forms.py:28
 msgid "Province"
 msgstr ""
 
-#: app/forms/logistics_forms.py:43 app/forms/order_forms.py:27
+#: app/forms/logistics_forms.py:43 app/forms/order_forms.py:29
 msgid "City"
 msgstr ""
 
@@ -439,9 +440,9 @@ msgstr ""
 msgid "Area"
 msgstr ""
 
-#: app/forms/logistics_forms.py:45 app/forms/order_forms.py:23
+#: app/forms/logistics_forms.py:45 app/forms/order_forms.py:25
 #: app/forms/product_forms.py:21 app/forms/warehouse_forms.py:12
-#: app/main/order.py:91 app/main/purchase.py:583
+#: app/main/order.py:91 app/main/purchase.py:584
 #: app/templates/logistics/show_shippers.html:36
 msgid "Address"
 msgstr ""
@@ -459,45 +460,46 @@ msgstr ""
 msgid "Out Serial No."
 msgstr ""
 
-#: app/forms/order_forms.py:10 app/templates/orders/show_list.html:264
+#: app/forms/order_forms.py:10 app/templates/orders/show_list.html:265
 msgid "From Store"
 msgstr ""
 
-#: app/forms/order_forms.py:11 app/forms/order_forms.py:34
+#: app/forms/order_forms.py:12 app/forms/order_forms.py:36
 #: app/templates/orders/_modal_express.html:19
 #: app/templates/orders/show_list.html:248
 msgid "Express"
 msgstr ""
 
-#: app/forms/order_forms.py:12
+#: app/forms/order_forms.py:13
 #: app/templates/warehouses/ex_warehouse_modal.html:12
 #: app/templates/warehouses/in_warehouse_modal.html:12
 msgid "From Warehouse"
 msgstr ""
 
-#: app/forms/order_forms.py:13 app/templates/orders/create_and_edit.html:265
+#: app/forms/order_forms.py:15 app/templates/orders/_modal_split.html:30
+#: app/templates/orders/create_and_edit.html:251
 msgid "Pay Amount"
 msgstr ""
 
-#: app/forms/order_forms.py:17
+#: app/forms/order_forms.py:19
 msgid "Buyer Name"
 msgstr ""
 
-#: app/forms/order_forms.py:20
+#: app/forms/order_forms.py:22
 msgid "Telephone"
 msgstr ""
 
-#: app/forms/order_forms.py:25 app/forms/user_forms.py:14
+#: app/forms/order_forms.py:27 app/forms/user_forms.py:14
 #: app/templates/settings/site.html:40
 msgid "Country"
 msgstr ""
 
-#: app/forms/order_forms.py:29 app/templates/orders/show_list.html:245
+#: app/forms/order_forms.py:31 app/templates/orders/show_list.html:245
 msgid "Buyer Remark"
 msgstr ""
 
-#: app/forms/order_forms.py:35 app/forms/purchase_forms.py:19
-#: app/main/order.py:101 app/main/purchase.py:593
+#: app/forms/order_forms.py:37 app/forms/purchase_forms.py:19
+#: app/main/order.py:101 app/main/purchase.py:594
 #: app/templates/orders/_modal_express.html:31
 #: app/templates/purchases/_modal_express.html:42
 #: app/templates/purchases/purchase_table.html:13
@@ -557,9 +559,9 @@ msgid "Parent"
 msgstr ""
 
 #: app/forms/product_forms.py:30 app/forms/product_forms.py:72
-#: app/forms/setting_forms.py:24 app/forms/warehouse_forms.py:23
-#: app/main/order.py:85 app/main/purchase.py:577
-#: app/templates/categories/show_list.html:34
+#: app/forms/setting_forms.py:14 app/forms/setting_forms.py:29
+#: app/forms/warehouse_forms.py:23 app/main/order.py:85
+#: app/main/purchase.py:577 app/templates/categories/show_list.html:34
 #: app/templates/dashboard/index.html:128
 #: app/templates/finances/show_payments.html:76
 #: app/templates/orders/show_list.html:153
@@ -575,14 +577,16 @@ msgid "Status"
 msgstr ""
 
 #: app/forms/product_forms.py:31 app/forms/product_forms.py:73
-#: app/forms/setting_forms.py:25 app/forms/warehouse_forms.py:24
-#: app/models/product.py:43 app/templates/categories/show_list.html:48
+#: app/forms/setting_forms.py:15 app/forms/setting_forms.py:30
+#: app/forms/warehouse_forms.py:24 app/models/product.py:43
+#: app/templates/categories/show_list.html:48
 msgid "Enabled"
 msgstr ""
 
 #: app/forms/product_forms.py:31 app/forms/product_forms.py:73
-#: app/forms/setting_forms.py:25 app/forms/warehouse_forms.py:24
-#: app/models/product.py:44 app/templates/categories/show_list.html:50
+#: app/forms/setting_forms.py:15 app/forms/setting_forms.py:30
+#: app/forms/warehouse_forms.py:24 app/models/product.py:44
+#: app/templates/categories/show_list.html:50
 msgid "Disabled"
 msgstr ""
 
@@ -694,38 +698,42 @@ msgstr ""
 msgid "Platform"
 msgstr ""
 
-#: app/forms/setting_forms.py:16
+#: app/forms/setting_forms.py:13
+msgid "Operator"
+msgstr ""
+
+#: app/forms/setting_forms.py:21
 #: app/templates/currencies/show_currencies.html:32
 msgid "Currency Title"
 msgstr ""
 
-#: app/forms/setting_forms.py:16
+#: app/forms/setting_forms.py:21
 msgid "Currency title cant empty!"
 msgstr ""
 
-#: app/forms/setting_forms.py:17
+#: app/forms/setting_forms.py:22
 #: app/templates/currencies/show_currencies.html:33
 msgid "Code"
 msgstr ""
 
-#: app/forms/setting_forms.py:17
+#: app/forms/setting_forms.py:22
 msgid "Currency code cant empty!"
 msgstr ""
 
-#: app/forms/setting_forms.py:18
+#: app/forms/setting_forms.py:23
 #: app/templates/currencies/show_currencies.html:34
 msgid "Symbol Left"
 msgstr ""
 
-#: app/forms/setting_forms.py:19
+#: app/forms/setting_forms.py:24
 msgid "Symbol_right"
 msgstr ""
 
-#: app/forms/setting_forms.py:21
+#: app/forms/setting_forms.py:26
 msgid "Decimal Place"
 msgstr ""
 
-#: app/forms/setting_forms.py:22
+#: app/forms/setting_forms.py:27
 #: app/templates/currencies/show_currencies.html:35
 msgid "Value"
 msgstr ""
@@ -769,7 +777,7 @@ msgid "Ability Title"
 msgstr ""
 
 #: app/forms/warehouse_forms.py:11 app/main/order.py:88
-#: app/main/purchase.py:580 app/templates/layout/list.html:33
+#: app/main/purchase.py:581 app/templates/layout/list.html:33
 #: app/templates/warehouses/show_list.html:32
 msgid "Warehouse Name"
 msgstr ""
@@ -795,15 +803,15 @@ msgstr ""
 msgid "Default Warehouse"
 msgstr ""
 
-#: app/main/file_manager.py:35 app/main/settings.py:291
+#: app/main/file_manager.py:35 app/main/settings.py:301
 msgid "Directory name isn't empty!"
 msgstr ""
 
-#: app/main/file_manager.py:42 app/main/settings.py:298
+#: app/main/file_manager.py:42 app/main/settings.py:308
 msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr ""
 
-#: app/main/file_manager.py:45 app/main/settings.py:301
+#: app/main/file_manager.py:45 app/main/settings.py:311
 msgid "Directory name is already exist!"
 msgstr ""
 
@@ -811,7 +819,7 @@ msgstr ""
 msgid "Supplier Info"
 msgstr ""
 
-#: app/main/order.py:89 app/main/purchase.py:581
+#: app/main/order.py:89 app/main/purchase.py:582
 #: app/templates/orders/show_list.html:169
 #: app/templates/purchases/_modal_export.html:35
 #: app/templates/purchases/pay_list.html:125
@@ -820,22 +828,23 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: app/main/order.py:90 app/main/purchase.py:582
+#: app/main/order.py:90 app/main/purchase.py:583
 msgid "Contact name"
 msgstr ""
 
-#: app/main/order.py:93 app/main/purchase.py:585
+#: app/main/order.py:93 app/main/purchase.py:586
 msgid "E-mail"
 msgstr ""
 
-#: app/main/order.py:95 app/main/purchase.py:587
+#: app/main/order.py:95 app/main/purchase.py:588
 #: app/templates/finances/show_payments.html:78
 msgid "Serial Number"
 msgstr ""
 
-#: app/main/order.py:96 app/main/purchase.py:588
-#: app/templates/orders/create_and_edit.html:239
-#: app/templates/orders/create_and_edit.html:261
+#: app/main/order.py:96 app/main/purchase.py:589
+#: app/templates/orders/_modal_split.html:24
+#: app/templates/orders/create_and_edit.html:228
+#: app/templates/orders/create_and_edit.html:245
 #: app/templates/orders/show_list.html:230
 #: app/templates/products/select_product_modal.html:30
 #: app/templates/products/table_product.html:12
@@ -847,8 +856,9 @@ msgstr ""
 msgid "Product Info"
 msgstr ""
 
-#: app/main/order.py:97 app/main/purchase.py:589
-#: app/templates/orders/create_and_edit.html:262
+#: app/main/order.py:97 app/main/purchase.py:590
+#: app/templates/orders/_modal_split.html:26
+#: app/templates/orders/create_and_edit.html:247
 #: app/templates/products/select_product_modal.html:31
 #: app/templates/purchases/purchase_modal.html:33
 #: app/templates/warehouses/in_warehouse_modal.html:45
@@ -856,12 +866,16 @@ msgstr ""
 msgid "Price"
 msgstr ""
 
-#: app/main/order.py:100 app/main/purchase.py:592
+#: app/main/order.py:100 app/main/purchase.py:593
 msgid "Subtotal"
 msgstr ""
 
 #: app/main/order.py:103
 msgid "Discount Amount"
+msgstr ""
+
+#: app/main/order.py:590
+msgid "Split order id ok!"
 msgstr ""
 
 #: app/main/product.py:244
@@ -921,15 +935,19 @@ msgstr ""
 msgid "You do not have permission to operate"
 msgstr ""
 
-#: app/main/settings.py:283
+#: app/main/purchase.py:580
+msgid "Warehouse Info"
+msgstr ""
+
+#: app/main/settings.py:293
 msgid "Directory isn't exist!"
 msgstr ""
 
-#: app/main/settings.py:307
+#: app/main/settings.py:317
 msgid "Modify directory is ok!"
 msgstr ""
 
-#: app/main/settings.py:363
+#: app/main/settings.py:373
 msgid "Delete asset is ok!"
 msgstr ""
 
@@ -1217,7 +1235,7 @@ msgstr ""
 #: app/templates/finances/show_payments.html:84
 #: app/templates/layout/list.html:35 app/templates/logistics/show_list.html:34
 #: app/templates/logistics/show_shippers.html:37
-#: app/templates/orders/create_and_edit.html:266
+#: app/templates/orders/create_and_edit.html:252
 #: app/templates/orders/show_list.html:250
 #: app/templates/products/create_and_edit.html:351
 #: app/templates/products/select_product_modal.html:33
@@ -1424,7 +1442,7 @@ msgid "Orders"
 msgstr ""
 
 #: app/templates/layout/base.html:81
-#: app/templates/orders/create_and_edit.html:275
+#: app/templates/orders/create_and_edit.html:305
 msgid "Products"
 msgstr ""
 
@@ -1561,7 +1579,6 @@ msgid "Edit Shipper"
 msgstr ""
 
 #: app/templates/logistics/create_edit_shipper.html:33
-#: app/templates/orders/create_and_edit.html:245
 #: app/templates/purchases/create_and_edit.html:133
 #: app/templates/warehouses/ex_warehouse_modal.html:15
 #: app/templates/warehouses/in_warehouse_modal.html:15
@@ -1614,6 +1631,7 @@ msgstr ""
 #: app/templates/orders/_modal_export.html:39
 #: app/templates/orders/_modal_express.html:40
 #: app/templates/orders/_modal_import.html:51
+#: app/templates/orders/_modal_split.html:81
 #: app/templates/products/_modal_import.html:51
 #: app/templates/products/modal_sku.html:92
 #: app/templates/products/select_product_modal.html:68
@@ -1658,11 +1676,11 @@ msgid "Add Express No."
 msgstr ""
 
 #: app/templates/orders/_modal_express.html:12
+#: app/templates/orders/_modal_split.html:12
 msgid "Order Serial"
 msgstr ""
 
 #: app/templates/orders/_modal_express.html:22
-#: app/templates/orders/create_and_edit.html:152
 msgid "Select Express"
 msgstr ""
 
@@ -1672,6 +1690,46 @@ msgstr ""
 
 #: app/templates/orders/_modal_import.html:27
 msgid "Select Store"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:5
+msgid "Split Order"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:25
+#: app/templates/orders/create_and_edit.html:246
+#: app/templates/products/create_and_edit.html:347
+#: app/templates/products/show_skus.html:8
+#: app/templates/products/table_product.html:13
+msgid "Mode/Color"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:27
+#: app/templates/orders/create_and_edit.html:248
+msgid "Deal Price"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:28
+#: app/templates/orders/create_and_edit.html:249
+#: app/templates/orders/show_list.html:233
+#: app/templates/purchases/_modal_arrival.html:50
+#: app/templates/purchases/purchase_pay_table.html:15
+#: app/templates/warehouses/edit_in_warehouse.html:72
+#: app/templates/warehouses/ex_warehouse_modal.html:45
+#: app/templates/warehouses/in_table.html:14
+#: app/templates/warehouses/in_warehouse_modal.html:47
+#: app/templates/warehouses/out_table.html:14
+#: app/templates/warehouses/stock_table.html:17
+msgid "Quantity"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:29
+#: app/templates/orders/create_and_edit.html:250
+msgid "Discount"
+msgstr ""
+
+#: app/templates/orders/_modal_split.html:82
+msgid "Submit Split"
 msgstr ""
 
 #: app/templates/orders/_sub_menu.html:3
@@ -1707,20 +1765,16 @@ msgstr ""
 msgid "Order Info"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:140
-msgid "Select stores"
-msgstr ""
-
-#: app/templates/orders/create_and_edit.html:174
+#: app/templates/orders/create_and_edit.html:163
 msgid "Customer Info"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:183
+#: app/templates/orders/create_and_edit.html:172
 msgid "币种"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:252
-#: app/templates/orders/create_and_edit.html:253
+#: app/templates/orders/create_and_edit.html:236
+#: app/templates/orders/create_and_edit.html:237
 #: app/templates/purchases/create_and_edit.html:161
 #: app/templates/purchases/create_and_edit.html:162
 #: app/templates/warehouses/ex_warehouse_modal.html:33
@@ -1728,40 +1782,36 @@ msgstr ""
 msgid "Select Products"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:263
-#: app/templates/orders/show_list.html:233
-#: app/templates/purchases/_modal_arrival.html:50
-#: app/templates/purchases/purchase_pay_table.html:15
-#: app/templates/warehouses/edit_in_warehouse.html:72
-#: app/templates/warehouses/ex_warehouse_modal.html:45
-#: app/templates/warehouses/in_table.html:14
-#: app/templates/warehouses/in_warehouse_modal.html:47
-#: app/templates/warehouses/out_table.html:14
-#: app/templates/warehouses/stock_table.html:17
-msgid "Quantity"
+#: app/templates/orders/create_and_edit.html:295
+#: app/templates/products/create_and_edit.html:391
+#: app/templates/products/create_and_edit.html:392
+#: app/templates/products/select_result.html:25
+#: app/templates/products/select_result_for_order.html:24
+#: app/templates/products/show_skus.html:52
+#: app/templates/purchases/create_and_edit.html:34
+#: app/templates/purchases/create_and_edit.html:206
+#: app/templates/purchases/create_and_edit.html:207
+#: app/templates/warehouses/purchase_item.html:24
+msgid "Remove"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:264
-msgid "Discount"
-msgstr ""
-
-#: app/templates/orders/create_and_edit.html:275
+#: app/templates/orders/create_and_edit.html:305
 msgid "Total"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:278
+#: app/templates/orders/create_and_edit.html:308
 msgid "Total Amount:"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:278
+#: app/templates/orders/create_and_edit.html:308
 msgid "Total Discount:"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:281
+#: app/templates/orders/create_and_edit.html:311
 msgid "Payable Amount:"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:290
+#: app/templates/orders/create_and_edit.html:320
 msgid "Order Remark"
 msgstr ""
 
@@ -1920,13 +1970,13 @@ msgstr ""
 msgid "Sort"
 msgstr ""
 
-#: app/templates/orders/show_list.html:274
-#: app/templates/purchases/purchase_table.html:37
-msgid "Product Count"
+#: app/templates/orders/show_list.html:259
+msgid "Split Child Order"
 msgstr ""
 
 #: app/templates/orders/show_list.html:275
-msgid "Order Detail"
+#: app/templates/purchases/purchase_table.html:37
+msgid "Product Count"
 msgstr ""
 
 #: app/templates/orders/show_list.html:307
@@ -1937,7 +1987,11 @@ msgstr ""
 msgid "More"
 msgstr ""
 
-#: app/templates/orders/show_list.html:317
+#: app/templates/orders/show_list.html:313
+msgid "Split order"
+msgstr ""
+
+#: app/templates/orders/show_list.html:318
 #: app/templates/purchases/purchase_table.html:82
 #: app/templates/warehouses/show_inout.html:220
 msgid "Show Detail"
@@ -2033,24 +2087,6 @@ msgstr ""
 #: app/templates/products/table_product.html:11
 #: app/templates/purchases/purchase_modal.html:29
 msgid "Image"
-msgstr ""
-
-#: app/templates/products/create_and_edit.html:347
-#: app/templates/products/show_skus.html:8
-#: app/templates/products/table_product.html:13
-msgid "Mode/Color"
-msgstr ""
-
-#: app/templates/products/create_and_edit.html:391
-#: app/templates/products/create_and_edit.html:392
-#: app/templates/products/select_result.html:25
-#: app/templates/products/select_result_for_order.html:24
-#: app/templates/products/show_skus.html:52
-#: app/templates/purchases/create_and_edit.html:34
-#: app/templates/purchases/create_and_edit.html:206
-#: app/templates/purchases/create_and_edit.html:207
-#: app/templates/warehouses/purchase_item.html:24
-msgid "Remove"
 msgstr ""
 
 #: app/templates/products/modal_sku.html:93
@@ -2934,5 +2970,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Feature Four"
+#~ msgstr ""
+
+#~ msgid "Select stores"
+#~ msgstr ""
+
+#~ msgid "Order Detail"
 #~ msgstr ""
 

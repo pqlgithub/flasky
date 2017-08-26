@@ -126,7 +126,8 @@ class Order(db.Model):
     finished_at = db.Column(db.Integer, default=0)
     # 关闭或取消时间
     closed_at = db.Column(db.Integer, default=0)
-
+    # 订单类型 1、正常订单；2、拆分子订单
+    type = db.Column(db.SmallInteger, default=1)
     # order and items => 1 to N
     items = db.relationship(
         'OrderItem', backref='order', lazy='dynamic'
@@ -151,6 +152,12 @@ class Order(db.Model):
         sku_id = self.items.first().sku_id
         item_sku = ProductSku.query.get(sku_id)
         return item_sku.cover.view_url
+
+    @property
+    def items_count(self):
+        """返回明细的数量"""
+        return self.items.count()
+
 
     def mark_checked_status(self):
         """标记为待审核状态"""
@@ -217,6 +224,10 @@ class OrderItem(db.Model):
     __table_args__ = (
         db.UniqueConstraint('order_id', 'sku_id', name='uix_order_id_sku_id'),
     )
+
+    @property
+    def sku(self):
+        return ProductSku.query.get(self.sku_id)
 
 
     def __repr__(self):

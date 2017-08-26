@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
-from flask import render_template, redirect, url_for, abort, flash, request,\
+import json
+import urllib.request
+from flask import g, render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
 from flask_babelex import gettext
@@ -8,7 +10,7 @@ from . import main
 from .. import db
 from app.models import Store, Asset, Site, User, Role, Ability, Directory, Currency
 from app.forms import StoreForm, SiteForm, RoleForm, CurrencyForm
-from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
+from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response, string_to_timestamp
 from ..decorators import user_has
 
 
@@ -112,11 +114,21 @@ def show_stores():
 @user_has('admin_setting')
 def create_store():
     form = StoreForm()
+
+    user_list = User.query.filter_by(master_uid=Master.master_uid()).all()
+    form.operator_id.choices = [(user.id, user.username) for user in user_list]
     if form.validate_on_submit():
+        if Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data):
+            flash('Store name already exist!', 'danger')
+            return redirect(url_for('.create_store'))
+
         store = Store(
             name=form.name.data,
             platform=form.platform.data,
-            master_uid=Master.master_uid()
+            master_uid=Master.master_uid(),
+            operator_id=form.operator_id.data,
+            description=form.description.data,
+            status=form.status.data
         )
         db.session.add(store)
         db.session.commit()
@@ -135,9 +147,15 @@ def create_store():
 def edit_store(id):
     store = Store.query.get_or_404(id)
     form = StoreForm()
+    user_list = User.query.filter_by(master_uid=Master.master_uid()).all()
+    form.operator_id.choices = [(user.id, user.username) for user in user_list]
     if form.validate_on_submit():
-        store.name = form.name.data
-        store.platform = form.platform.data
+        old_store = Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data)
+        if old_store and old_store.id != id:
+            flash('Store name already exist!', 'danger')
+            return redirect(url_for('.edit_store', id=id))
+
+        form.populate_obj(store)
 
         db.session.commit()
 
@@ -147,6 +165,9 @@ def edit_store(id):
     # 填充数据
     form.name.data = store.name
     form.platform.data = store.platform
+    form.operator_id.data = store.operator_id
+    form.description.data = store.description
+    form.status.data = store.status
 
     return render_template('stores/create_and_edit.html',
                            form=form,
@@ -166,7 +187,7 @@ def delete_store():
         for id in selected_ids:
             store = Store.query.get_or_404(int(id))
             db.session.delete(store)
-            db.session.commit()
+        db.session.commit()
 
         flash('Delete store is ok!', 'success')
     except:
@@ -192,6 +213,53 @@ def show_currencies(page=1):
     return render_template('currencies/show_currencies.html',
                            paginated_currencies=paginated_currencies,
                            sub_menu='currencies', **load_common_data())
+
+
+@main.route('/currencies/sync', methods=['POST'])
+@login_required
+@user_has('admin_setting')
+def sync_exchange_rate():
+    """同步汇率"""
+    # 获取当前默认货币
+    current_app.logger.debug('currency code: %s' % g.current_site.currency)
+
+    host = current_app.config['CURRENCY_API_HOST']
+    path = current_app.config['CURRENCY_API_SINGLE']
+    method = 'GET'
+    appcode = current_app.config['CURRENCY_API_CODE']
+    querys = 'currency='+ g.current_site.currency
+    bodys = {}
+    url = host + path + '?' + querys
+
+    req = urllib.request.Request(url)
+    req.add_header('Authorization', 'APPCODE ' + appcode)
+    response = urllib.request.urlopen(req)
+    content = response.read()
+    if type(content) == bytes:
+        content_dict = json.loads(content.decode('utf8'))
+        result = content_dict['result']
+        response_currency = result['list']
+
+        default_currency_code = result['currency']
+        default_value = 1.0000
+
+        # 更新默认值
+        default_currency = Currency.query.filter_by(master_uid=Master.master_uid(), code=default_currency_code).first()
+        default_currency.value = default_value
+
+        # 更新其他货币值
+        all_currencies = Currency.query.filter_by(master_uid=Master.master_uid()).all()
+        for currency in all_currencies:
+            code = currency.code
+            if response_currency.get(code):
+                new_currency_value = response_currency.get(code)
+
+                currency.value = new_currency_value.get('rate')
+                currency.last_updated = string_to_timestamp(new_currency_value.get('updatetime'))
+
+        db.session.commit()
+
+    return custom_response(True, gettext('Synchronous exchange rate successful.'))
 
 
 @main.route('/currencies/create', methods=['GET', 'POST'])

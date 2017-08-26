@@ -52,7 +52,7 @@ def timestamp():
 
 def string_to_timestamp(str_value):
     """字符串日期时间转换成时间戳"""
-    d = datetime.strptime(str_value, "%Y-%m-%d %H:%M:%S.%f")
+    d = datetime.strptime(str_value, "%Y-%m-%d %H:%M:%S")
     t = d.timetuple()
     timestamp = int(time.mktime(t))
     timestamp = float(str(timestamp) + str("%06d" % d.microsecond)) / 1000000

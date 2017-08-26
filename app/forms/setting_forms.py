@@ -10,6 +10,11 @@ from ..constant import SUPPORT_PLATFORM
 class StoreForm(Form):
     name = StringField(lazy_gettext('Store Name'), validators=[DataRequired(message="Store name can't empty!"), Length(2, 32)])
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
+    operator_id = SelectField(lazy_gettext('Operator'), choices=[], coerce=int)
+    status = SelectField(lazy_gettext('Status'),
+                         choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))],
+                         coerce=int)
+    description = TextAreaField(lazy_gettext('Description'))
 
 
 class CurrencyForm(Form):

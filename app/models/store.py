@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from flask_babelex import gettext, lazy_gettext
 from app import db
 from ..utils import timestamp
 from ..constant import SUPPORT_PLATFORM
+from app.models import User
 
 __all__ = [
     'Store',
@@ -9,12 +11,19 @@ __all__ = [
     'Currency'
 ]
 
+# 产品的状态
+STORE_STATUS = [
+    (1, lazy_gettext('Enabled'), 'success'),
+    (-1, lazy_gettext('Disabled'), 'danger')
+]
+
 class Store(db.Model):
     __tablename__ = 'stores'
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-
+    # 运营者
+    operator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     name = db.Column(db.String(30), index=True)
     serial_no = db.Column(db.String(10), unique=True, index=True)
     description = db.Column(db.String(255), nullable=True)
@@ -47,58 +56,23 @@ class Store(db.Model):
                 return plat['name']
         return None
 
+    @property
+    def status_label(self):
+        for s in STORE_STATUS:
+            if s[0] == self.status:
+                return s
+
+    @property
+    def operator(self):
+        """获取运营者信息"""
+        return User.query.get(self.operator_id) if self.operator_id else None
+
+
+    @staticmethod
+    def validate_unique_name(name, master_uid, platform):
+        """验证店铺名称是否唯一"""
+        return Store.query.filter_by(master_uid=master_uid, platform=platform, name=name).first()
+
 
     def __repr__(self):
         return '<Store %r>' % self.name
-
-
-
-class Country(db.Model):
-    """开通的国家列表"""
-
-    __tablename__ = 'countries'
-    id = db.Column(db.Integer, primary_key=True)
-    cn_name = db.Column(db.String(128), index=True, nullable=False)
-    en_name = db.Column(db.String(128), index=True, nullable=False)
-    code = db.Column(db.String(16), index=True, nullable=False)
-    code2 = db.Column(db.String(16), nullable=True)
-    # 是否开通
-    status = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.Integer, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-
-    def __repr__(self):
-        return '<Country %r>' % self.code
-
-
-class Currency(db.Model):
-    """支持币种"""
-
-    __tablename__ = 'currencies'
-
-    id = db.Column(db.Integer, primary_key=True)
-    master_uid = db.Column(db.Integer, default=0)
-    title = db.Column(db.String(32), unique=True, nullable=False)
-    code = db.Column(db.String(3), nullable=False)
-    symbol_left = db.Column(db.String(12), nullable=True)
-    symbol_right = db.Column(db.String(12), nullable=True)
-    decimal_place = db.Column(db.String(1), nullable=False)
-    value = db.Column(db.Float(15, 8), nullable=False)
-    status = db.Column(db.SmallInteger, default=1)
-
-    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    last_updated = db.Column(db.Integer, default=timestamp)
-
-    def to_json(self):
-        """资源和JSON的序列化转换"""
-        json_currency = {
-            'id': self.id,
-            'title': self.title,
-            'code': self.code,
-            'symbol_left': self.symbol_left,
-            'value': self.value
-        }
-        return json_currency
-
-    def __repr__(self):
-        return '<Currency {}>'.format(self.id)

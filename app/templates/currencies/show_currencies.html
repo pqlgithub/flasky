@@ -4,12 +4,29 @@
 	{% include 'settings/_sub_menu.html' %}
 {% endblock %}
 
+{% block jquery %}
+{#<script type="text/javascript">#}
+	$('.btn-sync').click(function () {
+		$.post("{{ url_for('main.sync_exchange_rate') }}", {csrf_token: csrf_token}, function(result){
+			if (result.success) {
+				mixpus.show_ok_message(result.status.message);
+			}
+		});
+
+		return false;
+	});
+{#</script>#}
+{% endblock %}
+
 {% block mainbar %}
 	<h2 class="page-header">
 		{{ _('Currency List') }}
 
 		<div class="pull-right">
 			{% include 'block/_select_items.html' %}
+			<button class="btn btn-default btn-sync" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Sync Exchange Rate') }}">
+				<i class="glyphicon glyphicon-refresh"></i>
+			</button>
 			<a href="{{ url_for('main.create_currency') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
@@ -47,12 +64,12 @@
 					<td>
 						{{ currency.title }}
 						{% if currency.id == current_site.currency_id %}
-							<span class="label label-info m-l-5">{{ _('Default Currency') }}</span>
+							<span class="badge badge-danger m-l-5">{{ _('Default Currency') }}</span>
 						{% endif %}
 					</td>
 					<td class="text-center">{{ currency.code }}</td>
 					<td class="text-center">{{ currency.symbol_left }}</td>
-					<td class="text-right">{{ currency.value }}</td>
+					<td class="text-right">{{ currency.value|round(4) }}</td>
 					<td class="text-right">
 						{{ currency.last_updated|timestamp2string(format='%Y-%m-%d %H:%M') }}
 					</td>

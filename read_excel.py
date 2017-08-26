@@ -105,4 +105,4 @@ def import_product_from_excel(file_path):
 
         return products
 
-import_product_from_excel(file_path)
+

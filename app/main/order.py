@@ -339,6 +339,18 @@ def export_orders():
 @user_has('admin_order')
 def create_order():
     form = OrderForm()
+    # 获取店铺
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取仓库列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取快递类型
+    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
+
+    # 初始化选项
+    form.store_id.choices = [(store.id, store.name) for store in store_list]
+    form.warehouse_id.choices = [(warehouse.id, warehouse.name) for warehouse in warehouse_list]
+    form.express_id.choices = [(express.id, express.name) for express in express_list]
+
     if request.method == 'POST':
         # 验证必须字段
         if not form.validate_on_submit():
@@ -431,20 +443,13 @@ def create_order():
 
     # 新增订单
     mode = 'create'
-    # 获取店铺
-    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-    # 获取仓库列表
-    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-    # 获取快递类型
-    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
     # 添加默认订单号
     form.serial_no.data = gen_serial_no('C')
 
     return render_template('orders/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           store_list=store_list,
-                           express_list=express_list,
+                           current_order=None,
                            **load_common_data())
 
 
@@ -452,7 +457,52 @@ def create_order():
 @login_required
 @user_has('admin_order')
 def edit_order(sn):
-    pass
+    current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
+    if current_order is None:
+        abort(404)
+
+    form = OrderForm()
+
+    # 获取店铺
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取仓库列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取快递类型
+    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
+
+    # 初始化选项
+    form.store_id.choices = [(store.id, store.name) for store in store_list]
+    form.warehouse_id.choices = [(warehouse.id, warehouse.name) for warehouse in warehouse_list]
+    form.express_id.choices = [(express.id, express.name) for express in express_list]
+
+    if request.method == 'POST':
+        pass
+
+
+    mode = 'edit'
+    form.serial_no.data = current_order.serial_no
+    form.outside_target_id.data = current_order.outside_target_id
+    form.store_id.data = current_order.store_id
+    form.express_id.data = current_order.express_id
+    form.warehouse_id.data = current_order.warehouse_id
+    form.freight.data = current_order.freight
+    form.remark.data = current_order.remark
+
+    form.buyer_name.data = current_order.buyer_name
+    form.buyer_tel.data = current_order.buyer_tel
+    form.buyer_phone.data = current_order.buyer_phone
+    form.buyer_zipcode.data = current_order.buyer_zipcode
+    form.buyer_address.data = current_order.buyer_address
+    form.buyer_country.data = current_order.buyer_country
+    form.buyer_province.data = current_order.buyer_province
+    form.buyer_city.data = current_order.buyer_city
+    form.buyer_remark.data = current_order.buyer_remark
+
+    return render_template('orders/create_and_edit.html',
+                           form=form,
+                           mode=mode,
+                           current_order=current_order,
+                           **load_common_data())
 
 
 @main.route('/orders/<string:sn>/show')
@@ -463,6 +513,85 @@ def preview_order(sn):
 
     return render_template('orders/preview_order.html',
                            order_info=order, **load_common_data())
+
+
+@main.route('/orders/<string:sn>/split', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_order')
+def split_order(sn):
+    current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
+    if current_order is None:
+        abort(404)
+
+    if request.method == 'POST':
+        selected_item_ids = request.form.getlist('selected[]')
+        if not selected_item_ids or selected_item_ids is None:
+            return custom_response(False, 'Split order items is NULL!')
+
+        total_quantity = 0
+        total_amount = 0
+        total_discount = 0
+        selected_items = []
+        for item_id in selected_item_ids:
+            item = OrderItem.query.get(item_id)
+            if item:
+                total_quantity += item.quantity
+                total_amount += item.quantity*item.deal_price
+                total_discount += item.discount_amount
+
+                selected_items.append(item)
+
+        # 添加订单
+        freight = 0
+        pay_amount = Decimal(total_amount) + freight - Decimal(total_discount)
+        new_serial_no = Order.make_unique_serial_no(gen_serial_no('C'))
+        new_order = Order(
+            master_uid=current_order.master_uid,
+            serial_no=new_serial_no,
+            outside_target_id=current_order.serial_no,
+            store_id=current_order.store_id,
+            warehouse_id=current_order.warehouse_id,
+            pay_amount=Decimal(pay_amount),
+            # 总金额
+            total_amount=Decimal(total_amount),
+            # 总数量
+            total_quantity=total_quantity,
+            discount_amount=Decimal(total_discount),
+            freight=freight,
+            express_id=current_order.express_id,
+            remark=current_order.remark,
+            buyer_name=current_order.buyer_name,
+            buyer_tel=current_order.buyer_tel,
+            buyer_phone=current_order.buyer_phone,
+            buyer_zipcode=current_order.buyer_zipcode,
+            buyer_address=current_order.buyer_address,
+            buyer_country=current_order.buyer_country,
+            buyer_province=current_order.buyer_province,
+            buyer_city=current_order.buyer_city,
+            # 买家备注
+            buyer_remark=current_order.buyer_remark,
+            type=2
+        )
+        db.session.add(new_order)
+
+        # 更新订单明细
+        for item in selected_items:
+            item.order = new_order
+            item.serial_no = new_serial_no
+
+        # 更新旧订单
+        current_order.pay_amount -= pay_amount
+        current_order.total_amount -= total_amount
+        current_order.total_quantity -= total_quantity
+        current_order.discount_amount -= total_discount
+
+        db.session.commit()
+
+        return custom_response(True, gettext('Split order id ok!'), 200)
+
+    return render_template('orders/_modal_split.html',
+                           current_order=current_order,
+                           **load_common_data())
 
 
 @main.route('/orders/ajax_verify', methods=['POST'])

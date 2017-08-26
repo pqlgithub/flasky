@@ -7,9 +7,11 @@ from wtforms.validators import DataRequired, InputRequired, Length, ValidationEr
 class OrderForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'))
     outside_target_id = StringField(lazy_gettext('Out Serial No.'))
-    store_id = IntegerField(lazy_gettext('From Store'), validators=[DataRequired("From store can't empty!")])
-    express_id = IntegerField(lazy_gettext('Express'))
-    warehouse_id = IntegerField(lazy_gettext('From Warehouse'), validators=[DataRequired("From warehouse can't empty!")])
+    store_id = SelectField(lazy_gettext('From Store'), choices=[], validators=[DataRequired("From store can't empty!")],
+                           coerce=int)
+    express_id = SelectField(lazy_gettext('Express'), choices=[], coerce=int)
+    warehouse_id = SelectField(lazy_gettext('From Warehouse'), choices=[], validators=[DataRequired("From warehouse can't empty!")],
+                               coerce=int)
     pay_amount = DecimalField(lazy_gettext('Pay Amount'))
     freight = DecimalField(lazy_gettext('Freight'), default=0.00)
     remark = TextAreaField(lazy_gettext('Remark'))

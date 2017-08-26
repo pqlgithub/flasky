@@ -8,7 +8,7 @@ from ..utils import timestamp, gen_serial_no, create_db_session
 from .asset import Asset
 from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
 from .purchase import Purchase
-from .store import Currency
+from app.models.currency import Currency
 
 __all__ = [
     'Product',
