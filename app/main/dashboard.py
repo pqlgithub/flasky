@@ -9,6 +9,8 @@ from app.models import Order, Product, ProductStock, Site
 from ..utils import Master
 from ..decorators import user_has, user_is
 
+from app.tasks import add_together
+
 @main.route('/dashboard')
 @login_required
 @user_has('admin_dashboard')
@@ -30,6 +32,8 @@ def index():
     # 总收入
     total_revenue = Order.query.filter_by(master_uid=Master.master_uid())\
         .with_entities(func.sum(Order.pay_amount)).one()
+
+    add_together.delay(2, 4)
 
     return render_template('dashboard/index.html',
                            top_menu='dashboard',

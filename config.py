@@ -9,6 +9,8 @@
 """
 
 import os
+from datetime import timedelta
+from celery.schedules import crontab
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -94,8 +96,27 @@ class Config:
     REDIS_URL = 'redis://:Fr%bird@201403$01@localhost:6379/0'
 
     # Celery Options
+    CELERY_IMPORTS = (
+        'app.tasks'
+    )
     CELERY_BROKER_URL = 'redis://:Fr%bird@201403$01@localhost:6379/5'
     CELERY_RESULT_BACKEND = 'redis://:Fr%bird@201403$01@localhost:6379/6'
+
+    # schedules
+    CELERYBEAT_SCHEDULE = {
+        #'add-every-30-seconds': {
+        #    'task': 'app.tasks.xxx',
+        #    # 每 30 秒执行一次
+        #    'schedule': timedelta(seconds=30),
+        #    'args': (5, 8)
+        #},
+        'update-today-currency': {
+            'task': 'app.tasks.async_currency_rate',
+            # 每天上午 11 点 59 分执行一次
+            'schedule': crontab(hour=11, minute=59),
+            'args': ()
+        }
+    }
 
     # Currency API
     CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
