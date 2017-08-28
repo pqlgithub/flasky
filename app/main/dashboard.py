@@ -9,7 +9,6 @@ from app.models import Order, Product, ProductStock, Site
 from ..utils import Master
 from ..decorators import user_has, user_is
 
-
 @main.route('/dashboard')
 @login_required
 @user_has('admin_dashboard')

@@ -90,6 +90,7 @@
       <w>topcontrol</w>
       <w>updatetime</w>
       <w>urknow</w>
+      <w>uwsgi</w>
       <w>webassets</w>
       <w>werkzeug</w>
       <w>whoose</w>

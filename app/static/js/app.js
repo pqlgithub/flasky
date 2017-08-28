@@ -31,6 +31,10 @@ var mixpus = {
 	version: 1.0
 };
 
+mixpus.trim = function (str) {
+	return str.replace(/^\s+|\s+$/g, "");
+};
+
 var display_alert = function (message) {
 	var html = '<div class="alert alert-warning alert-dismissible fade in" role="alert"> ';
 	html += '<button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';

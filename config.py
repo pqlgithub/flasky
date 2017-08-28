@@ -90,6 +90,13 @@ class Config:
     WHOOSH_BASE = '/Users/xiaoyi/Project/micku/whooses'
     MAX_SEARCH_RESULTS = 50
 
+    # Redis 配置
+    REDIS_URL = 'redis://:Fr%bird@201403$01@localhost:6379/0'
+
+    # Celery Options
+    CELERY_BROKER_URL = 'redis://:Fr%bird@201403$01@localhost:6379/5'
+    CELERY_RESULT_BACKEND = 'redis://:Fr%bird@201403$01@localhost:6379/6'
+
     # Currency API
     CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
     CURRENCY_API_HOST = 'http://jisuhuilv.market.alicloudapi.com'

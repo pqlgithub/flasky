@@ -5,8 +5,8 @@ from flask_login import current_user, login_required
 from . import main
 from .. import db, babel
 from ..constant import SUPPORT_LANGUAGES
-from ..utils import Master
-from app.models import Site
+from ..utils import Master, full_response
+from app.models import Site, Currency
 
 # 针对程序全局请求的钩子，
 @main.after_app_request
@@ -102,3 +102,26 @@ def include_init_data():
         'support_languages': SUPPORT_LANGUAGES,
         'current_site': g.current_site
     }
+
+@main.route('/change_currency')
+def change_currency():
+    """改变货币单位，自动转换汇率"""
+    fc = request.values.get('fc')
+    tc = request.values.get('tc')
+
+    from_currency = Currency.query.filter_by(code=fc).first()
+    to_currency = Currency.query.filter_by(code=tc).first()
+
+    current_app.logger.debug('Default currency [%d], from [%d], to [%d]' % (g.current_site.currency_id, from_currency.id, to_currency.id))
+
+    current_rate = 1.00
+    if g.current_site.currency_id == from_currency.id:
+        current_rate = current_rate * float(to_currency.value)
+
+    if g.current_site.currency_id == to_currency.id:
+        current_rate = current_rate / float(from_currency.value)
+
+    if g.current_site.currency_id != from_currency.id and g.current_site.currency_id != to_currency.id:
+        current_rate = (current_rate * float(to_currency.value))/float(from_currency.value)
+
+    return full_response(success=True, data={'rate': current_rate})

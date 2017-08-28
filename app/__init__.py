@@ -5,7 +5,7 @@
 
 	:copyright: (c) 2017 by mic.
 """
-
+import os
 from flask import Flask
 # 脚本化管理
 from flask_script import Manager, Shell
@@ -21,6 +21,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 # 国际化和本地化
 from flask_babelex import Babel
+# 定时任务
+from app.extensions import flask_celery
 # 全文检索
 import flask_whooshalchemyplus as whooshalchemyplus
 # 导入上传
@@ -40,6 +42,7 @@ mail = Mail()
 babel = Babel()
 csrf = CSRFProtect()
 s3 = FlaskS3()
+
 # 创建set
 uploader = UploadSet('photos', extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv'))
 
@@ -69,11 +72,14 @@ def create_app(config_name):
     assets_env.register(bundles)
     s3.init_app(app)
 
+    # Init the Flask-Celery-Helper via app object
+    # Register the celery object into app object
+    flask_celery.init_app(app)
+
     # 初始化
     configure_uploads(app, uploader)
     # 文件大小限制，默认为16MB
     patch_request_class(app)
-
 
     # logging setting
     if not app.debug:
@@ -105,5 +111,6 @@ def create_app(config_name):
 
     # Jinja2 导入我们的类作为所有模板的一个全局变量
     app.jinja_env.globals['momentjs'] = Momentjs
+
 
     return app

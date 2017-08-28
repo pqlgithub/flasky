@@ -13,3 +13,4 @@ from .order import Order, OrderItem, OrderStatus
 from .finance import PayAccount, TransactDetail, Invoice
 from .country import Country
 from .currency import Currency
+from .reminder import Reminder

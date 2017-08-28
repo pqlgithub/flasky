@@ -32,6 +32,10 @@ a:focus {
     color: #2aaeb0;
 }
 
+.badge-mixpus {
+	background-color: #2aaeb0;
+}
+
 .btn,
 a.btn {
 	-webkit-transition: all 0.4s ease-in-out;
