@@ -604,24 +604,23 @@ def print_purchase_pdf():
     #    filename = 'serial_no_' + sn
     #    code_bars[sn] = ean.save(root_path + filename, options)
 
+    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
+    if current_app.config['MODE'] == 'dev':
+        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
+
     html = template.render(
         current_site=current_site,
         title_attrs=title_attrs,
-        font_path=current_app.root_path + '/static/fonts/simsun.ttf',
+        font_path=font_path,
         purchase_list=purchase_list,
     ).encode('utf-8')
 
     if preview:
         return html
 
-    current_app.logger.debug('Html type[%s]!' % type(html))
-
     export_file = 'Purchase-{}-{}.pdf'.format(Master.master_uid(), int(timestamp()))
 
     pdf = create_pdf(html.decode())
-
-    current_app.logger.debug('Make response is ok!')
-
     resp = make_response(pdf)
 
     resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))

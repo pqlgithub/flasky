@@ -6,15 +6,17 @@
 	<style type="text/css">
 		@page {
 			size: A4;
-			margin: 1cm;
+			margin: 1cm 1.25cm;
 		}
 		@font-face {
-           font-family: simsun;
-           src: url("http://s3.mixpus.com/static/fonts/simsun.ttf");  /* 字体路径 */
+            font-family: simsun;
+            src: url("{{ font_path }}");  /* 字体路径 */
         }
         body {
-           font-family: simsun;
+            font-family: simsun;
+			font-size: 12px;
         }
+
 		.table {
 			border: 1px solid #9c9c9c;
 			table-layout：fixed;
@@ -22,8 +24,7 @@
 		.table td,
 		.table th {
 			background-color: #fff !important;
-			line-height: 20px;
-			font-size: 12px;
+			line-height: 16px;
 			padding-left: 3px;
 			padding-top: 3px;
 			word-wrap: break-word;
@@ -40,11 +41,14 @@
 			font-size: 16px;
 			line-height: 25px;
 			font-weight: bold;
+			text-align: center;
 		}
 		.purchase-code {
-			padding-top: 10px;
 			color: black;
 			font-weight: bold;
+		}
+		.add-date {
+			text-align: right;
 		}
 		.bh {
 			margin-bottom: 10px;
@@ -64,7 +68,7 @@
 			width: 300px;
 		}
 		.amount {
-			line-height: 25px;
+			line-height: 16px;
 			padding-left: 5px;
 			padding-top: 5px;
 			font-weight: bold;
@@ -82,11 +86,9 @@
 		<table class="bh">
 			<tr>
 				<td width="160px">
-					<div class="purchase-code">
-						<label>{{ title_attrs.serial_no }}:</label>
-					</div>
+					<label>{{ title_attrs.serial_no }}:</label>
 				</td>
-				<td>
+				<td width="220px">
 					<div class="purchase-code">
 						<label>{{ purchase.serial_no }}</label>
 					</div>
@@ -213,7 +215,7 @@
 				</td>
 				<td class="info">
 					{{ item.sku_serial_no }} <br>
-					{{ item.sku.product.name }}
+					{{ item.sku.product.name|break_line(15) }}
 				</td>
 				<td class="center">
 					{{ item.cost_price }} {{ current_site.currency }}
@@ -233,7 +235,7 @@
 
 		<table class="ph">
 			<tr>
-				<td class="center amount">
+				<td class="amount">
 					<label>{{ title_attrs.express_no }}：</label> {{ purchase.express_name|supress_none }} {{ purchase.express_no|supress_none }}
 				</td>
 				<td class="right amount">
