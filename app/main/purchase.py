@@ -598,18 +598,17 @@ def print_purchase_pdf():
         'arrival_quantity': gettext('Arrival Quantity')
     }
 
-    code_bars = {}
-    options = dict(text_distance=2,font_size=16)
-    root_path = current_app.root_path + '/static/code_bars/'
-    for sn in rids:
-        ean = barcode.get('code39', sn, writer=ImageWriter())
-        filename = 'serial_no_' + sn
-        code_bars[sn] = ean.save(root_path + filename, options)
+    # code_bars = {}
+    # options = dict(text_distance=2,font_size=16)
+    # root_path = current_app.root_path + '/static/code_bars/'
+    # for sn in rids:
+    #    ean = barcode.get('code39', sn, writer=ImageWriter())
+    #    filename = 'serial_no_' + sn
+    #    code_bars[sn] = ean.save(root_path + filename, options)
 
     html = template.render(
         current_site=current_site,
         title_attrs=title_attrs,
-        code_bars=code_bars,
         font_path=current_app.root_path + '/static/fonts/simsun.ttf',
         purchase_list=purchase_list,
     ).encode('utf-8')
