@@ -6,10 +6,6 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask_sqlalchemy import Pagination
 from flask_login import login_required, current_user
 from flask_babelex import gettext
-from io import BytesIO
-import xhtml2pdf.pisa as pisa
-import barcode
-from barcode.writer import ImageWriter
 from openpyxl.workbook import Workbook
 from . import main
 from .. import db, uploader
@@ -21,7 +17,7 @@ from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku,
     TransactDetail, InWarehouse, StockHistory, ProductStock, Site
 from app.forms import PurchaseForm, PurchaseExpressForm
 from .filters import supress_none, timestamp2string, break_line
-
+from ..pdfs import create_pdf
 
 def load_common_data():
     """
@@ -613,9 +609,8 @@ def print_purchase_pdf():
         purchase_list=purchase_list,
     ).encode('utf-8')
 
-    result = BytesIO()
-    pdf = pisa.CreatePDF(BytesIO(html), result)
-    resp = make_response(result.getvalue())
+    pdf = create_pdf(html)
+    resp = make_response(pdf.getvalue())
     export_file = 'Purchase-{}'.format(int(timestamp()))
     resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
     resp.headers['Content-Type'] = 'application/pdf'
