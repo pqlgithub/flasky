@@ -620,7 +620,7 @@ def print_purchase_pdf():
     export_file = 'Purchase-{}'.format(int(timestamp()))
     resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
     resp.headers['Content-Type'] = 'application/pdf'
-    
+
     return resp
 
 
