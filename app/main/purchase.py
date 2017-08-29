@@ -610,11 +610,17 @@ def print_purchase_pdf():
     ).encode('utf-8')
 
     pdf = create_pdf(html)
+
+    current_app.logger.debug('Pdf create ok!')
+
     resp = make_response(pdf.getvalue())
+
+    current_app.logger.debug('Make response is ok!')
+
     export_file = 'Purchase-{}'.format(int(timestamp()))
     resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
     resp.headers['Content-Type'] = 'application/pdf'
-
+    
     return resp
 
 
