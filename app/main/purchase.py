@@ -557,7 +557,9 @@ def output_purchase():
 def print_purchase_pdf():
     """输出pdf，并打印"""
     rid = request.args.get('rid')
+    preview = request.args.get('preview')
     rids = rid.split(',')
+
     purchase_list = Purchase.query.filter(Purchase.serial_no.in_(rids)).all()
 
     env = Environment(loader=PackageLoader(current_app.name, 'templates'))
@@ -608,6 +610,9 @@ def print_purchase_pdf():
         font_path=current_app.root_path + '/static/fonts/simsun.ttf',
         purchase_list=purchase_list,
     ).encode('utf-8')
+
+    if preview:
+        return html
 
     current_app.logger.debug('Html type[%s]!' % type(html))
 
