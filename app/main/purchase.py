@@ -17,7 +17,7 @@ from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku,
     TransactDetail, InWarehouse, StockHistory, ProductStock, Site
 from app.forms import PurchaseForm, PurchaseExpressForm
 from .filters import supress_none, timestamp2string, break_line
-from ..pdfs import create_pdf
+from ..pdfs import render_pdf, mimerender
 
 def load_common_data():
     """
@@ -554,6 +554,7 @@ def output_purchase():
 @main.route('/purchases/print_purchase_pdf')
 @login_required
 @user_has('admin_purchase')
+@mimerender(default='html', html=lambda html: html, pdf=render_pdf, override_input_key='format')
 def print_purchase_pdf():
     """输出pdf，并打印"""
     rid = request.args.get('rid')
@@ -602,26 +603,12 @@ def print_purchase_pdf():
     #    filename = 'serial_no_' + sn
     #    code_bars[sn] = ean.save(root_path + filename, options)
 
-    html = template.render(
-        current_site=current_site,
-        title_attrs=title_attrs,
-        font_path=current_app.root_path + '/static/fonts/simsun.ttf',
-        purchase_list=purchase_list,
-    ).encode('utf-8')
-
-    pdf = create_pdf(html)
-
-    current_app.logger.debug('Pdf create ok!')
-
-    resp = make_response(pdf.getvalue())
-
-    current_app.logger.debug('Make response is ok!')
-
-    export_file = 'Purchase-{}'.format(int(timestamp()))
-    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
-    resp.headers['Content-Type'] = 'application/pdf'
-
-    return resp
+    html = render_template('pdf/purchase.html',
+                            current_site=current_site,
+                            title_attrs=title_attrs,
+                            font_path=current_app.root_path + '/static/fonts/simsun.ttf',
+                            purchase_list=purchase_list)
+    return {'html': html}
 
 
 @main.route('/purchases/export_purchase', methods=['GET', 'POST'])
