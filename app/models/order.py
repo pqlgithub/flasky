@@ -2,6 +2,7 @@
 from flask_babelex import lazy_gettext
 from app import db
 from .product import ProductSku
+from .logistics import Express
 from ..utils import timestamp, gen_serial_no
 
 __all__ = [
@@ -128,6 +129,7 @@ class Order(db.Model):
     closed_at = db.Column(db.Integer, default=0)
     # 订单类型 1、正常订单；2、拆分子订单
     type = db.Column(db.SmallInteger, default=1)
+
     # order and items => 1 to N
     items = db.relationship(
         'OrderItem', backref='order', lazy='dynamic'
@@ -137,6 +139,13 @@ class Order(db.Model):
     invoice = db.relationship(
         'Invoice', backref='order', uselist=False
     )
+
+    @property
+    def express(self):
+        """关联物流方式"""
+        if self.express_id:
+            return Express.query.get(self.express_id)
+        return None
 
     @property
     def status_label(self):

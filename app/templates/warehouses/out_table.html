@@ -1,5 +1,5 @@
 <div class="table-responsive m-t-20">
-	<form id="purchases-form" action="{{ url_for('main.print_out_warehouses') }}" method="post">
+	<form id="warehouse-form" action="{{ url_for('main.print_out_warehouses') }}" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<table class="table table-bordered table-striped table-hover">
@@ -20,7 +20,7 @@
 			{% for out_ware in paginated_outwarehouses.items %}
 			<tr id="tr_{{ out_ware.id }}">
 				<td class="text-center">
-					<input name="selected[]" class="check-one" value="{{ out_ware.id }}" type="checkbox">
+					<input name="selected[]" class="check-one" value="{{ out_ware.serial_no }}" type="checkbox">
 				</td>
 				<td>
 					<strong>{{ out_ware.serial_no }}</strong>

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
+from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app
+    current_app, make_response, send_file
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from sqlalchemy.sql import func
 from . import main
 from .. import db
 from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, StockHistory, ProductStock, ProductSku,\
-    Purchase, PurchaseProduct
+    Purchase, PurchaseProduct, Site
 from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
     gen_serial_no, timestamp
 from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE
 from ..decorators import user_has, user_is
-
+from .filters import supress_none, timestamp2string, break_line
+from ..pdfs import create_pdf
 
 def load_common_data():
     """
@@ -472,7 +474,69 @@ def show_out_warehouses(page=1):
 @user_has('admin_warehouse')
 def print_out_warehouses():
     """打印出库单"""
-    pass
+    rid = request.args.get('rid')
+    preview = request.args.get('preview')
+    rids = rid.split(',')
+
+    out_warehouse_list = OutWarehouse.query.filter(OutWarehouse.serial_no.in_(rids)).all()
+
+    env = Environment(loader=PackageLoader(current_app.name, 'templates'))
+    env.filters['supress_none'] = supress_none
+    env.filters['timestamp2string'] = timestamp2string
+    env.filters['break_line'] = break_line
+    template = env.get_template('pdf/out_warehouse.html')
+
+    current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
+    title_attrs = {
+        'outbound_order': gettext('Outbound Order'),
+        'serial_no': gettext('Outbound Serial'),
+        'warehouse_info': gettext('Warehouse Info'),
+        'warehouse_operator': gettext('Warehouse Operator'),
+        'order_number': gettext('Order Number'),
+        'sn': gettext('Serial Number'),
+        'product_info': gettext('Product Info'),
+        'unit': gettext('Unit'),
+        'quantity': gettext('Quantity'),
+        'price': gettext('Price'),
+        'subtotal': gettext('Subtotal'),
+
+        'date': gettext('Date'),
+        'contact_name': gettext('Contact name'),
+        'address': gettext('Address'),
+        'phone': gettext('Phone'),
+        'email': gettext('E-mail'),
+        'remark': gettext('Remark'),
+        'in_quantity': gettext('Arrival Quantity'),
+        'express_no': gettext('Express No.'),
+        'freight': gettext('Freight'),
+        'other_charge': gettext('Other Charge'),
+        'total_amount': gettext('Total Amount')
+    }
+
+    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
+    if current_app.config['MODE'] == 'dev':
+        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
+
+    html = template.render(
+        current_site=current_site,
+        title_attrs=title_attrs,
+        font_path=font_path,
+        out_warehouse_list=out_warehouse_list,
+    ).encode('utf-8')
+
+    if preview:
+        return html
+
+    export_file = 'Outwarehouse-{}-{}.pdf'.format(Master.master_uid(), int(timestamp()))
+
+    pdf = create_pdf(html.decode())
+    resp = make_response(pdf)
+
+    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
+    resp.headers['Content-Type'] = 'application/pdf'
+
+    return resp
 
 
 @main.route('/inwarehouses/<int:id>/edit', methods=['GET', 'POST'])

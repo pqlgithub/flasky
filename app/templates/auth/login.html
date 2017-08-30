@@ -24,7 +24,7 @@
 							<div class="row">
 								<h2 class="title text-center">{{ _('Log in to Mixpus') }}</h2>
 
-								<form class="form-signin" action="{{ url_for('auth.login') }}" method="post" name="login">
+								<form class="form-signin" action="" method="post" name="login">
 									{{ form.hidden_tag() }}
 
 									{% with messages = get_flashed_messages(with_categories=true) %}

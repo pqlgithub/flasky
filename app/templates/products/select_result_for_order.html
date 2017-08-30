@@ -3,12 +3,27 @@
 	<td>
 		<img src="{{ stock.product_sku.cover.view_url }}" width="60px" class="pull-left">
 		<div class="product-info">
-			{{ stock.product_sku.serial_no }} <small class="label label-warning">({{ stock.product_sku.s_model }})</small><br>
+			{{ stock.product_sku.serial_no }}<br>
 			{{ stock.product_sku.product.name }}<br>
 		</div>
 	</td>
+	<td>
+		{% if stock.product_sku.s_model %}
+		<label class="label label-warning">
+			{{ stock.product_sku.s_model|supress_none }}
+		</label>
+		{% endif %}
+		{% if stock.product_sku.s_color %}
+		<label class="label label-default">
+			{{ stock.product_sku.s_color|supress_none }}
+		</label>
+		{% endif %}
+	</td>
 	<td class="text-center">
 		<strong id="sale_price_{{ stock.product_sku_id }}">{{ stock.product_sku.sale_price }}</strong>
+	</td>
+	<td class="text-center">
+		<strong id="deal_price_{{ stock.product_sku_id }}">{{ stock.product_sku.sale_price }}</strong>
 	</td>
 	<td class="text-center">
 		<input type="text" name="quantity[{{ stock.product_sku_id }}]" value="1" data-id="{{ stock.product_sku_id }}" id="quantity_{{ stock.product_sku_id }}" class="form-control quantity input-quantity">

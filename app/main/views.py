@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from flask import g, session, current_app, request, redirect, url_for
+from datetime import timedelta
+from flask import g, session, current_app, request, redirect, url_for, app
 from flask_sqlalchemy import get_debug_queries
-from flask_login import current_user, login_required
+from flask_login import current_user, login_manager
 from . import main
 from .. import db, babel
 from ..constant import SUPPORT_LANGUAGES
@@ -76,6 +77,13 @@ def before_request():
 
     else:
         g.current_site = None
+
+@main.before_app_request
+def make_session_permanent():
+    """请求前执行,为单独请求设立不操作超时机制,每次请求刷新失效时间"""
+    session.permanent = True  # 关闭浏览器重新打开还保存session
+    app.permanent_session_lifetime = timedelta(minutes=30)  # session失效时间
+    login_manager.remember_cookie_duration = timedelta(minutes=30)  # cookie失效时间
 
 
 @main.route('/<string:lang>')

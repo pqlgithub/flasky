@@ -6,14 +6,17 @@
 	<style type="text/css">
 		@page {
 			size: A4;
-			margin: 1cm;
+			margin: 1.25cm;
 		}
 		@font-face {
-           font-family: simsun;
-           src: url("{{font_path}}");  /* 字体路径 */
+            font-family: simsun;
+            src: url("{{ font_path }}");  /* 字体路径 */
         }
         body {
-           font-family: simsun;
+            font-family: simsun;
+			color: black;
+			font-size: 12px;
+			line-height: 20px;
         }
 		.table {
 			border: 1px solid #9c9c9c;
@@ -22,59 +25,37 @@
 		.table td,
 		.table th {
 			background-color: #fff !important;
-			line-height: 25px;
-			font-size: 14px;
-			padding-left: 5px;
-			padding-top: 5px;
+			padding-left: 3px;
+			padding-top: 3px;
 			word-wrap: break-word;
 			word-break: break-all;
+		}
+		h3 {
+			font-size: 14px;
 		}
 		.table td.title-label {
 			width: 150px;
 			font-weight: bold;
 		}
-		.table .table-header {
-			text-align: center;
+		table tr.total strong {
+			margin-right: 50px;
 		}
 		.site-logo {
 			font-size: 16px;
 			line-height: 25px;
 			font-weight: bold;
+			text-align: center;
 		}
-		.purchase-code {
-			font-size: 16px;
-			line-height: 40px;
-			padding-top: 10px;
-			color: black;
-			font-weight: bold;
-		}
-		.add-date {
-			line-height: 25px;
-			font-size: 14px;
+		.th {
+			margin-top: 20px;
 		}
 		.bh {
 			margin-bottom: 20px;
-		}
-		.ph {
-			margin-top: 50px;
 		}
 		.center {
 			text-align: center;
 			padding-right: 0;
 			padding-left: 0;
-		}
-		.right {
-			text-align: right;
-		}
-		.table td.info {
-			width: 300px;
-		}
-		.amount {
-			line-height: 25px;
-			font-size: 14px;
-			padding-left: 5px;
-			padding-top: 5px;
-			font-weight: bold;
 		}
 	</style>
 </head>
@@ -83,79 +64,108 @@
 	{% for order in order_list %}
 	<div id="content_{{ loop.index }}">
 		<div class="site-logo">
-			{{ current_site.company_name }}
+			{{ title_attrs.bill_name }}
 		</div>
 
-		<table class="bh">
+		<table class="th">
 			<tr>
-				<td width="160px">
-					<div class="purchase-code">
-						<label>{{ title_attrs.serial_no }}:</label>
-					</div>
+				<td>
+					<label>{{ title_attrs.store_name }}:</label> <strong>{{ order.store.name }}</strong>
 				</td>
 				<td>
-					<img src="{{ code_bars[order.serial_no] }}" width="260px">
+					<label>{{ title_attrs.serial_no }}:</label> <strong>{{ order.serial_no }}</strong>
 				</td>
 				<td class="add-date">
 					<label>{{ title_attrs.date }}:</label> {{ order.created_at|timestamp2string }} <br>
-					<label>{{ title_attrs.status }}:</label> {{ order.status_label[1] }}
 				</td>
 			</tr>
 		</table>
 
-		<table class="table ph">
+		<h3>{{ title_attrs.consignee }}</h3>
+		<table class="bh">
 			<tr>
+				<td>
+					<label>{{ title_attrs.consignee_name }}:</label> <strong>{{ order.buyer_name }}</strong>
+				</td>
+				<td>
+					<label>{{ title_attrs.remark }}:</label> <strong>{{ order.buyer_remark }}</strong>
+				</td>
+			</tr>
+		</table>
+
+		<h3>{{ title_attrs.product_items }}</h3>
+		<table class="table">
+			<tr>
+				<td class="center">
+					{{ title_attrs.order_number }}
+				</td>
 				<td class="center">
 					{{ title_attrs.sn }}
 				</td>
 				<td class="center">
-					{{ title_attrs.product_info }}
+					{{ title_attrs.product_name }}
 				</td>
 				<td class="center">
-					{{ title_attrs.price }}
+					{{ title_attrs.mode }}
+				</td>
+				<td class="center">
+					{{ title_attrs.unit }}
 				</td>
 				<td class="center">
 					{{ title_attrs.quantity }}
 				</td>
 				<td class="center">
+					{{ title_attrs.price }}
+				</td>
+				<td class="center">
+					{{ title_attrs.discount_price }}
+				</td>
+				<td class="center">
 					{{ title_attrs.subtotal }}
 				</td>
 			</tr>
-			{% for item in order.products %}
+			{% for item in order.items %}
 			<tr>
-				<td class="center" width="80px">
+				<td class="center">
 					{{ loop.index }}
 				</td>
-				<td class="info">
-					{{ item.sku_serial_no }} <br>
+				<td width="120px">
+					{{ item.sku_serial_no }}
+				</td>
+				<td width="180px">
 					{{ item.sku.product.name }}
 				</td>
-				<td class="center">
-					{{ item.cost_price }} {{ current_site.currency }}
+				<td>
+					{{ item.sku.s_model|supress_none }} {{ item.sku.s_color|supress_none }}
+				</td>
+				<td>
+
 				</td>
 				<td class="center">
 					{{ item.quantity }}
 				</td>
 				<td class="center">
-					{{ item.cost_price*item.quantity  }} {{ current_site.currency }}
+					{{ item.sku.cost_price }}
+				</td>
+				<td class="center">
+					{{ item.deal_price }}
+				</td>
+				<td class="center">
+					{{ item.deal_price*item.quantity  }}
 				</td>
 			</tr>
 			{% endfor %}
-		</table>
-
-		<table class="ph">
-			<tr>
-				<td class="center amount">
-					<label>{{ title_attrs.express_no }}：</label> {{ order.express_name|supress_none }} {{ order.express_no|supress_none }}
+			<tr class="total">
+				<td class="center">
+					{{ title_attrs.total }}
 				</td>
-				<td class="right amount">
-					<label>{{ title_attrs.freight }}：</label> {{ order.freight }} {{ current_site.currency }}<br>
-					<label>{{ title_attrs.discount }}：</label> -{{ order.discount_amount }} {{ current_site.currency }}<br>
-					<label>{{ title_attrs.total_amount }}：</label> {{ order.total_amount+order.freight }} {{ current_site.currency }}
+				<td colspan="8" class="center">
+					<label>{{ title_attrs.freight }}:</label> <strong>{{ order.freight }}</strong> &nbsp;&nbsp;&nbsp;&nbsp;
+					<label>{{ title_attrs.discount }}:</label> <strong>{{ order.discount_amount }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label>{{ title_attrs.pay_amount }}:</label> <strong>{{ order.pay_amount }}</strong>
 				</td>
 			</tr>
 		</table>
-
 	</div>
 	<pdf:nextpage />
 	{% endfor %}

@@ -46,6 +46,7 @@ def load_common_data():
 
 @main.route('/orders')
 @main.route('/orders/<int:page>')
+@login_required
 @user_has('admin_order')
 def show_orders(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -70,6 +71,7 @@ def print_order_pdf():
     """打印订单"""
     rid = request.args.get('rid')
     rids = rid.split(',')
+    preview = request.args.get('preview')
     order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
 
     env = Environment(loader=PackageLoader(current_app.name, 'templates'))
@@ -81,44 +83,44 @@ def print_order_pdf():
     current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
 
     title_attrs = {
-        'serial_no': gettext('Purchase Serial'),
-        'status': gettext('Status'),
-        'supplier': gettext('Supplier'),
-        'supplier_info': gettext('Supplier Info'),
-        'warehouse_name': gettext('Warehouse Name'),
-        'date': gettext('Date'),
-        'contact_name': gettext('Contact name'),
-        'address': gettext('Address'),
-        'phone': gettext('Phone'),
-        'email': gettext('E-mail'),
-        'remark': gettext('Remark'),
-        'sn': gettext('Serial Number'),
-        'product_info': gettext('Product Info'),
+        'bill_name': gettext('Shipping Bill'),
+        'store_name': gettext('Store Name'),
+        'serial_no': gettext('Order Serial'),
+        'consignee': gettext('Consignee'),
+        'date': gettext('Payed Date'),
+        'consignee_name': gettext('Consignee name'),
+        'remark': gettext('Buyer Remark'),
+        'product_items': gettext('Product Items'),
+
+        'order_number': gettext('Order Number'),
+        'sn': gettext('Product Serial'),
+        'product_name': gettext('Product Name'),
+        'mode': gettext('Product Mode'),
+        'unit': gettext('Unit'),
+        'quantity': gettext('Quantity'),
         'price': gettext('Price'),
-        'quantity': gettext('Purchase Quantity'),
-        'in_quantity': gettext('Arrival Quantity'),
+        'discount_price': gettext('Discount Price'),
         'subtotal': gettext('Subtotal'),
-        'express_no': gettext('Express No.'),
+        'total': gettext('Total'),
+
         'freight': gettext('Freight'),
-        'discount': gettext('Discount Amount'),
-        'total_amount': gettext('Total Amount')
+        'discount': gettext('Discount'),
+        'pay_amount': gettext('Pay Amount')
     }
 
-    code_bars = {}
-    options = dict(text_distance=2, font_size=16)
-    root_path = current_app.root_path + '/static/code_bars/'
-    for sn in rids:
-        ean = barcode.get('code39', sn, writer=ImageWriter())
-        filename = 'serial_no_' + sn
-        code_bars[sn] = ean.save(root_path + filename, options)
+    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
+    if current_app.config['MODE'] == 'dev':
+        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
 
     html = template.render(
         current_site=current_site,
         title_attrs=title_attrs,
-        code_bars=code_bars,
-        font_path=current_app.root_path + '/static/fonts/simsun.ttf',
+        font_path=font_path,
         order_list=order_list,
     ).encode('utf-8')
+
+    if preview:
+        return html
 
     result = BytesIO()
     pdf = pisa.CreatePDF(BytesIO(html), result)
@@ -273,6 +275,7 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
 
 @main.route('/orders/import', methods=['GET', 'POST'])
 @user_has('admin_order')
+@login_required
 def import_orders():
     """导入订单"""
     if request.method == 'POST':
@@ -328,6 +331,7 @@ def import_orders():
 
 
 @main.route('/orders/export', methods=['GET', 'POST'])
+@login_required
 @user_has('admin_order')
 def export_orders():
     """导出订单"""
@@ -347,7 +351,7 @@ def create_order():
     express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
 
     # 初始化选项
-    form.store_id.choices = [(store.id, store.name) for store in store_list]
+    form.store_id.choices = [(store.id, '%s -- %s' % (store.name, store.platform_name)) for store in store_list]
     form.warehouse_id.choices = [(warehouse.id, warehouse.name) for warehouse in warehouse_list]
     form.express_id.choices = [(express.id, express.name) for express in express_list]
 

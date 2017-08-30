@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Print OutWarehouse</title>
+	<style type="text/css">
+		@page {
+			size: A4;
+			margin: 1cm 1.25cm;
+		}
+		@font-face {
+            font-family: simsun;
+            src: url("{{ font_path }}");  /* 字体路径 */
+        }
+        body {
+            font-family: simsun;
+			font-size: 12px;
+			color: black;
+        }
+
+		.table {
+			border: 1px solid #9c9c9c;
+			table-layout：fixed;
+		}
+		.table td,
+		.table th {
+			background-color: #fff !important;
+			line-height: 16px;
+			padding-left: 3px;
+			padding-top: 3px;
+			word-wrap: break-word;
+			word-break: break-all;
+		}
+		.table td.title-label {
+			width: 150px;
+			font-weight: bold;
+		}
+		.table .table-header {
+			text-align: center;
+		}
+		.site-logo {
+			font-size: 16px;
+			line-height: 25px;
+			font-weight: bold;
+			text-align: center;
+		}
+		.bh {
+			margin-bottom: 10px;
+		}
+		.ph {
+			margin-top: 10px;
+		}
+		.center {
+			text-align: center;
+			padding-right: 0;
+			padding-left: 0;
+		}
+		.right {
+			text-align: right;
+		}
+		.amount {
+			line-height: 16px;
+			padding-left: 5px;
+			padding-top: 5px;
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	{% for out_ware in out_warehouse_list %}
+	<div id="content_{{ loop.index }}">
+		<div class="site-logo">
+			{{ current_site.company_name }} {{ title_attrs.outbound_order }}
+		</div>
+
+		<table class="bh">
+			<tr>
+				<td>
+					<label>{{ title_attrs.serial_no }}:</label> <strong>{{ out_ware.serial_no }}</strong>
+				</td>
+				<td>
+					<label>{{ title_attrs.date }}:</label> {{ out_ware.created_at|timestamp2string }}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label>{{ title_attrs.warehouse_info }}:</label> <strong></strong>
+				</td>
+				<td>
+					<label>{{ title_attrs.warehouse_operator }}:</label> <strong></strong>
+				</td>
+			</tr>
+		</table>
+
+		<table class="table ph">
+			<tr>
+				<td class="center">
+					{{ title_attrs.order_number }}
+				</td>
+				<td class="center">
+					{{ title_attrs.sn }}
+				</td>
+				<td class="center">
+					{{ title_attrs.product_info }}
+				</td>
+				<td class="center">
+					{{ title_attrs.unit }}
+				</td>
+				<td class="center">
+					{{ title_attrs.price }}
+				</td>
+				<td class="center">
+					{{ title_attrs.quantity }}
+				</td>
+				<td class="center">
+					{{ title_attrs.subtotal }}
+				</td>
+			</tr>
+
+		</table>
+
+
+
+	</div>
+	<pdf:nextpage />
+	{% endfor %}
+</body>
+</html>

@@ -85,6 +85,11 @@ def is_sequence(arg):
             hasattr(arg, "__iter__"))
 
 
+def next_is_valid(next_url):
+    """验证next url是否有效"""
+    return True
+
+
 def full_response(success=True, status=R200_OK, data=None):
     """结果响应：带数据和状态信息"""
     return jsonify({

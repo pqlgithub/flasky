@@ -13,6 +13,8 @@
 			var price = parseFloat($('#sale_price_' + sku_id).html());
 			var discount = parseFloat($('#discount_' + sku_id).val());
 
+			$('#deal_price_' + sku_id).html((price - discount).toFixed(2));
+
 			subtotal = price*quantity;
 			total_quantity += quantity;
 			total_discount += discount;
@@ -57,6 +59,7 @@
 		}
 
 		$('#sku-modal').remove();
+
 		$.ajax({
 			url: post_url,
 			type: 'post',
@@ -243,7 +246,7 @@
 					<thead>
 						<tr>
 							<th>{{ _('Product Info') }}</th>
-							<th class="text-center">{{ _('Mode/Color') }}</th>
+							<th>{{ _('Mode/Color') }}</th>
 							<th class="text-center">{{ _('Price') }}</th>
 							<th class="text-center">{{ _('Deal Price') }}</th>
 							<th class="text-center">{{ _('Quantity') }}</th>
@@ -263,7 +266,7 @@
 									{{ item.sku.product_name }}<br>
 								</div>
 							</td>
-							<td class="text-center">
+							<td>
 								{% if item.sku.s_model %}
 								<label class="label label-warning">
 									{{ item.sku.s_model|supress_none }}
@@ -276,10 +279,10 @@
 								{% endif %}
 							</td>
 							<td class="text-center">
-								<strong id="sale_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
+								<strong id="sale_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</strong>
 							</td>
 							<td class="text-center">
-								<strong id="deal_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</strong>
+								<strong id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
 							</td>
 							<td class="text-center">
 								<input type="text" name="quantity[{{ item.sku_id }}]" value="1" data-id="{{ item.sku_id }}" id="quantity_{{ item.sku_id }}" class="form-control quantity input-quantity">
