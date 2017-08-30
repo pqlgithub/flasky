@@ -75,6 +75,10 @@ SUPPORT_PLATFORM = (
         'id'  : 10,
         'name': 'Shopee'
     },
+    {
+        'id'  : 12,
+        'name': lazy_gettext('HuaZhu')
+    },
 )
 
 # 区域划分

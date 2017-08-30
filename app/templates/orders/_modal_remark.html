@@ -1,0 +1,69 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{{ _('Add Remark') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="remark-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Order Serial') }}</label>
+					<div class="col-sm-4">
+						<p class="form-control-static text-danger">{{ current_order.serial_no }}</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Remark') }}</label>
+					<div class="col-sm-9">
+						{{ form.remark(class="form-control") }}
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="remark-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+
+	$('#remark-submit-btn').click(function (e) {
+		data = $('#remark-form').serialize();
+
+		$.ajax({
+			url: "{{ url_for('main.add_remark', sn=current_order.serial_no) }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#remark-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#remark-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#remark-form')
+						.parents('.modal').modal('hide');
+
+					// 自动刷新
+					window.location.reload();
+				} else {
+					$('#remark-form').prepend(display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

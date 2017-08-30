@@ -46,8 +46,12 @@
 <script type="text/javascript"><!--
 	var data = {};
 
-	$('.select2').select2({
-		'width': '100%'
+	$('.select2').each(function (i, obj) {
+		if (!$(obj).data("select2")) {
+			$(obj).select2({
+				'width': '100%'
+			});
+		}
 	});
 
 	$('#express-submit-btn').click(function (e) {

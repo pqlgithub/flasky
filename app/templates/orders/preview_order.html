@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block mainbar %}
-<div class="list-page">
+<div class="form-page">
 	<h2 class="page-header">
 		{{ _('Order Info') }}
 		<span class="pull-right">
@@ -15,6 +15,163 @@
 		</span>
 	</h2>
 
+	<form id="order-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Order Info') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Serial No.') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.serial_no }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Pay Date') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">
+							{{ current_order.created_at|timestamp2string }}
+						</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Status') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">
+							<span class="indicator {{ current_order.status_label[2] }}">{{ current_order.status_label[1] }}</span>
+						</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('From Store') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.store.name }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Out Serial No.') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.outside_target_id }}</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Express') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.express.name }} <b class="text-mixpus">{{ current_order.express_no|supress_none }}</b></p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Freight') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.freight }} {{ current_site.currency }}</p>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="panel-heading">{{ _('Customer Info') }}</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Buyer Name') }}</label>
+					<div class="col-sm-2">
+						<p class="form-control-static">{{ current_order.buyer_name }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Phone') }}</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">{{ current_order.buyer_phone }} {{ current_order.buyer_tel }}</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Address') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">
+							{{ current_order.buyer_province }} {{ current_order.buyer_city }} {{ current_order.buyer_address }} {{ current_order.buyer_zipcode }}
+						</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Buyer Remark') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ current_order.buyer_remark }}</p>
+					</div>
+				</div>
+
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th>{{ _('Product Info') }}</th>
+							<th>{{ _('Mode/Color') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Deal Price') }}</th>
+							<th class="text-center">{{ _('Quantity') }}</th>
+							<th class="text-center">{{ _('Discount') }}</th>
+							<th class="text-right">{{ _('Pay Amount') }}</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="choose-products">
+						{% for item in current_order.items %}
+						<tr id="tr_stock_{{ item.sku_id }}">
+							<td>
+								<img src="{{ item.sku.cover.view_url }}" width="60px" class="pull-left">
+								<div class="product-info">
+									{{ item.sku.serial_no }}<br>
+									{{ item.sku.product_name }}<br>
+								</div>
+							</td>
+							<td>
+								{% if item.sku.s_model %}
+								<label class="label label-warning">
+									{{ item.sku.s_model|supress_none }}
+								</label>
+								{% endif %}
+								{% if item.sku.s_color %}
+								<label class="label label-default">
+									{{ item.sku.s_color|supress_none }}
+								</label>
+								{% endif %}
+							</td>
+							<td class="text-center">
+								<strong id="sale_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</strong>
+							</td>
+							<td class="text-center">
+								<strong id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
+							</td>
+							<td class="text-center">
+								<input type="text" name="quantity[{{ item.sku_id }}]" value="1" data-id="{{ item.sku_id }}" id="quantity_{{ item.sku_id }}" class="form-control quantity input-quantity">
+								<input type="hidden" name="items[]" value="{{ item.sku_id }}">
+							</td>
+							<td class="text-center">
+								<input type="text" name="discount[{{ item.sku_id }}]" value="0" data-id="{{ item.sku_id }}" id="discount_{{ item.sku_id }}" class="form-control input-quantity">
+							</td>
+							<td class="text-right">
+								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>
+							</td>
+							<td class="text-right">
+								<a href="" class="btn btn-link disabled">{{ _('Remove') }}</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+
+					<tfoot class="active">
+						<tr>
+							<th>
+								{{ _('Total') }} <strong class="text-danger" id="total_quantity">{{ current_order.items_count }}</strong> {{ _('Products') }}
+							</th>
+							<th colspan="4" class="text-center">
+								{{ _('Total Amount:') }} <strong class="text-danger" id="total_amount">{{ current_order.total_amount }}</strong> {{ current_site.currency }} - {{ _('Total Discount:') }} <strong class="text-danger" id="total_discount">0</strong> {{ current_site.currency }}
+							</th>
+							<th colspan="3" class="text-right">
+								{{ _('Payable Amount:') }} <strong class="text-danger" id="payable_amount">{{ current_order.pay_amount }}</strong> {{ current_site.currency }}
+							</th>
+						</tr>
+					</tfoot>
+				</table>
+
+			</div>
+		</div>
+
+	</form>
 
 </div>
 {% endblock %}

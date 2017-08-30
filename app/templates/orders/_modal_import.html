@@ -2,10 +2,10 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Import Orders') }}</h4>
+			<h4 class="modal-title">{{ _('Import Orders') }}</h4>
 		</div>
 		<div class="modal-body">
-			<form class="form-horizontal" action="" method="post" id="export-form">
+			<form class="form-horizontal" enctype="multipart/form-data" action="{{ url_for('main.import_orders') }}" method="post" id="import-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 				<div class="form-group">
@@ -26,16 +26,16 @@
 						<select name="store_id" class="select2">
 							<option value="0">{{ _('Select Store') }}</option>
 							{% for st in store_list %}
-							<option value="{{ st.id }}">{{ st.name }}</option>
+							<option value="{{ st.id }}">{{ st.name }} -- {{ st.platform_name }}</option>
 							{% endfor %}
 						</select>
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group required">
 					<label class="col-sm-3 control-label">{{ _('Upload File') }}</label>
 					<div class="col-sm-9">
-
+						<input type="file" name="excel">
 					</div>
 				</div>
 
@@ -49,48 +49,18 @@
 			</span>
 
 			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
-			<button type="button" id="export-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+			<button type="submit" form="import-form" id="import-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
 		</div>
 	</div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	var data = {};
-
-	$('.select2').select2({
-		'width': '100%'
-	});
-
-	$('#export-submit-btn').click(function (e) {
-		data = $('#export-form').serialize();
-
-		$.ajax({
-			url: "{{ post_url }}",
-			type: 'post',
-			data: data,
-			dataType: 'json',
-			beforeSend: function () {
-				$('#export-submit-btn').prop('disabled', true);
-			},
-			complete: function() {
-				$('#export-submit-btn').prop('disabled', false);
-			},
-			success: function (result) {
-				console.log(result);
-				if (result.success) {
-					$('#export-form')
-						.parents('.modal').modal('hide');
-
-					// 自动刷新
-					window.location.reload();
-				} else {
-					$('#export-form').prepend(display_alert(result.status.message))
-				}
-			},
-			error: function (xhr, ajaxOptions, thrownError) {
-				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-			}
-		});
+	$('.select2').each(function (i, obj) {
+		if (!$(obj).data("select2")) {
+			$(obj).select2({
+				'width': '100%'
+			});
+		}
 	});
 //-->
 </script>

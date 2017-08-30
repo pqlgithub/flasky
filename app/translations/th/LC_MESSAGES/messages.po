@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-08-30 12:02+0800\n"
+"POT-Creation-Date: 2017-08-30 16:10+0800\n"
 "PO-Revision-Date: 2017-07-18 20:43+0800\n"
 "Last-Translator: \n"
 "Language: th\n"
@@ -42,158 +42,162 @@ msgstr ""
 msgid "Aliexpress"
 msgstr ""
 
-#: app/constant.py:84
-msgid "Overseas"
+#: app/constant.py:80
+msgid "HuaZhu"
 msgstr ""
 
 #: app/constant.py:88
+msgid "Overseas"
+msgstr ""
+
+#: app/constant.py:92
 msgid "Domestic"
 msgstr ""
 
-#: app/constant.py:134 app/templates/orders/_sub_menu.html:18
+#: app/constant.py:138 app/templates/orders/_sub_menu.html:18
 msgid "Pending Review"
 msgstr ""
 
-#: app/constant.py:135
+#: app/constant.py:139
 msgid "Pending Arrival"
 msgstr ""
 
-#: app/constant.py:136
+#: app/constant.py:140
 msgid "Pending Storage"
 msgstr ""
 
-#: app/constant.py:137 app/constant.py:152
+#: app/constant.py:141 app/constant.py:156
 #: app/templates/finances/_sub_menu.html:10
 #: app/templates/orders/_sub_menu.html:29
 msgid "Finished"
 msgstr ""
 
-#: app/constant.py:138 app/models/order.py:46
+#: app/constant.py:142 app/models/order.py:46
 #: app/templates/orders/_sub_menu.html:32
 #: app/templates/orders/show_list.html:317
 #: app/templates/purchases/purchase_table.html:79
 msgid "Canceled"
 msgstr ""
 
-#: app/constant.py:143
+#: app/constant.py:147
 msgid "Available to Apply"
 msgstr ""
 
-#: app/constant.py:144
+#: app/constant.py:148
 msgid "Unpaid"
 msgstr ""
 
-#: app/constant.py:145
+#: app/constant.py:149
 msgid "Finished Paid "
 msgstr ""
 
-#: app/constant.py:150
+#: app/constant.py:154
 msgid "Waiting In"
 msgstr ""
 
-#: app/constant.py:151
+#: app/constant.py:155
 msgid "Part"
 msgstr ""
 
-#: app/constant.py:163 app/templates/layout/base.html:84
+#: app/constant.py:167 app/templates/layout/base.html:84
 msgid "Purchase"
 msgstr ""
 
-#: app/constant.py:164
+#: app/constant.py:168
 msgid "Order"
 msgstr ""
 
-#: app/constant.py:169
+#: app/constant.py:173
 msgid "Purchase Storage"
 msgstr ""
 
-#: app/constant.py:170
+#: app/constant.py:174
 msgid "Returned Storage"
 msgstr ""
 
-#: app/constant.py:171
+#: app/constant.py:175
 msgid "Exchange Storage"
 msgstr ""
 
-#: app/constant.py:172
+#: app/constant.py:176
 msgid "Manual Storage"
 msgstr ""
 
-#: app/constant.py:173 app/templates/warehouses/ex_warehouse_modal.html:28
+#: app/constant.py:177 app/templates/warehouses/ex_warehouse_modal.html:28
 msgid "Manual Out"
 msgstr ""
 
-#: app/constant.py:174
+#: app/constant.py:178
 msgid "Order Out"
 msgstr ""
 
-#: app/constant.py:175 app/templates/warehouses/ex_warehouse_modal.html:29
+#: app/constant.py:179 app/templates/warehouses/ex_warehouse_modal.html:29
 msgid "Returned Out"
 msgstr ""
 
-#: app/constant.py:192
+#: app/constant.py:196
 msgid "Retail"
 msgstr ""
 
-#: app/constant.py:193
+#: app/constant.py:197
 msgid "Services"
 msgstr ""
 
-#: app/constant.py:198
+#: app/constant.py:202
 msgid "Admin Store"
 msgstr ""
 
-#: app/constant.py:199
+#: app/constant.py:203
 msgid "Admin Supplier"
 msgstr ""
 
-#: app/constant.py:200
+#: app/constant.py:204
 msgid "Admin Purchase"
 msgstr ""
 
-#: app/constant.py:201
+#: app/constant.py:205
 msgid "Admin Warehouse"
 msgstr ""
 
-#: app/constant.py:202
+#: app/constant.py:206
 msgid "Admin Logistics"
 msgstr ""
 
-#: app/constant.py:203
+#: app/constant.py:207
 msgid "Admin Product"
 msgstr ""
 
-#: app/constant.py:204
+#: app/constant.py:208
 msgid "Admin Order"
 msgstr ""
 
-#: app/constant.py:205
+#: app/constant.py:209
 msgid "Admin Service"
 msgstr ""
 
-#: app/constant.py:206
+#: app/constant.py:210
 msgid "Admin Finance"
 msgstr ""
 
-#: app/constant.py:207
+#: app/constant.py:211
 msgid "Admin Reports"
 msgstr ""
 
-#: app/constant.py:208
+#: app/constant.py:212
 msgid "Admin Setting"
 msgstr ""
 
-#: app/constant.py:209
+#: app/constant.py:213
 msgid "Admin Dashboard"
 msgstr ""
 
-#: app/constant.py:221 app/main/purchase.py:574
+#: app/constant.py:225 app/main/purchase.py:574
 #: app/templates/purchases/_modal_express.html:12
 #: app/templates/purchases/purchase_pay_table.html:12
 msgid "Purchase Serial"
 msgstr ""
 
-#: app/constant.py:222 app/forms/product_forms.py:61 app/main/order.py:96
+#: app/constant.py:226 app/forms/product_forms.py:61 app/main/order.py:98
 #: app/templates/purchases/_modal_arrival.html:47
 #: app/templates/purchases/create_and_edit.html:176
 #: app/templates/purchases/purchase_modal.html:31
@@ -202,33 +206,34 @@ msgstr ""
 msgid "Product Name"
 msgstr ""
 
-#: app/constant.py:223
+#: app/constant.py:227
 msgid "Product SKU"
 msgstr ""
 
-#: app/constant.py:224 app/main/purchase.py:589
+#: app/constant.py:228 app/main/purchase.py:589
 #: app/templates/purchases/create_and_edit.html:179
 #: app/templates/purchases/view_detail.html:96
 msgid "Purchase Quantity"
 msgstr ""
 
-#: app/constant.py:225 app/main/purchase.py:590 app/main/purchase.py:596
+#: app/constant.py:229 app/main/purchase.py:590 app/main/purchase.py:596
 #: app/main/warehouse.py:510
 msgid "Arrival Quantity"
 msgstr ""
 
-#: app/constant.py:226 app/forms/order_forms.py:16
-#: app/forms/purchase_forms.py:11 app/main/order.py:104
+#: app/constant.py:230 app/forms/order_forms.py:16
+#: app/forms/purchase_forms.py:11 app/main/order.py:107
 #: app/main/purchase.py:593 app/main/warehouse.py:512
+#: app/templates/orders/preview_order.html:59
 #: app/templates/purchases/view_detail.html:64
 msgid "Freight"
 msgstr ""
 
-#: app/constant.py:227 app/main/purchase.py:594 app/main/warehouse.py:513
+#: app/constant.py:231 app/main/purchase.py:594 app/main/warehouse.py:513
 msgid "Other Charge"
 msgstr ""
 
-#: app/constant.py:228 app/main/purchase.py:595 app/main/warehouse.py:514
+#: app/constant.py:232 app/main/purchase.py:595 app/main/warehouse.py:514
 #: app/templates/dashboard/index.html:127
 #: app/templates/orders/show_list.html:236
 #: app/templates/purchases/_modal_express.html:28
@@ -238,9 +243,8 @@ msgstr ""
 msgid "Total Amount"
 msgstr ""
 
-#: app/constant.py:229 app/forms/logistics_forms.py:35
+#: app/constant.py:233 app/forms/logistics_forms.py:35
 #: app/forms/purchase_forms.py:9 app/templates/layout/base.html:87
-#: app/templates/orders/_modal_export.html:12
 #: app/templates/orders/_modal_import.html:12
 #: app/templates/orders/show_list.html:131
 #: app/templates/purchases/_modal_arrival.html:24
@@ -264,7 +268,7 @@ msgstr ""
 msgid "Warehouse"
 msgstr ""
 
-#: app/constant.py:230 app/forms/product_forms.py:57
+#: app/constant.py:234 app/forms/product_forms.py:57
 #: app/forms/purchase_forms.py:10 app/main/purchase.py:576
 #: app/templates/products/_modal_import.html:24
 #: app/templates/products/table_product.html:14
@@ -275,20 +279,20 @@ msgstr ""
 msgid "Supplier"
 msgstr ""
 
-#: app/constant.py:231 app/forms/logistics_forms.py:12
+#: app/constant.py:235 app/forms/logistics_forms.py:12
 #: app/forms/logistics_forms.py:36
 msgid "Contact Name"
 msgstr ""
 
-#: app/constant.py:232 app/forms/logistics_forms.py:14
+#: app/constant.py:236 app/forms/logistics_forms.py:14
 msgid "Contact Phone"
 msgstr ""
 
-#: app/constant.py:233 app/templates/warehouses/select_purchase_modal.html:15
+#: app/constant.py:237 app/templates/warehouses/select_purchase_modal.html:15
 msgid "Express No"
 msgstr ""
 
-#: app/constant.py:234 app/templates/finances/show_payments.html:77
+#: app/constant.py:238 app/templates/finances/show_payments.html:77
 #: app/templates/orders/show_list.html:201
 #: app/templates/orders/show_list.html:207
 #: app/templates/orders/show_list.html:262
@@ -312,21 +316,21 @@ msgstr ""
 msgid "Add Date"
 msgstr ""
 
-#: app/constant.py:235 app/templates/purchases/pay_list.html:174
+#: app/constant.py:239 app/templates/purchases/pay_list.html:174
 #: app/templates/purchases/show_list.html:248
 #: app/templates/purchases/view_detail.html:37
 msgid "Arrival Date"
 msgstr ""
 
-#: app/constant.py:236
+#: app/constant.py:240
 msgid "Arrival Status"
 msgstr ""
 
-#: app/constant.py:237 app/forms/order_forms.py:17
+#: app/constant.py:241 app/forms/order_forms.py:17 app/forms/order_forms.py:41
 #: app/forms/product_forms.py:22 app/forms/product_forms.py:95
 #: app/main/purchase.py:585 app/main/warehouse.py:509
 #: app/templates/finances/show_payments.html:83
-#: app/templates/orders/show_list.html:319
+#: app/templates/orders/_modal_remark.html:19
 #: app/templates/products/create_and_edit.html:365
 #: app/templates/products/show_skus.html:10
 #: app/templates/purchases/_modal_arrival.html:37
@@ -410,6 +414,7 @@ msgstr ""
 #: app/forms/logistics_forms.py:37 app/forms/product_forms.py:20
 #: app/forms/warehouse_forms.py:17 app/main/purchase.py:583
 #: app/main/warehouse.py:507 app/templates/logistics/show_shippers.html:35
+#: app/templates/orders/preview_order.html:76
 #: app/templates/orders/show_list.html:213
 #: app/templates/suppliers/search_result.html:14
 #: app/templates/suppliers/show_list.html:100
@@ -445,11 +450,12 @@ msgstr ""
 #: app/forms/product_forms.py:21 app/forms/warehouse_forms.py:12
 #: app/main/purchase.py:582 app/main/warehouse.py:506
 #: app/templates/logistics/show_shippers.html:36
+#: app/templates/orders/preview_order.html:83
 msgid "Address"
 msgstr ""
 
 #: app/forms/order_forms.py:8 app/forms/product_forms.py:60
-#: app/forms/product_forms.py:87
+#: app/forms/product_forms.py:87 app/templates/orders/preview_order.html:25
 #: app/templates/products/create_and_edit.html:360
 #: app/templates/products/show_skus.html:5
 #: app/templates/warehouses/in_table.html:11
@@ -457,16 +463,19 @@ msgstr ""
 msgid "Serial No."
 msgstr ""
 
-#: app/forms/order_forms.py:9
+#: app/forms/order_forms.py:9 app/templates/orders/preview_order.html:48
 msgid "Out Serial No."
 msgstr ""
 
-#: app/forms/order_forms.py:10 app/templates/orders/show_list.html:265
+#: app/forms/order_forms.py:10 app/templates/orders/_modal_export.html:12
+#: app/templates/orders/preview_order.html:44
+#: app/templates/orders/show_list.html:265
 msgid "From Store"
 msgstr ""
 
 #: app/forms/order_forms.py:12 app/forms/order_forms.py:36
 #: app/templates/orders/_modal_express.html:19
+#: app/templates/orders/preview_order.html:55
 #: app/templates/orders/show_list.html:248
 msgid "Express"
 msgstr ""
@@ -477,13 +486,14 @@ msgstr ""
 msgid "From Warehouse"
 msgstr ""
 
-#: app/forms/order_forms.py:15 app/main/order.py:106
+#: app/forms/order_forms.py:15 app/main/order.py:109
 #: app/templates/orders/_modal_split.html:30
 #: app/templates/orders/create_and_edit.html:254
+#: app/templates/orders/preview_order.html:107
 msgid "Pay Amount"
 msgstr ""
 
-#: app/forms/order_forms.py:19
+#: app/forms/order_forms.py:19 app/templates/orders/preview_order.html:72
 msgid "Buyer Name"
 msgstr ""
 
@@ -496,7 +506,8 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: app/forms/order_forms.py:31 app/main/order.py:91
+#: app/forms/order_forms.py:31 app/main/order.py:93
+#: app/templates/orders/preview_order.html:92
 #: app/templates/orders/show_list.html:245
 msgid "Buyer Remark"
 msgstr ""
@@ -566,6 +577,8 @@ msgstr ""
 #: app/templates/categories/show_list.html:34
 #: app/templates/dashboard/index.html:128
 #: app/templates/finances/show_payments.html:76
+#: app/templates/orders/_modal_export.html:31
+#: app/templates/orders/preview_order.html:35
 #: app/templates/orders/show_list.html:153
 #: app/templates/products/table_product.html:18
 #: app/templates/purchases/pay_list.html:103
@@ -692,7 +705,7 @@ msgstr ""
 msgid "Estimated date of arrival"
 msgstr ""
 
-#: app/forms/setting_forms.py:11 app/main/order.py:86
+#: app/forms/setting_forms.py:11 app/main/order.py:88
 #: app/templates/stores/show_list.html:30
 msgid "Store Name"
 msgstr ""
@@ -817,50 +830,52 @@ msgstr ""
 msgid "Directory name is already exist!"
 msgstr ""
 
-#: app/main/order.py:85
+#: app/main/order.py:87
 msgid "Shipping Bill"
 msgstr ""
 
-#: app/main/order.py:87 app/templates/orders/_modal_express.html:12
+#: app/main/order.py:89 app/templates/orders/_modal_express.html:12
+#: app/templates/orders/_modal_remark.html:12
 #: app/templates/orders/_modal_split.html:12
 msgid "Order Serial"
 msgstr ""
 
-#: app/main/order.py:88
+#: app/main/order.py:90
 msgid "Consignee"
 msgstr ""
 
-#: app/main/order.py:89
+#: app/main/order.py:91
 msgid "Payed Date"
 msgstr ""
 
-#: app/main/order.py:90
+#: app/main/order.py:92
 msgid "Consignee name"
 msgstr ""
 
-#: app/main/order.py:92
+#: app/main/order.py:94
 msgid "Product Items"
 msgstr ""
 
-#: app/main/order.py:94 app/main/warehouse.py:496
+#: app/main/order.py:96 app/main/warehouse.py:496
 msgid "Order Number"
 msgstr ""
 
-#: app/main/order.py:95
+#: app/main/order.py:97
 msgid "Product Serial"
 msgstr ""
 
-#: app/main/order.py:97
+#: app/main/order.py:99
 msgid "Product Mode"
 msgstr ""
 
-#: app/main/order.py:98 app/main/warehouse.py:499
+#: app/main/order.py:100 app/main/warehouse.py:499
 msgid "Unit"
 msgstr ""
 
-#: app/main/order.py:99 app/main/warehouse.py:500
+#: app/main/order.py:101 app/main/warehouse.py:500
 #: app/templates/orders/_modal_split.html:28
 #: app/templates/orders/create_and_edit.html:252
+#: app/templates/orders/preview_order.html:105
 #: app/templates/orders/show_list.html:233
 #: app/templates/purchases/_modal_arrival.html:50
 #: app/templates/purchases/purchase_pay_table.html:15
@@ -873,9 +888,10 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
-#: app/main/order.py:100 app/main/purchase.py:588 app/main/warehouse.py:501
+#: app/main/order.py:102 app/main/purchase.py:588 app/main/warehouse.py:501
 #: app/templates/orders/_modal_split.html:26
 #: app/templates/orders/create_and_edit.html:250
+#: app/templates/orders/preview_order.html:103
 #: app/templates/products/select_product_modal.html:32
 #: app/templates/purchases/purchase_modal.html:33
 #: app/templates/warehouses/in_warehouse_modal.html:45
@@ -883,20 +899,30 @@ msgstr ""
 msgid "Price"
 msgstr ""
 
-#: app/main/order.py:101
+#: app/main/order.py:103
 msgid "Discount Price"
 msgstr ""
 
-#: app/main/order.py:102 app/main/purchase.py:591 app/main/warehouse.py:502
+#: app/main/order.py:104 app/main/purchase.py:591 app/main/warehouse.py:502
 msgid "Subtotal"
 msgstr ""
 
-#: app/main/order.py:105 app/templates/orders/_modal_split.html:29
+#: app/main/order.py:105 app/templates/orders/create_and_edit.html:308
+#: app/templates/orders/preview_order.html:159
+msgid "Total"
+msgstr ""
+
+#: app/main/order.py:108 app/templates/orders/_modal_split.html:29
 #: app/templates/orders/create_and_edit.html:253
+#: app/templates/orders/preview_order.html:106
 msgid "Discount"
 msgstr ""
 
-#: app/main/order.py:589
+#: app/main/order.py:538
+msgid "Add Remark is ok!"
+msgstr ""
+
+#: app/main/order.py:629
 msgid "Split order id ok!"
 msgstr ""
 
@@ -966,6 +992,7 @@ msgid "Warehouse Info"
 msgstr ""
 
 #: app/main/purchase.py:580 app/main/warehouse.py:504
+#: app/templates/orders/_modal_export.html:24
 #: app/templates/orders/show_list.html:169
 #: app/templates/purchases/_modal_export.html:35
 #: app/templates/purchases/pay_list.html:125
@@ -991,6 +1018,7 @@ msgstr ""
 #: app/templates/orders/_modal_split.html:24
 #: app/templates/orders/create_and_edit.html:231
 #: app/templates/orders/create_and_edit.html:248
+#: app/templates/orders/preview_order.html:101
 #: app/templates/orders/show_list.html:230
 #: app/templates/products/select_product_modal.html:30
 #: app/templates/products/table_product.html:12
@@ -1315,6 +1343,7 @@ msgstr ""
 #: app/templates/layout/list.html:35 app/templates/logistics/show_list.html:34
 #: app/templates/logistics/show_shippers.html:37
 #: app/templates/orders/create_and_edit.html:255
+#: app/templates/orders/preview_order.html:108
 #: app/templates/orders/show_list.html:250
 #: app/templates/products/create_and_edit.html:366
 #: app/templates/products/select_product_modal.html:34
@@ -1526,6 +1555,7 @@ msgstr "สั่งซื้อสินค้า"
 
 #: app/templates/layout/base.html:81
 #: app/templates/orders/create_and_edit.html:308
+#: app/templates/orders/preview_order.html:159
 msgid "Products"
 msgstr "ผลิตภัณฑ์"
 
@@ -1685,35 +1715,19 @@ msgid "From"
 msgstr ""
 
 #: app/templates/orders/_modal_export.html:5
-#: app/templates/orders/_modal_import.html:5
-#: app/templates/orders/show_list.html:96
-msgid "Import Orders"
+#: app/templates/orders/show_list.html:101
+msgid "Export Orders"
 msgstr ""
 
 #: app/templates/orders/_modal_export.html:15
-#: app/templates/orders/_modal_import.html:15
-#: app/templates/purchases/_modal_export.html:15
-#: app/templates/purchases/_modal_import.html:15
-msgid "Select Warehouse"
+#: app/templates/orders/_modal_import.html:27
+msgid "Select Store"
 msgstr ""
 
-#: app/templates/orders/_modal_export.html:24
-#: app/templates/orders/_modal_import.html:36
-#: app/templates/products/_modal_import.html:36
-#: app/templates/purchases/_modal_import.html:24
-msgid "Upload File"
-msgstr ""
-
-#: app/templates/orders/_modal_export.html:35
-#: app/templates/orders/_modal_import.html:47
-#: app/templates/products/_modal_import.html:47
-#: app/templates/purchases/_modal_import.html:35
-msgid "Download Template"
-msgstr ""
-
-#: app/templates/orders/_modal_export.html:39
+#: app/templates/orders/_modal_export.html:40
 #: app/templates/orders/_modal_express.html:40
 #: app/templates/orders/_modal_import.html:51
+#: app/templates/orders/_modal_remark.html:28
 #: app/templates/orders/_modal_split.html:81
 #: app/templates/products/_modal_import.html:51
 #: app/templates/products/modal_sku.html:92
@@ -1735,9 +1749,10 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: app/templates/orders/_modal_export.html:40
+#: app/templates/orders/_modal_export.html:41
 #: app/templates/orders/_modal_express.html:41
 #: app/templates/orders/_modal_import.html:52
+#: app/templates/orders/_modal_remark.html:29
 #: app/templates/products/_modal_import.html:52
 #: app/templates/products/select_product_modal.html:82
 #: app/templates/purchases/_modal_arrival.html:95
@@ -1762,12 +1777,36 @@ msgstr ""
 msgid "Select Express"
 msgstr ""
 
+#: app/templates/orders/_modal_import.html:5
+#: app/templates/orders/show_list.html:96
+msgid "Import Orders"
+msgstr ""
+
+#: app/templates/orders/_modal_import.html:15
+#: app/templates/purchases/_modal_export.html:15
+#: app/templates/purchases/_modal_import.html:15
+msgid "Select Warehouse"
+msgstr ""
+
 #: app/templates/orders/_modal_import.html:24
 msgid "Store"
 msgstr ""
 
-#: app/templates/orders/_modal_import.html:27
-msgid "Select Store"
+#: app/templates/orders/_modal_import.html:36
+#: app/templates/products/_modal_import.html:36
+#: app/templates/purchases/_modal_import.html:24
+msgid "Upload File"
+msgstr ""
+
+#: app/templates/orders/_modal_import.html:47
+#: app/templates/products/_modal_import.html:47
+#: app/templates/purchases/_modal_import.html:35
+msgid "Download Template"
+msgstr ""
+
+#: app/templates/orders/_modal_remark.html:5
+#: app/templates/orders/show_list.html:319
+msgid "Add Remark"
 msgstr ""
 
 #: app/templates/orders/_modal_split.html:5
@@ -1776,6 +1815,7 @@ msgstr ""
 
 #: app/templates/orders/_modal_split.html:25
 #: app/templates/orders/create_and_edit.html:249
+#: app/templates/orders/preview_order.html:102
 #: app/templates/products/create_and_edit.html:362
 #: app/templates/products/select_product_modal.html:31
 #: app/templates/products/show_skus.html:8
@@ -1785,6 +1825,7 @@ msgstr ""
 
 #: app/templates/orders/_modal_split.html:27
 #: app/templates/orders/create_and_edit.html:251
+#: app/templates/orders/preview_order.html:104
 msgid "Deal Price"
 msgstr ""
 
@@ -1822,10 +1863,12 @@ msgstr ""
 
 #: app/templates/orders/create_and_edit.html:127
 #: app/templates/orders/preview_order.html:10
+#: app/templates/orders/preview_order.html:22
 msgid "Order Info"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:166
+#: app/templates/orders/preview_order.html:69
 msgid "Customer Info"
 msgstr ""
 
@@ -1843,6 +1886,7 @@ msgid "Select Products"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:298
+#: app/templates/orders/preview_order.html:150
 #: app/templates/products/create_and_edit.html:406
 #: app/templates/products/create_and_edit.html:407
 #: app/templates/products/select_result.html:25
@@ -1855,24 +1899,27 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:308
-msgid "Total"
-msgstr ""
-
 #: app/templates/orders/create_and_edit.html:311
+#: app/templates/orders/preview_order.html:162
 msgid "Total Amount:"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:311
+#: app/templates/orders/preview_order.html:162
 msgid "Total Discount:"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:314
+#: app/templates/orders/preview_order.html:165
 msgid "Payable Amount:"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:323
 msgid "Order Remark"
+msgstr ""
+
+#: app/templates/orders/preview_order.html:29
+msgid "Pay Date"
 msgstr ""
 
 #: app/templates/orders/show_list.html:81
@@ -1901,10 +1948,6 @@ msgstr ""
 
 #: app/templates/orders/show_list.html:93
 msgid "Synchronize orders"
-msgstr ""
-
-#: app/templates/orders/show_list.html:101
-msgid "Export Orders"
 msgstr ""
 
 #: app/templates/orders/show_list.html:107

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms import StringField, TextAreaField, IntegerField, DecimalField, SelectField, RadioField
+from wtforms.fields import StringField, TextAreaField, IntegerField, DecimalField, SelectField, RadioField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
 class OrderForm(Form):
@@ -35,3 +35,7 @@ class OrderForm(Form):
 class OrderExpressForm(Form):
     express_id = IntegerField(lazy_gettext('Express'))
     express_no = StringField(lazy_gettext('Express No.'))
+
+
+class OrderRemark(Form):
+    remark = TextAreaField(lazy_gettext('Remark'))

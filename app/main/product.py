@@ -308,7 +308,8 @@ def edit_product(rid):
     form.supplier_id.data = product.supplier_id
     form.name.data = product.name
     form.cover_id.data = product.cover_id
-    form.currency_id.data = product.currency_id
+    # 默认为官网默认货币
+    form.currency_id.data = product.currency_id if product.currency_id else g.current_site.currency_id
     form.region_id.data = product.region_id
     form.cost_price.data = product.cost_price
     form.sale_price.data = product.sale_price

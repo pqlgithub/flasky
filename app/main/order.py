@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import hashlib
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
 from jinja2 import PackageLoader, Environment
@@ -13,14 +14,14 @@ from openpyxl.workbook import Workbook
 import time
 from decimal import Decimal
 from . import main
-from .. import db
+from .. import db, uploader
 from ..decorators import user_has
 from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
     timestamp
 from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset
-from app.forms import OrderForm, OrderExpressForm
+from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
 
 
@@ -169,6 +170,8 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
     default_express = Express.query.filter_by(is_default=True).first()
     default_supplier = Supplier.query.filter_by(is_default=True).first()
     cover = Asset.query.filter_by(is_default=True).first()
+    reg_id = 2
+    currency_id = g.current_site.currency_id
 
     # 验证产品是否存在
     current_product = Product.query.filter_by(name=product['name']).first()
@@ -181,6 +184,8 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
             supplier_id = default_supplier.id,
             name = product['name'],
             cover_id = cover.id,
+            region_id = reg_id,
+            currency_id = currency_id,
             cost_price = product['cost_price'],
             sale_price = product['sale_price'],
             status = True
@@ -193,6 +198,7 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
             supplier_id = default_supplier.id,
             serial_no = gen_serial_no(),
             cover_id = cover.id,
+            region_id=reg_id,
             s_model = product['s_model'],
             cost_price = product['cost_price'],
             sale_price = product['sale_price'],
@@ -279,13 +285,20 @@ def import_order_by_dict(order_info, store_id, warehouse_id):
 def import_orders():
     """导入订单"""
     if request.method == 'POST':
-        wh_id = request.args.get('wh_id', 5, type=int)
-        st_id = request.args.get('st_id', 4, type=int)
+        wh_id = request.form.get('wh_id', type=int)
+        st_id = request.form.get('store_id', type=int)
+        f = request.files['excel']
 
-        dest_filename = r'orderDetail_hmall201707152350.xlsx'
-        import_path = current_app.root_path + '/static/import_orders/'
+        # start to save
+        sub_folder = str(time.strftime('%y%m%d'))
+        name_prefix = 'mix' + str(time.time())
+        name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
+        filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
 
-        order_file = '{}{}'.format(import_path, dest_filename)
+        order_file = uploader.path(filename)
+
+        current_app.logger.debug('Excel file [%s]' % order_file)
+
         # 读取文件
         wb = load_workbook(filename=order_file)
         sheets = wb.get_sheet_names()
@@ -321,12 +334,15 @@ def import_orders():
 
             import_order_by_dict(order_info, st_id, wh_id)
 
-        return custom_response(True, 'Import orders is ok!')
+        return redirect(url_for('.show_orders'))
 
     # 库房列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+    # 店铺列表
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
 
     return render_template('orders/_modal_import.html',
+                           store_list=store_list,
                            warehouse_list=warehouse_list)
 
 
@@ -335,7 +351,11 @@ def import_orders():
 @user_has('admin_order')
 def export_orders():
     """导出订单"""
-    return render_template('orders/_modal_export.html')
+    # 店铺列表
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+
+    return render_template('orders/_modal_export.html',
+                           store_list=store_list)
 
 
 @main.route('/orders/create', methods=['GET', 'POST'])
@@ -509,14 +529,34 @@ def edit_order(sn):
                            **load_common_data())
 
 
+@main.route('/orders/<string:sn>/add_remark', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_order')
+def add_remark(sn):
+    form = OrderRemark()
+    order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
+    if form.validate_on_submit():
+        order.remark = form.remark.data
+
+        db.session.commit()
+
+        return custom_response(True, gettext('Add Remark is ok!'))
+
+    form.remark.data = order.remark
+    return render_template('orders/_modal_remark.html',
+                           form=form,
+                           current_order=order,
+                           **load_common_data())
+
+
 @main.route('/orders/<string:sn>/show')
 @login_required
 @user_has('admin_order')
 def preview_order(sn):
-    order = Order.query.filter_by(serial_no=sn).first()
+    order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
 
     return render_template('orders/preview_order.html',
-                           order_info=order, **load_common_data())
+                           current_order=order, **load_common_data())
 
 
 @main.route('/orders/<string:sn>/split', methods=['GET', 'POST'])

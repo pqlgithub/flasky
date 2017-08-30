@@ -53,8 +53,8 @@
 					var rate = result.data.rate;
 					var $cost_price = $('input[name=cost_price]'), $sale_price = $('input[name=sale_price]');
 					var cost_price_value = $cost_price.val(), sale_price_value = $sale_price.val();
-					$cost_price.val(cost_price_value*rate);
-					$sale_price.val(sale_price_value*rate);
+					$cost_price.val((cost_price_value*rate).toFixed(2));
+					$sale_price.val((sale_price_value*rate).toFixed(2));
 				}
 			}, 'json');
 		} else {
