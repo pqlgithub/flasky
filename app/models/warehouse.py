@@ -205,7 +205,7 @@ class InWarehouse(db.Model):
     @property
     def target_label(self):
         if self.target_type == 1:
-            return 'Purchase'
+            return lazy_gettext('Purchase')
         return None
 
 

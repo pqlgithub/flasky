@@ -1,0 +1,103 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{{ _('In-warehouse') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="inwarehouse-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Warehouse') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">{{ current_inware.warehouse.name }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Relation Serial') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">
+							{% if current_inware.target_label %}
+							<strong class="text-danger">{{ current_inware.target_label }} {{ current_inware.target_serial_no }}</strong>
+							{% endif %}
+						</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Serial No.') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">{{ current_inware.serial_no }}</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Status') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">
+							<span class="indicator {{ current_inware.status_label[2] }}">{{ current_inware.status_label[1] }}</span>
+						</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Total Quantity') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">
+							{{ current_inware.total_quantity }}
+						</p>
+					</div>
+					<label class="col-sm-2 control-label">{{ _('Date') }}:</label>
+					<div class="col-sm-4">
+						<p class="form-control-static">
+							{{ current_inware.created_at|timestamp2string() }}
+						</p>
+					</div>
+				</div>
+
+				<table class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th class="text-center">{{ _('Order Number') }}</th>
+							<th>{{ _('Product Info') }}</th>
+							<th>{{ _('Mode/Color') }}</th>
+							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Quantity') }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for item in inware_list %}
+						<tr>
+							<td class="text-center">{{ loop.index }}</td>
+							<td>
+								<img src="{{ item.sku.cover.view_url }}" width="60px" class="pull-left">
+								<div class="product-info">
+									{{ item.sku.serial_no }} <br>
+									{{ item.sku.product.name }} <br>
+								</div>
+							</td>
+							<td>
+								{% if item.sku.s_model %}
+								<label class="label label-warning">
+									{{ item.sku.s_model|supress_none }}
+								</label>
+								{% endif %}
+								{% if item.sku.s_color %}
+								<label class="label label-default">
+									{{ item.sku.s_color|supress_none }}
+								</label>
+								{% endif %}
+							</td>
+							<td class="text-center">
+								{{ item.price }}
+							</td>
+							<td class="text-center">
+								{{ item.quantity }}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

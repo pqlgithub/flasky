@@ -40,7 +40,7 @@
 					{{ out_ware.created_at|timestamp2string() }}
 				</td>
 				<td class="text-right">
-					<a href="{{ url_for('main.preview_inwarehouse', id=out_ware.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
+					<a href="{{ url_for('main.preview_inwarehouse', sn=out_ware.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
 						{{ _('Show') }}
 					</a>
 				</td>

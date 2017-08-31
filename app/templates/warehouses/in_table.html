@@ -20,7 +20,7 @@
 			{% for in_ware in paginated_inwarehouses.items %}
 			<tr id="tr_{{ in_ware.id }}">
 				<td class="text-center">
-					<input name="selected[]" class="check-one" value="{{ in_ware.id }}" type="checkbox">
+					<input name="selected[]" class="check-one" value="{{ in_ware.serial_no }}" type="checkbox">
 				</td>
 				<td>
 					<strong>{{ in_ware.serial_no }}</strong>
@@ -40,7 +40,7 @@
 					{{ in_ware.created_at|timestamp2string() }}
 				</td>
 				<td class="text-right">
-					<a href="{{ url_for('main.preview_inwarehouse', id=in_ware.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
+					<a href="{{ url_for('main.preview_inwarehouse', sn=in_ware.serial_no) }}" class="ajax-modal" data-modal="preview-modal"  data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
 						{{ _('Show') }}
 					</a>
 				</td>

@@ -2,7 +2,7 @@
 from jinja2 import PackageLoader, Environment
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
-from flask_login import login_required, current_user
+from flask_login import login_required
 from flask_babelex import gettext
 from sqlalchemy.sql import func
 from . import main
@@ -242,14 +242,93 @@ def show_in_warehouses(page=1):
 @user_has('admin_warehouse')
 def print_in_warehouses():
     """打印入库单"""
-    pass
+    rid = request.values.get('rid')
+    preview = request.args.get('preview')
+    rids = rid.split(',')
+    if rid is None:
+        abort(404)
+
+    inwarehouses = InWarehouse.query.filter_by(master_uid=Master.master_uid()).filter(InWarehouse.serial_no.in_(rids)).all()
+    # 获取入库明细
+    inwarehouse_list = []
+    for in_ware in inwarehouses:
+        rid = in_ware.serial_no
+        in_ware.item_list = StockHistory.query.filter_by(master_uid=Master.master_uid(), serial_no=rid, type=1).all()
+        inwarehouse_list.append(in_ware)
+
+    env = Environment(loader=PackageLoader(current_app.name, 'templates'))
+    env.filters['supress_none'] = supress_none
+    env.filters['timestamp2string'] = timestamp2string
+    env.filters['break_line'] = break_line
+    template = env.get_template('pdf/in_warehouse.html')
+
+    title_attrs = {
+        'bill_name': gettext('In-warehouse'),
+        'store_name': gettext('Store Name'),
+        'serial_no': gettext('In-warehouse Serial'),
+        'consignee': gettext('Consignee'),
+        'date': gettext('Date'),
+        'warehouse': gettext('Warehouse'),
+        'relation_sn': gettext('Relation Serial'),
+        'status': gettext('Status'),
+        'total_quantity': gettext('Total Quantity'),
+
+        'consignee_name': gettext('Consignee name'),
+        'remark': gettext('Buyer Remark'),
+        'product_items': gettext('Product Items'),
+
+        'order_number': gettext('Order Number'),
+        'sn': gettext('Product Serial'),
+        'product_name': gettext('Product Name'),
+        'mode': gettext('Product Mode'),
+        'unit': gettext('Unit'),
+        'quantity': gettext('Quantity'),
+        'price': gettext('Price'),
+        'discount_price': gettext('Discount Price'),
+        'subtotal': gettext('Subtotal'),
 
 
-@main.route('/inwarehouses/<int:id>/preview')
+        'freight': gettext('Freight'),
+        'discount': gettext('Discount'),
+        'pay_amount': gettext('Pay Amount')
+    }
+
+    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
+    if current_app.config['MODE'] == 'dev':
+        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
+
+    html = template.render(
+        title_attrs=title_attrs,
+        font_path=font_path,
+        inwarehouse_list=inwarehouse_list,
+    ).encode('utf-8')
+
+    if preview:
+        return html
+
+    export_file = 'InWarehouse-{}-{}.pdf'.format(Master.master_uid(), int(timestamp()))
+
+    pdf = create_pdf(html.decode())
+    resp = make_response(pdf)
+
+    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
+    resp.headers['Content-Type'] = 'application/pdf'
+
+    return resp
+
+
+@main.route('/inwarehouses/<string:sn>/preview')
 @login_required
 @user_has('admin_warehouse')
-def preview_inwarehouse(id):
-    pass
+def preview_inwarehouse(sn):
+    """入库单详情"""
+    current_inware = InWarehouse.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
+    # 获取入库明细
+    inware_list = StockHistory.query.filter_by(master_uid=Master.master_uid(), serial_no=sn, type=1).all()
+
+    return render_template('warehouses/_modal_preview_inwarehouse.html',
+                           current_inware=current_inware,
+                           inware_list=inware_list)
 
 
 @main.route('/inwarehouses/create', methods=['GET', 'POST'])
@@ -478,7 +557,13 @@ def print_out_warehouses():
     preview = request.args.get('preview')
     rids = rid.split(',')
 
-    out_warehouse_list = OutWarehouse.query.filter(OutWarehouse.serial_no.in_(rids)).all()
+    out_warehouses = OutWarehouse.query.filter_by(master_uid=Master.master_uid()).filter(OutWarehouse.serial_no.in_(rids)).all()
+
+    out_warehouse_list = []
+    for out_ware in out_warehouses:
+        rid = out_ware.serial_no
+        out_ware.item_list = StockHistory.query.filter_by(master_uid=Master.master_uid(), serial_no=rid, type=2).all()
+        out_warehouse_list.append(out_ware)
 
     env = Environment(loader=PackageLoader(current_app.name, 'templates'))
     env.filters['supress_none'] = supress_none
@@ -495,8 +580,9 @@ def print_out_warehouses():
         'warehouse_operator': gettext('Warehouse Operator'),
         'order_number': gettext('Order Number'),
         'sn': gettext('Serial Number'),
-        'product_info': gettext('Product Info'),
+        'product_name': gettext('Product Name'),
         'unit': gettext('Unit'),
+        'mode': gettext('Product Mode'),
         'quantity': gettext('Quantity'),
         'price': gettext('Price'),
         'subtotal': gettext('Subtotal'),

@@ -62,6 +62,25 @@
 		}
 	});
 
+	// 打印入库单
+	$('.ajax-print').click(function () {
+		var form_id = $(this).data('form-id'), href = $(this).data('href');
+		// 检测是否选中
+		var selected = [];
+		$('#' + form_id).find('.check-one:checked').each(function () {
+			var id = $(this).val();
+			selected.push(id);
+		});
+		if (selected.length == 0){
+			swal('Error', 'First to selected the one!', 'error');
+			return false;
+		}
+		var wd = window.open('about:blank', '_blank');
+		wd.location.href = href + '?rid=' + selected.toString();
+
+		return false;
+	});
+
 {#</script>#}
 {% endblock %}
 
@@ -71,7 +90,7 @@
 		{{ _('InWarehouse List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<button class="btn btn-default" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
+			<button class="btn btn-default ajax-print" data-form-id="inwarehouse-form" data-href="{{ url_for('main.print_in_warehouses') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
 			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>

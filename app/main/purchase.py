@@ -448,6 +448,7 @@ def ajax_arrival(rid):
             target_serial_no=purchase.serial_no,
             warehouse_id=purchase.warehouse_id,
             total_quantity=quantity_offset,
+            in_status=6,
             remark=remark
         )
         db.session.add(in_warehouse)
