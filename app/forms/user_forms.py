@@ -55,3 +55,8 @@ class PasswdForm(Form):
     password = PasswordField(lazy_gettext('Password'),
                              validators=[DataRequired(), EqualTo('password2', message='Passwords must match')])
     password2 = PasswordField(lazy_gettext('Confirm password'), validators=[DataRequired()])
+
+
+class PreferenceForm(Form):
+    locale = SelectField(lazy_gettext('Default Language'), choices=[(l[1], l[2]) for l in SUPPORT_LANGUAGES],
+                         coerce=str)

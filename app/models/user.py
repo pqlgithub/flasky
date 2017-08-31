@@ -19,19 +19,15 @@ __all__ = [
 
 # 定义user与role关系的辅助表
 user_role_table = db.Table('users_roles',
-                           db.Column(
-                               'user_id', db.Integer, db.ForeignKey('users.id')),
-                           db.Column(
-                               'role_id', db.Integer, db.ForeignKey('roles.id')
-                           ))
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
+)
 
 # 定义role与ability关系的辅助表
 role_ability_table = db.Table('roles_abilities',
-                              db.Column(
-                                  'role_id', db.Integer, db.ForeignKey('roles.id')),
-                              db.Column(
-                                  'ability_id', db.Integer, db.ForeignKey('abilities.id')
-                              ))
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
+    db.Column('ability_id', db.Integer, db.ForeignKey('abilities.id'))
+)
 
 
 class User(UserMixin, db.Model):

@@ -2,11 +2,11 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user, logout_user
+from flask_babelex import gettext
 from . import main
 from .. import db
 from app.models import User, Role, Ability, Site
-from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm
-import app.constant as constant
+from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm, PreferenceForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
 
@@ -20,9 +20,27 @@ def load_common_data():
 
 @main.route('/users/profile', methods=['GET', 'POST'])
 @login_required
-@user_has('admin_setting')
 def profile():
     return render_template('users/profile.html')
+
+@main.route('/users/preference', methods=['GET', 'POST'])
+@login_required
+def preference():
+    form = PreferenceForm()
+
+    if form.validate_on_submit():
+        current_user.locale = form.locale.data
+
+        db.session.commit()
+
+        flash(gettext('Update preference setting is ok!'), 'success')
+
+        return redirect(url_for('main.index'))
+
+    form.locale.data = current_user.locale
+
+    return render_template('users/preference.html',
+                           form=form)
 
 
 @main.route('/site/child_users')

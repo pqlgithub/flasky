@@ -9,34 +9,22 @@ from ..constant import SUPPORT_LANGUAGES
 from ..utils import Master, full_response
 from app.models import Site, Currency
 
-# 针对程序全局请求的钩子，
-@main.after_app_request
-def after_request(response):
-    """
-    Such a function is executed after each request, even if outside of the blueprint.
-    """
-    for query in get_debug_queries():
-        if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
-            current_app.logger.info("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-                                       (query.statement, query.parameters, query.duration, query.context))
-    return response
-
-
 @babel.localeselector
 def get_locale():
     """
     locale selector装饰器
     在请求之前被调用，当产生响应时，选择使用的语言
     """
-    # 优先当前选择语言
-    if session.get('locale'):
-        current_app.logger.debug('Locale: %s --------|||---------' % session.get('locale'))
-        return session['locale']
 
-    # 其次，获取用户设置语言
+    # 优先，获取用户设置语言
     user = getattr(g, 'user', None)
     if user is not None and type(user) :
         return user.locale
+
+    # 其次，当前选择语言
+    current_site = getattr(g, 'current_site', None)
+    if current_site is not None:
+        return current_site.locale
 
     # 最后，使用默认语言
     return request.accept_languages.best_match([lang[1].lower() for lang in SUPPORT_LANGUAGES])
@@ -54,10 +42,6 @@ def before_request():
     """
     Such a function is executed before each request, even if outside of a blueprint.
     """
-    
-    # 设置本地化语言
-    g.locale = get_locale()
-
     g.user = current_user
 
     # 验证用户
@@ -78,6 +62,10 @@ def before_request():
     else:
         g.current_site = None
 
+    # 设置本地化语言
+    g.locale = get_locale()
+
+
 @main.before_app_request
 def make_session_permanent():
     """请求前执行,为单独请求设立不操作超时机制,每次请求刷新失效时间"""
@@ -94,7 +82,7 @@ def choose_locale(lang):
         # 设置默认语言
         lang = current_app.config['BABEL_DEFAULT_LOCALE']
 
-    session['locale'] = lang
+    current_user.locale = lang
 
     # remove the locale from the session if it's there
     # session.pop('locale', None)
@@ -133,3 +121,16 @@ def change_currency():
         current_rate = (current_rate * float(to_currency.value))/float(from_currency.value)
 
     return full_response(success=True, data={'rate': current_rate})
+
+
+# 针对程序全局请求的钩子，
+@main.after_app_request
+def after_request(response):
+    """
+    Such a function is executed after each request, even if outside of the blueprint.
+    """
+    for query in get_debug_queries():
+        if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
+            current_app.logger.info("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                                       (query.statement, query.parameters, query.duration, query.context))
+    return response

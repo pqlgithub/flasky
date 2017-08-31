@@ -220,6 +220,12 @@ DEFAULT_IMAGES = {
     }
 }
 
+# 产品数量单位
+PRODUCT_DEFAULT_UNIT = (
+    (1, lazy_gettext('piece'))
+)
+
+
 # 导出采购单头格式 / 采购单对应的字段
 PURCHASE_EXCEL_FIELDS = {
     'serial_no': gettext('Purchase Serial'),

@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include "settings/_sub_menu.html" %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Preference Setting') }}
+
+		<span class="pull-right">
+			<button type="submit" form="ability-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form id="ability-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			{{ form.locale.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.locale(class="form-control select2") }}
+			</div>
+		</div>
+
+
+	</form>
+</div>
+{% endblock %}
