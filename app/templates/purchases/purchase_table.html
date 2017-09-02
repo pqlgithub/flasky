@@ -9,7 +9,7 @@
 						<input name="check_all" type="checkbox" class="check-all">
 						{{ _('Product Info') }}
 					</th>
-					<th>{{ _('Payment Info') }} ({{ current_site.currency }})</th>
+					<th>{{ _('Payment Info') }}</th>
 					<th class="text-center">{{ _('Express No.') }}</th>
 					<th class="text-center">{{ _('Total Quantity') }}</th>
 					<th>{{ _('Status') }}</th>
@@ -40,8 +40,8 @@
 						</div>
 					</td>
 					<td>
-						{{ _('Amount payable') }}: {{ purchase.payable_amount }}<br>
-						({{ purchase.freight }} {{ _('freight') }})
+						{{ _('Amount payable') }}: {{ purchase.payable_amount }}{{ purchase.warehouse.currency_unit }}<br>
+						({{ purchase.freight }}{{ purchase.warehouse.currency_unit }} {{ _('freight') }})
 					</td>
 					<td class="text-center">
 						<a href="{{ url_for('main.purchase_express_no', rid=purchase.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">

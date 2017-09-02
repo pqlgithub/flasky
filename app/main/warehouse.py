@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from jinja2 import PackageLoader, Environment
-from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response, send_file
+from flask import g, render_template, redirect, url_for, abort, flash, request,\
+    current_app, make_response
 from flask_login import login_required
 from flask_babelex import gettext
 from sqlalchemy.sql import func
 from . import main
 from .. import db
 from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, StockHistory, ProductStock, ProductSku,\
-    Purchase, PurchaseProduct, Site
+    Purchase, PurchaseProduct, Site, Currency
 from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
     gen_serial_no, timestamp
 from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE
-from ..decorators import user_has, user_is
+from ..decorators import user_has
 from .filters import supress_none, timestamp2string, break_line
 from ..pdfs import create_pdf
 
@@ -658,6 +658,9 @@ def show_warehouses(page=1):
 @user_has('admin_warehouse')
 def create_warehouse():
     form = WarehouseForm()
+    currency_list = Currency.query.filter_by(status=1).all()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+                                currency_list]
     if form.validate_on_submit():
         try:
             warehouse = Warehouse(
@@ -666,6 +669,7 @@ def create_warehouse():
                 address=form.address.data,
                 en_address=form.en_address.data,
                 description=form.description.data,
+                currency_id=form.currency_id.data,
                 username=form.username.data,
                 phone=form.phone.data,
                 email=form.email.data,
@@ -698,6 +702,9 @@ def create_warehouse():
         current_app.logger.debug(form.errors)
 
     mode = 'create'
+    # 默认站点币种
+    form.currency_id.data = g.current_site.currency_id
+
     return render_template('warehouses/create_and_edit.html',
                            form=form,
                            mode=mode,
@@ -711,6 +718,9 @@ def create_warehouse():
 def edit_warehouse(id):
     warehouse = Warehouse.query.get_or_404(id)
     form = WarehouseForm()
+    currency_list = Currency.query.filter_by(status=1).all()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+                                currency_list]
     if form.validate_on_submit():
         form.populate_obj(warehouse)
         db.session.commit()
@@ -730,6 +740,7 @@ def edit_warehouse(id):
     form.type.data = warehouse.type
     form.is_default.data = warehouse.is_default
     form.status.data = warehouse.status
+    form.currency_id.data = warehouse.currency_id
 
     return render_template('warehouses/create_and_edit.html',
                            form=form,

@@ -5,6 +5,7 @@ from app import db
 from ..utils import timestamp
 from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES
 from .purchase import Purchase
+from .currency import Currency
 
 __all__ = [
     'Warehouse',
@@ -33,6 +34,8 @@ class Warehouse(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
+    # 币种
+    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     name = db.Column(db.String(32), nullable=False)
     address = db.Column(db.String(128))
     en_address = db.Column(db.String(128))
@@ -52,6 +55,14 @@ class Warehouse(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    @property
+    def currency_unit(self):
+        """当前货币单位"""
+        if self.currency_id:
+            current_currency = Currency.query.get(self.currency_id)
+            return current_currency.code
+        else:
+            return None
 
     @property
     def default_shelve(self):

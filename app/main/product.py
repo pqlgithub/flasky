@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import time, hashlib
+import time, hashlib, re
 from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
@@ -463,12 +463,13 @@ def import_product():
             default_cover = Asset.query.filter_by(is_default=True).first()
 
             for product_dict in products:
+                id_code = product_dict.get('id_code')
                 # 69码不存在，跳过
-                if product_dict.get('id_code') is None:
+                if id_code is None or re.match(r'^\d{13}$', id_code) is None:
                     continue
 
                 # 验证sku是否已存在
-                rows = ProductSku.validate_unique_id_code(product_dict['id_code'], region_id=reg_id, master_uid=Master.master_uid())
+                rows = ProductSku.validate_unique_id_code(id_code, region_id=reg_id, master_uid=Master.master_uid())
                 if len(rows) >= 1:
                     # 已存在，则跳过
                     continue
@@ -479,7 +480,7 @@ def import_product():
                     'supplier_id' : supplier_id,
                     'master_uid' : Master.master_uid(),
                     'serial_no' : ProductSku.make_unique_serial_no(gen_serial_no()),
-                    'id_code' : product_dict.get('id_code'),
+                    'id_code' : id_code,
                     'cover_id' : default_cover.id,
                     's_model' : product_dict.get('mode'),
                     's_color' : product_dict.get('color'),
