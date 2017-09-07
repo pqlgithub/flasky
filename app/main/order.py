@@ -98,9 +98,10 @@ def shipment_order():
         # 获取发货人
         shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=warehouse_id).first()
 
+
         eorder = {}
         eorder['ShipperCode'] = express_code
-        eorder['OrderCode'] = order.outside_target_id
+        eorder['OrderCode'] = order.outside_target_id if order.outside_target_id else order.rid
         eorder['PayType'] = 1
         eorder['ExpType'] = 1
         eorder['IsReturnPrintTemplate'] = '1'
