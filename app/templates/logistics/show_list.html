@@ -30,6 +30,8 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th>{{ _('Logistics Name') }}</th>
+						<th>{{ _('Logistics Code') }}</th>
+						<th class="text-center">{{ _('Default') }}</th>
 						<th>{{ _('Contact') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
@@ -42,6 +44,16 @@
 						</td>
 						<td>
 							{{ express.name }}
+						</td>
+						<td>
+							{{ express.code }}
+						</td>
+						<td class="text-center">
+							{% if express.is_default %}
+							<label class="badge badge-mixpus">
+								<i class="glyphicon glyphicon-ok"></i>
+							</label>
+							{% endif %}
 						</td>
 						<td>
 							{{ express.contact_name }} {{ express.contact_mobile }}

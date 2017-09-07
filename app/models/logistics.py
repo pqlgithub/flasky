@@ -15,6 +15,7 @@ class Express(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     name = db.Column(db.String(32), index=True, nullable=False)
+    code = db.Column(db.String(10), index=True, nullable=False)
     # 联系人信息
     contact_name = db.Column(db.String(16), nullable=False)
     contact_mobile = db.Column(db.String(11))

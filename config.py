@@ -126,6 +126,12 @@ class Config:
     CURRENCY_API_ALL = '/exchange/currency'
 
 
+    # 快递鸟
+    KDN_APP_ID = '1302778'
+    KDN_APP_KEY = '243d245a-4184-48f4-8072-9485de34a705'
+    KDN_APP_ROOT_URL = 'http://testapi.kdniao.cc:8081/api'
+
+
     @staticmethod
     def init_app(app):
         pass
@@ -164,6 +170,9 @@ class ProductionConfig(Config):
 
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'
+
+    # 快递鸟
+    KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
 
 
 config = {

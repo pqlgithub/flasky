@@ -141,6 +141,11 @@ class Order(db.Model):
     )
 
     @property
+    def rid(self):
+        """订单编号别名"""
+        return self.serial_no
+
+    @property
     def express(self):
         """关联物流方式"""
         if self.express_id:

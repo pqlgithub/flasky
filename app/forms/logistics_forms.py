@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms import StringField, TextAreaField, IntegerField, DecimalField, SelectField, RadioField
+from wtforms.fields import StringField, TextAreaField, IntegerField, DecimalField, SelectField, BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
 from app.models import Express
 
 class ExpressForm(Form):
     name = StringField(lazy_gettext('Express Name'), validators=[DataRequired("Express Name can't empty!")])
+    code = StringField(lazy_gettext('Express Code'), validators=[DataRequired("Express Code can't empty!")])
     # 联系人信息
     contact_name = StringField(lazy_gettext('Contact Name'))
     contact_mobile = StringField(lazy_gettext('Contact Mobile'))
     contact_phone = StringField(lazy_gettext('Contact Phone'))
     description = TextAreaField(lazy_gettext('Description'))
+
+    is_default = BooleanField(lazy_gettext('Is Default'), default=False)
 
     def validate_name(self, filed):
         if Express.query.filter_by(name=filed.data).first():

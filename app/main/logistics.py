@@ -40,6 +40,7 @@ def create_express():
         express = Express(
             master_uid = Master.master_uid(),
             name = form.name.data,
+            code = form.code.data,
             contact_name = form.contact_name.data,
             contact_mobile = form.contact_mobile.data,
             contact_phone = form.contact_phone.data,
@@ -73,6 +74,7 @@ def edit_express(id):
 
     # 初始化编辑数据
     form.name.data = express.name
+    form.code.data = express.code
     form.contact_name.data = express.contact_name
     form.contact_mobile.data = express.contact_mobile
     form.contact_phone.data = express.contact_phone

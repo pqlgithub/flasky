@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Print Order</title>
+	<style type="text/css">
+		@page {
+			size: A5;
+			margin: 1.25cm;
+		}
+		@font-face {
+            font-family: simsun;
+            src: url("{{ font_path }}");  /* 字体路径 */
+        }
+        body {
+            font-family: simsun;
+			color: black;
+			font-size: 12px;
+			line-height: 20px;
+        }
+		.table {
+			border: 1px solid #9c9c9c;
+			table-layout：fixed;
+		}
+		.table td,
+		.table th {
+			background-color: #fff !important;
+			padding-left: 3px;
+			padding-top: 3px;
+			word-wrap: break-word;
+			word-break: break-all;
+		}
+		h3 {
+			font-size: 14px;
+		}
+		.table td.title-label {
+			width: 150px;
+			font-weight: bold;
+		}
+		table tr.total strong {
+			margin-right: 50px;
+		}
+		.site-logo {
+			font-size: 16px;
+			line-height: 25px;
+			font-weight: bold;
+			text-align: center;
+		}
+		.th {
+			margin-top: 20px;
+		}
+		.bh {
+			margin-bottom: 20px;
+		}
+		.center {
+			text-align: center;
+			padding-right: 0;
+			padding-left: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="message">
+		{{ reason }}
+	</div>
+</body>
+</html>

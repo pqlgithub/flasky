@@ -5,8 +5,9 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from jinja2 import PackageLoader, Environment
 from flask_login import login_required, current_user
 from flask_babelex import gettext
-from io import BytesIO
+from io import BytesIO, StringIO
 import xhtml2pdf.pisa as pisa
+import html
 import barcode
 from barcode.writer import ImageWriter
 from openpyxl.reader.excel import load_workbook
@@ -20,9 +21,10 @@ from ..utils import gen_serial_no, Master, full_response, custom_response, R201_
     timestamp
 from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
-    OutWarehouse, StockHistory, Site, Supplier, Asset
+    OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
+from app.helpers import kdniao
 
 
 def load_common_data():
@@ -63,6 +65,82 @@ def show_orders(page=1):
                            sub_menu='orders',
                            status=status,
                            paginated_orders=paginated_orders, **load_common_data())
+
+@main.route('/orders/shipment')
+@login_required
+@user_has('admin_order')
+def shipment_order():
+    """设置订单发货状态，获取电子面单"""
+    rid = request.args.get('rid')
+    rids = rid.split(',')
+    order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
+
+    for order in order_list:
+        # 检查订单是否为待发货
+        if order.status != OrderStatus.PENDING_SHIPMENT:
+            current_app.logger.warn("Order[%s] status isn't pending shipment!" % order.rid)
+            continue
+
+        # 获取客户设置快递公司，如无则选择默认
+        express_id = order.express_id
+        express_code = ''
+        if express_id:
+            express = Express.query.get(express_id)
+            express_code = express.code if express else ''
+
+        # 获取默认值
+        if not express_code:
+            express = Express.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
+            express_code = express.code
+
+        # 发货前，需先审单，设置从哪个仓库发出
+        warehouse_id = order.warehouse_id
+        # 获取发货人
+        shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=warehouse_id).first()
+
+        eorder = {}
+        eorder['ShipperCode'] = express_code
+        eorder['OrderCode'] = order.outside_target_id
+        eorder['PayType'] = 1
+        eorder['ExpType'] = 1
+        eorder['IsReturnPrintTemplate'] = '1'
+
+        sender = {}
+        sender['Name'] = shipper.name
+        sender['Mobile'] = shipper.mobile
+        sender['ProvinceName'] = shipper.province
+        sender['CityName'] = shipper.city
+        sender['ExpAreaName'] = shipper.area
+        sender['Address'] = shipper.address
+
+        receiver = {}
+        receiver['Name'] = order.buyer_name
+        receiver['Mobile'] = order.buyer_phone
+        receiver['ProvinceName'] = order.buyer_province
+        receiver['CityName'] = order.buyer_city
+        receiver['ExpAreaName'] = ''
+        receiver['Address'] = order.buyer_address
+
+        commodity_one = {}
+        commodity_one['GoodsName'] = '其他'
+        commodity = []
+        commodity.append(commodity_one)
+
+        eorder['Sender'] = sender
+        eorder['Receiver'] = receiver
+        eorder['Commodity'] = commodity
+
+        # 请求电子面单
+        eorder_result = kdniao.get_eorder(eorder)
+
+        current_app.logger.debug('result code: %s, success: %s' % (eorder_result['ResultCode'], eorder_result['Success']))
+
+        if eorder_result['ResultCode'] != '100' or eorder_result['Success'] != True:
+            reason = eorder_result['Reason']
+            return render_template('pdf/eorder.html',
+                                   reason=reason)
+
+        return eorder_result['PrintTemplate']
 
 
 @main.route('/orders/print_order_pdf')

@@ -47,8 +47,27 @@
 		return false;
 	});
 
-	// 打印采购单
+	// 打印订单发货单
 	$('.ajax-print').click(function () {
+		var form_id = $(this).data('form-id'), href = $(this).data('href');
+		// 检测是否选中
+		var selected = [];
+		$('#' + form_id).find('.check-one:checked').each(function () {
+			var id = $(this).val();
+			selected.push(id);
+		});
+		if (selected.length == 0){
+			swal('Error', 'First to selected the one!', 'error');
+			return false;
+		}
+		var wd = window.open('about:blank', '_blank');
+		wd.location.href = href + '?rid=' + selected.toString();
+
+		return false;
+	});
+
+	// 获取快递单号、设置发货状态
+	$('.ajax-shipment').click(function () {
 		var form_id = $(this).data('form-id'), href = $(this).data('href');
 		// 检测是否选中
 		var selected = [];
@@ -78,7 +97,7 @@
 			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
 				0 items selected
 			</span>
-			<button class="btn btn-default ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
+			<button class="btn btn-default ajax-shipment" data-form-id="orders-form" data-href="{{ url_for('main.shipment_order') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Shipment') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
 			<div class="btn-group">
@@ -89,6 +108,9 @@
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Update buyer info') }}</a></li>
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Set as blacked') }}</a></li>
+					<li>
+						<a href="javascript:void(0);" class="ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}">{{ _('Print Shipping Document') }}</a>
+					</li>
 					<li class="divider" role="separator"></li>
 					<li><a href="#" class="ajax-modal" data-modal="synchronize-modal">{{ _('Synchronize orders') }}</a></li>
 					<li>
