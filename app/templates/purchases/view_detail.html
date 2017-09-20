@@ -104,10 +104,22 @@
 						<img src="{{ item.cover.view_url }}" width="60px">
 					</td>
 					<td>
+						{% if item.sku.product %}
+							{{ item.sku.product.name }}<br>
+						{% endif %}
 						{{ item.sku.serial_no }}
 					</td>
 					<td class="text-center">
-						<label class="label label-warning">{{ item.sku.s_model }}</label>
+						{% if item.sku.s_model %}
+						<label class="label label-warning">
+							{{ item.sku.s_model|supress_none }}
+						</label>
+						{% endif %}
+						{% if item.sku.s_color %}
+						<label class="label label-default">
+							{{ item.sku.s_color|supress_none }}
+						</label>
+						{% endif %}
 					</td>
 					<td class="text-center">
 						<label id="cost_price_{{ item.product_sku_id }}">{{ item.cost_price }}</label> {{ current_site.currency }}

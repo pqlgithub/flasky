@@ -3,7 +3,7 @@
 		{{ _('Purchases List') }}
 	</div>
 	{% for s in purchase_status %}
-		<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}" class="list-group-item {% if status == s[0] %} active{% endif %}">
+		<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}" class="pjax list-group-item {% if status == s[0] %} active{% endif %}">
 			{{ s[2] }}
 			{% if s[0] == 1 and pending_review_count > 0 %}
 			<span class="badge">{{ pending_review_count }}</span>
@@ -21,7 +21,7 @@
 		{{ _('Purchases Payment') }}
 	</div>
 	{% for pay in purchase_payed %}
-		<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}" class="list-group-item {% if f == pay[0] %} active{% endif %}">
+		<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}" class="pjax list-group-item {% if f == pay[0] %} active{% endif %}">
 			{{ pay[2] }}
 			{% if pay[0] == 1 and applyable_count > 0 %}
 			<span class="badge">{{ applyable_count }}</span>

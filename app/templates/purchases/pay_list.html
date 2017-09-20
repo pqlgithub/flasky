@@ -1,10 +1,10 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'purchases/_sub_menu.html' %}
 {% endblock %}
 
-{% block private_js %}
+{% block after_jquery %}
 <script type="text/javascript">
 	var submit_filter_form = function () {
 		var data = $('#filter-purchase-form').serialize();
@@ -13,45 +13,41 @@
 			$('#table-refresh-box').html(result);
 		}, 'html');
 	};
-</script>
-{% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	// 审核 全部 or 单个
-	$('button.verify-all').click(function () {
-		var form_id = $(this).data('form-id');
-		// 检测是否选中
-		selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
-		});
-		if (selected.length){
-			$.post('{{ url_for("main.ajax_apply_pay") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
-				if (result.success) {
-					ids = result.data;
-					for (var i=0,l=ids.length;i<l;i++) {
-						$('#tr_' + ids[i]).remove();
-					}
-				} else {
-					swal("Error", result.status.message, "error");
-				}
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		// 审核 全部 or 单个
+		$('button.verify-all').click(function () {
+			var form_id = $(this).data('form-id');
+			// 检测是否选中
+			selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
 			});
-		} else {
-			swal("Error", "First to selected the one!!!", "error");
-		}
+			if (selected.length){
+				$.post('{{ url_for("main.ajax_apply_pay") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+					if (result.success) {
+						ids = result.data;
+						for (var i=0,l=ids.length;i<l;i++) {
+							$('#tr_' + ids[i]).remove();
+						}
+					} else {
+						swal("Error", result.status.message, "error");
+					}
+				});
+			} else {
+				swal("Error", "First to selected the one!!!", "error");
+			}
+		});
 	});
 
-	hook_dropdown_menu(function(){
-		submit_filter_form();
-	});
-
-	hook_filter_search(function(){
-		submit_filter_form();
-	});
-
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}

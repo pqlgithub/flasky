@@ -46,7 +46,7 @@
 					{{ purchase.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
 				</td>
 				<td class="text-right">
-					<a href="{{ url_for('main.preview_purchase', rid=purchase.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+					<a href="{{ url_for('main.preview_purchase', rid=purchase.serial_no) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 						{{ _('View') }}
 					</a>
 				</td>

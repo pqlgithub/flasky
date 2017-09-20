@@ -1,10 +1,10 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'purchases/_sub_menu.html' %}
 {% endblock %}
 
-{% block private_js %}
+{% block after_jquery %}
 <script type="text/javascript">
 	var recount = function () {
 		var total_quantity=0, total_amount=0, sku_count=0;
@@ -38,92 +38,93 @@
 		}
 		return tr_html.join('');
 	};
-</script>
-{% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	$('#add-product-btn').click(function (e) {
-		var $btn = $(this), post_url=$(this).attr('href');
-		var supplier_id = $('#supplier_id').find(':selected').eq(0).val();
-		if (supplier_id == 0) {
-			swal(
-				'{{ _("Oops...") }}',
-			  	'{{ _("Please select the supplier first!") }}',
-			  	'error'
-			);
+	$(function () {
+		mixpus.init_page_layout();
+
+		$('#add-product-btn').click(function (e) {
+			var $btn = $(this), post_url=$(this).attr('href');
+			var supplier_id = $('#supplier_id').find(':selected').eq(0).val();
+			if (supplier_id == 0) {
+				swal(
+					'{{ _("Oops...") }}',
+					'{{ _("Please select the supplier first!") }}',
+					'error'
+				);
+				return false;
+			}
+
+			$('#sku-modal').remove();
+
+			$.ajax({
+				url: post_url,
+				dataType: 'html',
+				data: {'supplier_id': supplier_id},
+				beforeSend: function() {
+					$btn.prop('disabled', true);
+				},
+				complete: function() {
+					$btn.prop('disabled', false);
+				},
+				success: function(html) {
+					$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+
+					$('#sku-modal').modal('show');
+				}
+			});
 			return false;
-		}
-		$('#sku-modal').remove();
-		$.ajax({
-			url: post_url,
-			dataType: 'html',
-			data: {'supplier_id': supplier_id},
-			beforeSend: function() {
-				$btn.prop('disabled', true);
-			},
-			complete: function() {
-				$btn.prop('disabled', false);
-			},
-			success: function(html) {
-				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+		});
 
-				$('#sku-modal').modal('show');
+		$('.ajax-delete-sku').click(function () {
+			var item_id = parseInt($(this).data('item-id')), sku_id = $(this).data('id');
+			if (item_id > 0) {
+				$.post('/purchases/delete_item', {'item_id': item_id, 'csrf_token': csrf_token}, function (result) {
+					if (result.success) {
+						$('#tr_sku_'+ result.data.sku_id).remove();
+
+						recount();
+						return false;
+					}
+				}, 'json');
+			}
+
+			$('#tr_sku_'+sku_id).remove();
+			recount();
+
+			return false;
+		});
+
+		$(document).on('change', 'input.quantity', function(e) {
+			var quantity = parseInt($(this).val()), sku_id = $(this).data('id');
+			var price = parseFloat($('#cost_price_' + sku_id).html());
+			$('#amount_' + sku_id).html((price*quantity).toFixed(2));
+
+			recount();
+		});
+
+		$('.change-currency').change(function () {
+			var currency = $(this).find('option:selected').data('currency');
+			if (currency != undefined) {
+				$.get("{{ url_for('main.change_currency') }}", {
+					fc: $('input[name=from_currency]').val(),
+					tc: currency
+				}, function (result) {
+					if (result.success) {
+						$('input[name=from_currency]').val(currency);
+						$('.current-currency').text(currency);
+						var rate = result.data.rate;
+						var $freight = $('input[name=freight]'), $extra_charge = $('input[name=extra_charge]');
+						var freight_value = $freight.val(), extra_charge_value = $extra_charge.val();
+						$freight.val((freight_value*rate).toFixed(2));
+						$extra_charge.val((extra_charge_value*rate).toFixed(2));
+					}
+				}, 'json');
+			} else {
+				mixpus.show_warning_message('Currency is error!');
 			}
 		});
-		return false;
 	});
-
-	$('.ajax-delete-sku').click(function () {
-		var item_id = parseInt($(this).data('item-id')), sku_id = $(this).data('id');
-		if (item_id > 0) {
-			$.post('/purchases/delete_item', {'item_id': item_id, 'csrf_token': csrf_token}, function (result) {
-				if (result.success) {
-					$('#tr_sku_'+ result.data.sku_id).remove();
-
-					recount();
-					return false;
-				}
-			}, 'json');
-		}
-
-		$('#tr_sku_'+sku_id).remove();
-		recount();
-
-		return false;
-	});
-
-	$(document).on('change', 'input.quantity', function(e) {
-		var quantity = parseInt($(this).val()), sku_id = $(this).data('id');
-		var price = parseFloat($('#cost_price_' + sku_id).html());
-		$('#amount_' + sku_id).html((price*quantity).toFixed(2));
-
-		recount();
-	});
-
-	$('.change-currency').change(function () {
-		var currency = $(this).find('option:selected').data('currency');
-		if (currency != undefined) {
-			$.get("{{ url_for('main.change_currency') }}", {
-				fc: $('input[name=from_currency]').val(),
-				tc: currency
-			}, function (result) {
-				if (result.success) {
-					$('input[name=from_currency]').val(currency);
-					$('.current-currency').text(currency);
-					var rate = result.data.rate;
-					var $freight = $('input[name=freight]'), $extra_charge = $('input[name=extra_charge]');
-					var freight_value = $freight.val(), extra_charge_value = $extra_charge.val();
-					$freight.val((freight_value*rate).toFixed(2));
-					$extra_charge.val((extra_charge_value*rate).toFixed(2));
-				}
-			}, 'json');
-		} else {
-			mixpus.show_warning_message('Currency is error!');
-		}
-	});
-
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -139,7 +140,7 @@
 			<button type="submit" form="purchase-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_purchases') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_purchases') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>
@@ -211,10 +212,20 @@
 						<img src="{{ item.cover.view_url }}" width="60px">
 					</td>
 					<td>
+						{{ item.sku.product.name }}<br>
 						{{ item.sku.serial_no }}
 					</td>
 					<td class="text-center">
-						<label class="label label-warning">{{ item.sku.s_model }}</label>
+						{% if item.sku.s_model %}
+						<label class="label label-warning">
+							{{ item.sku.s_model|supress_none }}
+						</label>
+						{% endif %}
+						{% if item.sku.s_color %}
+						<label class="label label-default">
+							{{ item.sku.s_color|supress_none }}
+						</label>
+						{% endif %}
 					</td>
 					<td class="text-center">
 						<label id="cost_price_{{ item.product_sku_id }}">{{ item.cost_price }}</label> {{ item.sku.product.currency_unit }}
@@ -261,7 +272,7 @@
 			{{ form.arrival_date.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-3">
 				<div class="input-group form-date">
-					{{ form.arrival_date(id="arrival_date", class="form-control form_datetime") }}
+					{{ form.arrival_date(class="form-control form_datetime") }}
 					<span class="input-group-addon">
 						<i class="glyphicon glyphicon-calendar"></i>
 					</span>

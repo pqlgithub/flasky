@@ -1,10 +1,10 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'purchases/_sub_menu.html' %}
 {% endblock %}
 
-{% block private_js %}
+{% block after_jquery %}
 <script type="text/javascript">
 	var submit_filter_form = function () {
 		var data = $('#filter-purchase-form').serialize();
@@ -14,7 +14,13 @@
 		}, 'html');
 	};
 
-	function hook_list_action() {
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
 		// 审核 全部 or 单个
 		$('button.verify-all').click(function () {
 			var form_id = $(this).data('form-id');
@@ -25,7 +31,7 @@
 				selected.push(id);
 			});
 			if (selected.length){
-				$.post('{{ url_for("main.ajax_verify") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+				$.post('{{ url_for("main.ajax_verify") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
 					if (result.success) {
 						ids = result.data;
 						for (var i=0,l=ids.length;i<l;i++) {
@@ -63,11 +69,13 @@
 		// 到货
 		$('.ajax-arrival').click(function (e) {
 			var $btn = $(this), post_url = $(this).attr('href');
+
 			$('#modal-arrival').remove();
+
 			$.ajax({
 				url: post_url,
 				dataType: 'html',
-				data: {'csrf_token': csrf_token},
+				data: {'csrf_token': mixpus.csrf_token},
 				beforeSend: function() {
 					$btn.prop('disabled', true);
 				},
@@ -83,24 +91,10 @@
 
 			return false;
 		});
-	}
+
+	});
 
 </script>
-{% endblock %}
-
-{% block jquery %}
-{#<script type="text/javascript">#}
-	hook_dropdown_menu(function(){
-		submit_filter_form();
-	});
-
-	hook_filter_search(function(){
-		submit_filter_form();
-	});
-
-	hook_list_action();
-
-{#</script>#}
 {% endblock %}
 
 {% block mainbar %}
@@ -132,7 +126,7 @@
 			<button class="btn btn-warning verify-all" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
-			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_purchase') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">

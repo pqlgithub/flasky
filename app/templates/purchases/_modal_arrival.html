@@ -44,7 +44,7 @@
 					<thead>
 					<tr>
 						<th class="text-center">{{ _('Product Image') }}</th>
-						<th>{{ _('Product Name') }}</th>
+						<th>{{ _('Product Info') }}</th>
 						<th class="text-center">{{ _('Product Model') }}</th>
 						<th class="text-center">{{ _('In / Total Quantity') }}</th>
 						<th class="text-center">{{ _('Quantity') }}</th>
@@ -54,13 +54,27 @@
 					{% for item in purchase.products %}
 					<tr>
 						<td class="text-center">
+							{% if item.sku.cover %}
 							<img src="{{ item.sku.cover.view_url }}" width="60px">
+							{% endif %}
 						</td>
 						<td>
+							{% if item.sku.product %}
+							{{ item.sku.product.name }}<br>
+							{% endif %}
 							{{ item.sku.serial_no }}
 						</td>
 						<td class="text-center">
-							<label class="label label-warning">{{ item.sku.s_model }}</label>
+							{% if item.sku.s_model %}
+							<label class="label label-warning">
+								{{ item.sku.s_model|supress_none }}
+							</label>
+							{% endif %}
+							{% if item.sku.s_color %}
+							<label class="label label-default">
+								{{ item.sku.s_color|supress_none }}
+							</label>
+							{% endif %}
 						</td>
 						<td class="text-center">
 							<span class="text-danger">{{ item.in_quantity }}</span> / {{ item.quantity }}
