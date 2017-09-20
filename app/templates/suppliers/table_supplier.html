@@ -33,7 +33,7 @@
 		{{ supplier.remark }}
 	</td>
 	<td class="text-right">
-		<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+		<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 			{{ _('Edit') }}
 		</a>
 	</td>

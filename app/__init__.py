@@ -25,6 +25,8 @@ from flask_babelex import Babel
 from app.extensions import flask_celery
 # 全文检索
 import flask_whooshalchemyplus as whooshalchemyplus
+# pjax
+from flask_pjax import PJAX
 # 导入上传
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_wtf.csrf import CSRFProtect
@@ -42,6 +44,7 @@ mail = Mail()
 babel = Babel()
 csrf = CSRFProtect()
 s3 = FlaskS3()
+pjax = PJAX()
 
 # 创建set
 uploader = UploadSet('photos', extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv'))
@@ -74,6 +77,7 @@ def create_app(config_name):
     # Init the Flask-Celery-Helper via app object
     # Register the celery object into app object
     flask_celery.init_app(app)
+    pjax.init_app(app)
 
     # 初始化
     configure_uploads(app, uploader)

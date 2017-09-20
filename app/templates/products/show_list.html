@@ -1,11 +1,11 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
+{% block after_jquery %}
+<script type="text/javascript">
 	var submit_filter_form = function () {
 		var data = $('.filter-form').serialize();
 
@@ -15,29 +15,25 @@
 		return false;
 	};
 
-	$('input.searcher').on('keydown', function (e) {
-		var ev = window.event||e;
-		if (ev.keyCode == 13) {
-			submit_filter_form();
-			return false;
-		}
-	});
+	$(function () {
+		mixpus.init_page_layout();
 
-	hook_dropdown_menu(function(){
-		submit_filter_form();
-	});
+		mixpus.hook_filter_search(submit_filter_form);
 
-	$('a.ajax-copy').click(function () {
-		if ($('input.check-one:checked').length != 1) {
-			mixpus.show_error_message("{{ _('Choose one product at a time') }}");
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		$('a.ajax-copy').click(function () {
+			if ($('input.check-one:checked').length != 1) {
+				mixpus.show_error_message("{{ _('Choose one product at a time') }}");
+				return false;
+			}
+			var product_rid = $('input.check-one:checked').val();
+			var toid = $(this).data('toid'), post_url = $(this).attr('href');
+			window.location.href = post_url + '?reg_id='+ toid + '&rid='+ product_rid;
 			return false;
-		}
-		var product_rid = $('input.check-one:checked').val();
-		var toid = $(this).data('toid'), post_url = $(this).attr('href');
-		window.location.href = post_url + '?reg_id='+ toid + '&rid='+ product_rid;
-		return false;
+		});
 	});
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -69,7 +65,7 @@
 					</li>
 				</ul>
 			</div>
-			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="products-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">

@@ -94,12 +94,12 @@ class Product(db.Model):
 
     # product and sku => 1 to N
     skus = db.relationship(
-        'ProductSku', backref='product', lazy='dynamic'
+        'ProductSku', backref='product', lazy='dynamic', cascade='delete'
     )
 
     # product and customs declaration => 1 to 1
     declaration = db.relationship(
-        'CustomsDeclaration', backref='product', uselist=False
+        'CustomsDeclaration', backref='product', uselist=False, cascade='delete'
     )
 
     @property
@@ -651,7 +651,7 @@ class Category(db.Model):
 
         sql += " WHERE c2.master_uid=%d" % uid
         sql += " GROUP BY cp.category_id"
-        sql += " ORDER BY cp.category_id ASC"
+        sql += " ORDER BY cp.category_id ASC, c2.sort_order ASC"
 
         if page == 1:
             offset = 0
@@ -664,10 +664,10 @@ class Category(db.Model):
 
 
     @classmethod
-    def repair_categories(cls, pid=0):
+    def repair_categories(cls, master_uid, pid=0):
         """repair category path"""
 
-        categories = Category.query.filter_by(pid=pid).all()
+        categories = Category.query.filter_by(master_uid=master_uid, pid=pid).all()
 
         for cate in categories:
             db.engine.execute("DELETE FROM `categories_paths` WHERE category_id=%d" % cate.id)
@@ -685,9 +685,7 @@ class Category(db.Model):
             db.engine.execute(
                 'REPLACE INTO `categories_paths` SET category_id=%d, path_id=%d, level=%d' % (cate.id, cate.id, level))
 
-            db.session.commit()
-
-            Category.repair_categories(cate.id)
+            Category.repair_categories(master_uid, cate.id)
 
 
     def __repr__(self):

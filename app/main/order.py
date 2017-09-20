@@ -66,12 +66,12 @@ def show_orders(page=1):
                            status=status,
                            paginated_orders=paginated_orders, **load_common_data())
 
-@main.route('/orders/shipment')
+@main.route('/orders/shipment', methods=['POST'])
 @login_required
 @user_has('admin_order')
 def shipment_order():
     """设置订单发货状态，获取电子面单"""
-    rid = request.args.get('rid')
+    rid = request.values.get('rid')
     rids = rid.split(',')
     order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
 

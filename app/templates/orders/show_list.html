@@ -1,95 +1,142 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include "orders/_sub_menu.html" %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	// 审核 全部 or 单个
-	$('button.verify-all').click(function () {
-		var form_id = $(this).data('form-id');
-		// 检测是否选中
-		selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
-		});
-		if (selected.length){
-			$.post('{{ url_for("main.ajax_verify_order") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
-				if (result.success) {
-					ids = result.data;
-					for (var i=0,l=ids.length;i<l;i++) {
-						$('#tr_' + ids[i] + '_parent').remove();
-						$('#tr_' + ids[i]).remove();
+{% block private_js %}
+<!--设置网络打印机-->
+<script src="{{ url_for('static', filename='Lodop/LodopFuncs.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		// 审核 全部 or 单个
+		$('button.verify-all').click(function () {
+			var form_id = $(this).data('form-id');
+			// 检测是否选中
+			selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length){
+				$.post('{{ url_for("main.ajax_verify_order") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
+					if (result.success) {
+						ids = result.data;
+						for (var i=0,l=ids.length;i<l;i++) {
+							$('#tr_' + ids[i] + '_parent').remove();
+							$('#tr_' + ids[i]).remove();
+						}
+					} else {
+						swal("Error", result.status.message, "error");
 					}
+				});
+			} else {
+				swal("Error", "First to selected the one!!!", "error");
+			}
+		});
+
+		$('.ajax-canceled').click(function () {
+			var url = $(this).data('href');
+			$.post(url, {csrf_token: mixpus.csrf_token}, function(result){
+				if (result.success) {
+					rid = result.data.rid;
+					$('#tr_' + rid + '_parent').remove();
+					$('#tr_' + rid).remove();
 				} else {
 					swal("Error", result.status.message, "error");
 				}
 			});
-		} else {
-			swal("Error", "First to selected the one!!!", "error");
-		}
-	});
 
-	$('.ajax-canceled').click(function () {
-		var url = $(this).data('href');
-		$.post(url, {csrf_token: csrf_token}, function(result){
-			if (result.success) {
-				rid = result.data.rid;
-				$('#tr_' + rid + '_parent').remove();
-				$('#tr_' + rid).remove();
-			} else {
-				swal("Error", result.status.message, "error");
+			return false;
+		});
+
+		// 打印订单发货单
+		$('.ajax-print').click(function () {
+			var form_id = $(this).data('form-id'), href = $(this).data('href');
+			// 检测是否选中
+			var selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length == 0){
+				swal('Error', 'First to selected the one!', 'error');
+				return false;
 			}
-		});
 
-		return false;
-	});
+			var wd = window.open('about:blank', '_blank');
+			wd.location.href = href + '?rid=' + selected.toString();
 
-	// 打印订单发货单
-	$('.ajax-print').click(function () {
-		var form_id = $(this).data('form-id'), href = $(this).data('href');
-		// 检测是否选中
-		var selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
-		});
-		if (selected.length == 0){
-			swal('Error', 'First to selected the one!', 'error');
 			return false;
-		}
-		var wd = window.open('about:blank', '_blank');
-		wd.location.href = href + '?rid=' + selected.toString();
-
-		return false;
-	});
-
-	// 获取快递单号、设置发货状态
-	$('.ajax-shipment').click(function () {
-		var form_id = $(this).data('form-id'), href = $(this).data('href');
-		// 检测是否选中
-		var selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
 		});
-		if (selected.length == 0){
-			swal('Error', 'First to selected the one!', 'error');
+
+		// 获取快递单号、设置发货状态
+		$('.ajax-shipment').click(function () {
+			var $btn = $(this);
+
+			try {
+				LODOP = getLodop();
+				if (LODOP.VERSION) {
+					if (LODOP.CVERSION) {
+						console.log("当前有C-Lodop云打印可用!\n C-Lodop版本:"+LODOP.CVERSION+"(内含Lodop"+LODOP.VERSION+")");
+					} else {
+						console.log("本机已成功安装了Lodop控件！\n 版本号:"+LODOP.VERSION);
+					}
+				};
+			} catch (err){
+				mixpus.show_error_message('请首先安装打印控件！');
+				return false;
+			}
+
+			var form_id = $(this).data('form-id'), href = $(this).data('href');
+			// 检测是否选中
+			var selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length == 0){
+				swal('Error', 'First to selected the one!', 'error');
+				return false;
+			}
+
+			$btn.prop('disabled', true);
+
+			$.post(href, {'rid': selected.toString(), 'csrf_token': mixpus.csrf_token}, function (result) {
+
+				$btn.prop('disabled', false);
+
+				LODOP.PRINT_INIT('{{ _("Print Express") }}');
+				// 自定义纸张大小打印
+				LODOP.SET_PRINT_PAGESIZE(1, '100mm', '180mm', '');
+				LODOP.SET_SHOW_MODE('HIDE_SBUTTIN_PREVIEW', 1);
+
+				// 设置打印内容
+				LODOP.ADD_PRINT_HTM('10mm', '5mm', '100%', '100%', result);
+
+				// 预览
+				LODOP.PREVIEW();
+
+				// 选择打印机
+				// LODOP.PRINTA();
+				// 直接打印
+				// LODOP.PRINT();
+			});
 			return false;
-		}
-		var wd = window.open('about:blank', '_blank');
-		wd.location.href = href + '?rid=' + selected.toString();
+		});
 
-		return false;
 	});
-
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}
 <div class="list-page">
+	<div class="alert alert-danger hide" role="alert" id="clodop-alert"></div>
 	<h2 class="page-header">
 		{{ _('Order List') }}
 
@@ -130,7 +177,7 @@
 				<i class="glyphicon glyphicon-ok"></i>
 			</button>
 			{% endif %}
-			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="orders-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
@@ -360,4 +407,5 @@
 		</div>
 	</div>
 </div>
+
 {% endblock %}

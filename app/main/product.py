@@ -352,8 +352,8 @@ def delete_product():
         abort(404)
 
     try:
-        for id in selected_ids:
-            product = Product.query.get_or_404(id)
+        for rid in selected_ids:
+            product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
             if product:
                 db.session.delete(product)
 
@@ -561,9 +561,10 @@ def add_sku(rid):
 
         # 验证69码是否重复
         id_code = form.id_code.data
-        rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
-        if len(rows) >= 1:
-            return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
+
+        #rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
+        #if len(rows) >= 1:
+        #    return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
 
         sku = ProductSku(
             product_id=product.id,
@@ -609,9 +610,10 @@ def edit_sku(rid, s_id):
     if form.validate_on_submit():
         # 验证69码是否重复
         id_code = form.id_code.data
-        rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
-        if len(rows) > 1 or (len(rows) == 1 and rows[0][0] != s_id):
-            return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
+        
+        #rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
+        #if len(rows) > 1 or (len(rows) == 1 and rows[0][0] != s_id):
+        #    return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
 
         sku.cover_id = form.sku_cover_id.data
         sku.id_code = form.id_code.data
@@ -692,6 +694,16 @@ def show_categories(page=1):
                            **load_common_data())
 
 
+@main.route('/categories/repair')
+@main.route('/categories/repair/<int:parent_id>')
+@login_required
+def repair_category_path(parent_id=0):
+
+    Category.repair_categories(Master.master_uid(), parent_id)
+
+    return redirect(url_for('.show_categories'))
+
+
 @main.route('/categories/create', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_product')
@@ -710,7 +722,7 @@ def create_category():
         db.session.commit()
 
         # rebuild category path
-        Category.repair_categories(category.pid)
+        Category.repair_categories(Master.master_uid(), category.pid)
 
         flash('Add category is ok!', 'success')
 
@@ -739,7 +751,7 @@ def edit_category(id):
         db.session.commit()
 
         # rebuild category path
-        Category.repair_categories(category.pid)
+        Category.repair_categories(Master.master_uid(), category.pid)
 
         flash('Edit category is ok!', 'success')
 
@@ -778,6 +790,10 @@ def delete_category():
         for id in selected_ids:
             category = Category.query.get_or_404(int(id))
             db.session.delete(category)
+
+            # rebuild category path
+            Category.repair_categories(Master.master_uid(), id)
+
         db.session.commit()
 
         flash('Delete category is ok!', 'success')

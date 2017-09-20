@@ -1,7 +1,15 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -17,7 +25,7 @@
 			<button type="submit" form="supplier-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_suppliers') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_suppliers') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>

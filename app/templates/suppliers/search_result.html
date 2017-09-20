@@ -36,17 +36,9 @@
 </div>
 
 <script type="text/javascript">
-	hook_all_check();
-
-	$('[data-toggle="tooltip"]').tooltip({
-		container: 'body',
-		html: true,
-		trigger: 'hover'
-	});
-
-	$('.select2').select2({
-		'width': '100%'
-	});
+	mixpus.hook_all_check();
+	mixpus.hook_tooltip_toggle();
+	mixpus.hook_select2();
 
 	$('.pages-box.ajax')
 		.find('a')

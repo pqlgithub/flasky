@@ -18,6 +18,7 @@ bundles = {
         'js/jquery.plupload.queue.js',
         'js/bootstrap-datetimepicker.js',
         'js/clipboard.js',
+        'js/jquery.pjax.js',
         output='js/admin.min.js'
     ),
     'app_js': Bundle(

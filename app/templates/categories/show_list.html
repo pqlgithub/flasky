@@ -1,7 +1,15 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -10,7 +18,10 @@
 		{{ _('Category List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_category') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a class="pjax btn btn-default" href="{{ url_for('main.repair_category_path') }}" data-toggle="tooltip" data-original-title="{{ _('Rebuild') }}">
+				<i class="glyphicon glyphicon-refresh"></i>
+			</a>
+			<a href="{{ url_for('main.create_category') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="categories-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
@@ -51,7 +62,7 @@
 							{% endif %}
 						</td>
 						<td class="actions text-right">
-							<a href="{{ url_for('main.edit_category', id=cate.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_category', id=cate.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>
@@ -61,6 +72,7 @@
 			</table>
 		</form>
 	</div>
+
 	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">

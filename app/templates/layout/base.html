@@ -49,9 +49,6 @@
 		<![endif]-->
 		<script src="{{ url_for('static', filename='js/moment-with-locales.min.js') }}" type="text/javascript"></script>
 		{{ moment.lang(g.locale) }}
-		<script type="text/javascript">
-			var csrf_token = "{{ csrf_token() }}", img_last_open_folder = '', locale_label="{{ _('items selected') }}";
-		</script>
 	</head>
 
 	<body>
@@ -151,7 +148,7 @@
 			<div class="col-sm-3 col-md-2 sidebar">
 				{% block sidebar %}{% endblock %}
 			</div>
-			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="pjax-container">
 				{% with messages = get_flashed_messages(with_categories=true) %}
 					{% if messages %}
 					<div class="flashes">
@@ -188,9 +185,15 @@
   		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
   		{% endassets %}
 
-		{% block private_js %}{% endblock %}
 		<script type="text/javascript">
-			mixpus.copy_ok_message = "{{ _('Copy successfully') }}";
+			// 加载js执行前的配置信息
+			mixpus.csrf_token = "{{ csrf_token() }}";
+			mixpus.locale = {
+				selected_label: "{{ _('items selected') }}",
+				copy_ok_message: "{{ _('Copy successfully') }}"
+			};
+			mixpus.language = '{{ g.locale|default("en") }}';
+			mixpus.c_lodop_hosts = "192.168.1.22:8000,192.168.1.22:18000";
 
 			// 打开页面时加载进度条。
 			NProgress.start();
@@ -198,94 +201,16 @@
 			$(function(){
 				NProgress.done();
 
-				$(".form_datetime").datetimepicker({
-					minView: "month",
-					language: "{{ g.locale|default('en') }}",
-					format: "yyyy-mm-dd",
-					autoclose: true,
-					todayBtn: true
-				});
-				$('.form-date span.input-group-addon').click(function () {
-					$(this).prev('.form_datetime').focus();
-				});
-
-				// Image Manager
-				$(document).on('click', 'a[data-toggle=\'image\']', function(e) {
-					var $element = $(this);
-					var $popover = $element.data('bs.popover'); // element has bs popover?
-					var $target = $(this).data('target');
-					var $placement = $(this).data('placement') || 'right';
-
-					e.preventDefault();
-
-					// destroy all image popovers
-					$('a[data-toggle="image"]').popover('destroy');
-
-					// remove flickering (do not re-add popover when clicking for removal)
-					if ($popover) {
-						return;
-					}
-
-					$element.popover({
-						html: true,
-						placement: $placement,
-						trigger: 'manual',
-						content: function() {
-							return '<button type="button" id="button-image" class="btn btn-mixpus m-r-10"><i class="glyphicon glyphicon-edit"></i></button> <button type="button" id="button-clear" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></button>';
-						}
-					});
-
-					$element.popover('show');
-
-					$('#button-image').on('click', function() {
-						var $button = $(this);
-						var $icon   = $button.find('> i');
-
-						$('#modal-image').remove();
-
-						if ($.cookie('img_last_open_folder') && ($.cookie('img_last_open_folder') != 'undefined')) {
-							img_last_open_folder = $.cookie('img_last_open_folder');
-						}
-
-						$.ajax({
-							url: '{{ url_for("main.show_asset") }}?directory=' + img_last_open_folder + '&up_target=' + $target,
-							dataType: 'html',
-							beforeSend: function() {
-								$button.prop('disabled', true);
-								if ($icon.length) {
-									$icon.attr('class', 'fa fa-circle-o-notch fa-spin');
-								}
-							},
-							complete: function() {
-								$button.prop('disabled', false);
-								if ($icon.length) {
-									$icon.attr('class', 'fa fa-pencil');
-								}
-							},
-							success: function(html) {
-								$('body').append('<div id="modal-image" class="modal">' + html + '</div>');
-
-								$('#modal-image').modal('show');
-							}
-						});
-
-						$element.popover('destroy');
-					});
-
-					$('#button-clear').on('click', function() {
-						$element.find('img').attr('src', $element.find('img').attr('data-placeholder'));
-
-						$element.parent().find('input').val('');
-
-						$element.popover('destroy');
-					});
-
-				});
+				mixpus.hook_pjax_link();
 
 				{% block jquery %}
 				// current document scripts
 				{% endblock %}
 			});
 		</script>
+
+		{% block private_js %}{% endblock %}
+		{% block after_jquery %}{% endblock %}
+
 	</body>
 </html>

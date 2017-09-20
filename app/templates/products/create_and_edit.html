@@ -1,73 +1,76 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	$('.ajax-sku').click(function (e) {
-		var $btn = $(this), post_url=$(this).attr('href');
-		$('#sku-modal').remove();
-		$.ajax({
-			url: post_url,
-			dataType: 'html',
-			beforeSend: function() {
-				$btn.prop('disabled', true);
-			},
-			complete: function() {
-				$btn.prop('disabled', false);
-			},
-			success: function(html) {
-				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
 
-				$('#sku-modal').modal('show');
-			}
+		$('.ajax-sku').click(function (e) {
+			var $btn = $(this), post_url=$(this).attr('href');
+			$('#sku-modal').remove();
+			$.ajax({
+				url: post_url,
+				dataType: 'html',
+				beforeSend: function() {
+					$btn.prop('disabled', true);
+				},
+				complete: function() {
+					$btn.prop('disabled', false);
+				},
+				success: function(html) {
+					$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+
+					$('#sku-modal').modal('show');
+				}
+			});
+			return false;
 		});
-		return false;
-	});
 
-	$('.ajax-delete-sku').click(function () {
-		var post_url = $(this).attr('href');
-		$.post(post_url, {'csrf_token': csrf_token}, function (result) {
-			if (result.success) {
-				$('#tr_sku_'+ result.data.id).remove();
-			}
-		}, 'json');
-		return false;
-	});
-
-	$('.change-currency').change(function () {
-		var current_text = $(this).find('option:selected').text();
-		var ary_currency = current_text.split('-');
-		if (ary_currency.length > 1) {
-			var currency_code = ary_currency[1].trim();
-			var current_currency_unit = $('input[name=current_currency_unit]').val();
-			$.get("{{ url_for('main.change_currency') }}", {
-				fc: current_currency_unit,
-				tc: currency_code
-			}, function (result) {
+		$('.ajax-delete-sku').click(function () {
+			var post_url = $(this).attr('href');
+			$.post(post_url, {'csrf_token': mixpus.csrf_token}, function (result) {
 				if (result.success) {
-					$('.current-currency').text(currency_code.trim());
-					$('input[name=current_currency_unit]').val(currency_code.trim());
-					var rate = result.data.rate;
-					var $cost_price = $('input[name=cost_price]'), $sale_price = $('input[name=sale_price]');
-					var cost_price_value = $cost_price.val(), sale_price_value = $sale_price.val();
-					$cost_price.val((cost_price_value*rate).toFixed(2));
-					$sale_price.val((sale_price_value*rate).toFixed(2));
+					$('#tr_sku_'+ result.data.id).remove();
 				}
 			}, 'json');
-		} else {
-			mixpus.show_warning_message('Currency text is error!');
-		}
-	});
+			return false;
+		});
 
-	$('.btn-save-continue').click(function () {
-		$('input[name=next_action]').val('continue_save');
-		$('#product-form').submit();
-	});
+		$('.change-currency').change(function () {
+			var current_text = $(this).find('option:selected').text();
+			var ary_currency = current_text.split('-');
+			if (ary_currency.length > 1) {
+				var currency_code = ary_currency[1].trim();
+				var current_currency_unit = $('input[name=current_currency_unit]').val();
+				$.get("{{ url_for('main.change_currency') }}", {
+					fc: current_currency_unit,
+					tc: currency_code
+				}, function (result) {
+					if (result.success) {
+						$('.current-currency').text(currency_code.trim());
+						$('input[name=current_currency_unit]').val(currency_code.trim());
+						var rate = result.data.rate;
+						var $cost_price = $('input[name=cost_price]'), $sale_price = $('input[name=sale_price]');
+						var cost_price_value = $cost_price.val(), sale_price_value = $sale_price.val();
+						$cost_price.val((cost_price_value*rate).toFixed(2));
+						$sale_price.val((sale_price_value*rate).toFixed(2));
+					}
+				}, 'json');
+			} else {
+				mixpus.show_warning_message('Currency text is error!');
+			}
+		});
 
-{#</script>#}
+		$('.btn-save-continue').click(function () {
+			$('input[name=next_action]').val('continue_save');
+			$('#product-form').submit();
+		});
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -86,7 +89,7 @@
 			<button type="button" class="btn btn-icon btn-save-continue btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
 				<i class="glyphicon glyphicon-floppy-saved"></i>
 			</button>
-			<a href="{{ url_for('main.show_products') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_products') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>

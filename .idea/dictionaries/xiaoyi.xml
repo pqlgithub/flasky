@@ -17,6 +17,7 @@
       <w>bodys</w>
       <w>celerybeat</w>
       <w>chigh</w>
+      <w>clodop</w>
       <w>clow</w>
       <w>croped</w>
       <w>cssmin</w>
@@ -46,6 +47,8 @@
       <w>lazada</w>
       <w>levelname</w>
       <w>lineno</w>
+      <w>lodop</w>
+      <w>lodopfuncs</w>
       <w>loglevel</w>
       <w>mainbar</w>
       <w>michose</w>
@@ -59,6 +62,7 @@
       <w>navbar</w>
       <w>nprogress</w>
       <w>onload</w>
+      <w>oscript</w>
       <w>outlist</w>
       <w>outwarehouse</w>
       <w>outwarehouses</w>
@@ -75,6 +79,7 @@
       <w>rhigh</w>
       <w>rlow</w>
       <w>saled</w>
+      <w>sbuttin</w>
       <w>scrolltotop</w>
       <w>scrollup</w>
       <w>shopee</w>

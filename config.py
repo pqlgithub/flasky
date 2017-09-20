@@ -92,6 +92,9 @@ class Config:
     WHOOSH_BASE = '/Users/xiaoyi/Project/micku/whooses'
     MAX_SEARCH_RESULTS = 50
 
+    # Pjax base template
+    PJAX_BASE_TEMPLATE = 'pjax.html'
+
     # Redis 配置
     REDIS_URL = 'redis://:Fr%bird@201403$01@localhost:6379/0'
 

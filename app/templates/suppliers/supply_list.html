@@ -1,11 +1,11 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
+{% block after_jquery %}
+<script type="text/javascript">
 	var submit_filter_form = function () {
 		var data = $('#filter-supplier-form').serialize();
 
@@ -14,19 +14,15 @@
 		}, 'html');
 		return false;
 	};
+	$(function () {
+		mixpus.init_page_layout();
 
-	$('input.searcher').on('keydown', function (e) {
-		var ev = window.event||e;
-		if (ev.keyCode == 13) {
-			submit_filter_form();
-			return false;
-		}
-	});
+		mixpus.hook_filter_search(submit_filter_form);
 
-	hook_dropdown_menu(function(){
-		submit_filter_form();
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
 	});
-{#</script>#}
+</script>
 {% endblock %}
 
 

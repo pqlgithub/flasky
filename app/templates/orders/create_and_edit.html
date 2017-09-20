@@ -1,104 +1,73 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include "orders/_sub_menu.html" %}
 {% endblock %}
 
-{% block private_js %}
+{% block after_jquery %}
 <script type="text/javascript">
-	var recount = function () {
-		var total_quantity=0, total_amount=0, total_discount=0;
-		$('#choose-products input.quantity').each(function () {
-			var quantity = parseInt($(this).val()), sku_id = $(this).data('id');
-			var price = parseFloat($('#sale_price_' + sku_id).html());
-			var discount = parseFloat($('#discount_' + sku_id).val());
+	$(function () {
+		mixpus.init_page_layout();
 
-			$('#deal_price_' + sku_id).html((price - discount).toFixed(2));
+		mixpus.tracker_order_change();
 
-			subtotal = price*quantity;
-			total_quantity += quantity;
-			total_discount += discount;
-			total_amount += subtotal;
-
-			$('#subtotal_' + sku_id).html((subtotal - discount).toFixed(2));
-		});
-		$('#total_quantity').html(total_quantity);
-		$('#total_amount').html(total_amount.toFixed(2));
-		$('#total_discount').html(total_discount.toFixed(2));
-		$('#payable_amount').html((total_amount - total_discount).toFixed(2))
-	};
-
-	var tracker_change = function () {
-		$('#choose-products input.input-quantity')
-			.unbind('change')
-			.on('change', function () {
-				recount();
-			});
-	};
-</script>
-{% endblock %}
-
-{% block jquery %}
-{#<script type="text/javascript">#}
-	tracker_change();
-
-	$('#add-product-btn').click(function (e) {
-		var $btn = $(this), post_url=$(this).attr('href');
-		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
-		if (warehouse_id == 0) {
-			swal({
-				title: "Warning",
-				text: "Please first choose the warehouse to ship？",
-				type: "warning",
-				showCancelButton: false,
-				confirmButtonClass: 'btn-warning',
-				confirmButtonText: "Okay, I know!",
-				closeOnConfirm: true
-			});
-			return false;
-		}
-
-		$('#sku-modal').remove();
-
-		$.ajax({
-			url: post_url,
-			type: 'post',
-			dataType: 'html',
-			data: {'wh_id': warehouse_id, 'csrf_token': '{{ csrf_token() }}', 't':'order'},
-			beforeSend: function() {
-				$btn.prop('disabled', true);
-			},
-			complete: function() {
-				$btn.prop('disabled', false);
-			},
-			success: function(html) {
-				$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
-
-				$('#sku-modal').modal('show');
+		$('#add-product-btn').click(function (e) {
+			var $btn = $(this), post_url=$(this).attr('href');
+			var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
+			if (warehouse_id == 0) {
+				swal({
+					title: "Warning",
+					text: "Please first choose the warehouse to ship？",
+					type: "warning",
+					showCancelButton: false,
+					confirmButtonClass: 'btn-warning',
+					confirmButtonText: "Okay, I know!",
+					closeOnConfirm: true
+				});
+				return false;
 			}
-		});
 
-		return false;
-	});
+			$('#sku-modal').remove();
 
-	// ajax save
-	$('button.btn-save').click(function () {
-		var form = $(this).data('form-id');
-		$.post("{{ url_for('main.create_order') }}", $('#'+form).serialize(), function (result) {
-			if (result.success) {
-				window.location.href = result.data.next_url;
-			} else {
-				for (var item in result.data) {
-					$('[name='+item+']')
-						.after('<span class="help-block">'+ result.data[item][0] +'</span>')
-						.parent()
-						.addClass('has-error');
+			$.ajax({
+				url: post_url,
+				type: 'post',
+				dataType: 'html',
+				data: {'wh_id': warehouse_id, 'csrf_token': mixpus.csrf_token, 't':'order'},
+				beforeSend: function() {
+					$btn.prop('disabled', true);
+				},
+				complete: function() {
+					$btn.prop('disabled', false);
+				},
+				success: function(html) {
+					$('body').append('<div id="sku-modal" role="dialog" class="modal">' + html + '</div>');
+
+					$('#sku-modal').modal('show');
 				}
-			}
-		}, 'json');
-	});
+			});
 
-{#</script>#}
+			return false;
+		});
+
+		// ajax save
+		$('button.btn-save').click(function () {
+			var form = $(this).data('form-id');
+			$.post("{{ url_for('main.create_order') }}", $('#'+form).serialize(), function (result) {
+				if (result.success) {
+					window.location.href = result.data.next_url;
+				} else {
+					for (var item in result.data) {
+						$('[name='+item+']')
+							.after('<span class="help-block">'+ result.data[item][0] +'</span>')
+							.parent()
+							.addClass('has-error');
+					}
+				}
+			}, 'json');
+		});
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -114,7 +83,7 @@
 			<button role="button" data-form-id="order-form" class="btn btn-icon btn-mixpus btn-save" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_orders') }}" class="btn btn-icon btn-default btn-back" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_orders') }}" class="pjax btn btn-icon btn-default btn-back" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>
