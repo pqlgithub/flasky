@@ -17,9 +17,10 @@
 			color: black;
 			font-size: 12px;
 			line-height: 20px;
+			font-weight: bold;
         }
 		.table {
-			border: 1px solid #9c9c9c;
+			border: 1px solid black;
 			table-layout：fixed;
 		}
 		.table td,
@@ -51,6 +52,9 @@
 		}
 		.bh {
 			margin-bottom: 20px;
+		}
+		.ml {
+			width: 150px;
 		}
 		.center {
 			text-align: center;
@@ -102,10 +106,10 @@
 				<td class="center">
 					{{ title_attrs.sn }}
 				</td>
-				<td class="center">
+				<td>
 					{{ title_attrs.product_name }}
 				</td>
-				<td class="center">
+				<td>
 					{{ title_attrs.mode }}
 				</td>
 				<td class="center">
@@ -160,9 +164,9 @@
 					{{ title_attrs.total }}
 				</td>
 				<td colspan="8" class="center">
-					<label>{{ title_attrs.freight }}:</label> <strong>{{ order.freight }}</strong> &nbsp;&nbsp;&nbsp;&nbsp;
-					<label>{{ title_attrs.discount }}:</label> <strong>{{ order.discount_amount }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;
-					<label>{{ title_attrs.pay_amount }}:</label> <strong>{{ order.pay_amount }}</strong>
+					<label>{{ title_attrs.freight }}:</label> {{ order.freight }}
+					<label class="ml">{{ title_attrs.discount }}: {{ order.discount_amount }}</label>
+					<label class="ml">{{ title_attrs.pay_amount }}:  {{ order.pay_amount }}</label>
 				</td>
 			</tr>
 		</table>
