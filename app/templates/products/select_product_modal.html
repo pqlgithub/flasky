@@ -133,12 +133,9 @@
 				$('#choose-products .select2').select2({
 					'width': '100%'
 				});
-				if (recount && typeof(recount) == 'function') {
-					recount();
-				}
-				if (tracker_change && typeof(tracker_change) == 'function') {
-					tracker_change();
-				}
+
+				mixpus.order_recount();
+				mixpus.tracker_order_change();
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
