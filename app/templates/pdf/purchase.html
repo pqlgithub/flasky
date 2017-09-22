@@ -66,7 +66,10 @@
 			text-align: right;
 		}
 		.table td.info {
-			width: 300px;
+			width: 240px;
+		}
+		.table td.id_code {
+			width: 155px;
 		}
 		.amount {
 			line-height: 16px;
@@ -193,17 +196,23 @@
 				<td class="center">
 					{{ title_attrs.sn }}
 				</td>
-				<td class="center">
+				<td>
 					{{ title_attrs.product_info }}
+				</td>
+				<td>
+					{{ title_attrs.mode }}
+				</td>
+				<td>
+					{{ title_attrs.color }}
+				</td>
+				<td class="center id_code">
+					{{ title_attrs.id_code }}
 				</td>
 				<td class="center">
 					{{ title_attrs.price }}
 				</td>
 				<td class="center">
 					{{ title_attrs.quantity }}
-				</td>
-				<td class="center">
-					{{ title_attrs.arrival_quantity }}
 				</td>
 				<td class="center">
 					{{ title_attrs.subtotal }}
@@ -215,17 +224,23 @@
 					{{ loop.index }}
 				</td>
 				<td class="info">
-					{{ item.sku_serial_no }} <br>
-					{{ item.sku.product.name|break_line(15) }}
+					{{ item.sku.product.name|break_line(15) }}  <br>
+					{{ item.sku_serial_no }}
+				</td>
+				<td>
+					{{ item.sku.s_model }}
+				</td>
+				<td>
+					{{ item.sku.s_color }}
+				</td>
+				<td class="center">
+					{{ item.sku.id_code }}
 				</td>
 				<td class="center">
 					{{ item.cost_price }} {{ current_site.currency }}
 				</td>
 				<td class="center">
 					{{ item.quantity }}
-				</td>
-				<td class="center">
-					{{ item.in_quantity }}
 				</td>
 				<td class="center">
 					{{ item.cost_price*item.quantity  }} {{ current_site.currency }}

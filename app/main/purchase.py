@@ -594,7 +594,10 @@ def print_purchase_pdf():
         'email': gettext('E-mail'),
         'remark': gettext('Remark'),
         'sn': gettext('Serial Number'),
+        'id_code': gettext('Commodity Codes'),
         'product_info': gettext('Product Info'),
+        'mode': gettext('Mode'),
+        'color': gettext('Color'),
         'price': gettext('Price'),
         'quantity': gettext('Purchase Quantity'),
         'in_quantity': gettext('Arrival Quantity'),
@@ -740,6 +743,18 @@ def _rebuild_header_value(key, current_site):
         return '{}({})'.format(PURCHASE_EXCEL_FIELDS[key], current_site.currency)
     return PURCHASE_EXCEL_FIELDS[key]
 
+def _check_id_code(product_skus):
+    """检测69码是否重复"""
+    id_codes = {}
+    for sku_dict in product_skus:
+        sku_id_code = sku_dict.get('id_code')
+        if id_codes.get(sku_id_code):
+            id_codes[sku_id_code] += 1
+        else:
+            id_codes[sku_id_code] = 1
+
+    return [k for k in id_codes.keys() if id_codes[k] > 1]
+
 
 @main.route('/purchases/import_purchase', methods=['GET', 'POST'])
 @login_required
@@ -760,6 +775,13 @@ def import_purchase():
 
         # 读取文档内容
         product_skus = import_product_from_excel(storage_filepath)
+
+        # 检测是否有重复的69码
+        repeat_id_code = _check_id_code(product_skus)
+        if len(repeat_id_code):
+            current_app.logger.warn('69码有重复：%s' % repeat_id_code)
+            flash(gettext('Commodity codes is repeat: %s' % ','.join(repeat_id_code)), 'danger')
+            return redirect(url_for('.show_purchases'))
 
         total_quantity = 0
         total_amount = 0

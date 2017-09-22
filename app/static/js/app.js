@@ -59,7 +59,7 @@ mixpus.init_page_layout = function () {
 		$(mixpus.container_id).stop(true, true).fadeIn();
 	});
 
-	$('.alert-dismissable').fadeTo(2000, 500).fadeOut(500, function(){
+	$('.alert-success.alert-dismissable').fadeTo(2000, 500).fadeOut(500, function(){
 		$('.alert-dismissable').alert('close');
 		$('.flashes').fadeOut(500, function () {
 			$(this).remove();
