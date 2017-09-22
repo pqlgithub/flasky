@@ -72,11 +72,7 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	$('[data-toggle="tooltip"]').tooltip({
-		container: 'body',
-		html: true,
-		trigger: 'hover'
-	});
+	mixpus.hook_all_check();
 
 	var hock_thumbnail = function () {
 		$('a.thumbnail').on('click', function(e) {
@@ -97,7 +93,7 @@
 	$('a.directory').on('click', function(e) {
 		e.preventDefault();
 
-		var args = get_url_params($(this).attr('href'));
+		var args = mixpus.get_url_params($(this).attr('href'));
 		if (args || args != null) {
 			$.cookie('img_last_open_folder', args['directory']);
 		}
@@ -150,7 +146,7 @@
 				data: {
 					folder: encodeURIComponent($('input[name=\'folder\']').val()),
 					parent_directory: '{{ current_directory }}',
-					csrf_token: csrf_token
+					csrf_token: mixpus.csrf_token
 				},
 				beforeSend: function() {
 					$('#button-create').prop('disabled', true);
@@ -164,7 +160,7 @@
 					} else {
 						$btn
 							.parent().parent()
-							.before(display_alert(result['status']['message']));
+							.before(mixpus.display_alert(result['status']['message']));
 					}
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
@@ -187,7 +183,7 @@
 		multiple_queues: true,
 		multipart_params: {
         	'directory': '{{ current_directory }}',
-			'csrf_token': csrf_token
+			'csrf_token': mixpus.csrf_token
 		},
         filters : {
             // Maximum file size
@@ -227,7 +223,7 @@
 				});
 				var data = {
 					'path[]': path,
-					'csrf_token': csrf_token
+					'csrf_token': mixpus.csrf_token
 				};
 
 				$.ajax({

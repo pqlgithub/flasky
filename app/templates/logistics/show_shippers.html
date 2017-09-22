@@ -1,4 +1,4 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'logistics/_sub_menu.html' %}
@@ -10,10 +10,10 @@
 		{{ _('Shipper List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_shipper') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_shipper') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="shippers-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="shippers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -59,7 +59,7 @@
 							{{ shipper.province }} {{ shipper.city }} {{ shipper.area }} {{ shipper.address }} {{ shipper.zipcode }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_shipper', id=shipper.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_shipper', id=shipper.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>

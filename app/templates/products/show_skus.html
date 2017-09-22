@@ -45,7 +45,7 @@
 			{{ sku.remark }}
 		</td>
 		<td class="text-right">
-			<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn ajax-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn ajax-edit-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 				{{ _('Edit') }}
 			</a>
 			<a href="{{ url_for('main.delete_sku', rid=sku.serial_no) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
@@ -58,9 +58,11 @@
 </table>
 
 <script type="text/javascript">
-	$('.ajax-sku').click(function (e) {
+	$('.ajax-edit-sku').click(function (e) {
 		var $btn = $(this), post_url=$(this).attr('href');
+
 		$('#sku-modal').remove();
+
 		$.ajax({
 			url: post_url,
 			dataType: 'html',
@@ -76,12 +78,13 @@
 				$('#sku-modal').modal('show');
 			}
 		});
+
 		return false;
 	});
 
 	$('.ajax-delete-sku').click(function () {
 		var post_url = $(this).attr('href');
-		$.post(post_url, {'csrf_token': csrf_token}, function (result) {
+		$.post(post_url, {'csrf_token': mixpus.csrf_token}, function (result) {
 			if (result.success) {
 				$('#tr_sku_'+ result.data.id).remove();
 			}

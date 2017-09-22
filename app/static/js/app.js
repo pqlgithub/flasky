@@ -11,6 +11,9 @@ var mixpus = {
 		locale_label: '',
 		copy_ok_message: ''
 	},
+	urls: {
+		show_assets: ''
+	},
 	lodop: '', // 网络打印机实例
 	container_id: '#pjax-container',
 	img_last_open_folder: '', // 缓存最近的上传目录
@@ -394,7 +397,7 @@ mixpus.upload_file_manager = function () {
 			}
 
 			$.ajax({
-				url: '{{ url_for("main.show_asset") }}?directory=' + mixpus.img_last_open_folder + '&up_target=' + $target,
+				url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder + '&up_target=' + $target,
 				dataType: 'html',
 				beforeSend: function() {
 					$button.prop('disabled', true);

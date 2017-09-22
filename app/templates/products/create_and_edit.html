@@ -9,9 +9,13 @@
 	$(function () {
 		mixpus.init_page_layout();
 
+		mixpus.upload_file_manager();
+
 		$('.ajax-sku').click(function (e) {
 			var $btn = $(this), post_url=$(this).attr('href');
+
 			$('#sku-modal').remove();
+
 			$.ajax({
 				url: post_url,
 				dataType: 'html',
@@ -27,6 +31,7 @@
 					$('#sku-modal').modal('show');
 				}
 			});
+
 			return false;
 		});
 
