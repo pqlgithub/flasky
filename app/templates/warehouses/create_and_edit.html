@@ -1,82 +1,84 @@
-{% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'warehouses/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	var warehouse_id = {{ warehouse_id|default(0) }};
-	var counter = 0;
-	$('.add-row').click(function (e) {
-		var new_row = '<tr id="tr_'+ counter +'">' +
-			'<td><input type="text" name="name_'+ counter +'" class="form-control"></td>' +
-			'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" checked="checked" value="1"> {{ _("Qualified") }} </label>' +
-			'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> {{ _("Defective") }} </label>' +
-			'</td>' +
-			'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-mixpus save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row"><i class="glyphicon glyphicon-trash"></i></button> </td>' +
-			'</tr>';
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
 
-		$('#shelves-wrapper').append(new_row);
-		
-		$('.save-row').click(function (e) {
-			var n = $(this).data('number'), $this=$(this);
-			var data = {
-				'name': $('input[name="name_'+ n +'"]').val(),
-				'type': $('input[name="type_'+ n +'"]:checked').val(),
-				'warehouse_id': warehouse_id,
-				'csrf_token': csrf_token
-			};
-			$.post({
-				url: '{{ url_for("main.add_shelve") }}',
-				dataType: 'json',
-				data: data,
-				beforeSend: function() {
-					$this.prop('disabled', true);
-				},
-				complete: function() {
-					$this.prop('disabled', false);
-				},
-				success: function(result) {
-					if (result.success) {
-						var added_row = '<tr>' +
+		var warehouse_id = {{ warehouse_id|default(0) }};
+		var counter = 0;
+		$('.add-row').click(function (e) {
+			var new_row = '<tr id="tr_'+ counter +'">' +
+				'<td><input type="text" name="name_'+ counter +'" class="form-control"></td>' +
+				'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" checked="checked" value="1"> {{ _("Qualified") }} </label>' +
+				'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> {{ _("Defective") }} </label>' +
+				'</td>' +
+				'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-mixpus save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row"><i class="glyphicon glyphicon-trash"></i></button> </td>' +
+				'</tr>';
+
+			$('#shelves-wrapper').append(new_row);
+
+			$('.save-row').click(function (e) {
+				var n = $(this).data('number'), $this=$(this);
+				var data = {
+					'name': $('input[name="name_'+ n +'"]').val(),
+					'type': $('input[name="type_'+ n +'"]:checked').val(),
+					'warehouse_id': warehouse_id,
+					'csrf_token': csrf_token
+				};
+				$.post({
+					url: '{{ url_for("main.add_shelve") }}',
+					dataType: 'json',
+					data: data,
+					beforeSend: function() {
+						$this.prop('disabled', true);
+					},
+					complete: function() {
+						$this.prop('disabled', false);
+					},
+					success: function(result) {
+						if (result.success) {
+							var added_row = '<tr>' +
 								'<td>'+ result.data.name +'</td>' +
 								'<td>'+ result.data.type_label[1] +'</td>' +
 								'<td class="text-center">--</td>' +
 								'</tr>';
-						$this.parent().parent()
-							.before(added_row)
-							.remove();
-					} else {
-						$('table.table-shelves').before(display_alert(result.status.message))
+							$this.parent().parent()
+								.before(added_row)
+								.remove();
+						} else {
+							$('table.table-shelves').before(display_alert(result.status.message))
+						}
 					}
+				});
+			});
+
+			$('.delete-row').click(function () {
+				$(this).parent().parent().remove();
+			});
+
+			counter +=1;
+
+			return false;
+		});
+
+		$('.ajax-delete').click(function (e) {
+			var id = $(this).data('target'), post_url=$(this).attr('href');
+			$.post(post_url, {'id': id, 'csrf_token': csrf_token}, function (result) {
+				if (result.success) {
+					$('#tr_'+id).remove();
+				} else {
+					$('#warehouse-form').prepend(display_alert(result.status.message))
 				}
 			});
+			return false;
 		});
-
-		$('.delete-row').click(function () {
-			$(this).parent().parent().remove();
-		});
-
-		counter +=1;
-
-		return false;
 	});
-
-	$('.ajax-delete').click(function (e) {
-		var id = $(this).data('target'), post_url=$(this).attr('href');
-		$.post(post_url, {'id': id, 'csrf_token': csrf_token}, function (result) {
-			if (result.success) {
-				$('#tr_'+id).remove();
-			} else {
-				$('#warehouse-form').prepend(display_alert(result.status.message))
-			}
-		});
-		return false;
-	});
-
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -92,7 +94,7 @@
 			<button type="submit" form="warehouse-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_warehouses') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_warehouses') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>

@@ -1,35 +1,11 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'warehouses/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	// 审核 全部 or 单个
-	$('button.verify-all').click(function () {
-		var form_id = $(this).data('form-id');
-		// 检测是否选中
-		selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
-		});
-		if (selected.length){
-			$.post('{{ url_for("main.ajax_verify") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
-				if (result.success) {
-					ids = result.data;
-					for (var i=0,l=ids.length;i<l;i++) {
-						$('#tr_' + ids[i]).remove();
-					}
-				} else {
-					swal("Error", result.status.message, "error");
-				}
-			});
-		} else {
-			swal("Error", "First to selected the one!!!", "error");
-		}
-	});
+{% block after_jquery %}
+<script type="text/javascript">
 
 	var submit_filter_form = function () {
 		var data = $('#filter-stocks-form').serialize();
@@ -39,49 +15,60 @@
 		}, 'html');
 	};
 
-	$('.dropdown-select-menu .option').on('click', function () {
-		var $this=$(this), label=$(this).text(), v=$(this).data('id'),
-			target=$(this).parent().parent().data('target');
-		$(this)
-			.parent()
-			.siblings('.active').removeClass('active')
-			.end()
-			.addClass('active');
-		$('input[name='+target+']').val(v);
+	$(function () {
+		mixpus.init_page_layout();
 
-		$(this).parent().parent().prev().find('b').text(label);
-
-		submit_filter_form();
-	});
-
-	$('input.searcher').on('keydown', function (e) {
-		var ev = window.event||e;
-		if (ev.keyCode == 13) {
-			submit_filter_form();
-			return false;
-		}
-	});
-
-	// 打印入库单
-	$('.ajax-print').click(function () {
-		var form_id = $(this).data('form-id'), href = $(this).data('href');
-		// 检测是否选中
-		var selected = [];
-		$('#' + form_id).find('.check-one:checked').each(function () {
-			var id = $(this).val();
-			selected.push(id);
+		// 审核 全部 or 单个
+		$('button.verify-all').click(function () {
+			var form_id = $(this).data('form-id');
+			// 检测是否选中
+			selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length){
+				$.post('{{ url_for("main.ajax_verify") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+					if (result.success) {
+						ids = result.data;
+						for (var i=0,l=ids.length;i<l;i++) {
+							$('#tr_' + ids[i]).remove();
+						}
+					} else {
+						swal("Error", result.status.message, "error");
+					}
+				});
+			} else {
+				swal("Error", "First to selected the one!!!", "error");
+			}
 		});
-		if (selected.length == 0){
-			swal('Error', 'First to selected the one!', 'error');
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+
+		// 打印入库单
+		$('.ajax-print').click(function () {
+			var form_id = $(this).data('form-id'), href = $(this).data('href');
+			// 检测是否选中
+			var selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length == 0){
+				swal('Error', 'First to selected the one!', 'error');
+				return false;
+			}
+			var wd = window.open('about:blank', '_blank');
+			wd.location.href = href + '?rid=' + selected.toString();
+
 			return false;
-		}
-		var wd = window.open('about:blank', '_blank');
-		wd.location.href = href + '?rid=' + selected.toString();
+		});
 
-		return false;
 	});
-
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}

@@ -2,28 +2,28 @@
 	<div class="list-group-header">
 		{{ _('Stock manage') }}
 	</div>
-	<a href="{{ url_for('main.show_stocks') }}" class="list-group-item {% if sub_menu == 'stocks'%} active{% endif %}">
+	<a href="{{ url_for('main.show_stocks') }}" class="pjax list-group-item {% if sub_menu == 'stocks'%} active{% endif %}">
 		{{ _('Stock List') }}
 	</a>
 
-	<a href="{{ url_for('main.show_inout') }}" class="list-group-item {% if sub_menu == 'inout'%} active{% endif %}">
+	<a href="{{ url_for('main.show_inout') }}" class="pjax list-group-item {% if sub_menu == 'inout'%} active{% endif %}">
 		{{ _('In-out Stock') }}
 	</a>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item {% if sub_menu == 'inlist'%} active{% endif %}">
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'inlist'%} active{% endif %}">
 		{{ _('In List') }}
 	</a>
-	<a href="{{ url_for('main.show_out_warehouses') }}" class="list-group-item {% if sub_menu == 'outlist'%} active{% endif %}">
+	<a href="{{ url_for('main.show_out_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'outlist'%} active{% endif %}">
 		{{ _('Out List') }}
 	</a>
 
 	<div class="list-group-header">
 		{{ _('Inventory Allocation') }}
 	</div>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item">
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item">
 		{{ _('Inventory Allocation') }}
 		<span class="badge">0</span>
 	</a>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="list-group-item">
+	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item">
 		{{ _('Inventory Verification') }}
 		<span class="badge">0</span>
 	</a>
@@ -31,7 +31,7 @@
 	<div class="list-group-header">
 		{{ _('Warehouse settings') }}
 	</div>
-	<a href="{{ url_for('main.show_warehouses') }}" class="list-group-item {% if sub_menu == 'warehouses'%} active{% endif %}">
+	<a href="{{ url_for('main.show_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'warehouses'%} active{% endif %}">
 		{{ _('Warehouse List') }}
 	</a>
 

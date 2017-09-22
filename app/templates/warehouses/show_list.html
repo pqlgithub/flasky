@@ -1,5 +1,4 @@
-{% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'warehouses/_sub_menu.html' %}
@@ -10,7 +9,7 @@
 		{{ _('Warehouse List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_warehouse') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_warehouse') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="warehouses-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
@@ -67,7 +66,7 @@
 							{{ warehouse.shelves.count() }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>
@@ -78,6 +77,7 @@
 		</form>
 	</div>
 
+	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">

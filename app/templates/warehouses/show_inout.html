@@ -1,16 +1,19 @@
-{% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'warehouses/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	$('.btn-refresh').on('click', function () {
-		window.location.reload();
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		$('.btn-refresh').on('click', function () {
+			window.location.reload();
+		});
 	});
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -51,7 +54,7 @@
 		</div>
 	</h2>
 
-	<form class="form-inline" method="post" action="{{ url_for('main.show_suppliers') }}">
+	<form class="form-inline" method="post" action="{{ url_for('main.show_inout') }}">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
@@ -229,6 +232,7 @@
 		</form>
 	</div>
 
+	{% import "block/_macros.html" as macros %}
 	<div class="pages-box">
 		<div class="pull-left">
 			<nav aria-label="Page navigation">

@@ -210,7 +210,13 @@
 		</script>
 
 		{% block private_js %}{% endblock %}
-		{% block after_jquery %}{% endblock %}
+		{% block after_jquery %}
+		<script type="text/javascript">
+			$(function () {
+				mixpus.init_page_layout();
+			});
+		</script>
+		{% endblock %}
 
 	</body>
 </html>
