@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Title</title>
-</head>
-<body>
+{% extends pjax("layout/base.html") %}
 
-</body>
-</html>
+{% block sidebar %}
+	{% include 'finances/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Receivables List') }}
+		<span class="pull-right">
+			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
+				0 items selected
+			</span>
+			<a href="{{ url_for('main.create_transaction') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="transactions-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive m-t-20">
+		<form id="transactions-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		</form>
+	</div>
+
+</div>
+{% endblock %}

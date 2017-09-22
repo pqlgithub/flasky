@@ -71,7 +71,7 @@
 					$('#user-modal').modal('hide');
 					$('.btn-refresh').trigger('click');
 				} else {
-					$('#user-form').prepend(display_alert(result.status.message))
+					$('#user-form').prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

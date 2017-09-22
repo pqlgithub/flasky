@@ -46,7 +46,7 @@
 					<td>
 						{{ user.email }} / {{ user.username }}
 					</td>
-					<td>{{ user.mobile }}</td>
+					<td>{{ user.mobile|supress_none }}</td>
 					<td class="text-center">
 						{% if user.is_master %}
 							<i class="glyphicon glyphicon-user" data-toggle="tooltip" title="" data-original-title="{{ _('This is the master') }}"></i>

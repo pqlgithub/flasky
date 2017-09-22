@@ -1,4 +1,4 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'settings/_sub_menu.html' %}
@@ -9,10 +9,10 @@
 		{{ _('Store List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_store') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_store') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="stores-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="stores-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -21,6 +21,7 @@
 	<div class="table-responsive">
 		<form id="stores-form" action="{{ url_for('main.delete_store') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
 			<table class="table table-bordered table-striped table-hover">
 				<thead>
 				<tr>
@@ -59,7 +60,7 @@
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ store.id }}-actions">
-								<li><a href="{{ url_for('main.edit_store', id=store.id) }}">{{ _('Edit') }}</a></li>
+								<li><a href="{{ url_for('main.edit_store', id=store.id) }}" class="pjax">{{ _('Edit') }}</a></li>
 							</ul>
 						</div>
 					</td>

@@ -1,5 +1,4 @@
-{% extends "layout/base.html" %}
-{% import "block/_macros.html" as macros %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'settings/_sub_menu.html' %}
@@ -14,7 +13,7 @@
 			<button type="submit" form="ability-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_stores') }}" class="btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_stores') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>

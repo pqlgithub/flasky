@@ -1,13 +1,7 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'system/_sub_menu.html' %}
-{% endblock %}
-
-{% block jquery %}
-{#<script type="text/javascript">#}
-
-{#</script>#}
 {% endblock %}
 
 {% block mainbar %}
@@ -15,7 +9,7 @@
 		{{ _('Role List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>

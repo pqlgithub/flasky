@@ -2,17 +2,17 @@
 	<div class="list-group-header">
 		{{ _('Payment List') }}
 	</div>
-	<a href="{{ url_for('main.show_payments') }}?s=1" class="list-group-item child-item {% if status == 1 %} active{% endif %}">
+	<a href="{{ url_for('main.show_payments') }}?s=1" class="pjax list-group-item child-item {% if status == 1 %} active{% endif %}">
 		{{  _('Pending Pay') }}
 		<span class="badge">0</span>
 	</a>
-	<a href="{{ url_for('main.show_payments') }}?s=2" class="list-group-item child-item {% if status == 2 %} active{% endif %}">
+	<a href="{{ url_for('main.show_payments') }}?s=2" class="pjax list-group-item child-item {% if status == 2 %} active{% endif %}">
 		{{  _('Finished') }}
 	</a>
 	<div class="list-group-header">
 		{{ _('Receivables List') }}
 	</div>
-	<a href="{{ url_for('main.show_receives') }}?t=1" class="list-group-item {% if sub_menu == 'receives' %} active{% endif %}">
+	<a href="{{ url_for('main.show_receives') }}?t=1" class="pjax list-group-item {% if sub_menu == 'receives' %} active{% endif %}">
 		{{  _('Receivables') }}
 	</a>
 </div>

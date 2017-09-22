@@ -1,13 +1,7 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include 'settings/_sub_menu.html' %}
-{% endblock %}
-
-{% block jquery %}
-{#<script type="text/javascript">#}
-
-{#</script>#}
 {% endblock %}
 
 {% block mainbar %}
@@ -32,7 +26,7 @@
 			{% if current_directory %}
 			<div class="col-sm-2 col-xs-6 text-center">
 				<div class="text-center">
-					<a href="{{ url_for('main.show_assets') }}?pid={{ current_directory.parent_id|default(0) }}" class="directory">
+					<a href="{{ url_for('main.show_assets') }}?pid={{ current_directory.parent_id|default(0) }}" class="pjax directory">
 						<i class="glyphicon glyphicon-level-up fa-5x"></i>
 					</a>
 				</div>
@@ -45,7 +39,7 @@
 			{% for d in paginated_directory.items %}
 			<div class="col-sm-2 col-xs-6 text-center">
 				<div class="text-center">
-					<a href="{{ url_for('main.show_assets') }}?pid={{ d.id }}" class="directory" style="vertical-align: middle;">
+					<a href="{{ url_for('main.show_assets') }}?pid={{ d.id }}" class="pjax directory" style="vertical-align: middle;">
 						<i class="glyphicon glyphicon-folder-close fa-5x"></i>
 					</a>
 				</div>

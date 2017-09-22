@@ -1,36 +1,40 @@
-{% extends "layout/base.html" %}
+{% extends pjax("layout/base.html") %}
 
 {% block sidebar %}
 	{% include "settings/_sub_menu.html" %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	$('.ajax-role').click(function (e) {
-		var $btn = $(this), post_url = $(this).attr('href');
-		$('#role-modal').remove();
-		$.ajax({
-			url: post_url,
-			dataType: 'html',
-			beforeSend: function() {
-				$btn.prop('disabled', true);
-			},
-			complete: function() {
-				$btn.prop('disabled', false);
-			},
-			success: function(html) {
-				$('body').append('<div id="role-modal" role="dialog" class="modal">' + html + '</div>');
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
 
-				$('#role-modal').modal('show');
-			}
+		$('.ajax-role').click(function (e) {
+			var $btn = $(this), post_url = $(this).attr('href');
+			$('#role-modal').remove();
+			$.ajax({
+				url: post_url,
+				dataType: 'html',
+				beforeSend: function() {
+					$btn.prop('disabled', true);
+				},
+				complete: function() {
+					$btn.prop('disabled', false);
+				},
+				success: function(html) {
+					$('body').append('<div id="role-modal" role="dialog" class="modal">' + html + '</div>');
+
+					$('#role-modal').modal('show');
+				}
+			});
+			return false;
 		});
-		return false;
-	});
 
-	$('.btn-refresh').on('click', function () {
-		window.location.reload();
+		$('.btn-refresh').on('click', function () {
+			window.location.reload();
+		});
 	});
-{#</script>#}
+</script>
 {% endblock %}
 
 {% block mainbar %}

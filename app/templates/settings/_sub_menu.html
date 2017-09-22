@@ -2,33 +2,33 @@
 	<div class="list-group-header">
 		{{ _('settings') }}
 	</div>
-	<a href="{{ url_for('main.site') }}" class="list-group-item {% if sub_menu == 'sites'%} active{% endif %}">
+	<a href="{{ url_for('main.site') }}" class="pjax list-group-item {% if sub_menu == 'sites'%} active{% endif %}">
 		{{ _('Site Info') }}
 	</a>
-	<a href="{{ url_for('main.show_stores') }}" class="list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
+	<a href="{{ url_for('main.show_stores') }}" class="pjax list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
 		{{ _('Store List') }}
 	</a>
-	<a href="{{ url_for('main.show_currencies') }}" class="list-group-item {% if sub_menu == 'currencies'%} active{% endif %}">
+	<a href="{{ url_for('main.show_currencies') }}" class="pjax list-group-item {% if sub_menu == 'currencies'%} active{% endif %}">
 		{{ _('Currency List') }}
 	</a>
 	<div class="list-group-header">
 		{{ _('Privilege manage') }}
 	</div>
 	{% if g.user.is_master %}
-	<a href="{{ url_for('main.child_users') }}" class="list-group-item {% if sub_menu == 'child_users'%} active{% endif %}">
+	<a href="{{ url_for('main.child_users') }}" class="pjax list-group-item {% if sub_menu == 'child_users'%} active{% endif %}">
 		{{ _('Child User') }}
 	</a>
 	{% endif %}
-	<a href="{{ url_for('main.setting_roles') }}" class="list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
+	<a href="{{ url_for('main.setting_roles') }}" class="pjax list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
 		{{ _('Acl List') }}
 	</a>
-	<a href="{{ url_for('main.passwd') }}" class="list-group-item {% if sub_menu == 'passwd'%} active{% endif %}">
+	<a href="{{ url_for('main.passwd') }}" class="pjax list-group-item {% if sub_menu == 'passwd'%} active{% endif %}">
 		{{ _('Update Password') }}
 	</a>
 	<div class="list-group-header">
 		{{ _('Asset manage') }}
 	</div>
-	<a href="{{ url_for('main.show_assets') }}" class="list-group-item {% if sub_menu == 'assets'%} active{% endif %}">
+	<a href="{{ url_for('main.show_assets') }}" class="pjax list-group-item {% if sub_menu == 'assets'%} active{% endif %}">
 		{{ _('Asset List') }}
 	</a>
 </div>
