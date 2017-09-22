@@ -1,0 +1,23 @@
+{% include 'orders/table_order.html' %}
+
+{% import "block/_macros.html" as macros %}
+<div class="pages-box ajax">
+	<div class="pull-left">
+		<nav aria-label="Page navigation">
+			{{ macros.pagination_widget(pagination, '.search_orders', qk=qk, sk=sk, store_id=store_id, s=s, date=date) }}
+		</nav>
+	</div>
+</div>
+
+<script type="text/javascript">
+	mixpus.hook_all_check();
+
+	mixpus.hook_tooltip_toggle();
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('#table-refresh-box').load($(this).attr('href'));
+			return false;
+		});
+</script>

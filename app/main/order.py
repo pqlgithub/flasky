@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import hashlib
+import datetime, time
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
 from jinja2 import PackageLoader, Environment
 from flask_login import login_required, current_user
+from flask_sqlalchemy import Pagination
 from flask_babelex import gettext
 from io import BytesIO, StringIO
 import xhtml2pdf.pisa as pisa
@@ -19,7 +21,7 @@ from .. import db, uploader
 from ..decorators import user_has
 from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
     timestamp
-from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS
+from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, SORT_TYPE_CODE
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
@@ -37,12 +39,15 @@ def load_common_data():
 
     # 库房列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+    # 店铺列表
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
 
     return {
         'pending_pay_count': pending_pay_count,
         'pending_review_count': pending_review_count,
         'pending_ship_count': pending_ship_count,
         'warehouse_list': warehouse_list,
+        'store_list': store_list,
         'top_menu': 'orders'
     }
 
@@ -64,7 +69,80 @@ def show_orders(page=1):
     return render_template('orders/show_list.html',
                            sub_menu='orders',
                            status=status,
-                           paginated_orders=paginated_orders, **load_common_data())
+                           paginated_orders=paginated_orders.items,
+                           pagination=paginated_orders,
+                           **load_common_data())
+
+
+@main.route('/orders/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_order')
+def search_orders(page=1):
+    """订单搜索"""
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    qk = request.values.get('qk')
+    sk = request.values.get('sk', type=str, default='ad')
+    store_id = request.values.get('store_id', type=int)
+    s = request.values.get('s', type=int)
+    date = request.values.get('date', type=int)
+
+    builder = Order.query.filter_by(master_uid=Master.master_uid())
+    if store_id:
+        builder = builder.filter_by(store_id=store_id)
+
+    if s:
+        builder = builder.filter_by(status=s)
+
+    if date:
+        now = datetime.date.today()
+        if date == 1: # 今天之内
+            start_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.time()
+        if date == 2: # 昨天之内
+            dt = now - datetime.timedelta(days=1)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+        if date == 7: # 7天之内
+            dt = now - datetime.timedelta(days=7)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+        if date == 30: # 30天之内
+            dt = now - datetime.timedelta(days=30)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+
+        builder = builder.filter(Order.created_at > start_time, Order.created_at < end_time)
+
+    #qk = qk.strip()
+    #if qk:
+    #    builder = builder.whoosh_search(qk, like=True)
+
+    orders = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_orders = orders[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('orders/search_result.html',
+                           qk=qk,
+                           sk=sk,
+                           store_id=store_id,
+                           s=s,
+                           date=date,
+                           paginated_orders=paginated_orders,
+                           pagination=pagination)
+
 
 @main.route('/orders/shipment', methods=['POST'])
 @login_required

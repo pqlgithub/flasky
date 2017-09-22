@@ -11,8 +11,23 @@
 
 {% block after_jquery %}
 <script type="text/javascript">
+
+	var submit_filter_form = function () {
+		var data = $('.filter-form').serialize();
+
+		$.post("{{ url_for('main.search_orders') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+
+		return false;
+	};
+
 	$(function () {
 		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
 
 		// 审核 全部 or 单个
 		$('button.verify-all').click(function () {
@@ -186,29 +201,29 @@
 		</span>
 	</h2>
 
-	<form class="form-inline" method="post" action="">
+	<form class="form-inline filter-form" method="post" action="">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control" size="60" placeholder="{{ _('Search order serial_no or customer...') }}">
+			<input type="text" class="form-control" name="qk" size="60" placeholder="{{ _('Search order serial_no or customer...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<input type="hidden" name="wh_id" value="{{ wh_id }}">
-				<button class="btn btn-default dropdown-toggle" id="filter-warehouse" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
+				<input type="hidden" name="store_id" value="{{ store_id }}">
+				<button class="btn btn-default dropdown-toggle" id="filter-store" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Store') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-select-menu" data-target="wh_id" aria-labelledby="filter-warehouse">
-					<li class="dropdown-header">{{ _('Search Warehouse')}}</li>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="store_id" aria-labelledby="filter-warehouse">
+					<li class="dropdown-header">{{ _('Search Store')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
 						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
-					{% for w in warehouse_list %}
+					{% for st in store_list %}
 					<li>
-						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}</a>
+						<a href="javascript:void(0);" data-id="{{ st.id }}" class="option">{{ st.name }} -- {{ st.platform_name }}</a>
 					</li>
 					{% endfor %}
 				</ul>
@@ -234,31 +249,28 @@
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
+				<input type="hidden" name="date" value="{{ date }}">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Date') }}: <b>{{ _('Unlimited') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu" aria-labelledby="filter-date">
+				<ul class="dropdown-menu dropdown-select-menu" data-target="date" aria-labelledby="filter-date">
 					<li class="dropdown-header">{{ _('Filter Date')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('Unlimited') }}</a>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('Unlimited') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Today') }}</a>
+						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Today') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Yesterday') }}</a>
+						<a href="javascript:void(0);" data-id="2" class="option">{{ _('Yesterday') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('7 Days') }}</a>
+						<a href="javascript:void(0);" data-id="7" class="option">{{ _('7 Days') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('30 Days') }}</a>
-					</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="#">{{ _('Custom Date') }}</a>
+						<a href="javascript:void(0);" data-id="30" class="option">{{ _('30 Days') }}</a>
 					</li>
 				</ul>
 			</div>
@@ -266,20 +278,22 @@
 
 		<div class="form-group pull-right">
 			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="filter-sort">
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
 					<li class="dropdown-header">{{ _('Sort Order')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#">{{ _('Add Date') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Business Mode') }}</a>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
 					</li>
 					<li>
-						<a href="#">{{ _('Phone') }}</a>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
 					</li>
 				</ul>
 			</div>
@@ -287,123 +301,16 @@
 
 	</form>
 
-	<div class="table-responsive m-t-20">
-		<form id="orders-form" action="" method="post">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<div id="table-refresh-box" class="m-t-20">
+		{% include "orders/table_order.html" %}
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
-					<tr>
-						<th>
-							<input name="check_all" type="checkbox" class="check-all">
-							{{ _('Product Info') }}
-						</th>
-						<th class="text-center">
-							{{ _('Quantity') }}
-						</th>
-						<th class="text-center">
-							{{ _('Total Amount') }}
-						</th>
-						<th class="text-center">
-							{{ _('Customer「Country」') }}
-						</th>
-						<th>
-							{{ _('Contact') }}
-						</th>
-						<th>
-							{{ _('Buyer Remark') }}
-						</th>
-						<th class="text-center">
-							{{ _('Express') }}
-						</th>
-						<th class="text-right">{{ _('Action') }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for order in paginated_orders.items %}
-					<tr id="tr_{{ order.serial_no }}_parent">
-						<td>
-							<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
-							<label for="order-id-{{ order.serial_no }}">{{ order.serial_no }}</label>
-							{% if order.type == 2 %}<small data-toggle="tooltip" title="" data-original-title="{{ _('Split Child Order') }}"><i class="glyphicon glyphicon-duplicate"></i></small> {% endif %}
-						</td>
-						<td colspan="2">
-							{{ _('Add Date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
-						</td>
-						<td colspan="3">
-							{{ _('From Store') }}: <strong>{{ order.store.name }}（{{ order.store.platform_name }}）</strong>
-						</td>
-						<td colspan="2">
-							<span class="indicator {{ order.status_label[2] }}">{{ order.status_label[1] }}</span>
-						</td>
-					</tr>
-					<tr id="tr_{{ order.serial_no }}">
-						<td>
-							<img src="{{ order.cover }}" width="60px" class="pull-left">
-							<div class="product-info">
-								{{ _('Product Count') }}： <label>{{ order.items.count() }}</label> <br>
-							</div>
-						</td>
-						<td class="text-center">
-							{{ order.total_quantity }}
-						</td>
-						<td class="text-center">
-							{{ order.total_amount }} {{ current_site.currency }}
-						</td>
-						<td class="text-center">
-							{{ order.buyer_name }}
-						</td>
-						<td>
-							{{ order.buyer_tel }} {{ order.buyer_phone }}
-						</td>
-						<td>
-							{{ order.buyer_remark }}
-						</td>
-						<td class="text-center">
-							{% if order.status in [10,15] %}
-								{% if order.express_id %}{{ order.express.name }}<br>{% endif %}
-								{% if order.express_no %}
-								<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Update Express No.') }}">
-									{{ order.express_no|supress_none }}
-								</a>
-								{% else %}
-								<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-									{{ _('Add Express') }}
-								</a>
-								{% endif %}
-							{% endif %}
-						</td>
-						<td class="text-right">
-							<div class="dropdown">
-								<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ order.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-									{{ _('More') }}
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
-									{% if order.status in [1,5] %}
-									<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
-									<li><a href="{{ url_for('main.split_order', sn=order.serial_no) }}" class="ajax-modal" data-modal="split-order-modal">{{ _('Split order') }}</a></li>
-									<li><a href="javascript:void(0);" data-href="{{ url_for('main.ajax_canceled', rid=order.serial_no) }}" class="ajax-canceled">{{ _('Canceled') }}</a></li>
-									{% endif %}
-									<li><a href="{{ url_for('main.add_remark', sn=order.serial_no) }}" class="ajax-modal" data-modal="remark-order-modal">{{ _('Add Remark') }}</a></li>
-									<li role="separator" class="divider"></li>
-									<li><a href="{{ url_for('main.preview_order', sn=order.serial_no) }}" target="_blank">{{ _('Show Detail') }}</a></li>
-								</ul>
-							</div>
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</form>
-	</div>
-
-	{% import "block/_macros.html" as macros %}
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_orders, '.show_orders') }}
-			</nav>
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box">
+			<div class="pull-left">
+				<nav aria-label="Page navigation">
+					{{ macros.pagination_widget(pagination, '.show_orders') }}
+				</nav>
+			</div>
 		</div>
 	</div>
 </div>
