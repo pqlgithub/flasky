@@ -243,6 +243,11 @@
 					<li>
 						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
+					{% for s in status_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ s[0] }}" class="option">{{ s[1] }}</a>
+					</li>
+					{% endfor %}
 				</ul>
 			</div>
 		</div>

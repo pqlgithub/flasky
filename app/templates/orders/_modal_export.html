@@ -9,8 +9,8 @@
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label">{{ _('From Store') }}</label>
-					<div class="col-sm-6">
+					<label class="col-sm-2 control-label">{{ _('From Store') }}</label>
+					<div class="col-sm-5">
 						<select name="store_id" class="select2">
 							<option value="0">{{ _('Select Store') }}</option>
 							{% for st in store_list %}
@@ -21,16 +21,43 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label">{{ _('Date') }}</label>
-					<div class="col-sm-6">
-
+					<label class="col-sm-2 control-label">{{ _('Date') }}</label>
+					<div class="col-sm-5">
+						<div class="input-group form-date">
+							<input type="text" name="start_date" class="form-control form-datetime" />
+							<span class="input-group-addon">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</span>
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<div class="input-group form-date">
+							<input type="text" name="end_date" class="form-control form-datetime" />
+							<span class="input-group-addon">
+								<i class="glyphicon glyphicon-calendar"></i>
+							</span>
+						</div>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label">{{ _('Status') }}</label>
-					<div class="col-sm-6">
+					<label class="col-sm-2 control-label">{{ _('Status') }}</label>
+					<div class="col-sm-10">
+						<div class="form-control-static">
+							{% for s in status_list %}
+							<input type="checkbox" name="status[]" value="{{ s[0] }}" id="status{{ s[0] }}"> <label for="status{{ s[0] }}" class="m-r-5">{{ s[1] }}</label>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
 
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Type') }}</label>
+					<div class="col-sm-10">
+						<div class="form-control-static">
+							<input type="radio" name="type" value="1" id="type1" checked="checked"> <label for="type1" class="m-r-5">{{ _('Order Express') }}</label>
+							<input type="radio" name="type" value="2" id="type2"> <label for="type2">{{ _('Order List') }}</label>
+						</div>
 					</div>
 				</div>
 
@@ -38,24 +65,17 @@
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
-			<button type="button" id="export-submit-btn" class="btn btn-primary">{{ _('Submit') }}</button>
+			<button type="button" id="export-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
 		</div>
 	</div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	var data = {};
-
-	$('.select2').each(function (i, obj) {
-		if (!$(obj).data("select2")) {
-			$(obj).select2({
-				'width': '100%'
-			});
-		}
-	});
+	mixpus.hook_select2();
+	mixpus.hook_form_datetime();
 
 	$('#export-submit-btn').click(function (e) {
-		data = $('#export-form').serialize();
+		var $form=$('#export-form'), data = $form.serialize(), $btn=$('#export-submit-btn');
 
 		$.ajax({
 			url: "{{ post_url }}",
@@ -63,21 +83,28 @@
 			data: data,
 			dataType: 'json',
 			beforeSend: function () {
-				$('#export-submit-btn').prop('disabled', true);
+				$btn.prop('disabled', true);
 			},
 			complete: function() {
-				$('#export-submit-btn').prop('disabled', false);
+				$btn.prop('disabled', false);
 			},
 			success: function (result) {
 				console.log(result);
 				if (result.success) {
-					$('#export-form')
-						.parents('.modal').modal('hide');
+					// $form.parents('.modal').modal('hide');
 
-					// 自动刷新
-					window.location.reload();
+					var download_url = result.data.download_url;
+
+					$('#export_file_box').remove();
+
+					$form.append(
+						'<div class="form-group" id="export_file_box"><label class="col-sm-2 control-label">{{ _("Export File:") }}</label><div class="col-sm-10">' +
+						'<div class="form-control-static"><a href="'+ download_url +'" target="_blank">{{ _("Click to download") }}</a></div>' +
+						'</div></div>'
+					)
+
 				} else {
-					$('#export-form').prepend(display_alert(result.status.message))
+					$form.prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

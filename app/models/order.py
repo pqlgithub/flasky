@@ -8,7 +8,7 @@ from ..utils import timestamp, gen_serial_no
 __all__ = [
     'Order',
     'OrderItem',
-    'OrderStatus'
+    'OrderStatus',
 ]
 
 # 发票类型
@@ -210,6 +210,23 @@ class Order(db.Model):
                 break
         return new_serial_no
 
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        opened_columns = ['serial_no', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
+                          'discount_amount', 'express_no', 'remark', 'buyer_name', 'buyer_tel', 'buyer_phone',
+                          'buyer_zipcode','buyer_address', 'buyer_country', 'buyer_province', 'buyer_city', 'buyer_remark',
+                          'created_at', 'express_at', 'received_at', 'status']
+        json_order = { c: getattr(self, c, None) for c in opened_columns }
+        # 添加快递公司
+        json_order['express_name'] = self.express.name if self.express else ''
+        # 添加店铺名称
+        json_order['store_name'] = '{}({})'.format(self.store.name, self.store.platform_name)
+
+        # 订单状态转化
+        json_order['status'] = self.status_label[1]
+
+        return json_order
 
 
     def __repr__(self):

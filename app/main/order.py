@@ -6,7 +6,7 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from jinja2 import PackageLoader, Environment
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
-from flask_babelex import gettext
+from flask_babelex import gettext, lazy_gettext
 from io import BytesIO, StringIO
 import xhtml2pdf.pisa as pisa
 import html
@@ -20,14 +20,23 @@ from . import main
 from .. import db, uploader
 from ..decorators import user_has
 from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
-    timestamp
-from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, SORT_TYPE_CODE
+    timestamp, datestr_to_timestamp
+from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, SORT_TYPE_CODE, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
 from app.helpers import kdniao
 
+status_list = (
+    (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment')),
+    (OrderStatus.PENDING_CHECK, lazy_gettext('Pending Check')),
+    (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Pending Shipment')),
+    (OrderStatus.SHIPPED, lazy_gettext('Shipped')),
+    (OrderStatus.SIGNED, lazy_gettext('Signed')),
+    (OrderStatus.FINISHED, lazy_gettext('Pending Finished')),
+    (OrderStatus.REFUND, lazy_gettext('Refund'))
+)
 
 def load_common_data():
     """
@@ -48,7 +57,8 @@ def load_common_data():
         'pending_ship_count': pending_ship_count,
         'warehouse_list': warehouse_list,
         'store_list': store_list,
-        'top_menu': 'orders'
+        'top_menu': 'orders',
+        'status_list': status_list
     }
 
 
@@ -503,16 +513,126 @@ def import_orders():
                            warehouse_list=warehouse_list)
 
 
+def _rebuild_header_value(key, current_site):
+    """重建Excel表头标题"""
+    if key in ['freight','extra_charge','total_amount',]:
+        return '{}({})'.format(ORDER_EXCEL_FIELDS[key], current_site.currency)
+    return ORDER_EXCEL_FIELDS[key]
+
+
 @main.route('/orders/export', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_order')
 def export_orders():
     """导出订单"""
+    if request.method == 'POST':
+        store_id = request.form.get('store_id', type=int)
+        status = request.form.getlist('status[]')
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        type = request.form.get('type', 1, type=int)
+
+        builder = Order.query.filter_by(master_uid=Master.master_uid())
+        if store_id:
+            builder = builder.filter_by(store_id=store_id)
+
+        if status:
+            status = [int(s) for s in status]
+            builder = builder.filter(Order.status.in_(status))
+
+        if start_date:
+            start_date = datestr_to_timestamp(start_date)
+            builder = builder.filter(Order.created_at >= start_date)
+
+        if end_date:
+            end_date = datestr_to_timestamp(end_date)
+            builder = builder.filter(Order.created_at <= end_date)
+
+        order_list = builder.order_by('created_at asc').all()
+
+        filename = 'mic_order_list'
+        if type == 1:
+            filename = 'mic_order_express'
+
+        dest_filename = r'{}_{}.xlsx'.format(filename, datetime.datetime.now().strftime('%Y%m%d'))
+        export_path = current_app.root_path + '/static/'
+        export_file = '{}{}'.format(export_path, dest_filename)
+
+        # 新建文件
+        wb = Workbook()
+        # 第一个sheet
+        ws = wb.active
+        ws.title = 'Order List'
+
+        current_app.logger.debug('Export order count: %d' % len(order_list))
+
+        # 导出订单物流信息
+        if type == 1:
+            express_columns = [key for key in ORDER_EXPRESS_FIELDS.keys()]
+            # 写入表头
+            for col in range(1, len(express_columns) + 1):
+                field = express_columns[col - 1]
+                ws.cell(row=1, column=col, value=ORDER_EXPRESS_FIELDS[field])
+
+            # 写入数据，从第2行开始写入
+            for row in range(2, len(order_list) + 2):
+                current_order = order_list[row - 2]
+                for col in range(1, len(express_columns) + 1):
+                    field = express_columns[col - 1]
+
+                    # outside_target_id, express_no
+                    cell_value = current_order.to_json().get(field)
+
+                    ws.cell(row=row, column=col, value=cell_value)
+        # 导出订单信息
+        else:
+            order_columns = [key for key in MIXPUS_ORDER_FIELDS.keys()]
+
+            # 写入表头
+            for col in range(1, len(order_columns) + 1):
+                field = order_columns[col - 1]
+                ws.cell(row=1, column=col, value=MIXPUS_ORDER_FIELDS[field])
+
+            # 写入数据, 从第2行开始写入
+            for row in range(2, len(order_list) + 2):
+                current_order = order_list[row - 2]
+
+                current_app.logger.debug('Current row: %d' % row)
+
+                items = current_order.items
+
+                for col in range(1, len(order_columns) + 1):
+                    field = order_columns[col - 1]
+
+                    cell_value = current_order.to_json().get(field)
+                    if field == 'status':
+                        cell_value = str(cell_value)
+                    elif field in ['created_at', 'express_at', 'received_at']:
+                        cell_value = timestamp2string(cell_value) if cell_value else ''
+                    elif field == 'product_id':
+                        cell_value = ';'.join([item.sku_serial_no for item in items])
+                    elif field == 'product_name':
+                        cell_value = ';'.join([item.sku.product_name for item in items])
+                    elif field == 's_model':
+                        cell_value = ';'.join(['{}{}'.format(item.sku.s_model, item.sku.s_color) for item in items])
+                    elif field == 'deal_price':
+                        cell_value = ';'.join([str(item.deal_price) for item in items])
+                    else:
+                        current_app.logger.debug('Current col: %s' % field)
+
+                    ws.cell(row=row, column=col, value=cell_value)
+
+        wb.save(filename=export_file)
+
+        return full_response(True, R200_OK, {'download_url': url_for('static', filename=dest_filename)})
+
     # 店铺列表
     store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
 
     return render_template('orders/_modal_export.html',
-                           store_list=store_list)
+                           post_url=url_for('main.export_orders'),
+                           store_list=store_list,
+                           status_list=status_list)
 
 
 @main.route('/orders/create', methods=['GET', 'POST'])

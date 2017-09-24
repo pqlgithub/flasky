@@ -247,7 +247,37 @@ PURCHASE_EXCEL_FIELDS = {
     'remark': gettext('Remark')
 }
 
-# 导入/导出订单格式对应
+# 导入/导出订单物流信息
+ORDER_EXPRESS_FIELDS = {
+    'outside_target_id': '订单号', # 第三方订单号
+    'express_name': '物流服务商',
+    'express_no': '快递单号'
+}
+# 导入/导出订单格式（Mixpus）
+MIXPUS_ORDER_FIELDS = {
+    'serial_no': '订单号',
+    'store_name': '店铺',
+    'status': '订单状态',
+    'product_id':  '商品ID',
+    'product_name': '商品名称',
+    's_model': '商品规格',
+    'deal_price': '商品销售单价',
+    'freight' : '运费',
+    'total_quantity' : '实际成交数量',
+    'total_amount' : '商品销售总额',
+    'discount_amount' : '优惠总金额',
+    'created_at' : '下单时间',
+    'express_at' : '发货时间',
+    'received_at' : '收货时间',
+    'buyer_name' : '收件人',
+    'buyer_phone' : '收件人手机',
+    'buyer_address' : '收件人地址',
+    'buyer_remark' : '买家留言',
+    'express_name' : '物流服务商',
+    'express_no' : '快递单号'
+}
+
+# 导入/导出订单格式对应（第三方）
 ORDER_EXCEL_FIELDS = {
     'store_name': '店铺',
     'store_id': '店铺ID',
