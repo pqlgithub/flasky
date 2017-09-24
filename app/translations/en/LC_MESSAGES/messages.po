@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-24 13:37+0800\n"
+"POT-Creation-Date: 2017-09-24 23:57+0800\n"
 "PO-Revision-Date: 2017-06-12 20:37+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -72,7 +72,7 @@ msgstr ""
 msgid "Finished"
 msgstr ""
 
-#: app/constant.py:142 app/models/order.py:46
+#: app/constant.py:142 app/models/order.py:47
 #: app/templates/orders/_sub_menu.html:32
 #: app/templates/orders/table_order.html:97
 #: app/templates/purchases/purchase_table.html:79
@@ -845,34 +845,34 @@ msgstr ""
 msgid "Directory name is already exist!"
 msgstr ""
 
-#: app/main/order.py:32 app/models/order.py:47
+#: app/main/order.py:32 app/models/order.py:48
 #: app/templates/orders/_sub_menu.html:14
 msgid "Pending Payment"
 msgstr ""
 
-#: app/main/order.py:33 app/models/order.py:48
+#: app/main/order.py:33 app/models/order.py:49
 msgid "Pending Check"
 msgstr ""
 
-#: app/main/order.py:34 app/models/order.py:49
+#: app/main/order.py:34 app/models/order.py:50
 #: app/templates/orders/_sub_menu.html:22
 msgid "Pending Shipment"
 msgstr ""
 
-#: app/main/order.py:35 app/models/order.py:50
+#: app/main/order.py:35 app/models/order.py:51
 #: app/templates/orders/_sub_menu.html:26
 msgid "Shipped"
 msgstr ""
 
-#: app/main/order.py:36 app/models/order.py:51
+#: app/main/order.py:36 app/models/order.py:52
 msgid "Signed"
 msgstr ""
 
-#: app/main/order.py:37 app/models/order.py:53
+#: app/main/order.py:37 app/models/order.py:54
 msgid "Pending Finished"
 msgstr ""
 
-#: app/main/order.py:38 app/models/order.py:52
+#: app/main/order.py:38 app/models/order.py:53
 msgid "Refund"
 msgstr ""
 
@@ -1167,11 +1167,11 @@ msgstr ""
 msgid "default shelve, can't delete!"
 msgstr ""
 
-#: app/models/order.py:54
+#: app/models/order.py:55
 msgid "Pending Rating"
 msgstr ""
 
-#: app/models/order.py:55
+#: app/models/order.py:56
 msgid "Rated"
 msgstr ""
 
@@ -1459,8 +1459,8 @@ msgstr ""
 #: app/templates/products/create_and_edit.html:412
 #: app/templates/products/show_skus.html:48
 #: app/templates/products/show_skus.html:49
-#: app/templates/products/table_product.html:76
-#: app/templates/products/table_product.html:77
+#: app/templates/products/table_product.html:66
+#: app/templates/products/table_product.html:67
 #: app/templates/purchases/purchase_pay_table.html:49
 #: app/templates/purchases/purchase_table.html:78
 #: app/templates/settings/show_assets.html:49
@@ -1628,6 +1628,7 @@ msgstr ""
 #: app/templates/layout/base.html:78
 #: app/templates/orders/create_and_edit.html:277
 #: app/templates/orders/preview_order.html:165
+#: app/templates/orders/table_order.html:55
 msgid "Products"
 msgstr ""
 
@@ -2192,11 +2193,6 @@ msgstr ""
 msgid "Split Child Order"
 msgstr ""
 
-#: app/templates/orders/table_order.html:55
-#: app/templates/purchases/purchase_table.html:37
-msgid "Product Count"
-msgstr ""
-
 #: app/templates/orders/table_order.html:77
 msgid "Update Express No."
 msgstr ""
@@ -2362,6 +2358,20 @@ msgstr ""
 msgid "Search Region"
 msgstr ""
 
+#: app/templates/products/table_product.html:40
+msgid "sku"
+msgstr ""
+
+#: app/templates/products/table_product.html:42
+msgid "Product Sku"
+msgstr ""
+
+#: app/templates/products/table_product.html:42
+#: app/templates/warehouses/in_table.html:44
+#: app/templates/warehouses/out_table.html:44
+msgid "Show"
+msgstr ""
+
 #: app/templates/purchases/_modal_arrival.html:5
 msgid "Put in warehouse"
 msgstr ""
@@ -2480,6 +2490,10 @@ msgstr ""
 
 #: app/templates/purchases/purchase_table.html:12
 msgid "Payment Info"
+msgstr ""
+
+#: app/templates/purchases/purchase_table.html:37
+msgid "Product Count"
 msgstr ""
 
 #: app/templates/purchases/purchase_table.html:39
@@ -2928,11 +2942,6 @@ msgstr ""
 msgid "View Detail"
 msgstr ""
 
-#: app/templates/warehouses/in_table.html:44
-#: app/templates/warehouses/out_table.html:44
-msgid "Show"
-msgstr ""
-
 #: app/templates/warehouses/in_warehouse_modal.html:24
 msgid "In Type"
 msgstr ""
@@ -3352,5 +3361,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Commodity Codes [%s] already exist!"
+#~ msgstr ""
+
+#~ msgid "Product"
 #~ msgstr ""
 

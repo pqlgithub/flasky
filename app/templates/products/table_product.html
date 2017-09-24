@@ -37,19 +37,9 @@
 						{% endif %}
 					</td>
 					<td>
-						{% for sku in product.skus %}
-							{% if sku.s_model %}
-							<label class="label label-warning">
-								{{ sku.s_model|supress_none }}
-							</label>
-							{% endif %}
-							{% if sku.s_color %}
-							<label class="label label-default">
-								{{ sku.s_color|supress_none }}
-							</label>
-							{% endif %}
-							<br>
-						{% endfor %}
+						{{ _('sku') }}: {{ product.skus.count() }}<br>
+						<a href="#" rel="popover" data-content="{% for sku in product.skus %}<label class='text-mixpus m-r-10'>{{ sku.serial_no }} <small class='text-warning'>(
+				{% if sku.s_model %}{{ sku.s_model|supress_none }}{% endif %} {% if sku.s_color %}{{ sku.s_color|supress_none }}{% endif %} )</small></label>{% endfor %}" data-original-title="{{ _('Product Sku') }}">{{ _('Show') }}</a>
 					</td>
 					<td class="text-center">
 						{{ product.supplier.short_name }}

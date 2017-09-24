@@ -52,7 +52,7 @@
 				<td>
 					<img src="{{ order.cover }}" width="60px" class="pull-left">
 					<div class="product-info">
-						{{ _('Product Count') }}： <label>{{ order.items.count() }}</label> <br>
+						{{ _('Products') }}: {{ order.all_items }}
 					</div>
 				</td>
 				<td class="text-center">

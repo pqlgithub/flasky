@@ -69,6 +69,8 @@ mixpus.init_page_layout = function () {
 		});
 	});
 
+	mixpus.hook_popover_toggle();
+
 	mixpus.hook_select2();
 
 	mixpus.hook_tooltip_toggle();
@@ -110,6 +112,17 @@ mixpus.hook_tooltip_toggle = function () {
 		trigger: 'hover',
 		html: true
 	});
+};
+
+mixpus.hook_popover_toggle = function () {
+	$("a[rel=popover]")
+		.popover({
+      		'html': true,
+			'placement': 'top'
+	  	})
+      	.click(function(e) {
+      		e.preventDefault()
+      	});
 };
 
 mixpus.hook_form_datetime = function () {
