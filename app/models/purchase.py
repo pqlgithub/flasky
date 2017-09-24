@@ -77,7 +77,7 @@ class Purchase(db.Model):
         product_name = []
         for item in self.products:
             sku = item.sku
-            if sku:
+            if sku and sku.product:
                 product_name.append(sku.product.name)
         return ';'.join(product_name)
 

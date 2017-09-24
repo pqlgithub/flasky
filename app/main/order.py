@@ -92,18 +92,22 @@ def search_orders(page=1):
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
-    sk = request.values.get('sk', type=str, default='ad')
     store_id = request.values.get('store_id', type=int)
     s = request.values.get('s', type=int)
     date = request.values.get('date', type=int)
+    sk = request.values.get('sk', type=str, default='ad')
 
     builder = Order.query.filter_by(master_uid=Master.master_uid())
+
+    qk = qk.strip()
+    if qk:
+        current_app.logger.debug('Search order [%s]!' % qk)
+        builder = builder.whoosh_search(query=qk, or_=True)
+
     if store_id:
         builder = builder.filter_by(store_id=store_id)
-
     if s:
         builder = builder.filter_by(status=s)
-
     if date:
         now = datetime.date.today()
         if date == 1: # 今天之内
@@ -124,11 +128,7 @@ def search_orders(page=1):
 
         builder = builder.filter(Order.created_at > start_time, Order.created_at < end_time)
 
-    #qk = qk.strip()
-    #if qk:
-    #    builder = builder.whoosh_search(qk, like=True)
-
-    orders = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+    orders = builder.order_by(Order.created_at.desc()).all()
 
     # 构造分页
     total_count = builder.count()
@@ -991,7 +991,7 @@ def order_express_no(rid):
     if form.validate_on_submit():
         # 验证是否有效
         if order.status in [OrderStatus.PENDING_PAYMENT, OrderStatus.PENDING_CHECK]:
-            return custom_response(False, 'Order status is error!')
+            return custom_response(False, gettext('Order status is error!'))
 
         # 点击发货
         order.express_id = form.express_id.data
@@ -1018,7 +1018,7 @@ def order_express_no(rid):
         # 获取库房信息
         warehouse = Warehouse.query.get(order.warehouse_id)
         if not warehouse:
-            return custom_response(False, "Warehouse info isn't exist!")
+            return custom_response(False, gettext("Warehouse info isn't exist!"))
         default_shelve = warehouse.default_shelve
 
         # 出库单明细
@@ -1026,6 +1026,8 @@ def order_express_no(rid):
             sku_id = item.sku_id
             product_stock = ProductStock.query.filter_by(product_sku_id=sku_id,
                                                          warehouse_id=order.warehouse_id).first()
+            if product_stock is None:
+                return custom_response(False, gettext('This item is out of stock'))
 
             offset_quantity = item.quantity
             current_quantity = product_stock.current_count

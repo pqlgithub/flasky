@@ -237,7 +237,7 @@ class ProductSku(db.Model):
     @property
     def product_name(self):
         """product name"""
-        return self.product.name
+        return self.product.name if self.product else ''
 
     @property
     def supplier_name(self):

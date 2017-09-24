@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-24 12:22+0800\n"
+"POT-Creation-Date: 2017-09-24 13:37+0800\n"
 "PO-Revision-Date: 2017-07-18 20:43+0800\n"
 "Last-Translator: \n"
 "Language: th\n"
@@ -336,6 +336,7 @@ msgstr ""
 #: app/main/purchase.py:595 app/main/warehouse.py:595
 #: app/templates/finances/show_payments.html:86
 #: app/templates/orders/_modal_remark.html:19
+#: app/templates/orders/preview_order.html:66
 #: app/templates/products/create_and_edit.html:373
 #: app/templates/products/show_skus.html:10
 #: app/templates/purchases/_modal_arrival.html:37
@@ -427,7 +428,7 @@ msgstr ""
 #: app/forms/logistics_forms.py:40 app/forms/product_forms.py:20
 #: app/forms/warehouse_forms.py:19 app/main/purchase.py:593
 #: app/main/warehouse.py:593 app/templates/logistics/show_shippers.html:35
-#: app/templates/orders/preview_order.html:76
+#: app/templates/orders/preview_order.html:83
 #: app/templates/suppliers/search_result.html:14
 #: app/templates/suppliers/show_list.html:97
 msgid "Phone"
@@ -462,7 +463,7 @@ msgstr ""
 #: app/forms/product_forms.py:21 app/forms/warehouse_forms.py:12
 #: app/main/purchase.py:592 app/main/warehouse.py:592
 #: app/templates/logistics/show_shippers.html:36
-#: app/templates/orders/preview_order.html:83
+#: app/templates/orders/preview_order.html:90
 msgid "Address"
 msgstr ""
 
@@ -503,11 +504,11 @@ msgstr ""
 #: app/forms/order_forms.py:15 app/main/order.py:276 app/main/warehouse.py:293
 #: app/templates/orders/_modal_split.html:30
 #: app/templates/orders/create_and_edit.html:223
-#: app/templates/orders/preview_order.html:107
+#: app/templates/orders/preview_order.html:114
 msgid "Pay Amount"
 msgstr ""
 
-#: app/forms/order_forms.py:19 app/templates/orders/preview_order.html:72
+#: app/forms/order_forms.py:19 app/templates/orders/preview_order.html:79
 msgid "Buyer Name"
 msgstr ""
 
@@ -521,7 +522,7 @@ msgid "Country"
 msgstr ""
 
 #: app/forms/order_forms.py:31 app/main/order.py:260 app/main/warehouse.py:277
-#: app/templates/orders/preview_order.html:92
+#: app/templates/orders/preview_order.html:99
 #: app/templates/orders/table_order.html:25
 msgid "Buyer Remark"
 msgstr ""
@@ -921,7 +922,7 @@ msgstr ""
 #: app/main/order.py:268 app/main/warehouse.py:285 app/main/warehouse.py:586
 #: app/templates/orders/_modal_split.html:28
 #: app/templates/orders/create_and_edit.html:221
-#: app/templates/orders/preview_order.html:105
+#: app/templates/orders/preview_order.html:112
 #: app/templates/orders/table_order.html:13
 #: app/templates/purchases/_modal_arrival.html:50
 #: app/templates/purchases/purchase_pay_table.html:15
@@ -938,7 +939,7 @@ msgstr ""
 #: app/main/order.py:269 app/main/purchase.py:601 app/main/warehouse.py:286
 #: app/main/warehouse.py:587 app/templates/orders/_modal_split.html:26
 #: app/templates/orders/create_and_edit.html:219
-#: app/templates/orders/preview_order.html:103
+#: app/templates/orders/preview_order.html:110
 #: app/templates/products/select_product_modal.html:32
 #: app/templates/purchases/purchase_modal.html:33
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:59
@@ -957,23 +958,35 @@ msgid "Subtotal"
 msgstr ""
 
 #: app/main/order.py:272 app/templates/orders/create_and_edit.html:277
-#: app/templates/orders/preview_order.html:159
+#: app/templates/orders/preview_order.html:165
 msgid "Total"
 msgstr ""
 
 #: app/main/order.py:275 app/main/warehouse.py:292
 #: app/templates/orders/_modal_split.html:29
 #: app/templates/orders/create_and_edit.html:222
-#: app/templates/orders/preview_order.html:106
+#: app/templates/orders/preview_order.html:113
 msgid "Discount"
 msgstr ""
 
-#: app/main/order.py:806
+#: app/main/order.py:820
 msgid "Add Remark is ok!"
 msgstr ""
 
-#: app/main/order.py:897
+#: app/main/order.py:911
 msgid "Split order id ok!"
+msgstr ""
+
+#: app/main/order.py:994
+msgid "Order status is error!"
+msgstr ""
+
+#: app/main/order.py:1021
+msgid "Warehouse info isn't exist!"
+msgstr ""
+
+#: app/main/order.py:1030
+msgid "This item is out of stock"
 msgstr ""
 
 #: app/main/product.py:244
@@ -1063,7 +1076,7 @@ msgstr ""
 #: app/main/purchase.py:598 app/templates/orders/_modal_split.html:24
 #: app/templates/orders/create_and_edit.html:200
 #: app/templates/orders/create_and_edit.html:217
-#: app/templates/orders/preview_order.html:101
+#: app/templates/orders/preview_order.html:108
 #: app/templates/orders/table_order.html:10
 #: app/templates/products/select_product_modal.html:30
 #: app/templates/products/table_product.html:12
@@ -1401,7 +1414,7 @@ msgstr ""
 #: app/templates/layout/list.html:35 app/templates/logistics/show_list.html:36
 #: app/templates/logistics/show_shippers.html:37
 #: app/templates/orders/create_and_edit.html:224
-#: app/templates/orders/preview_order.html:108
+#: app/templates/orders/preview_order.html:115
 #: app/templates/orders/table_order.html:30
 #: app/templates/products/create_and_edit.html:374
 #: app/templates/products/select_product_modal.html:34
@@ -1614,7 +1627,7 @@ msgstr "สั่งซื้อสินค้า"
 
 #: app/templates/layout/base.html:78
 #: app/templates/orders/create_and_edit.html:277
-#: app/templates/orders/preview_order.html:159
+#: app/templates/orders/preview_order.html:165
 msgid "Products"
 msgstr "ผลิตภัณฑ์"
 
@@ -1918,7 +1931,7 @@ msgstr ""
 
 #: app/templates/orders/_modal_split.html:25
 #: app/templates/orders/create_and_edit.html:218
-#: app/templates/orders/preview_order.html:102
+#: app/templates/orders/preview_order.html:109
 #: app/templates/products/create_and_edit.html:370
 #: app/templates/products/select_product_modal.html:31
 #: app/templates/products/show_skus.html:8
@@ -1929,7 +1942,7 @@ msgstr ""
 
 #: app/templates/orders/_modal_split.html:27
 #: app/templates/orders/create_and_edit.html:220
-#: app/templates/orders/preview_order.html:104
+#: app/templates/orders/preview_order.html:111
 msgid "Deal Price"
 msgstr ""
 
@@ -1968,7 +1981,7 @@ msgid "Order Info"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:135
-#: app/templates/orders/preview_order.html:69
+#: app/templates/orders/preview_order.html:76
 msgid "Customer Info"
 msgstr ""
 
@@ -1986,7 +1999,7 @@ msgid "Select Products"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:267
-#: app/templates/orders/preview_order.html:150
+#: app/templates/orders/preview_order.html:156
 #: app/templates/products/create_and_edit.html:414
 #: app/templates/products/create_and_edit.html:415
 #: app/templates/products/select_result.html:25
@@ -2000,17 +2013,17 @@ msgid "Remove"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:280
-#: app/templates/orders/preview_order.html:162
+#: app/templates/orders/preview_order.html:168
 msgid "Total Amount:"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:280
-#: app/templates/orders/preview_order.html:162
+#: app/templates/orders/preview_order.html:168
 msgid "Total Discount:"
 msgstr ""
 
 #: app/templates/orders/create_and_edit.html:283
-#: app/templates/orders/preview_order.html:165
+#: app/templates/orders/preview_order.html:171
 msgid "Payable Amount:"
 msgstr ""
 

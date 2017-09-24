@@ -22,17 +22,17 @@
 			<div class="panel-heading">{{ _('Order Info') }}</div>
 			<div class="panel-body">
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Serial No.') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Serial No.') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.serial_no }}</p>
 					</div>
-					<label class="col-sm-2 control-label">{{ _('Pay Date') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Pay Date') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">
 							{{ current_order.created_at|timestamp2string }}
 						</p>
 					</div>
-					<label class="col-sm-2 control-label">{{ _('Status') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Status') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">
 							<span class="indicator {{ current_order.status_label[2] }}">{{ current_order.status_label[1] }}</span>
@@ -41,24 +41,31 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('From Store') }}</label>
+					<label class="col-sm-2 control-label">{{ _('From Store') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.store.name }}</p>
 					</div>
-					<label class="col-sm-2 control-label">{{ _('Out Serial No.') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Out Serial No.') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.outside_target_id }}</p>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Express') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Express') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.express.name }} <b class="text-mixpus">{{ current_order.express_no|supress_none }}</b></p>
 					</div>
-					<label class="col-sm-2 control-label">{{ _('Freight') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Freight') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.freight }} {{ current_site.currency }}</p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Remark') }}:</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ current_order.remark }}</p>
 					</div>
 				</div>
 
@@ -69,18 +76,18 @@
 			<div class="panel-heading">{{ _('Customer Info') }}</div>
 			<div class="panel-body">
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Buyer Name') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Buyer Name') }}:</label>
 					<div class="col-sm-2">
 						<p class="form-control-static">{{ current_order.buyer_name }}</p>
 					</div>
-					<label class="col-sm-2 control-label">{{ _('Phone') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Phone') }}:</label>
 					<div class="col-sm-4">
 						<p class="form-control-static">{{ current_order.buyer_phone }} {{ current_order.buyer_tel }}</p>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Address') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Address') }}:</label>
 					<div class="col-sm-10">
 						<p class="form-control-static">
 							{{ current_order.buyer_province }} {{ current_order.buyer_city }} {{ current_order.buyer_address }} {{ current_order.buyer_zipcode }}
@@ -89,7 +96,7 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Buyer Remark') }}</label>
+					<label class="col-sm-2 control-label">{{ _('Buyer Remark') }}:</label>
 					<div class="col-sm-10">
 						<p class="form-control-static">{{ current_order.buyer_remark }}</p>
 					</div>
@@ -137,11 +144,10 @@
 								<strong id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
 							</td>
 							<td class="text-center">
-								<input type="text" name="quantity[{{ item.sku_id }}]" value="1" data-id="{{ item.sku_id }}" id="quantity_{{ item.sku_id }}" class="form-control quantity input-quantity">
-								<input type="hidden" name="items[]" value="{{ item.sku_id }}">
+								<strong>{{ item.quantity }}</strong>
 							</td>
 							<td class="text-center">
-								<input type="text" name="discount[{{ item.sku_id }}]" value="0" data-id="{{ item.sku_id }}" id="discount_{{ item.sku_id }}" class="form-control input-quantity">
+								<strong>{{ item.discount_amount }}</strong>
 							</td>
 							<td class="text-right">
 								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_babelex import lazy_gettext
+from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
 from .product import ProductSku
 from .logistics import Express
@@ -59,6 +60,9 @@ class Order(db.Model):
     """订单表"""
 
     __tablename__ = 'orders'
+
+    __searchable__ = ['serial_no', 'outside_target_id', 'express_no', 'buyer_name', 'buyer_tel', 'buyer_phone', 'all_items']
+    __analyzer__ = ChineseAnalyzer()
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -172,6 +176,12 @@ class Order(db.Model):
         """返回明细的数量"""
         return self.items.count()
 
+    @property
+    def all_items(self):
+        """全部订单明细"""
+        sku_list = [item.sku.serial_no for item in self.items]
+        return ' '.join(sku_list)
+
 
     def mark_checked_status(self):
         """标记为待审核状态"""
@@ -218,6 +228,9 @@ class Order(db.Model):
                           'buyer_zipcode','buyer_address', 'buyer_country', 'buyer_province', 'buyer_city', 'buyer_remark',
                           'created_at', 'express_at', 'received_at', 'status']
         json_order = { c: getattr(self, c, None) for c in opened_columns }
+
+        # 订单编号
+        json_order['outside_target_id'] = self.outside_target_id if self.outside_target_id else self.serial_no
         # 添加快递公司
         json_order['express_name'] = self.express.name if self.express else ''
         # 添加店铺名称
