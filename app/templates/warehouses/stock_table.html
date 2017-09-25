@@ -1,6 +1,6 @@
 <div id="table-refresh-box">
 	<div class="m-t-10 text-right">
-		{{ _('Stock Total Amount') }}: <label class="text-danger m-r-15">{{ total_amount[0]|float }} {{ current_site.currency }}</label>
+		{{ _('Stock Total Amount') }}: <label class="text-danger m-r-15">{{ total_amount[0]|round(2) }} {{ current_site.currency }}</label>
 		{{ _('Stock Quantity') }}: <label class="text-danger m-r-10">{{ total_quantity[0]|int }}</label>
 	</div>
 	<div class="table-responsive">
