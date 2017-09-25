@@ -31,7 +31,7 @@
 				selected.push(id);
 			});
 			if (selected.length){
-				$.post('{{ url_for("main.ajax_apply_pay") }}', {'selected[]': selected, csrf_token: csrf_token}, function (result) {
+				$.post('{{ url_for("main.ajax_apply_pay") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
 					if (result.success) {
 						ids = result.data;
 						for (var i=0,l=ids.length;i<l;i++) {

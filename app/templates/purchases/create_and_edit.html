@@ -6,6 +6,7 @@
 
 {% block after_jquery %}
 <script type="text/javascript">
+	var selected_skus = [];
 	var recount = function () {
 		var total_quantity=0, total_amount=0, sku_count=0;
 		$('input.quantity').each(function () {
@@ -23,14 +24,26 @@
 	var parse_result = function (skus) {
 		var tr_html = [];
 		for (var i=0,l=skus.length; i<l; i++) {
+			if (selected_skus.indexOf(skus[i].id) != -1) {
+				continue;
+			}
+			selected_skus.push(skus[i].id);
+
 			tr_html.push('<tr id="tr_sku_'+ skus[i].id +'">');
 			tr_html.push('<td class="text-center"><img src="'+ skus[i].cover +'" width="60px"></td>');
-			tr_html.push('<td>'+ skus[i].serial_no +'</td>');
-			tr_html.push('<td class="text-center"><label class="label label-warning">'+ skus[i].s_model +'</label></td>');
+			tr_html.push('<td>'+ skus[i].product_name +'<br>' + skus[i].serial_no +'</td>');
+			tr_html.push('<td class="text-center">');
+			if (skus[i].s_model) {
+				tr_html.push('<label class="label label-warning">'+ skus[i].s_model +'</label>');
+			}
+			if (skus[i].s_color) {
+				tr_html.push('<label class="label label-default">'+ skus[i].s_color +'</label>');
+			}
+			tr_html.push('</td>');
 			tr_html.push('<td class="text-center"><label id="cost_price_'+ skus[i].id +'">'+ skus[i].cost_price +'</label></td>');
 			tr_html.push('<td class="text-center"><input type="text" class="form-control quantity input-quantity" data-id="'+ skus[i].id +'" name="sku['+ skus[i].id +'][quantity]" size="5" value="1"></td>');
 			tr_html.push('<td class="text-right"><span id="amount_'+ skus[i].id +'">'+ (skus[i].cost_price*1).toFixed(2) +'</span></td>');
-			tr_html.push('<td class="text-right"><a data-id="'+ skus[i].id +'" data-item-id="0" class="btn ajax-delete-sku btn-link">'+
+			tr_html.push('<td class="text-right"><a data-id="'+ skus[i].id +'" data-item-id="0" class="ajax-delete-sku">'+
 				'{{ _("Remove") }}</a>'+
 				'<input type="hidden" name="sku[]" value="'+ skus[i].id +'">' +
 				'</td>');
@@ -41,6 +54,13 @@
 
 	$(function () {
 		mixpus.init_page_layout();
+
+		// 编辑初始化明细
+		$('#choose-products').find('[name="sku[]"]').each(function () {
+			var v = $(this).val();
+			alert(v);
+			selected_skus.push(v);
+		});
 
 		$('#add-product-btn').click(function (e) {
 			var $btn = $(this), post_url=$(this).attr('href');
@@ -78,7 +98,7 @@
 		$('.ajax-delete-sku').click(function () {
 			var item_id = parseInt($(this).data('item-id')), sku_id = $(this).data('id');
 			if (item_id > 0) {
-				$.post('/purchases/delete_item', {'item_id': item_id, 'csrf_token': csrf_token}, function (result) {
+				$.post('/purchases/delete_item', {'item_id': item_id, 'csrf_token': mixpus.csrf_token}, function (result) {
 					if (result.success) {
 						$('#tr_sku_'+ result.data.sku_id).remove();
 
@@ -237,7 +257,7 @@
 						<span id="amount_{{ item.product_sku_id }}">{{ item.cost_price*item.quantity }}</span>
 					</td>
 					<td class="text-right">
-						<a class="btn ajax-delete-sku btn-link" data-id="{{ item.product_sku_id }}" data-item-id="{{ item.id }}" data-toggle="tooltip" data-original-title="{{ _('Remove') }}">
+						<a class="ajax-delete-sku" data-id="{{ item.product_sku_id }}" data-item-id="{{ item.id }}" data-toggle="tooltip" data-original-title="{{ _('Remove') }}">
 							{{ _('Remove') }}
 						</a>
 						<input type="hidden" name="sku[]" value="{{ item.product_sku_id }}">

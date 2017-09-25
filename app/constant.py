@@ -216,7 +216,7 @@ DEFAULT_ACLIST = (
 # 默认图片
 DEFAULT_IMAGES = {
     'cover': {
-        'view_url': '/static/img/no_image-100x100.png'
+        'view_url': '/static/img/no_img100x100.png'
     }
 }
 

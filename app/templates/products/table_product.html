@@ -29,12 +29,13 @@
 						<img src="{{ product.cover.view_url }}" width="60px">
 					</td>
 					<td>
-						{{ product.name|safe }}<br>
 						{% if product.region_id == 1 %}
 							<span class="text-mixpus">{{ product.serial_no }}</span>
 						{% else %}
 							<span class="text-warning">{{ product.serial_no }}</span>
 						{% endif %}
+						<br>
+						{{ product.name|safe }}
 					</td>
 					<td>
 						{{ _('sku') }}: {{ product.skus.count() }}<br>

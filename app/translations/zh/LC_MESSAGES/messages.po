@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-24 23:57+0800\n"
-"PO-Revision-Date: 2017-09-24 23:58+0800\n"
+"POT-Creation-Date: 2017-09-26 00:14+0800\n"
+"PO-Revision-Date: 2017-09-26 00:16+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -301,7 +301,6 @@ msgstr "物流单号"
 #: app/constant.py:244 app/templates/finances/show_payments.html:80
 #: app/templates/orders/show_list.html:288
 #: app/templates/orders/show_list.html:298
-#: app/templates/orders/table_order.html:42
 #: app/templates/products/show_list.html:110
 #: app/templates/products/show_list.html:120
 #: app/templates/purchases/pay_list.html:154
@@ -970,23 +969,43 @@ msgstr "总计"
 msgid "Discount"
 msgstr "折扣"
 
-#: app/main/order.py:820
+#: app/main/order.py:327
+msgid "Default express isn't setting!"
+msgstr "默认物流未设置！"
+
+#: app/main/order.py:432
+msgid "Import orders is error!!!"
+msgstr "导入订单失败！"
+
+#: app/main/order.py:434
+msgid "Import Orders is ok!"
+msgstr "导入订单成功！"
+
+#: app/main/order.py:815
 msgid "Add Remark is ok!"
 msgstr "添加备注成功!"
 
-#: app/main/order.py:911
+#: app/main/order.py:906
 msgid "Split order id ok!"
 msgstr "拆单已完成！"
 
-#: app/main/order.py:994
+#: app/main/order.py:984
+msgid "Delete order null!"
+msgstr "删除订单为空！"
+
+#: app/main/order.py:998
+msgid "Delete order is ok!"
+msgstr "删除订单成功！"
+
+#: app/main/order.py:1015
 msgid "Order status is error!"
 msgstr "订单状态有误!"
 
-#: app/main/order.py:1021
+#: app/main/order.py:1042
 msgid "Warehouse info isn't exist!"
 msgstr "操作仓库不存在!"
 
-#: app/main/order.py:1030
+#: app/main/order.py:1051
 msgid "This item is out of stock"
 msgstr "此商品无库存"
 
@@ -1359,6 +1378,7 @@ msgstr "保存"
 #: app/templates/logistics/create_and_edit.html:20
 #: app/templates/logistics/create_edit_shipper.html:20
 #: app/templates/orders/create_and_edit.html:86
+#: app/templates/orders/import_result.html:12
 #: app/templates/orders/preview_order.html:12
 #: app/templates/products/create_and_edit.html:97
 #: app/templates/purchases/create_and_edit.html:143
@@ -1460,8 +1480,8 @@ msgstr "操作"
 #: app/templates/products/create_and_edit.html:412
 #: app/templates/products/show_skus.html:48
 #: app/templates/products/show_skus.html:49
-#: app/templates/products/table_product.html:66
 #: app/templates/products/table_product.html:67
+#: app/templates/products/table_product.html:68
 #: app/templates/purchases/purchase_pay_table.html:49
 #: app/templates/purchases/purchase_table.html:78
 #: app/templates/settings/show_assets.html:49
@@ -1895,7 +1915,6 @@ msgid "Select Express"
 msgstr "选择物流"
 
 #: app/templates/orders/_modal_import.html:5
-#: app/templates/orders/show_list.html:180
 msgid "Import Orders"
 msgstr "导入订单"
 
@@ -2033,6 +2052,30 @@ msgstr "支付接："
 msgid "Order Remark"
 msgstr "备注"
 
+#: app/templates/orders/import_result.html:10
+msgid "Import Order Result"
+msgstr "导入订单结果"
+
+#: app/templates/orders/import_result.html:22
+msgid "Serial no"
+msgstr "编码"
+
+#: app/templates/orders/import_result.html:23
+msgid "Season"
+msgstr "原因"
+
+#: app/templates/orders/import_result.html:30
+msgid "Order is already imported!"
+msgstr "订单已被导入过！"
+
+#: app/templates/orders/import_result.html:39
+msgid "Current sku isn't exist!"
+msgstr "此sku不存在！"
+
+#: app/templates/orders/import_result.html:41
+msgid "Inventory is not enough!"
+msgstr "库存不足！"
+
 #: app/templates/orders/preview_order.html:29
 msgid "Pay Date"
 msgstr "付款日期"
@@ -2067,6 +2110,10 @@ msgstr "打印发货单"
 #: app/templates/orders/show_list.html:177
 msgid "Synchronize orders"
 msgstr "同步订单"
+
+#: app/templates/orders/show_list.html:180
+msgid "Import Orders Of HuaZhu"
+msgstr "导入华住订单"
 
 #: app/templates/orders/show_list.html:191
 #: app/templates/purchases/pay_list.html:59
@@ -2193,6 +2240,10 @@ msgstr "更新日期"
 #: app/templates/orders/table_order.html:39
 msgid "Split Child Order"
 msgstr "拆分的子订单"
+
+#: app/templates/orders/table_order.html:42
+msgid "Order date"
+msgstr "下单日期"
 
 #: app/templates/orders/table_order.html:77
 msgid "Update Express No."
@@ -2359,15 +2410,15 @@ msgstr "搜索产品SKU或名称..."
 msgid "Search Region"
 msgstr "搜索区域"
 
-#: app/templates/products/table_product.html:40
+#: app/templates/products/table_product.html:41
 msgid "sku"
 msgstr "sku"
 
-#: app/templates/products/table_product.html:42
+#: app/templates/products/table_product.html:43
 msgid "Product Sku"
 msgstr "商品sku"
 
-#: app/templates/products/table_product.html:42
+#: app/templates/products/table_product.html:43
 #: app/templates/warehouses/in_table.html:44
 #: app/templates/warehouses/out_table.html:44
 msgid "Show"

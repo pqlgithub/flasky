@@ -2,7 +2,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Search Products') }}</h4>
+			<h4 class="modal-title">{{ _('Search Products') }}</h4>
 		</div>
 		<div class="modal-body">
 			<form class="form" action="" method="post" id="sku-form">
@@ -89,7 +89,7 @@
 		var qk = $('input[name=qk]').val();
 
 		$.post("{{ url_for('main.ajax_search_products') }}", {
-			'supplier_id': supplier_id, 'qk': qk, 'csrf_token': csrf_token
+			'supplier_id': supplier_id, 'qk': qk, 'csrf_token': mixpus.csrf_token
 		}, function (result) {
 			$('#purchase-items').html(result);
 		}, 'html');
@@ -150,7 +150,7 @@
 						.append(parse_result(result.data));
 					recount();
 				} else {
-					$('#sku-form').prepend(display_alert(result.status.message))
+					$('#sku-form').prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

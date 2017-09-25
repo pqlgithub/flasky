@@ -288,8 +288,10 @@ class ProductSku(db.Model):
         """资源和JSON的序列化转换"""
         json_sku = {
             'id': self.id,
+            'product_name': self.product_name,
             'serial_no': self.serial_no,
             's_model': self.s_model,
+            's_color': self.s_color,
             'cover': uploader.url(self.cover.filepath),
             'cost_price': str(self.cost_price),
             's_weight': str(self.s_weight)

@@ -1,5 +1,5 @@
 <div class="table-responsive">
-	<form id="orders-form" action="" method="post">
+	<form id="orders-form" action="{{ url_for('main.delete_order') }}" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<table class="table table-bordered table-striped table-hover">
@@ -35,11 +35,11 @@
 			<tr id="tr_{{ order.serial_no }}_parent">
 				<td>
 					<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
-					<label for="order-id-{{ order.serial_no }}">{{ order.serial_no }}</label>
+					<label for="order-id-{{ order.serial_no }}">{% if order.outside_target_id %}{{ order.outside_target_id }}{% else %}{{ order.serial_no }}{% endif %}</label>
 					{% if order.type == 2 %}<small data-toggle="tooltip" title="" data-original-title="{{ _('Split Child Order') }}"><i class="glyphicon glyphicon-duplicate"></i></small> {% endif %}
 				</td>
 				<td colspan="2">
-					{{ _('Add Date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
+					{{ _('Order date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
 				</td>
 				<td colspan="3">
 					{{ _('From Store') }}: <strong>{{ order.store.name }}（{{ order.store.platform_name }}）</strong>

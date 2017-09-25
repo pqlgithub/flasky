@@ -177,7 +177,7 @@
 					<li><a href="#" class="ajax-modal" data-modal="synchronize-modal">{{ _('Synchronize orders') }}</a></li>
 					<li>
 						<a href="{{ url_for('main.import_orders') }}" class="ajax-modal" data-modal="import-modal">
-							{{ _('Import Orders') }}
+							{{ _('Import Orders Of HuaZhu') }}
 						</a>
 					</li>
 					<li>
@@ -313,7 +313,7 @@
 		<div class="pages-box">
 			<div class="pull-left">
 				<nav aria-label="Page navigation">
-					{{ macros.pagination_widget(pagination, '.show_orders') }}
+					{{ macros.pagination_widget(pagination, '.show_orders', s=status) }}
 				</nav>
 			</div>
 		</div>
