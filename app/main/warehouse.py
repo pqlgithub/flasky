@@ -5,14 +5,15 @@ from flask import g, render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required
 from flask_babelex import gettext
 from sqlalchemy.sql import func
+from sqlalchemy import or_
 from . import main
 from .. import db
 from ..models import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, StockHistory, ProductStock, ProductSku,\
-    Purchase, PurchaseProduct, Site, Currency
+    Purchase, PurchaseProduct, Site, Currency, Order, OrderStatus
 from ..forms import WarehouseForm
 from ..utils import full_response, custom_status, status_response,custom_response, R201_CREATED, R204_NOCONTENT, Master,\
     gen_serial_no, timestamp
-from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE
+from ..constant import SORT_TYPE_CODE, WAREHOUSE_OPERATION_TYPE, OUTWAREHOUSE_STATUS
 from ..decorators import user_has
 from .filters import supress_none, timestamp2string, break_line
 from ..pdfs import create_pdf
@@ -507,12 +508,16 @@ def search_out_warehouses():
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     wh_id = request.values.get('wh_id', type=int)
+    s = request.values.get('s', type=int)
     qk = request.values.get('qk', type=str)
     sk = request.values.get('sk', 'ad', type=str)
 
     builder = OutWarehouse.query.filter_by(master_uid=Master.master_uid())
     if wh_id:
         builder = builder.filter_by(warehouse_id=wh_id)
+
+    if s:
+        builder = builder.filter_by(out_status=s)
 
     qk = qk.strip()
     if qk:
@@ -545,7 +550,50 @@ def show_out_warehouses(page=1):
     return render_template('warehouses/show_outlist.html',
                            paginated_outwarehouses=paginated_outwarehouses,
                            sub_menu='outlist',
+                           status_list=OUTWAREHOUSE_STATUS,
                            **load_common_data())
+
+
+@main.route('/outwarehouses/scan', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_warehouse')
+def scan_out_warehouse():
+    """扫描出库"""
+
+    # 订单ID
+    rid = request.values.get('rid')
+    if request.method == 'POST':
+        # 获取订单信息, 设置已发货状态
+        order = Order.query.filter_by(master_uid=Master.master_uid()).filter(or_(Order.serial_no==rid, Order.outside_target_id==rid)).first()
+        if order and order.status != OrderStatus.SHIPPED:
+            order.mark_shipped_status()
+
+        # 获取出库单信息
+        out_warehouse = OutWarehouse.query.filter_by(master_uid=Master.master_uid(), target_serial_no=rid).first()
+        if out_warehouse and out_warehouse.out_status != 3:
+            out_warehouse.mark_out_status_finished()
+
+        db.session.commit()
+
+        return render_template('warehouses/scan_out_row.html',
+                               out_ware=out_warehouse,
+                               rid=rid)
+
+    return render_template('warehouses/scan_out_warehouse.html')
+
+
+@main.route('/outwarehouses/<string:sn>')
+@login_required
+@user_has('admin_warehouse')
+def preview_out_warehouse(sn):
+    """预览或查看出库单详情"""
+    out_warehouse = OutWarehouse.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
+    # 获取出库明细
+    outware_list = StockHistory.query.filter_by(master_uid=Master.master_uid(), serial_no=sn, type=2).all()
+
+    return render_template('warehouses/_modal_preview_outwarehouse.html',
+                           out_warehouse=out_warehouse,
+                           outware_list=outware_list)
 
 
 @main.route('/outwarehouses/print')

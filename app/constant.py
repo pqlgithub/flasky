@@ -156,6 +156,12 @@ INWAREHOUSE_STATUS = (
     (6, lazy_gettext('Finished'), 'success'),
 )
 
+OUTWAREHOUSE_STATUS = (
+    (1, lazy_gettext('UnOut Stock'), 'danger'),
+    (2, lazy_gettext('Outing Stock'), 'danger'),
+    (3, lazy_gettext('Outed Stock'), 'success')
+)
+
 # 收支类型
 TRANSACT_TYPE = (
     (1, '收款'),

@@ -22,7 +22,10 @@
 		{{ _('Pending Shipment') }}
 		{% if pending_ship_count %}<span class="badge">{{ pending_ship_count }}</span>{% endif %}
 	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=15" class="pjax list-group-item {% if status == 15 %} active{% endif %}">
+	<a href="{{ url_for('main.show_orders') }}?s=13" class="pjax list-group-item {% if status == 13 %} active{% endif %}">
+		{{ _('UnPrinting') }}
+	</a>
+	<a href="{{ url_for('main.show_orders') }}?s=16" class="pjax list-group-item {% if status == 16 %} active{% endif %}">
 		{{ _('Shipped') }}
 	</a>
 	<a href="{{ url_for('main.show_orders') }}?s=20" class="pjax list-group-item {% if status == 20 %} active{% endif %}">

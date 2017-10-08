@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms.fields import StringField, TextAreaField, IntegerField, DecimalField, SelectField, BooleanField
+from wtforms.fields import StringField, TextAreaField, IntegerField, DecimalField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
 from app.models import Express
@@ -16,6 +16,11 @@ class ExpressForm(Form):
     description = TextAreaField(lazy_gettext('Description'))
 
     is_default = BooleanField(lazy_gettext('Is Default'), default=False)
+
+    # 电子面单设置账号与密码
+    customer_name = StringField(lazy_gettext('Customer Name'))
+    customer_pwd = PasswordField(lazy_gettext('Customer Password'))
+    send_site = StringField(lazy_gettext('Send Site'))
 
     def validate_name(self, filed):
         if Express.query.filter_by(name=filed.data).first():

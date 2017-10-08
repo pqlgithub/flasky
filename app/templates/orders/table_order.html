@@ -71,17 +71,17 @@
 					{{ order.buyer_remark }}
 				</td>
 				<td class="text-center">
-					{% if order.status in [10,15] %}
-					{% if order.express_id %}{{ order.express.name }}<br>{% endif %}
-					{% if order.express_no %}
-					<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Update Express No.') }}">
-						{{ order.express_no|supress_none }}
-					</a>
-					{% else %}
-					<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-						{{ _('Add Express') }}
-					</a>
-					{% endif %}
+					{% if order.status not in [-1,1,5] %}
+						{% if order.express_id %}{{ order.express.name }}<br>{% endif %}
+						{% if order.express_no %}
+						<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Update Express No.') }}">
+							{{ order.express_no|supress_none }}
+						</a>
+						{% else %}
+						<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
+							{{ _('Add Express') }}
+						</a>
+						{% endif %}
 					{% endif %}
 				</td>
 				<td class="text-right">

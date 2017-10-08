@@ -255,28 +255,35 @@ def order_express_no(rid):
 @login_required
 @user_has('admin_order')
 def shipment_order():
-    """设置订单发货状态，获取电子面单"""
+    """获取订单的电子面单"""
     rid = request.values.get('rid')
     rids = rid.split(',')
     order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
 
+    messages = {}
     for order in order_list:
+        cur_rid = order.rid
         # 检查订单是否为待发货
         if order.status != OrderStatus.PENDING_SHIPMENT:
             current_app.logger.warn("Order[%s] status isn't pending shipment!" % order.rid)
+            messages[cur_rid] = gettext("Order[%s] status isn't pending shipment!" % order.rid)
             continue
 
         # 获取客户设置快递公司，如无则选择默认
         express_id = order.express_id
-        express_code = ''
+
+        express = None
         if express_id:
             express = Express.query.get(express_id)
-            express_code = express.code if express else ''
 
         # 获取默认值
-        if not express_code:
+        if express is None:
             express = Express.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
-            express_code = express.code
+
+        if express is None:
+            current_app.logger.warn("Order[%s] express not set!" % order.rid)
+            messages[cur_rid] = gettext("Order[%s] express not set!" % order.rid)
+            continue
 
         # 发货前，需先审单，设置从哪个仓库发出
         warehouse_id = order.warehouse_id
@@ -284,11 +291,19 @@ def shipment_order():
         shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=warehouse_id).first()
 
         eorder = {}
-        eorder['ShipperCode'] = express_code
+        eorder['ShipperCode'] = express.code
+        # 同一电子面单模板可多次调用，无需保存到本地
+        eorder['LogisticCode'] = order.express_no
         eorder['OrderCode'] = order.outside_target_id if order.outside_target_id else order.rid
         eorder['PayType'] = 1
         eorder['ExpType'] = 1
-        eorder['IsReturnPrintTemplate'] = '1'
+        # 返回电子面单模板：0-不需要；1-需要
+        eorder['IsReturnPrintTemplate'] = '0'
+
+        # 电子面单客户账号（与快递网点申请）
+        eorder['CustomerName'] = express.customer_name
+        eorder['CustomerPwd'] = express.customer_pwd
+        eorder['SendSite'] = express.send_site
 
         sender = {}
         sender['Name'] = shipper.name
@@ -322,17 +337,186 @@ def shipment_order():
 
         if eorder_result['ResultCode'] != '100' or eorder_result['Success'] != True:
             reason = eorder_result['Reason']
-            return render_template('pdf/eorder.html',
-                                   reason=reason)
+            messages[cur_rid] = reason
+            continue
 
         # 获取电子面单成功，则填充物流单号
         logistic_code = eorder_result['Order']['LogisticCode']
 
         # 点击发货
         order.express_no = logistic_code
-        order.mark_shipped_status()
+        order.mark_print_status()
 
-        # 同步生成出库单
+
+    db.session.commit()
+
+    success = False if len(messages) else True
+
+    return custom_response(success=success, message=messages)
+
+
+@main.route('/orders/print_eorder', methods=['POST'])
+@login_required
+@user_has('admin_order')
+def print_eorder():
+    """打印电子面单"""
+    rid = request.values.get('rid')
+    current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+
+    # 检查订单是否为待发货
+    if current_order.status != OrderStatus.PENDING_PRINT or not current_order.express_no:
+        current_app.logger.warn("Order[%s] status isn't pending print!" % rid)
+        return custom_response(False, gettext("Order[%s] status is error or express_no is empty!" % rid))
+
+    # 获取客户设置快递公司，如无则选择默认
+    express_id = current_order.express_id
+
+    express = None
+    if express_id:
+        express = Express.query.get(express_id)
+
+    # 获取默认值
+    if express is None:
+        express = Express.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
+
+    # 获取发货人
+    shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=current_order.warehouse_id).first()
+
+    eorder = {}
+    eorder['ShipperCode'] = express.code
+    # 同一电子面单模板可多次调用，无需保存到本地
+    eorder['LogisticCode'] = current_order.express_no
+    eorder['OrderCode'] = current_order.outside_target_id if current_order.outside_target_id else current_order.rid
+    eorder['PayType'] = 1
+    eorder['ExpType'] = 1
+    eorder['IsReturnPrintTemplate'] = '1'
+
+    eorder['CustomerName'] = express.customer_name
+    eorder['CustomerPwd'] = express.customer_pwd
+    eorder['SendSite'] = express.send_site
+
+    sender = {}
+    sender['Name'] = shipper.name
+    sender['Mobile'] = shipper.mobile
+    sender['ProvinceName'] = shipper.province
+    sender['CityName'] = shipper.city
+    sender['ExpAreaName'] = shipper.area
+    sender['Address'] = shipper.address
+
+    receiver = {}
+    receiver['Name'] = current_order.buyer_name
+    receiver['Mobile'] = current_order.buyer_phone
+    receiver['ProvinceName'] = current_order.buyer_province
+    receiver['CityName'] = current_order.buyer_city
+    receiver['ExpAreaName'] = ''
+    receiver['Address'] = current_order.buyer_address
+
+    commodity_one = {}
+    commodity_one['GoodsName'] = '其他'
+    commodity = []
+    commodity.append(commodity_one)
+
+    eorder['Sender'] = sender
+    eorder['Receiver'] = receiver
+    eorder['Commodity'] = commodity
+
+    # 请求电子面单
+    eorder_result = kdniao.get_eorder(eorder)
+
+    current_app.logger.debug(
+        'result code: %s, success: %s' % (eorder_result['ResultCode'], eorder_result['Success']))
+
+    current_app.logger.debug('%s' % eorder_result)
+
+    if eorder_result['ResultCode'] == '105' and eorder_result['Success'] == False:
+        return full_response(data=eorder_result['PrintTemplate'])
+
+    if eorder_result['ResultCode'] != '100' or eorder_result['Success'] != True:
+        reason = eorder_result['Reason']
+        return custom_response(False, reason)
+
+
+@main.route('/orders/print_order_pdf')
+@login_required
+@user_has('admin_order')
+def print_order_pdf():
+    """打印发货单"""
+    rid = request.args.get('rid')
+    rids = rid.split(',')
+    preview = request.args.get('preview')
+    order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
+
+    # 同步自动生成出库单
+    auto_gen_outwarehouse(order_list)
+
+    env = Environment(loader=PackageLoader(current_app.name, 'templates'))
+    env.filters['supress_none'] = supress_none
+    env.filters['timestamp2string'] = timestamp2string
+    env.filters['break_line'] = break_line
+    template = env.get_template('pdf/order.html')
+
+    current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
+
+    title_attrs = {
+        'bill_name': gettext('Shipping Bill'),
+        'store_name': gettext('Store Name'),
+        'serial_no': gettext('Order Serial'),
+        'consignee': gettext('Consignee'),
+        'date': gettext('Payed Date'),
+        'consignee_name': gettext('Consignee name'),
+        'remark': gettext('Buyer Remark'),
+        'product_items': gettext('Product Items'),
+
+        'order_number': gettext('Order Number'),
+        'sn': gettext('Product Serial'),
+        'product_name': gettext('Product Name'),
+        'mode': gettext('Product Mode'),
+        'unit': gettext('Unit'),
+        'quantity': gettext('Quantity'),
+        'price': gettext('Price'),
+        'discount_price': gettext('Discount Price'),
+        'subtotal': gettext('Subtotal'),
+        'total': gettext('Total'),
+
+        'freight': gettext('Freight'),
+        'discount': gettext('Discount'),
+        'pay_amount': gettext('Pay Amount')
+    }
+
+    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
+    if current_app.config['MODE'] == 'dev':
+        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
+
+    html = template.render(
+        current_site=current_site,
+        title_attrs=title_attrs,
+        font_path=font_path,
+        order_list=order_list,
+    ).encode('utf-8')
+
+    if preview:
+        return html
+
+    result = BytesIO()
+    pdf = pisa.CreatePDF(BytesIO(html), result)
+    resp = make_response(result.getvalue())
+    export_file = 'Order-{}'.format(int(timestamp()))
+    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
+    resp.headers['Content-Type'] = 'application/pdf'
+
+    return resp
+
+
+def auto_gen_outwarehouse(order_list):
+    """同步自动生成出库单"""
+
+    for order in order_list:
+        # 检测是否已存在出库单
+        if OutWarehouse.query.filter_by(master_uid=Master.master_uid(),
+                                        target_serial_no=order.serial_no,warehouse_id=order.warehouse_id).first():
+            # 已存在，则跳过
+            continue
+
         out_serial_no = gen_serial_no('CK')
         out_warehouse = OutWarehouse(
             master_uid=Master.master_uid(),
@@ -393,77 +577,8 @@ def shipment_order():
 
             db.session.add(stock_history)
 
-        db.session.commit()
+    db.session.commit()
 
-        return eorder_result['PrintTemplate']
-
-
-@main.route('/orders/print_order_pdf')
-@login_required
-@user_has('admin_order')
-def print_order_pdf():
-    """打印订单"""
-    rid = request.args.get('rid')
-    rids = rid.split(',')
-    preview = request.args.get('preview')
-    order_list = Order.query.filter_by(master_uid=Master.master_uid()).filter(Order.serial_no.in_(rids)).all()
-
-    env = Environment(loader=PackageLoader(current_app.name, 'templates'))
-    env.filters['supress_none'] = supress_none
-    env.filters['timestamp2string'] = timestamp2string
-    env.filters['break_line'] = break_line
-    template = env.get_template('pdf/order.html')
-
-    current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
-
-    title_attrs = {
-        'bill_name': gettext('Shipping Bill'),
-        'store_name': gettext('Store Name'),
-        'serial_no': gettext('Order Serial'),
-        'consignee': gettext('Consignee'),
-        'date': gettext('Payed Date'),
-        'consignee_name': gettext('Consignee name'),
-        'remark': gettext('Buyer Remark'),
-        'product_items': gettext('Product Items'),
-
-        'order_number': gettext('Order Number'),
-        'sn': gettext('Product Serial'),
-        'product_name': gettext('Product Name'),
-        'mode': gettext('Product Mode'),
-        'unit': gettext('Unit'),
-        'quantity': gettext('Quantity'),
-        'price': gettext('Price'),
-        'discount_price': gettext('Discount Price'),
-        'subtotal': gettext('Subtotal'),
-        'total': gettext('Total'),
-
-        'freight': gettext('Freight'),
-        'discount': gettext('Discount'),
-        'pay_amount': gettext('Pay Amount')
-    }
-
-    font_path = 'http://s3.mixpus.com/static/fonts/simsun.ttf'
-    if current_app.config['MODE'] == 'dev':
-        font_path = current_app.root_path + '/static/fonts/simsun.ttf'
-
-    html = template.render(
-        current_site=current_site,
-        title_attrs=title_attrs,
-        font_path=font_path,
-        order_list=order_list,
-    ).encode('utf-8')
-
-    if preview:
-        return html
-
-    result = BytesIO()
-    pdf = pisa.CreatePDF(BytesIO(html), result)
-    resp = make_response(result.getvalue())
-    export_file = 'Order-{}'.format(int(timestamp()))
-    resp.headers['Content-Disposition'] = ("inline; filename='{0}'; filename*=UTF-8''{0}".format(export_file))
-    resp.headers['Content-Type'] = 'application/pdf'
-
-    return resp
 
 
 def get_key_by_value(dict_value):
@@ -1108,10 +1223,35 @@ def ajax_verify_order():
     return full_response(True, R200_OK, selected_sns)
 
 
+@main.route('/orders/ajax_shipped', methods=['POST'])
+@login_required
+@user_has('admin_order')
+def ajax_shipped():
+    """订单发货"""
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        return custom_response(False, 'Shipped order null!')
+
+    try:
+        for rid in selected_ids:
+            order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+            if order and order.status != OrderStatus.SHIPPED:
+                order.mark_shipped_status()
+
+        db.session.commit()
+
+    except Exception as ex:
+        current_app.logger.warn('Shipped order is fail: %s' % ex)
+        return custom_response(False, 'Shipped order is fail: %s' % ex)
+
+    return full_response(True, R200_OK, selected_ids)
+
+
 @main.route('/orders/<string:rid>/ajax_canceled', methods=['POST'])
 @login_required
 @user_has('admin_order')
 def ajax_canceled(rid):
+    """订单取消"""
     order = Order.query.filter_by(serial_no=rid).first()
     if not order:
         return custom_response(False, "Order isn't exist!")

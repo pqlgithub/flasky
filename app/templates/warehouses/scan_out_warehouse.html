@@ -1,0 +1,89 @@
+{% extends pjax("layout/base.html") %}
+
+{% block sidebar %}
+	{% include 'warehouses/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		// 扫描后自动提交
+		var submit_scan_form = function () {
+			var data = $('#out-warehouse-form').serialize();
+			$.post('{{ url_for("main.scan_out_warehouse") }}', data, function (result) {
+				$('#scan-result-box').prepend(result);
+
+				$('input[name=rid]').val(''); // 清空记录
+
+				$('a.ajax-modal').unbind('click');
+				mixpus.hook_ajax_modal();
+
+			}, 'html');
+		};
+
+		$('input.scanning').on('keydown', function (e) {
+			var ev = window.event||e;
+			if (ev.keyCode == 13) {
+				submit_scan_form();
+				return false;
+			}
+		}).on('change', function () {
+			if ($('input[name=rid]').val()) {
+				submit_scan_form();
+			}
+			return false;
+		});
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Scanning Out Warehouse') }}
+
+		<span class="pull-right">
+			<a href="{{ url_for('main.show_out_warehouses') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+
+	<form id="out-warehouse-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">{{ _('Scanned Orders') }}</label>
+			<div class="col-sm-8">
+				<div class="input-group">
+					<input type="text" name="rid" class="form-control scanning" placeholder="{{ _('Scan barcode') }}" autofocus="autofocus">
+					<div class="input-group-addon">
+						<i class="glyphicon glyphicon-barcode"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th>{{ _('Serial No.') }}</th>
+					<th>{{ _('Relation Serial') }}</th>
+					<th class="text-center">{{ _('Warehouse') }}</th>
+					<th class="text-center">{{ _('Quantity') }}</th>
+					<th class="text-right">{{ _('Add Date') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody id="scan-result-box">
+
+			</tbody>
+		</table>
+
+	</form>
+</div>
+{% endblock %}

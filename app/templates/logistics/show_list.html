@@ -32,6 +32,7 @@
 						<th>{{ _('Logistics Name') }}</th>
 						<th>{{ _('Logistics Code') }}</th>
 						<th class="text-center">{{ _('Default') }}</th>
+						<th>{{ _('Customer Name') }}</th>
 						<th>{{ _('Contact') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>
 					</tr>
@@ -54,6 +55,9 @@
 								<i class="glyphicon glyphicon-ok"></i>
 							</label>
 							{% endif %}
+						</td>
+						<td>
+							{{ express.customer_name|supress_none }} {% if express.send_site %}({{ express.send_site|supress_none }}){% endif %}
 						</td>
 						<td>
 							{{ express.contact_name }} {{ express.contact_mobile }}

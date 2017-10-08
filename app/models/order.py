@@ -28,26 +28,32 @@ class OrderStatus:
     PENDING_CHECK = 5
     # 待发货
     PENDING_SHIPMENT = 10
+    # 配货中
+    DISTRIBUTION = 12
+    # 待打印
+    PENDING_PRINT = 13
     # 已发货
-    SHIPPED = 15
+    SHIPPED = 16
     # 已签收
-    SIGNED = 17
-    # 已退款
-    REFUND = 18
+    SIGNED = 20
     # 订单完成
-    FINISHED = 20
+    FINISHED = 30
     # 待评分
-    PENDING_RATING = 25
+    PENDING_RATING = 40
     # 评分完成
-    RATED = 30
+    RATED = 45
+    # 已退款
+    REFUND = 90
 
 
 # 订单状态
 ORDER_STATUS = [
     (OrderStatus.CANCELED, lazy_gettext('Canceled'), 'info'),
     (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment'), 'danger'),
-    (OrderStatus.PENDING_CHECK, lazy_gettext('Pending Check'), 'danger'),
-    (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Pending Shipment'), 'primary'),
+    (OrderStatus.PENDING_CHECK, lazy_gettext('UnApprove'), 'danger'),
+    (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Effective'), 'primary'),
+    (OrderStatus.DISTRIBUTION, lazy_gettext('Distribution'), 'primary'),
+    (OrderStatus.PENDING_PRINT, lazy_gettext('UnPrinting'), 'primary'),
     (OrderStatus.SHIPPED, lazy_gettext('Shipped'), 'warning'),
     (OrderStatus.SIGNED, lazy_gettext('Signed'), 'success'),
     (OrderStatus.REFUND, lazy_gettext('Refund'), 'warning'),
@@ -193,16 +199,21 @@ class Order(db.Model):
         self.verified_at = timestamp()
         self.status = OrderStatus.PENDING_SHIPMENT
 
+    def mark_print_status(self):
+        """标记为待打印状态"""
+        self.status = OrderStatus.PENDING_PRINT
+        self.express_at = timestamp()
+
 
     def mark_shipped_status(self):
         """标记为已发货状态"""
         self.status = OrderStatus.SHIPPED
-        self.express_at = timestamp()
 
 
     def mark_finished_status(self):
         """标记为已完成的状态"""
         self.status = OrderStatus.FINISHED
+
 
     def mark_canceled_status(self):
         """标记为关闭或取消状态"""

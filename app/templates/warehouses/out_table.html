@@ -13,6 +13,7 @@
 				<th class="text-center">{{ _('Warehouse') }}</th>
 				<th class="text-center">{{ _('Quantity') }}</th>
 				<th class="text-right">{{ _('Add Date') }}</th>
+				<th class="text-right">{{ _('Status') }}</th>
 				<th class="text-right">{{ _('Action') }}</th>
 			</tr>
 			</thead>
@@ -40,7 +41,10 @@
 					{{ out_ware.created_at|timestamp2string() }}
 				</td>
 				<td class="text-right">
-					<a href="{{ url_for('main.preview_inwarehouse', sn=out_ware.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
+					<span class="indicator {{ out_ware.status_label[2] }}">{{ out_ware.status_label[1] }}</span>
+				</td>
+				<td class="text-right">
+					<a href="{{ url_for('main.preview_out_warehouse', sn=out_ware.serial_no) }}" class="btn btn-link ajax-modal" data-modal="preview-modal" data-toggle="tooltip" data-original-title="{{ _('View Detail') }}">
 						{{ _('Show') }}
 					</a>
 				</td>

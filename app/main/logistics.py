@@ -44,7 +44,11 @@ def create_express():
             contact_name = form.contact_name.data,
             contact_mobile = form.contact_mobile.data,
             contact_phone = form.contact_phone.data,
-            description = form.description.data
+            description = form.description.data,
+            is_default = form.is_default.data,
+            customer_name = form.customer_name.data,
+            customer_pwd = form.customer_pwd.data,
+            send_site = form.send_site.data
         )
 
         db.session.add(express)
@@ -66,10 +70,14 @@ def edit_express(id):
     express = Express.query.get_or_404(id)
     form = EditExpressForm(express)
     if form.validate_on_submit():
+        # 填充默认值
+        if not form.customer_pwd.data:
+            form.customer_pwd.data = express.customer_pwd
         form.populate_obj(express)
         db.session.commit()
 
         flash('Edit express id ok!', 'success')
+
         return redirect(url_for('.show_expresses'))
 
     # 初始化编辑数据
@@ -79,6 +87,9 @@ def edit_express(id):
     form.contact_mobile.data = express.contact_mobile
     form.contact_phone.data = express.contact_phone
     form.description.data = express.description
+    form.is_default.data = express.is_default
+    form.customer_name.data = express.customer_name
+    form.send_site.data = express.send_site
 
     return render_template('logistics/create_and_edit.html',
                            form=form,

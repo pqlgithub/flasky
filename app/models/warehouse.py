@@ -3,7 +3,7 @@ from flask import current_app
 from flask_babelex import gettext, lazy_gettext
 from app import db
 from ..utils import timestamp
-from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES
+from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES, OUTWAREHOUSE_STATUS
 from .purchase import Purchase
 from .currency import Currency
 
@@ -252,10 +252,20 @@ class OutWarehouse(db.Model):
     )
 
     @property
+    def status_label(self):
+        for s in OUTWAREHOUSE_STATUS:
+            if s[0] == self.out_status:
+                return s
+
+    @property
     def target_label(self):
         if self.target_type == 1:
-            return 'Order'
+            return lazy_gettext('Order')
         return None
+
+    def mark_out_status_finished(self):
+        """更新出库状态为已完成"""
+        self.out_status = 3
 
 
     def __repr__(self):

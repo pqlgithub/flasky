@@ -13,6 +13,7 @@
       <w>attrs</w>
       <w>autoclose</w>
       <w>autoescape</w>
+      <w>autofocus</w>
       <w>baidu</w>
       <w>bodys</w>
       <w>celerybeat</w>
@@ -64,6 +65,7 @@
       <w>onload</w>
       <w>oscript</w>
       <w>outlist</w>
+      <w>outware</w>
       <w>outwarehouse</w>
       <w>outwarehouses</w>
       <w>passwd</w>

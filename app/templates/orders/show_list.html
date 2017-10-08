@@ -70,6 +70,37 @@
 			return false;
 		});
 
+		// 手动设置发货
+		$('.ajax-deliver').click(function () {
+			var form_id = $(this).data('form-id');
+			// 检测是否选中
+			var selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length == 0){
+				swal('Error', 'First to selected the one!', 'error');
+				return false;
+			}
+
+			$.post('{{ url_for("main.ajax_shipped") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
+				if (result.success) {
+					ids = result.data;
+					for (var i=0,l=ids.length;i<l;i++) {
+						$('#tr_' + ids[i] + '_parent').remove();
+						$('#tr_' + ids[i]).remove();
+					}
+				} else {
+					mixpus.show_error_message(result.status.message);
+				}
+			});
+
+			return false;
+		});
+
+
+
 		// 打印订单发货单
 		$('.ajax-print').click(function () {
 			var form_id = $(this).data('form-id'), href = $(this).data('href');
@@ -90,8 +121,8 @@
 			return false;
 		});
 
-		// 获取快递单号、设置发货状态
-		$('.ajax-shipment').click(function () {
+		// 打印电子面单
+		$('.ajax-print-eorder').click(function () {
 			var $btn = $(this);
 
 			try {
@@ -122,26 +153,63 @@
 
 			$btn.prop('disabled', true);
 
+			for (var i=0; i<selected.length; i++) {
+				$.post(href, {'rid': selected[i], 'csrf_token': mixpus.csrf_token}, function (result) {
+					if (!result.success) {
+						mixpus.show_error_message(result.status.message);
+						return false;
+					}
+					LODOP.PRINT_INIT('{{ _("Print Express") }}');
+					// 自定义纸张大小打印
+					LODOP.SET_PRINT_PAGESIZE(1, '100mm', '180mm', '');
+					LODOP.SET_SHOW_MODE('HIDE_SBUTTIN_PREVIEW', 1);
+
+					// 设置打印内容
+					LODOP.ADD_PRINT_HTM('10mm', '5mm', '100%', '100%', result.data);
+
+					// 预览
+					// LODOP.PREVIEW();
+
+					// 选择打印机
+					// LODOP.PRINTA();
+					// 直接打印
+					LODOP.PRINT();
+
+				}, 'json');
+			}
+
+			$btn.prop('disabled', false);
+
+			return false;
+		});
+
+		// 获取快递单号、设置发货状态
+		$('.ajax-shipment').click(function () {
+			var $btn = $(this);
+			var form_id = $(this).data('form-id'), href = $(this).data('href');
+			// 检测是否选中
+			var selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length == 0){
+				swal('Error', 'First to selected the one!', 'error');
+				return false;
+			}
+
+			$btn.prop('disabled', true);
+
 			$.post(href, {'rid': selected.toString(), 'csrf_token': mixpus.csrf_token}, function (result) {
 
 				$btn.prop('disabled', false);
 
-				LODOP.PRINT_INIT('{{ _("Print Express") }}');
-				// 自定义纸张大小打印
-				LODOP.SET_PRINT_PAGESIZE(1, '100mm', '180mm', '');
-				LODOP.SET_SHOW_MODE('HIDE_SBUTTIN_PREVIEW', 1);
+				if (!result.success) {
+					mixpus.show_error_message(result.status.message);
+				}
 
-				// 设置打印内容
-				LODOP.ADD_PRINT_HTM('10mm', '5mm', '100%', '100%', result);
+			}, 'json');
 
-				// 预览
-				LODOP.PREVIEW();
-
-				// 选择打印机
-				// LODOP.PRINTA();
-				// 直接打印
-				// LODOP.PRINT();
-			});
 			return false;
 		});
 
@@ -159,20 +227,19 @@
 			<span class="checked-items-status text-muted navbar-text m-r-15 hidden">
 				0 items selected
 			</span>
-			<button class="btn btn-default ajax-shipment" data-form-id="orders-form" data-href="{{ url_for('main.shipment_order') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Shipment') }}">
-				<i class="glyphicon glyphicon-print"></i>
-			</button>
 			<div class="btn-group">
 				<button class="btn btn-default dropdown-toggle" type="button" id="storage-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Actions') }}
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
+					{% if status in [10, 13] %}
+					<li>
+						<a href="javascript:void(0);" class="ajax-deliver" data-form-id="orders-form">{{ _('Deliver Goods') }}</a>
+					</li>
+					{% endif %}
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Update buyer info') }}</a></li>
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Set as blacked') }}</a></li>
-					<li>
-						<a href="javascript:void(0);" class="ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}">{{ _('Print Shipping Document') }}</a>
-					</li>
 					<li class="divider" role="separator"></li>
 					<li><a href="#" class="ajax-modal" data-modal="synchronize-modal">{{ _('Synchronize orders') }}</a></li>
 					<li>
@@ -190,6 +257,19 @@
 			{% if status == 1 or status == 5 %}
 			<button class="btn btn-warning verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
 				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+			{% endif %}
+			{% if status == 10 %}
+			<button class="btn btn-primary ajax-shipment" data-form-id="orders-form" data-href="{{ url_for('main.shipment_order') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Set Logistics Info') }}">
+				<i class="glyphicon glyphicon-send"></i>
+			</button>
+			{% endif %}
+			{% if status == 13 %}
+			<button class="btn btn-primary ajax-print-eorder" data-form-id="orders-form" data-href="{{ url_for('main.print_eorder') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Eorder') }}">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+			<button class="btn btn-success ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Shipment Bill') }}">
+				<i class="glyphicon glyphicon-print"></i>
 			</button>
 			{% endif %}
 			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
@@ -232,7 +312,7 @@
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<input type="hidden" name="s" value="{{ status }}">
+				<input type="hidden" name="s" value="{{ s }}">
 				<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Status') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>

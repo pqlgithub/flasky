@@ -24,6 +24,11 @@ class Express(db.Model):
     # 默认物流公司
     is_default = db.Column(db.Boolean, default=False)
 
+    # 电子面单账号与密码设置
+    customer_name = db.Column(db.String(32), nullable=True)
+    customer_pwd = db.Column(db.String(100), nullable=True)
+    send_site = db.Column(db.String(32), nullable=True)
+
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
