@@ -286,6 +286,11 @@ class AnonymousUser(AnonymousUserMixin):
     def is_setting(self):
         return False
 
+    @property
+    def is_master(self):
+        """是否为主账号"""
+        return False
+
 
 login_manager.anonymous_user = AnonymousUser
 

@@ -74,6 +74,7 @@ def folder(page=1):
 
 @main.route('/file_manager/show_asset')
 @main.route('/file_manager/show_asset/<int:page>')
+@login_required
 def show_asset(page=1):
     per_page = 20
     parent_directory = ''
@@ -113,17 +114,20 @@ def show_asset(page=1):
 
 
 @main.route('/file_manager/get_asset/<int:id>')
+@login_required
 def get_asset(id):
     asset = Asset.query.get_or_404(id)
     return jsonify(asset.to_json())
 
 @main.route('/file_manager/view_asset/<int:id>')
+@login_required
 def view_asset(id):
     asset = Asset.query.get_or_404(id)
     return jsonify(asset.to_json())
 
 
 @main.route('/file_manager/flupload', methods=['POST'])
+@login_required
 def flupload():
     saved_asset_ids = []
     sub_folder = str(time.strftime('%y%m%d'))
@@ -185,6 +189,7 @@ def flupload():
     })
 
 @main.route('/file_manager/pldelete', methods=['POST'])
+@login_required
 def pldelete():
     path_list = request.form.getlist('path[]')
 

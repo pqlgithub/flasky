@@ -100,7 +100,7 @@ def get_eorder(eorder):
 def track_express(express_code):
     """查询物流信息"""
 
-    url = 'http://testapi.kdniao.cc:8081/Ebusiness/EbusinessOrderHandle.aspx'
+    url = current_app.config['KDN_APP_ROOT_URL'] + '/Ebusiness/EbusinessOrderHandle.aspx'
     data = get_company(express_code, current_app.config['KDN_APP_ID'], current_app.config['KDN_APP_KEY'], url)
     if not any(data['Shippers']):
         current_app.logger.warn('未查到该快递信息,请检查快递单号是否有误！')
