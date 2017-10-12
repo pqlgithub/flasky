@@ -292,7 +292,7 @@ class ProductSku(db.Model):
             'serial_no': self.serial_no,
             's_model': self.s_model,
             's_color': self.s_color,
-            'cover': uploader.url(self.cover.filepath),
+            'cover': self.cover.view_url,
             'cost_price': str(self.cost_price),
             's_weight': str(self.s_weight)
         }
