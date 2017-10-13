@@ -51,7 +51,7 @@ def show_stocks(page=1):
 
     sort_by = '%s desc' % sort_type
 
-    paginated_stocks = builder.order_by(sort_by).paginate(page, per_page)
+    paginated_stocks = builder.order_by('id desc').paginate(page, per_page)
 
     re_builder = builder
     # 当前库存总数
