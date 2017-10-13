@@ -12,7 +12,7 @@
 
 				<div class="form-group">
 					<div class="input-group">
-						<input type="text" name="qk" value="" class="form-control" placeholder="Search sku or name..." >
+						<input type="text" name="qk" value="{{ qk }}" class="form-control" placeholder="{{ _('Search sku or name...') }}" >
 						<div class="input-group-btn">
 							<button class="btn btn-warning" type="button">
 								<i class="glyphicon glyphicon-search"></i>
@@ -75,6 +75,13 @@
 					</tbody>
 				</table>
 
+				{% import "block/_macros.html" as macros %}
+				<div class="pages-box pages-mini">
+					<nav aria-label="Page navigation">
+						{{ macros.pagination_widget(paginated_stocks, '.ajax_select_products', wh_id=wh_id, qk=qk) }}
+					</nav>
+				</div>
+
 			</form>
 		</div>
 		<div class="modal-footer">
@@ -85,6 +92,13 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
+
+	$('.pagination a').on('click', function(e) {
+		e.preventDefault();
+
+		$('#sku-modal').load($(this).attr('href'));
+	});
+
 	// 全选 or 反选
 	$('#sku-form').find('input.check-all').bind('click', function() {
 		if ($(this).is(':checked')){

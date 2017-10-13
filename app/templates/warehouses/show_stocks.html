@@ -86,7 +86,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
-			<input type="text" class="form-control input-search" size="60" name="q_k" placeholder="{{ _('Search products sku or name...') }}">
+			<input type="text" class="form-control searcher" size="60" name="q_k" placeholder="{{ _('Search products sku or name...') }}">
 		</div>
 
 		<div class="form-group m-l-5">
@@ -96,7 +96,7 @@
 					{{ _('Warehouse') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="wh_id" aria-labelledby="filter-warehouse">
+				<ul class="dropdown-menu dropdown-select-menu" data-target="wh_id" aria-labelledby="filter-warehouse">
 					<li class="dropdown-header">{{ _('Search Warehouse')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>

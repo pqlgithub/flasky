@@ -154,7 +154,7 @@ def ajax_find_skus():
     return full_response(True, R200_OK, sku_list)
 
 
-@main.route('/products/ajax_select', methods=['POST'])
+@main.route('/products/ajax_select', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_product')
 def ajax_select_products():
@@ -163,11 +163,12 @@ def ajax_select_products():
     wh_id = request.form.get('wh_id')
     t = request.form.get('t', 'stock')
     page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
 
-    query = ProductStock.query
+    builder = ProductStock.query
     if wh_id:
-        query = query.filter_by(warehouse_id=wh_id)
-        paginated_stocks = query.order_by('created_at desc').paginate(page, 10)
+        builder = builder.filter_by(warehouse_id=wh_id)
+        paginated_stocks = builder.order_by('created_at desc').paginate(page, per_page)
 
     return render_template('products/select_product_modal.html',
                            paginated_stocks=paginated_stocks,

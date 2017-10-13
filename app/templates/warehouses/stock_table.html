@@ -1,7 +1,9 @@
 <div id="table-refresh-box">
 	<div class="m-t-10 text-right">
+		{% if total_amount[0] %}
 		{{ _('Stock Total Amount') }}: <label class="text-danger m-r-15">{{ total_amount[0]|round(2) }} {{ current_site.currency }}</label>
 		{{ _('Stock Quantity') }}: <label class="text-danger m-r-10">{{ total_quantity[0]|int }}</label>
+		{% endif %}
 	</div>
 	<div class="table-responsive">
 		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
