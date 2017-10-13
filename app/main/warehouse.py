@@ -53,11 +53,12 @@ def show_stocks(page=1):
 
     paginated_stocks = builder.order_by(sort_by).paginate(page, per_page)
 
+    re_builder = builder
     # 当前库存总数
-    total_quantity = builder.with_entities(func.sum(ProductStock.current_count)).one()
+    total_quantity = re_builder.with_entities(func.sum(ProductStock.current_count)).one()
 
     # 库存总金额
-    total_amount = builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
+    total_amount = re_builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
         .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
 
     if request.method == 'POST':
