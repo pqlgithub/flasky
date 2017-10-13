@@ -1,25 +1,52 @@
-{% for sku in paginated_skus %}
-<tr id="tr_sku_{{ sku.id }}">
-	<td class="text-center">
-		<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
-	</td>
-	<td class="text-center">
-		<img src="{{ sku.cover.view_url }}" width="60px">
-	</td>
-	<td class="text-center">
-		{{ sku.serial_no }}
-	</td>
-	<td>
-		{{ sku.product.name }}
-	</td>
-	<td class="text-center">
-		{{ sku.s_model }}
-	</td>
-	<td class="text-right">
-		{{ sku.cost_price }} {{ current_site.currency }}
-	</td>
-	<td class="text-right">
-		<strong class="text-danger">{{ sku.stock_count }}</strong>
-	</td>
-</tr>
-{% endfor %}
+<table class="table table-bordered m-t-20">
+	<thead>
+	<tr>
+		<th class="text-center">
+			<input name="check_all" type="checkbox" class="check-all">
+		</th>
+		<th class="text-center">{{ _('Image') }}</th>
+		<th class="text-center">{{ _('SKU') }}</th>
+		<th>{{ _('Product Name') }}</th>
+		<th class="text-center">{{ _('Attributes') }}</th>
+		<th class="text-right">{{ _('Price') }}</th>
+		<th class="text-right">{{ _('Total Stock / Not Arrived') }}</th>
+	</tr>
+	</thead>
+	<tbody id="purchase-items">
+	{% for sku in paginated_skus %}
+	<tr id="tr_sku_{{ sku.id }}">
+		<td class="text-center">
+			<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
+		</td>
+		<td class="text-center">
+			<img src="{{ sku.cover.view_url }}" width="60px">
+		</td>
+		<td class="text-center">
+			{{ sku.serial_no }}
+		</td>
+		<td>
+			{{ sku.product.name }}
+		</td>
+		<td class="text-center">
+			{% if sku.s_model %}
+			<label class="label label-warning">
+				{{ sku.s_model|supress_none }}
+			</label>
+			{% endif %}
+			{% if sku.s_color %}
+			<label class="label label-default">
+				{{ sku.s_color|supress_none }}
+			</label>
+			{% endif %}
+		</td>
+		<td class="text-right">
+			{{ sku.cost_price }} {{ current_site.currency }}
+		</td>
+		<td class="text-right">
+			<strong class="text-mixpus">{{ sku.stock_count }}</strong> / <strong class="text-danger">{{ sku.no_arrival_count }}</strong>
+		</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+

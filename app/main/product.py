@@ -94,11 +94,15 @@ def ajax_search_products():
     """搜索产品,满足采购等选择产品"""
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
-    supplier_id = request.values.get('supplier_id')
+    supplier_id = request.values.get('supplier_id', type=int)
     qk = request.values.get('qk')
-
+    reg_id = request.values.get('reg_id', type=int)
+    
     if request.method == 'POST':
         builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
+        if reg_id:
+            builder = builder.filter_by(region_id=reg_id)
+        
         qk = qk.strip()
         if qk:
             builder = builder.whoosh_search(qk, like=True)
@@ -123,11 +127,12 @@ def ajax_search_products():
                                paginated_skus=paginated_skus,
                                pagination=pagination)
 
-    skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).all()
+    paginated_skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).paginate(page, per_page)
 
     return render_template('purchases/purchase_modal.html',
                            supplier_id=supplier_id,
-                           skus=skus)
+                           default_regions=DEFAULT_REGIONS,
+                           paginated_skus=paginated_skus)
 
 
 @main.route('/products/skus', methods=['POST'])

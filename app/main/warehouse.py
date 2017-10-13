@@ -23,6 +23,7 @@ def load_common_data():
     私有方法，装载共用数据
     """
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    
     return {
         'top_menu': 'warehouses',
         'warehouse_list': warehouse_list

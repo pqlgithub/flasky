@@ -448,6 +448,9 @@ img.card-img-top {
 .pages-entries {
 	line-height: 50px;
 }
+.pages-mini .pagination {
+    margin: 5px 0;
+}
 .table > thead > tr > th {
 	background-color: #eee;
 	vertical-align: middle;
