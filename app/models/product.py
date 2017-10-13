@@ -245,6 +245,12 @@ class ProductSku(db.Model):
         return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
 
     @property
+    def region_label(self):
+        for r in DEFAULT_REGIONS:
+            if r['id'] == self.region_id:
+                return r
+    
+    @property
     def cover(self):
         """cover asset info"""
         return Asset.query.get(self.cover_id) if self.cover_id else DEFAULT_IMAGES['cover']

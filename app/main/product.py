@@ -125,7 +125,10 @@ def ajax_search_products():
 
         return render_template('purchases/purchase_tr_time.html',
                                paginated_skus=paginated_skus,
-                               pagination=pagination)
+                               pagination=pagination,
+                               supplier_id=supplier_id,
+                               reg_id=reg_id,
+                               qk=qk)
 
     paginated_skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).paginate(page, per_page)
 
@@ -583,10 +586,11 @@ def add_sku(rid):
             s_weight=form.s_weight.data,
             cost_price=form.cost_price.data,
             sale_price=form.sale_price.data,
+            region_id=product.region_id,
             remark=form.remark.data
         )
         db.session.add(sku)
-
+        
         db.session.commit()
 
         return full_response(True, R201_CREATED, sku.to_json())
@@ -627,6 +631,7 @@ def edit_sku(rid, s_id):
         sku.s_weight = form.s_weight.data
         sku.cost_price = form.cost_price.data
         sku.sale_price = form.sale_price.data
+        sku.region_id = product.region_id
         sku.remark = form.remark.data
 
         db.session.commit()
