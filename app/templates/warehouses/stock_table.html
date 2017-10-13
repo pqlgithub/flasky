@@ -16,9 +16,10 @@
 						<input name="check_all" type="checkbox" class="check-all">
 					</th>
 					<th>{{ _('Product Info') }}</th>
-					<th class="text-center">{{ _('Quantity') }}<br>{{ _('Safety Stock') }}</th>
+					<th class="text-center">{{ _('Total Quantity') }}</th>
 					<th>{{ _('Purchasing') }}</th>
 					<th class="text-center">{{ _('Available') }}</th>
+					<th class="text-center">{{ _('Safety Stock') }}</th>
 					<th class="text-center">{{ _('Warehouse') }}<br>{{ _('Shelve') }}</th>
 					<th class="text-right">{{ _('Price') }}</th>
 					<th class="text-right">{{ _('Total Amount') }}</th>
@@ -37,19 +38,23 @@
 						<td>
 							<img src="{{ stock.cover.view_url }}" width="60px" class="pull-left">
 							<div class="product-info">
-								{{ stock.product_sku.serial_no }} <small>({{ stock.product_sku.s_model }})</small><br>
+								<b>{{ stock.product_sku.serial_no }}</b><br>
 								{{ stock.product_sku.product.name }}<br>
+								<small>({{ stock.product_sku.mode }})</small>
 							</div>
 						</td>
-						<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
-							{{ stock.current_count }} <br>
-							{% if stock.min_count %}<label class="label label-warning">{{ stock.min_count }}</label>{% endif %}
+						<td class="text-center">
+							{{ stock.total_count }}
 						</td>
 						<td class="text-center">
 							{{ stock.purchasing_count }}
 						</td>
 						<td class="text-center">
 							{{ stock.available_count }}
+						</td>
+						<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
+							{{ stock.current_count }} <br>
+							{% if stock.min_count %}<label class="label label-warning">{{ stock.min_count }}</label>{% endif %}
 						</td>
 						<td class="text-center">
 							{{ stock.warehouse.name }}<br>

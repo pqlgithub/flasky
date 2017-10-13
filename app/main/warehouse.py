@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime, time
 from jinja2 import PackageLoader, Environment
 from flask import g, render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
@@ -89,20 +90,65 @@ def preview_inout(id):
     pass
 
 
-@main.route('/inout')
-@main.route('/inout/<int:page>')
+@main.route('/inout', methods=['GET', 'POST'])
+@main.route('/inout/<int:page>', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_warehouse')
 def show_inout(page=1):
     """显示库存变化明细"""
     per_page = request.args.get('per_page', 10, type=int)
-    status = request.args.get('s', 0, type=int)
-    paginated_inout_list = StockHistory.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(page, per_page)
+    wh_id = request.values.get('wh_id', type=int)
+    type = request.values.get('type', type=int)
+    date = request.values.get('date', type=int)
+    qk = request.values.get('qk')
+    
+    builder = StockHistory.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+    if type:
+        builder = builder.filter_by(type=type)
+        
+    if date:
+        now = datetime.date.today()
+        start_time = None
+        end_time = None
+        if date == 1: # 今天之内
+            start_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.time()
+        if date == 2: # 昨天之内
+            dt = now - datetime.timedelta(days=1)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+        if date == 7: # 7天之内
+            dt = now - datetime.timedelta(days=7)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+        if date == 30: # 30天之内
+            dt = now - datetime.timedelta(days=30)
+            start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
+            end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
+        
+        if start_time is not None and end_time is not None:
+            builder = builder.filter(StockHistory.created_at > start_time, StockHistory.created_at < end_time)
 
-    return render_template('warehouses/show_inout.html',
+    if qk:
+        qk = qk.strip() # 截取空格
+        builder = builder.filter(or_(StockHistory.serial_no==qk,StockHistory.sku_serial_no==qk))
+
+    paginated_inout_list = builder.order_by('created_at desc').paginate(page, per_page)
+    
+    current_tpl = 'warehouses/show_inout.html'
+    if request.method == 'POST':
+        current_tpl = 'warehouses/inout_table.html'
+    
+    return render_template(current_tpl,
                            paginated_inout_list=paginated_inout_list,
                            sub_menu='inout',
-                           status=status, **load_common_data())
+                           qk=qk,
+                           wh_id=wh_id,
+                           type=type,
+                           date=date,
+                           **load_common_data())
 
 
 @main.route('/ex_warehouse/create', methods=['GET', 'POST'])
@@ -207,8 +253,8 @@ def search_in_warehouses():
 
     qk = qk.strip()
     if qk:
-        builder = builder.filter_by(serial_no=qk)
-
+        builder = builder.filter(or_(InWarehouse.serial_no==qk, InWarehouse.target_serial_no==qk))
+    
     if sk == 'ad':
         builder = builder.order_by(InWarehouse.created_at.desc())
     if sk == 'ud':
@@ -522,8 +568,8 @@ def search_out_warehouses():
 
     qk = qk.strip()
     if qk:
-        builder = builder.filter_by(serial_no=qk)
-
+        builder = builder.filter(or_(OutWarehouse.serial_no==qk, OutWarehouse.target_serial_no==qk))
+    
     if sk == 'ad':
         builder = builder.order_by(OutWarehouse.created_at.desc())
     if sk == 'ud':

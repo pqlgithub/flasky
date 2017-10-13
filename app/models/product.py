@@ -254,7 +254,12 @@ class ProductSku(db.Model):
     def cover(self):
         """cover asset info"""
         return Asset.query.get(self.cover_id) if self.cover_id else DEFAULT_IMAGES['cover']
-
+    
+    @property
+    def mode(self):
+        """型号"""
+        return '%s %s' % (self.s_model, self.s_color)
+    
     @property
     def stock_count(self):
         """product sku stock count"""
@@ -296,6 +301,7 @@ class ProductSku(db.Model):
             'id': self.id,
             'product_name': self.product_name,
             'serial_no': self.serial_no,
+            'mode': self.mode,
             's_model': self.s_model,
             's_color': self.s_color,
             'cover': self.cover.view_url,
