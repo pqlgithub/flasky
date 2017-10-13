@@ -11,15 +11,9 @@
 				<input type="hidden" name="t" value="{{ t }}" >
 
 				<div class="form-group">
-					<div class="input-group">
-						<input type="text" name="qk" value="{{ qk }}" class="form-control" placeholder="{{ _('Search sku or name...') }}" >
-						<div class="input-group-btn">
-							<button class="btn btn-warning" type="button">
-								<i class="glyphicon glyphicon-search"></i>
-							</button>
-						</div>
-					</div>
+					<input type="text" name="qk" class="form-control searcher" placeholder="{{ _('Search sku or name...') }}" >
 				</div>
+
 
 				<table class="table table-bordered m-t-20 m-b-30">
 					<thead>
@@ -98,6 +92,26 @@
 
 		$('#sku-modal').load($(this).attr('href'));
 	});
+
+	var submit_search_handler = function () {
+		var qk = $('input[name=qk]').val();
+		var wh_id = $('input[name=wh_id]').val();
+		var t = $('input[name=t]').val();
+
+		$.post("{{ url_for('main.ajax_select_products') }}", {'qk': qk, 'wh_id': wh_id, 't':t,
+			'csrf_token': mixpus.csrf_token}, function (result) {
+			$('#sku-modal').html(result);
+		}, 'html');
+	};
+
+	$('input.searcher').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			submit_search_handler();
+			return false;
+		}
+	});
+
 
 	// 全选 or 反选
 	$('#sku-form').find('input.check-all').bind('click', function() {

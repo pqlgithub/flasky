@@ -140,7 +140,7 @@ def ajax_search_products():
                                qk=qk)
 
     paginated_skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).paginate(page, per_page)
-
+    
     return render_template('purchases/purchase_modal.html',
                            supplier_id=supplier_id,
                            default_regions=DEFAULT_REGIONS,
@@ -168,20 +168,27 @@ def ajax_find_skus():
 @user_has('admin_product')
 def ajax_select_products():
     """搜索库存产品,满足下单/出库等选择产品"""
-    paginated_stocks = None
-    wh_id = request.form.get('wh_id')
-    t = request.form.get('t', 'stock')
-    page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
-
-    builder = ProductStock.query
+    page = request.values.get('page', 1, type=int)
+    wh_id = request.values.get('wh_id')
+    qk = request.values.get('qk')
+    t = request.values.get('t')
+    
+    builder = ProductStock.query.filter_by(master_uid=Master.master_uid())
     if wh_id:
         builder = builder.filter_by(warehouse_id=wh_id)
-        paginated_stocks = builder.order_by('created_at desc').paginate(page, per_page)
+        
+    if qk:
+        qk = qk.strip()
+        builder = builder.filter_by(sku_serial_no=qk)
 
+    paginated_stocks = builder.order_by('created_at desc').paginate(page, per_page)
+    
+        
     return render_template('products/select_product_modal.html',
                            paginated_stocks=paginated_stocks,
                            wh_id=wh_id,
+                           qk=qk,
                            t=t)
 
 @main.route('/products/ajax_submit_result', methods=['POST'])
