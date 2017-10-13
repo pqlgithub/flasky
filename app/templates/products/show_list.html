@@ -83,12 +83,12 @@
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<input type="hidden" name="reg_id" value="{{ reg_id }}">
+				<input type="hidden" name="reg_id">
 				<button class="btn btn-default dropdown-toggle" id="filter-region" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Region') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="reg_id" aria-labelledby="filter-region">
+				<ul class="dropdown-menu dropdown-select-menu" data-target="reg_id" aria-labelledby="filter-region">
 					<li class="dropdown-header">{{ _('Search Region')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
@@ -102,6 +102,29 @@
 				</ul>
 			</div>
 		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="bra_id">
+				<button class="btn btn-default dropdown-toggle" id="filter-bra_id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Brand') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="bra_id" aria-labelledby="filter-bra_id">
+					<li class="dropdown-header">{{ _('Search Brand')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for r in paginated_suppliers.items %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ r.id }}" class="option">{{ r.short_name|safe }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
 
 		<div class="form-group pull-right">
 			<div class="dropdown">

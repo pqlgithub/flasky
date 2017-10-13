@@ -34,11 +34,16 @@ def show_products(page=1):
     builder = Product.query.filter_by(master_uid=Master.master_uid())
 
     paginated_result = builder.order_by('created_at desc').paginate(page, per_page)
-
+    
+    # 品牌列表
+    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(
+        1, 1000)
+    
     return render_template('products/show_list.html',
                            sub_menu='products',
                            paginated_products=paginated_result.items,
                            pagination=paginated_result,
+                           paginated_suppliers=paginated_suppliers,
                            **load_common_data())
 
 
@@ -50,7 +55,8 @@ def search_products():
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
-    reg_id = request.values.get('reg_id')
+    reg_id = request.values.get('reg_id', type=int)
+    bra_id = request.values.get('bra_id', type=int)
     sk = request.values.get('sk', type=str, default='ad')
 
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
@@ -58,13 +64,15 @@ def search_products():
     builder = Product.query.filter_by(master_uid=Master.master_uid())
     if reg_id:
         builder = builder.filter_by(region_id=reg_id)
+    if bra_id:
+        builder = builder.filter_by(supplier_id=bra_id)
 
     qk = qk.strip()
     if qk:
         builder = builder.whoosh_search(qk, like=True)
 
     products = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
-
+    
     # 构造分页
     total_count = builder.count()
     if page == 1:
@@ -78,11 +86,12 @@ def search_products():
     paginated_products = products[start:end]
 
     pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
-
+    
     return render_template('products/search_result.html',
                            qk=qk,
                            sk=sk,
                            reg_id=reg_id,
+                           bra_id=bra_id,
                            paginated_products=paginated_products,
                            pagination=pagination)
 
