@@ -55,23 +55,23 @@ def show_stocks(page=1):
 
     re_builder = builder
     # 当前库存总数
-    total_quantity = re_builder.with_entities(func.sum(ProductStock.current_count)).one()
+    #total_quantity = re_builder.with_entities(func.sum(ProductStock.current_count)).one()
 
     # 库存总金额
-    total_amount = re_builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
-        .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
+    #total_amount = re_builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
+    #    .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
 
     if request.method == 'POST':
         return render_template('warehouses/stock_table.html',
                                paginated_stocks=paginated_stocks,
-                               total_quantity=total_quantity,
-                               total_amount=total_amount,
+                               #total_quantity=total_quantity,
+                               #total_amount=total_amount,
                                wh_id=wh_id)
 
     return render_template('warehouses/show_stocks.html',
                            paginated_stocks=paginated_stocks,
-                           total_quantity=total_quantity,
-                           total_amount=total_amount,
+                           #total_quantity=total_quantity,
+                           #total_amount=total_amount,
                            sub_menu='stocks',
                            wh_id=wh_id, **load_common_data())
 
