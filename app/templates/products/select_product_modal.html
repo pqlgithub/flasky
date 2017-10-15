@@ -23,7 +23,7 @@
 							</th>
 							<th>{{ _('Product Info') }}</th>
 							<th>{{ _('Mode/Color') }}</th>
-							<th class="text-center">{{ _('Price') }}</th>
+							<th class="text-center">{{ _('Sale Price') }}</th>
 							<th class="text-center">{{ _('Total Stock') }}</th>
 							<th class="text-right">{{ _('Action') }}</th>
 						</tr>
@@ -54,7 +54,7 @@
 							{% endif %}
 						</td>
 						<td class="text-center">
-							{{ stock.product_sku.product.cost_price }} {{ current_site.currency }}
+							{{ stock.product_sku.product.sale_price }} {{ current_site.currency }}
 						</td>
  						<td class="text-center">
 							{{ stock.current_count }}
@@ -72,7 +72,7 @@
 				{% import "block/_macros.html" as macros %}
 				<div class="pages-box pages-mini">
 					<nav aria-label="Page navigation">
-						{{ macros.pagination_widget(paginated_stocks, '.ajax_select_products', wh_id=wh_id, qk=qk) }}
+						{{ macros.pagination_widget(paginated_stocks, '.ajax_select_products', wh_id=wh_id, qk=qk, t=t) }}
 					</nav>
 				</div>
 

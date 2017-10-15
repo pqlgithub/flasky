@@ -258,7 +258,14 @@ class ProductSku(db.Model):
     @property
     def mode(self):
         """型号"""
-        return '%s %s' % (self.s_model, self.s_color)
+        mode_str = ''
+        if self.s_model:
+            mode_str += self.s_model + ' '
+        
+        if self.s_color:
+            mode_str += self.s_color
+        
+        return mode_str
     
     @property
     def stock_count(self):

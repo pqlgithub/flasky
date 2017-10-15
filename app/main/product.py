@@ -3,12 +3,14 @@ import time, hashlib, re
 from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
+from sqlalchemy.sql import func
 from flask_babelex import gettext
+import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
-    Currency
+    Currency, Order, OrderItem
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
     custom_response, import_product_from_excel
@@ -212,6 +214,7 @@ def ajax_submit_result():
     tpl = 'products/select_result.html'
     if t == 'order':
         tpl = 'products/select_result_for_order.html'
+    
     return render_template(tpl,
                            stock_products=stock_products,
                            warehouse_shelves=warehouse_shelves)
@@ -262,6 +265,9 @@ def create_product():
             categories.append(Category.query.get(form.category_id.data))
 
             product.update_categories(*categories)
+        
+        # 新增索引
+        flask_whooshalchemyplus.index_one_model(Product)
 
         db.session.commit()
 
@@ -607,6 +613,10 @@ def add_sku(rid):
             remark=form.remark.data
         )
         db.session.add(sku)
+
+        # 新增索引
+        flask_whooshalchemyplus.index_one_model(Product)
+        flask_whooshalchemyplus.index_one_model(ProductSku)
         
         db.session.commit()
 
@@ -690,6 +700,35 @@ def delete_sku(rid):
     except:
         db.session.rollback()
         return full_response(True, custom_status('Delete sku is failed!', 500))
+
+
+@main.route('/products/<string:rid>/orders')
+@login_required
+def sku_of_orders(rid):
+    """某个sku订单列表"""
+    per_page = request.args.get('per_page', 15, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    builder = OrderItem.query.filter_by(sku_serial_no=rid)
+    builder = builder.join(Order, OrderItem.order_id==Order.id).filter(Order.master_uid==Master.master_uid())
+    
+    paginated_orders = builder.order_by(OrderItem.id.desc()).paginate(page, per_page)
+
+    # 当前销售总数
+    total_quantity = builder.with_entities(func.sum(OrderItem.quantity)).one()
+    
+    # 销售总金额
+    total_sales = builder.with_entities(func.sum(OrderItem.quantity * OrderItem.deal_price), func.sum(OrderItem.discount_amount)).one()
+
+    total_amount = 0
+    if total_sales and total_sales[0]:
+        total_amount = total_sales[0] - total_sales[1]
+        
+    
+    return render_template('products/sku_of_orders.html',
+                           paginated_orders=paginated_orders,
+                           total_amount=total_amount,
+                           total_quantity=total_quantity)
 
 
 @main.route('/categories')

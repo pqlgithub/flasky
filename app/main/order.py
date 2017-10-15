@@ -9,7 +9,7 @@ from flask_sqlalchemy import Pagination
 from flask_babelex import gettext, lazy_gettext
 from io import BytesIO, StringIO
 import xhtml2pdf.pisa as pisa
-import html
+import flask_whooshalchemyplus
 import barcode
 from barcode.writer import ImageWriter
 from openpyxl.reader.excel import load_workbook
@@ -102,8 +102,8 @@ def search_orders(page=1):
     qk = qk.strip()
     if qk:
         current_app.logger.debug('Search order [%s]!' % qk)
-        builder = builder.whoosh_search(query=qk, or_=True)
-
+        builder = builder.whoosh_search(query=qk)
+    
     if store_id:
         builder = builder.filter_by(store_id=store_id)
     if s:
@@ -707,8 +707,11 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
 
         db.session.add(order_item)
 
+    # 新增索引
+    flask_whooshalchemyplus.index_one_model(Order)
+    
     db.session.commit()
-
+    
     if bad_orders or bad_skus:
         flash(gettext('Import orders is error!!!'), 'danger')
     else:
@@ -1013,6 +1016,9 @@ def create_order():
             item['order_serial_no'] = new_serial_no
             order_item = OrderItem(order=order, **item)
             db.session.add(order_item)
+
+        # 新增索引
+        flask_whooshalchemyplus.index_one_model(Order)
 
         db.session.commit()
 

@@ -7,6 +7,7 @@ from flask_sqlalchemy import Pagination
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from openpyxl.workbook import Workbook
+import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response,\
@@ -209,6 +210,9 @@ def create_purchase():
             purchase_item = PurchaseProduct(purchase=purchase, **purchase_item)
             db.session.add(purchase_item)
 
+        # 新增索引
+        flask_whooshalchemyplus.index_one_model(Purchase)
+        
         db.session.commit()
 
         flash('Add purchase is success!', 'success')

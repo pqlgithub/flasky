@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy import text, event
 from flask_babelex import lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
+import flask_whooshalchemyplus
 from app import db
 from .product import ProductSku
 from .logistics import Express
@@ -231,7 +233,12 @@ class Order(db.Model):
                 break
         return new_serial_no
 
+    @staticmethod
+    def on_sync_change(mapper, connection, target):
+        """同步事件"""
+        pass
 
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         opened_columns = ['serial_no', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
@@ -288,3 +295,7 @@ class OrderItem(db.Model):
     def __repr__(self):
         return '<OrderItem %r>' % self.id
 
+
+# 添加监听事件, 实现触发器
+#sqlalchemy.exc.InvalidRequestError: Session is already flushing
+# event.listen(Order, 'after_insert', Order.on_sync_change)

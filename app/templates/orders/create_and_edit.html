@@ -66,6 +66,7 @@
 				}
 			}, 'json');
 		});
+
 	});
 </script>
 {% endblock %}
@@ -264,7 +265,7 @@
 								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>
 							</td>
 							<td class="text-right">
-								<a href="" class="btn btn-link disabled">{{ _('Remove') }}</a>
+								<a href="javascript:void(0);" class="btn btn-link disabled">{{ _('Remove') }}</a>
 							</td>
 						</tr>
 						{% endfor %}

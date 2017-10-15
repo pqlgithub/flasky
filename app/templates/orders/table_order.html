@@ -68,7 +68,7 @@
 					{{ order.buyer_tel }} {{ order.buyer_phone }}
 				</td>
 				<td>
-					{{ order.buyer_remark }}
+					{{ order.buyer_remark|supress_none }}
 				</td>
 				<td class="text-center">
 					{% if order.status not in [-1,1,5] %}

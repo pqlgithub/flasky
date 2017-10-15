@@ -344,6 +344,13 @@ mixpus.tracker_order_change = function () {
 				mixpus.order_recount();
 			});
 
+    $('a.ajax-remove-item').click(function (e) {
+        $('#tr_stock_' + $(this).data('id')).remove();
+
+        mixpus.order_recount();
+
+        return false;
+    });
 };
 
 // 订单产品数量变化，重新计算数值
