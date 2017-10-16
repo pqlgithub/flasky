@@ -636,20 +636,7 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
             current_app.logger.warn("Current sku[%s] isn't exist!" % product['sku_serial_no'])
             bad_skus.append((product['sku_serial_no'], 1))
             continue
-
-        # 验证库存
-        product_stock = ProductStock.query.filter_by(product_sku_id=current_sku.id,
-                                                         warehouse_id=warehouse_id).first()
-        if product_stock is None or product_stock.available_count < product['quantity']:
-            # 产品库存不足
-            current_app.logger.warn("Current sku[%s] inventory is not enough!" % product['sku_serial_no'])
-            bad_skus.append((product['sku_serial_no'], 2))
-            continue
-
-        # 同步减去库存
-        product_stock.current_count -= product['quantity']
-        product_stock.saled_count += product['quantity']
-
+        
         # 开始导入订单
         new_order_serial_no = Order.make_unique_serial_no(gen_serial_no('C'))
 
@@ -767,9 +754,9 @@ def import_orders():
 
         # 文件转化为列表
         order_list = []
-        for row_idx in xrange(2, total_rows + 1):
+        for row_idx in range(2, total_rows + 1):
             order_info = {}
-            for col_idx in xrange(1, total_cols + 1):
+            for col_idx in range(1, total_cols + 1):
                 key = get_key_by_value(header[col_idx - 1])
                 cell_value = ws.cell(row=row_idx, column=col_idx).value
 
@@ -953,17 +940,13 @@ def create_order():
             # 验证sku信息
             product_sku = ProductSku.query.get(sku_id)
             if not product_sku:
-                return custom_response(False, 'Product sku[%d] is not exist!' % sku_id)
+                return custom_response(False, gettext('Product sku[%d] is not exist!' % sku_id))
 
             # 验证库存
             product_stock = ProductStock.query.filter_by(product_sku_id=sku_id, warehouse_id=form.warehouse_id.data).first()
             if product_stock.available_count < quantity:
-                return custom_response(False, 'Inventory is not enough!')
-
-            # 同步减去库存
-            product_stock.current_count -= quantity
-            product_stock.saled_count += quantity
-
+                return custom_response(False, gettext('[%s] Inventory is not enough!' % product_sku.serial_no))
+            
             # 添加订单明细
             item = {
                 'sku_id': sku_id,
@@ -1201,33 +1184,60 @@ def split_order(sn):
 @login_required
 @user_has('admin_order')
 def ajax_verify_order():
+    """订单审核"""
     selected_sns = request.form.getlist('selected[]')
     if not selected_sns or selected_sns is None:
         return custom_response(False, 'Verify order is NULL!')
 
     try:
         for sn in selected_sns:
-            order = Order.query.filter_by(serial_no=sn).one()
+            order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).one()
             if order is None:
-                return custom_response(False, "Verify order isn't exist!")
-
+                return custom_response(False, gettext("Verify order isn't exist!"))
+            
             if order.status == OrderStatus.PENDING_PAYMENT:
-                # 等待审核
+                # 已付款，进入待审核
                 order.mark_checked_status()
             elif order.status == OrderStatus.PENDING_CHECK:
                 # 完成审核，待发货状态
+
+                # 订单审核时，验证库存
+                bad_skus = _validate_order_stock(order.items, order.warehouse_id)
+                # 未通过验证
+                if bad_skus:
+                    return custom_response(False, gettext("Order[%s] items[%s] isn't exist or Inventory is not enough " % (sn, bad_skus)))
+
                 order.mark_shipment_status()
             else:
                 pass
 
         db.session.commit()
-
+        
     except:
         db.session.rollback()
-        return custom_response(False, "Verify order is fail!!!")
+        return custom_response(False, gettext("Verify order is fail!!!"))
 
     return full_response(True, R200_OK, selected_sns)
 
+
+def _validate_order_stock(order_items, warehouse_id):
+    """验证订单明细库存"""
+    bad_skus = []
+    for item in order_items:
+        product_stock = ProductStock.query.filter_by(sku_serial_no=item.sku_serial_no,
+                                                     warehouse_id=warehouse_id).first()
+        # 产品库存不足
+        if product_stock is None or product_stock.available_count < item.quantity:
+            current_app.logger.warn("Current sku[%s] inventory is not enough!" % item.sku_serial_no)
+            bad_skus.append(item.sku_serial_no)
+            continue
+            
+        # 同步减去库存
+        product_stock.current_count -= item.quantity
+        product_stock.saled_count += item.quantity
+        
+    return bad_skus
+    
 
 @main.route('/orders/ajax_shipped', methods=['POST'])
 @login_required

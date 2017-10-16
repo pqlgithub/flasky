@@ -57,11 +57,16 @@
 				if (result.success) {
 					window.location.href = result.data.next_url;
 				} else {
-					for (var item in result.data) {
-						$('[name='+item+']')
-							.after('<span class="help-block">'+ result.data[item][0] +'</span>')
-							.parent()
-							.addClass('has-error');
+                    if (result.data) {
+                        for (var item in result.data) {
+                            $('[name='+item+']')
+                                .after('<span class="help-block">'+ result.data[item][0] +'</span>')
+                                .parent()
+                                .addClass('has-error');
+                        }
+                    }
+					if (result.status && result.status.message) {
+					    return mixpus.show_error_message(result.status.message);
 					}
 				}
 			}, 'json');

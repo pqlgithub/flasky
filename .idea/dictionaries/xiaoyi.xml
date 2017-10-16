@@ -15,6 +15,7 @@
       <w>autoclose</w>
       <w>autoescape</w>
       <w>autofocus</w>
+      <w>autorestart</w>
       <w>autostart</w>
       <w>baidu</w>
       <w>bodys</w>
@@ -94,6 +95,8 @@
       <w>skus</w>
       <w>slideshow</w>
       <w>sqlite</w>
+      <w>startretries</w>
+      <w>startsecs</w>
       <w>supervisord</w>
       <w>supress</w>
       <w>sweetalert</w>

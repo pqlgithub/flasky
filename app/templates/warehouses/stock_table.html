@@ -19,7 +19,7 @@
 					<th class="text-center">{{ _('Total Quantity') }}</th>
 					<th>{{ _('Purchasing') }}</th>
 					<th class="text-center">{{ _('Available') }}</th>
-					<th class="text-center">{{ _('Safety Stock') }}</th>
+					<th class="text-center">{{ _('Saled Quantity') }}</th>
 					<th class="text-center">{{ _('Warehouse') }}<br>{{ _('Shelve') }}</th>
 					<th class="text-right">{{ _('Price') }}</th>
 					<th class="text-right">{{ _('Total Amount') }}</th>
@@ -50,11 +50,10 @@
 							{{ stock.purchasing_count }}
 						</td>
 						<td class="text-center">
-							{{ stock.available_count }}
+							{{ stock.available_count }} {% if stock.min_count %}<span class="label label-warning">{{ stock.min_count }}</span>{% endif %}
 						</td>
 						<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
-							{{ stock.current_count }} <br>
-							{% if stock.min_count %}<label class="label label-warning">{{ stock.min_count }}</label>{% endif %}
+							{{ stock.saled_count }}
 						</td>
 						<td class="text-center">
 							{{ stock.warehouse.name }}<br>
