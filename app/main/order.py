@@ -624,7 +624,7 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
             'quantity': order_info['quantity'],
             'cost_price': order_info['cost_price'],
             'sale_price': order_info['sale_price'],
-            'sku_serial_no': order_info['store_product_id'],
+            'sku_serial_no': order_info['store_product_id'].strip(), # 截取前后空格
             'discount_total_amount': order_info['discount_total_amount']
         }
 
