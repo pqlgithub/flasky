@@ -32,7 +32,7 @@
 			tr_html.push('<tr id="tr_sku_'+ skus[i].id +'">');
 			tr_html.push('<td class="text-center"><img src="'+ skus[i].cover +'" width="60px"></td>');
 			tr_html.push('<td>'+ skus[i].product_name +'<br>' + skus[i].serial_no +'</td>');
-			tr_html.push('<td class="text-center">');
+			tr_html.push('<td>');
 			if (skus[i].s_model) {
 				tr_html.push('<label class="label label-warning">'+ skus[i].s_model +'</label>');
 			}
@@ -217,7 +217,7 @@
 				<tr>
 					<th class="text-center">{{ _('Product Image') }}</th>
 					<th>{{ _('Product Name') }}</th>
-					<th class="text-center">{{ _('Product Model') }}</th>
+					<th>{{ _('Product Model') }}</th>
 					<th class="text-center">{{ _('Purchase Price') }}</th>
 					<th class="text-center">{{ _('Purchase Quantity') }}</th>
 					<th class="text-right">{{ _('Total Amount') }}</th>
@@ -234,7 +234,7 @@
 						{{ item.sku.product.name }}<br>
 						{{ item.sku.serial_no }}
 					</td>
-					<td class="text-center">
+					<td>
 						{% if item.sku.s_model %}
 						<label class="label label-warning">
 							{{ item.sku.s_model|supress_none }}

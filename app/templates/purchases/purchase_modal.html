@@ -10,12 +10,12 @@
 				<input type="hidden" name="supplier_id" value="{{ supplier_id }}">
 
 				<div class="form-group">
-					<input type="text" name="qk" class="form-control searcher" size="80" placeholder="{{ _('Search sku or name...') }}" >
+					<input type="text" name="qk" class="form-control searcher" size="80" value="{{ qk|supress_none }}" placeholder="{{ _('Search sku or name...') }}" >
 				</div>
 
 				<div class="form-group m-l-10">
 					<div class="dropdown">
-						<input type="hidden" name="reg_id" value="{{ reg_id }}">
+						<input type="hidden" name="reg_id" value="{{ reg_id|supress_none }}">
 						<button class="btn btn-default dropdown-toggle" id="filter-region" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 							{{ _('Region') }}: <b>{{ _('All') }}</b>
 							<span class="caret"></span>
@@ -46,51 +46,17 @@
 								<th class="text-center">{{ _('SKU') }}</th>
 								<th>{{ _('Product Name') }}</th>
 								<th class="text-center">{{ _('Attributes') }}</th>
-								<th class="text-right">{{ _('Price') }}</th>
+								<th class="text-right">{{ _('Cost Price') }}</th>
 								<th class="text-right">{{ _('Total Stock / Not Arrived') }}</th>
 							</tr>
 						</thead>
 						<tbody id="purchase-items">
-						{% for sku in paginated_skus.items %}
-						<tr id="tr_sku_{{ sku.id }}">
-							<td class="text-center">
-								<input name="selected[]" class="check-one" value="{{ sku.id }}" type="checkbox">
-							</td>
-							<td class="text-center">
-								<img src="{{ sku.cover.view_url }}" width="60px">
-							</td>
-							<td class="text-center">
-								{{ sku.serial_no }}
-							</td>
-							<td>
-								{{ sku.product.name }}<br>
-								{% if sku.product.region_id == 1 %}
-								<span class="text-mixpus">{{ sku.product.region_label.get('name') }}</span>
-								{% endif %}
+						{% for sku in selected_skus %}
+							{% include 'purchases/_sku_table_tr.html' %}
+						{% endfor %}
 
-								{% if sku.product.region_id == 2 %}
-								<span class="text-warning">{{ sku.product.region_label.get('name') }}</span>
-								{% endif %}
-							</td>
-							<td class="text-center">
-								{% if sku.s_model %}
-								<label class="label label-warning">
-									{{ sku.s_model|supress_none }}
-								</label>
-								{% endif %}
-								{% if sku.s_color %}
-								<label class="label label-default">
-									{{ sku.s_color|supress_none }}
-								</label>
-								{% endif %}
-							</td>
-							<td class="text-right">
-								{{ sku.cost_price }} {{ sku.product.currency_unit }}
-							</td>
-							<td class="text-right">
-								<strong class="text-mixpus">{{ sku.stock_count }}</strong> / <strong class="text-danger">{{ sku.no_arrival_count }}</strong>
-							</td>
-						</tr>
+						{% for sku in paginated_skus %}
+							{% include 'purchases/_sku_table_tr.html' %}
 						{% endfor %}
 						</tbody>
 					</table>
@@ -98,7 +64,7 @@
 					{% import "block/_macros.html" as macros %}
 					<div class="pages-box pages-mini">
 						<nav aria-label="Page navigation">
-							{{ macros.pagination_widget(paginated_skus, '.ajax_search_products', supplier_id=supplier_id, reg_id=reg_id, qk=qk) }}
+							{{ macros.pagination_widget(pagination, '.ajax_search_products') }}
 						</nav>
 					</div>
 
@@ -116,13 +82,21 @@
 <script type="text/javascript"><!--
 	var data = {};
 
-	var submit_search_handler = function () {
+	var submit_search_handler = function (url) {
 		var supplier_id = $('input[name=supplier_id]').val();
 		var qk = $('input[name=qk]').val();
 		var reg_id = $('input[name=reg_id]').val();
 
-		$.post("{{ url_for('main.ajax_search_products') }}", {
-			'supplier_id': supplier_id, 'qk': qk, 'reg_id': reg_id, 'csrf_token': mixpus.csrf_token
+		// 检测是否选中
+		var selected = [];
+		$('#sku-form').find('.check-one:checked').each(function () {
+			selected.push($(this).val());
+		});
+
+		var post_url = url || "{{ url_for('main.ajax_search_products') }}";
+
+		$.post(post_url, {
+			'supplier_id': supplier_id, 'qk': qk, 'reg_id': reg_id, 'selected':selected, 'csrf_token': mixpus.csrf_token
 		}, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
@@ -141,7 +115,7 @@
 	$('.pagination a').on('click', function(e) {
 		e.preventDefault();
 
-		$('#sku-modal').load($(this).attr('href'));
+		submit_search_handler($(this).attr('href'));
 	});
 
 	// 全选 or 反选

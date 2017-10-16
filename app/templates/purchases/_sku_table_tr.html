@@ -1,0 +1,39 @@
+<tr id="tr_sku_{{ sku.id }}">
+    <td class="text-center">
+        <input name="selected[]" class="check-one" value="{{ sku.id }}" {% if selected_ids and (sku.id in selected_ids) %}checked="checked"{% endif %} type="checkbox">
+    </td>
+    <td class="text-center">
+        <img src="{{ sku.cover.view_url }}" width="60px">
+    </td>
+    <td class="text-center">
+        {{ sku.serial_no }}
+    </td>
+    <td>
+        {{ sku.product.name }}<br>
+        {% if sku.product.region_id == 1 %}
+        <span class="text-mixpus">{{ sku.product.region_label.get('name') }}</span>
+        {% endif %}
+
+        {% if sku.product.region_id == 2 %}
+        <span class="text-warning">{{ sku.product.region_label.get('name') }}</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if sku.s_model %}
+        <label class="label label-warning">
+            {{ sku.s_model|supress_none }}
+        </label>
+        {% endif %}
+        {% if sku.s_color %}
+        <label class="label label-default">
+            {{ sku.s_color|supress_none }}
+        </label>
+        {% endif %}
+    </td>
+    <td class="text-right">
+        {{ sku.cost_price }} {{ sku.product.currency_unit }}
+    </td>
+    <td class="text-right">
+        <strong class="text-mixpus">{{ sku.stock_count }}</strong> / <strong class="text-danger">{{ sku.no_arrival_count }}</strong>
+    </td>
+</tr>

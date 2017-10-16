@@ -106,48 +106,54 @@ def ajax_search_products():
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     supplier_id = request.values.get('supplier_id', type=int)
-    qk = request.values.get('qk')
     reg_id = request.values.get('reg_id', type=int)
-    
-    if request.method == 'POST':
-        builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
-        if reg_id:
-            builder = builder.filter_by(region_id=reg_id)
-        
+    qk = request.values.get('qk')
+    selected_ids = request.values.getlist('selected[]')
+
+    builder = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id)
+    if reg_id:
+        builder = builder.filter_by(region_id=reg_id)
+
+    if qk:
         qk = qk.strip()
-        if qk:
-            builder = builder.whoosh_search(qk, like=True)
+        builder = builder.whoosh_search(qk, like=True)
 
-        skus = builder.order_by(ProductSku.created_at.desc()).all()
-
-        # 构造分页
-        total_count = builder.count()
-        if page == 1:
-            start = 0
-        else:
-            start = (page - 1) * per_page
-        end = start + per_page
-
-        current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
-
-        paginated_skus = skus[start:end]
-
-        pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
-
-        return render_template('purchases/purchase_tr_time.html',
-                               paginated_skus=paginated_skus,
-                               pagination=pagination,
-                               supplier_id=supplier_id,
-                               reg_id=reg_id,
-                               qk=qk)
-
-    paginated_skus = ProductSku.query.filter_by(master_uid=Master.master_uid(), supplier_id=supplier_id).order_by(ProductSku.created_at.desc()).paginate(page, per_page)
+    skus = builder.order_by(ProductSku.created_at.desc()).all()
     
-    return render_template('purchases/purchase_modal.html',
-                           supplier_id=supplier_id,
-                           default_regions=DEFAULT_REGIONS,
-                           paginated_skus=paginated_skus)
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
 
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_skus = skus[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+    
+    # 获取已经选中的sku
+    selected_skus = None
+    if selected_ids is not None:
+        selected_ids = [int(sku_id) for sku_id in selected_ids]
+        selected_skus = ProductSku.query.filter_by(master_uid=Master.master_uid()).filter(ProductSku.id.in_(selected_ids)).all()
+    
+    current_tpl = 'purchases/purchase_modal.html'
+    if request.method == 'POST':
+        current_tpl = 'purchases/purchase_tr_time.html'
+    
+    return render_template(current_tpl,
+                           default_regions=DEFAULT_REGIONS,
+                           paginated_skus=paginated_skus,
+                           pagination=pagination,
+                           supplier_id=supplier_id,
+                           reg_id=reg_id,
+                           qk=qk,
+                           selected_ids=selected_ids,
+                           selected_skus=selected_skus)
+    
 
 @main.route('/products/skus', methods=['POST'])
 @login_required
