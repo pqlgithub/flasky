@@ -101,13 +101,14 @@ def search_orders(page=1):
 
     qk = qk.strip()
     if qk:
-        current_app.logger.debug('Search order [%s]!' % qk)
-        builder = builder.whoosh_search(query=qk)
+        current_app.logger.warn('Search order [%s]!' % qk)
+        builder = builder.whoosh_search(qk, or_=True)
     
     if store_id:
         builder = builder.filter_by(store_id=store_id)
     if s:
         builder = builder.filter_by(status=s)
+        
     if date:
         now = datetime.date.today()
         if date == 1: # 今天之内
