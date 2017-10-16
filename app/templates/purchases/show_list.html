@@ -92,6 +92,20 @@
 			return false;
 		});
 
+		// 取消采购单
+		$('.ajax-canceled').click(function (e) {
+			e.preventDefault();
+
+			$.post($(this).attr('href'), {'csrf_token': mixpus.csrf_token}, function (result) {
+				if (result.success) {
+				    $('#tr_' + result.data + '_parent').remove();
+					$('#tr_' + result.data).remove();
+				} else {
+				    return mixpus.show_error_message(result.status.message);
+				}
+            }, 'json');
+        });
+
 	});
 
 </script>

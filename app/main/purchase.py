@@ -369,6 +369,26 @@ def delete_purchase_item():
     return full_response(True, R200_OK, {'sku_id': sku_id})
 
 
+@main.route('/purchases/<string:rid>/ajax_canceled', methods=['POST'])
+@login_required
+@user_has('admin_purchase')
+def ajax_canceled_purchase(rid):
+    """取消采购单"""
+    purchase = Purchase.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+    if purchase is None:
+        return custom_response(False, gettext('Canceled purchase is Null!'))
+    
+    if purchase.status in [1, 5]:
+        # 待审核、待到货， 直接取消状态
+        purchase.update_status(-1)
+    
+    if purchase.status in [15]:
+        # 已完成，取消状态，
+        pass
+    
+    return full_response(True, R200_OK, rid)
+    
+
 @main.route('/purchases/ajax_verify', methods=['POST'])
 @login_required
 @user_has('admin_purchase')
