@@ -187,9 +187,9 @@ class Order(db.Model):
     @property
     def all_items(self):
         """全部订单明细"""
-        sku_list = [item.sku.serial_no for item in self.items]
+        sku_list = [item.sku_serial_no for item in self.items]
         return ' '.join(sku_list)
-
+    
 
     def mark_checked_status(self):
         """标记为待审核状态"""
