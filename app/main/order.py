@@ -129,6 +129,8 @@ def search_orders(page=1):
 
         builder = builder.filter(Order.created_at > start_time, Order.created_at < end_time)
 
+    current_app.logger.warn('Search order --- sql: %s' % str(builder))
+    
     orders = builder.order_by(Order.created_at.desc()).all()
 
     # 构造分页

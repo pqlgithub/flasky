@@ -35,7 +35,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     # slow database query threshold (in seconds)
-    DATABASE_QUERY_TIMEOUT = 1
+    DATABASE_QUERY_TIMEOUT = 0.5
     
     # 管理员
     ADMINS = ('purpen.w@gmail.com',)
