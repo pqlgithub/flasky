@@ -19,7 +19,7 @@ from flask_s3 import create_all
 from werkzeug.contrib.fixers import ProxyFix
 
 from app import create_app, db
-from app.models import User, Role
+from app.models import User, Role, Order, Product, ProductSku, Purchase
 from app.assets import assets_env
 
 from commands.initial_data import InitialData
@@ -42,11 +42,23 @@ def upload_files_s3():
                bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1', include_hidden=False)
 
 
-@manager.command
-def update_index_all():
-    """手动建立索引"""
-    from flask_whooshalchemyplus import index_all
-    index_all(app)
+@manager.option('-m', '--model', dest='model', default='all')
+def whoose_index(model):
+    """手动建立全文索引"""
+    from flask_whooshalchemyplus import index_all, index_one_model
+    models = {
+        'Order': Order,
+        'Purchase': Purchase,
+        'Product': Product,
+        'ProductSku': ProductSku
+    }
+    if model == 'all':
+        index_all(app)
+    elif model in models.keys():
+        index_one_model(models[model])
+    else:
+        pass
+
 
 @manager.command
 def test():
