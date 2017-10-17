@@ -102,7 +102,7 @@ def search_orders(page=1):
     qk = qk.strip()
     if qk:
         current_app.logger.warn('Search order [%s]!' % qk)
-        builder = builder.whoosh_search(qk, or_=True)
+        builder = builder.whoosh_search(qk, or_=True, like=True)
     
     if store_id:
         builder = builder.filter_by(store_id=store_id)
