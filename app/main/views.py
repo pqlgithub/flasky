@@ -131,6 +131,6 @@ def after_request(response):
     """
     for query in get_debug_queries():
         if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
-            current_app.logger.info("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+            current_app.logger.warn("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
                                        (query.statement, query.parameters, query.duration, query.context))
     return response
