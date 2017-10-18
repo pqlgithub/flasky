@@ -227,10 +227,16 @@ def split_huazhu_address(address_str):
     """地址字符串转换为省、市、区、地址"""
     
     addr_ary = address_str.split('-')
+    province = ''
+    city = ''
+    area = ''
+    if len(addr_ary) > 1:
+        province = addr_ary.pop(0)
+    if len(addr_ary) > 1:
+        city = addr_ary.pop(0)
+    if len(addr_ary) > 1:
+        area = addr_ary.pop(0)
     
-    province = addr_ary.pop(0)
-    city = addr_ary.pop(0)
-    area = addr_ary.pop(0)
     address = '-'.join(addr_ary)
     
     return (province, city, area, address)
