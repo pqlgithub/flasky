@@ -252,6 +252,14 @@ mixpus.hook_filter_search = function (callback) {
 	});
 };
 
+// 自定义每页数量更新
+mixpus.hook_per_page_select = function () {
+	$('.per-page.select2').change(function (e) {
+		var url = $(this).find('option:selected').data('href');
+		window.location.href = url;
+    });
+};
+
 mixpus.hook_all_check = function() {
 	// 全选 or 反选
 	$('input.check-all').bind('click', function() {

@@ -22,6 +22,8 @@
 
 		mixpus.hook_dropdown_menu(submit_filter_form);
 
+		mixpus.hook_per_page_select();
+
 		// 审核 全部 or 单个
 		$('button.verify-all').click(function () {
 			var form_id = $(this).data('form-id');

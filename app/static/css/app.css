@@ -448,6 +448,12 @@ img.card-img-top {
 .pages-entries {
 	line-height: 50px;
 }
+.custom-per-page {
+    margin: 18px 30px 18px 0;
+    display: inline-block;
+    width: 80px;
+    float: left;
+}
 .pages-mini .pagination {
     margin: 5px 0;
 }

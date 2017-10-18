@@ -29,6 +29,8 @@
 
 		mixpus.hook_dropdown_menu(submit_filter_form);
 
+		mixpus.hook_per_page_select();
+
 		// 审核 全部 or 单个
 		$('button.verify-all').click(function () {
 			var form_id = $(this).data('form-id');
@@ -400,11 +402,9 @@
 
 		{% import "block/_macros.html" as macros %}
 		<div class="pages-box">
-			<div class="pull-left">
-				<nav aria-label="Page navigation">
-					{{ macros.pagination_widget(pagination, '.show_orders', s=status) }}
-				</nav>
-			</div>
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(pagination, '.show_orders', s=status) }}
+			</nav>
 		</div>
 	</div>
 </div>

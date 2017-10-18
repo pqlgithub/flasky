@@ -4,10 +4,15 @@
 	{% include 'system/_sub_menu.html' %}
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
 
-{#</script>#}
+		mixpus.hook_per_page_select();
+
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}

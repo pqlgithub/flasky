@@ -22,6 +22,8 @@
 
 		mixpus.hook_dropdown_menu(submit_filter_form);
 
+		mixpus.hook_per_page_select();
+
 		$('a.ajax-copy').click(function () {
 			if ($('input.check-one:checked').length != 1) {
 				mixpus.show_error_message("{{ _('Choose one product at a time') }}");
