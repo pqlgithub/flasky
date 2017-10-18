@@ -26,7 +26,7 @@ debug = False
 
 # 如果不使用supervisord之类的进程管理工具可以是进程成为守护进程，否则会出问题
 # INFO exited: gunicorn (exit status 0; not expected)
-daemon = False
+daemon = True
 
 # 进程名称
 proc_name = 'gunicorn.pid'
