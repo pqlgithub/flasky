@@ -90,7 +90,7 @@
 					<label class="col-sm-2 control-label">{{ _('Address') }}:</label>
 					<div class="col-sm-10">
 						<p class="form-control-static">
-							{{ current_order.buyer_province }} {{ current_order.buyer_city }} {{ current_order.buyer_address }} {{ current_order.buyer_zipcode }}
+							{{ current_order.buyer_province|supress_none }} {{ current_order.buyer_city|supress_none }} {{ current_order.buyer_area|supress_none }} {{ current_order.buyer_address }} {{ current_order.buyer_zipcode }}
 						</p>
 					</div>
 				</div>

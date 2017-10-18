@@ -27,6 +27,7 @@ class OrderForm(Form):
     buyer_country = StringField(lazy_gettext('Country'))
     buyer_province = StringField(lazy_gettext('Province'))
     buyer_city = StringField(lazy_gettext('City'))
+    buyer_area = StringField(lazy_gettext('Area'))
     # 买家备注
     buyer_remark = TextAreaField(lazy_gettext('Buyer Remark'))
 
@@ -34,7 +35,7 @@ class OrderForm(Form):
 
 class OrderExpressForm(Form):
     express_id = IntegerField(lazy_gettext('Express'))
-    express_no = StringField(lazy_gettext('Express No.'))
+    express_no = StringField(lazy_gettext('Express No.'), validators=[DataRequired("Express number can't empty!")])
 
 
 class OrderRemark(Form):

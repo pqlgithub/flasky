@@ -220,3 +220,18 @@ def import_product_from_excel(file_path):
             products.append(new_product)
 
         return products
+
+
+
+def split_huazhu_address(address_str):
+    """地址字符串转换为省、市、区、地址"""
+    
+    addr_ary = address_str.split('-')
+    
+    province = addr_ary.pop(0)
+    city = addr_ary.pop(0)
+    area = addr_ary.pop(0)
+    address = '-'.join(addr_ary)
+    
+    return (province, city, area, address)
+    

@@ -12,18 +12,19 @@
 	</div>
 	<a href="{{ url_for('main.show_orders') }}?s=1" class="pjax list-group-item {% if status == 1 %} active{% endif %}">
 		{{ _('Pending Payment') }}
-		{% if pending_pay_count %}<span class="badge">{{ pending_pay_count }}</span>{% endif %}
+		<span class="badge" id="pending_pay_count">{% if status_count.pending_pay_count %}{{ status_count.pending_pay_count }}{% endif %}</span>
 	</a>
 	<a href="{{ url_for('main.show_orders') }}?s=5" class="pjax list-group-item {% if status == 5 %} active{% endif %}">
 		{{ _('Pending Review') }}
-		{% if pending_review_count %}<span class="badge">{{ pending_review_count }}</span>{% endif %}
+		<span class="badge" id="pending_review_count">{% if status_count.pending_review_count %}{{ status_count.pending_review_count }}{% endif %}</span>
 	</a>
 	<a href="{{ url_for('main.show_orders') }}?s=10" class="pjax list-group-item {% if status == 10 %} active{% endif %}">
 		{{ _('Pending Shipment') }}
-		{% if pending_ship_count %}<span class="badge">{{ pending_ship_count }}</span>{% endif %}
+		<span class="badge" id="pending_ship_count">{% if status_count.pending_ship_count %}{{ status_count.pending_ship_count }}{% endif %}</span>
 	</a>
 	<a href="{{ url_for('main.show_orders') }}?s=13" class="pjax list-group-item {% if status == 13 %} active{% endif %}">
 		{{ _('UnPrinting') }}
+		<span class="badge" id="unprinting_count">{% if status_count.unprinting_count %}{{ status_count.unprinting_count }}{% endif %}</span>
 	</a>
 	<a href="{{ url_for('main.show_orders') }}?s=16" class="pjax list-group-item {% if status == 16 %} active{% endif %}">
 		{{ _('Shipped') }}

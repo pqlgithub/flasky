@@ -20,7 +20,7 @@ from . import main
 from .. import db, uploader
 from ..decorators import user_has
 from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
-    timestamp, datestr_to_timestamp
+    timestamp, datestr_to_timestamp, split_huazhu_address
 from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, SORT_TYPE_CODE, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
@@ -42,25 +42,37 @@ def load_common_data():
     """
     私有方法，装载共用数据
     """
-    pending_pay_count = Order.query.filter_by(master_uid=Master.master_uid(),status=OrderStatus.PENDING_PAYMENT).count()
-    pending_review_count = Order.query.filter_by(master_uid=Master.master_uid(),status=OrderStatus.PENDING_CHECK).count()
-    pending_ship_count = Order.query.filter_by(master_uid=Master.master_uid(),status=OrderStatus.PENDING_SHIPMENT).count()
-
     # 库房列表
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
     # 店铺列表
     store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
 
     return {
-        'pending_pay_count': pending_pay_count,
-        'pending_review_count': pending_review_count,
-        'pending_ship_count': pending_ship_count,
         'warehouse_list': warehouse_list,
         'store_list': store_list,
         'top_menu': 'orders',
-        'status_list': status_list
+        'status_list': status_list,
+        'status_count': _recount()
     }
 
+
+def _recount():
+    """重新计算订单的数量"""
+    pending_pay_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                              status=OrderStatus.PENDING_PAYMENT).count()
+    pending_review_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                                 status=OrderStatus.PENDING_CHECK).count()
+    pending_ship_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                               status=OrderStatus.PENDING_SHIPMENT).count()
+    unprinting_count = Order.query.filter_by(master_uid=Master.master_uid(), status=OrderStatus.PENDING_PRINT).count()
+    
+    return {
+        'pending_pay_count': pending_pay_count,
+        'pending_review_count': pending_review_count,
+        'pending_ship_count': pending_ship_count,
+        'unprinting_count': unprinting_count
+    }
+    
 
 @main.route('/orders')
 @main.route('/orders/<int:page>')
@@ -174,7 +186,8 @@ def order_express_no(rid):
         # 点击发货
         order.express_id = form.express_id.data
         order.express_no = form.express_no.data
-        order.mark_shipped_status()
+        # 自动转换到待打印状态
+        order.mark_print_status()
 
         # 自动生成出库单
         out_serial_no = gen_serial_no('CK')
@@ -239,11 +252,11 @@ def order_express_no(rid):
 
         db.session.commit()
 
-        return custom_response(True, 'Add express info if ok!')
+        return custom_response(True, 'Add express info is ok!')
 
     form.express_id.data = order.express_id
     form.express_no.data = order.express_no
-
+    
     # get express
     express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
 
@@ -321,9 +334,9 @@ def shipment_order():
         receiver['Mobile'] = order.buyer_phone
         receiver['ProvinceName'] = order.buyer_province
         receiver['CityName'] = order.buyer_city
-        receiver['ExpAreaName'] = ''
+        receiver['ExpAreaName'] = order.buyer_area
         receiver['Address'] = order.buyer_address
-
+        
         commodity_one = {}
         commodity_one['GoodsName'] = '其他'
         commodity = []
@@ -345,12 +358,13 @@ def shipment_order():
 
         # 获取电子面单成功，则填充物流单号
         logistic_code = eorder_result['Order']['LogisticCode']
-
         # 点击发货
         order.express_no = logistic_code
+        
+        # 自动转换到待打印状态
         order.mark_print_status()
 
-
+    
     db.session.commit()
 
     success = False if len(messages) else True
@@ -411,9 +425,9 @@ def print_eorder():
     receiver['Mobile'] = current_order.buyer_phone
     receiver['ProvinceName'] = current_order.buyer_province
     receiver['CityName'] = current_order.buyer_city
-    receiver['ExpAreaName'] = ''
+    receiver['ExpAreaName'] = current_order.buyer_area
     receiver['Address'] = current_order.buyer_address
-
+    
     commodity_one = {}
     commodity_one['GoodsName'] = '其他'
     commodity = []
@@ -583,7 +597,6 @@ def auto_gen_outwarehouse(order_list):
     db.session.commit()
 
 
-
 def get_key_by_value(dict_value):
     """通过值获取key"""
     for (key, value) in ORDER_EXCEL_FIELDS.items():
@@ -651,6 +664,9 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
             ordered_at = time.mktime(time.strptime(order_info['ordered_at'], '%Y-%m-%d %H:%M:%S'))
         else:
             ordered_at = timestamp()
+            
+        # 分解地址
+        buyer_province, buyer_city, buyer_area, buyer_address = split_huazhu_address(order_info['buyer_address'])
 
         order = Order(
             master_uid = Master.master_uid(),
@@ -673,16 +689,17 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
             buyer_name = order_info['buyer_name'],
             buyer_tel = order_info['buyer_phone'],
             buyer_phone = order_info['buyer_mobile'],
-            buyer_address = order_info['buyer_address'],
+            buyer_address = buyer_address,
             buyer_zipcode = '',
             buyer_country = '中国',
-            buyer_province = '',
-            buyer_city = '',
+            buyer_province = buyer_province,
+            buyer_city = buyer_city,
+            buyer_area = buyer_area,
             buyer_remark = order_info['buyer_remark'],
             created_at = ordered_at,
             updated_at = ordered_at
         )
-
+        
         db.session.add(order)
 
         order_item = OrderItem(
@@ -709,7 +726,8 @@ def import_order_by_dict(order_list, store_id, warehouse_id):
 
     return render_template('orders/import_result.html',
                            bad_skus=bad_skus,
-                           bad_orders=bad_orders)
+                           bad_orders=bad_orders,
+                           status_count=_recount())
 
 
 @main.route('/orders/import', methods=['GET', 'POST'])
@@ -1220,8 +1238,8 @@ def ajax_verify_order():
         db.session.rollback()
         return custom_response(False, gettext("Verify order is fail!!!"))
 
-    return full_response(True, R200_OK, selected_sns)
-
+    return full_response(True, R200_OK, dict({'selected_sns': selected_sns, 'status_count': _recount()}))
+    
 
 def _validate_order_stock(order_items, warehouse_id):
     """验证订单明细库存"""
@@ -1254,16 +1272,16 @@ def ajax_shipped():
     try:
         for rid in selected_ids:
             order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
-            if order and order.status != OrderStatus.SHIPPED:
+            if order and order.status in [OrderStatus.PENDING_SHIPMENT, OrderStatus.PENDING_PRINT]:
                 order.mark_shipped_status()
-
+        
         db.session.commit()
 
     except Exception as ex:
         current_app.logger.warn('Shipped order is fail: %s' % ex)
         return custom_response(False, 'Shipped order is fail: %s' % ex)
-
-    return full_response(True, R200_OK, selected_ids)
+    
+    return full_response(True, R200_OK, {'selected_ids': selected_ids, 'status_count': _recount()})
 
 
 @main.route('/orders/<string:rid>/ajax_canceled', methods=['POST'])
@@ -1271,8 +1289,8 @@ def ajax_shipped():
 @user_has('admin_order')
 def ajax_canceled(rid):
     """订单取消"""
-    order = Order.query.filter_by(serial_no=rid).first()
-    if not order:
+    order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+    if order is None:
         return custom_response(False, "Order isn't exist!")
 
     warehouse_id = order.warehouse_id
@@ -1296,7 +1314,7 @@ def ajax_canceled(rid):
         db.session.rollback()
         return custom_response(False, 'Order canceled is fail!')
 
-    return full_response(True, R200_OK, {'rid': rid})
+    return full_response(True, R200_OK, {'rid': rid, 'status_count': _recount()})
 
 
 @main.route('/orders/delete', methods=['POST'])

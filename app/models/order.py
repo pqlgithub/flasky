@@ -112,6 +112,7 @@ class Order(db.Model):
     buyer_country = db.Column(db.String(50), nullable=True)
     buyer_province = db.Column(db.String(50), nullable=True)
     buyer_city = db.Column(db.String(50), nullable=True)
+    buyer_area = db.Column(db.String(50), nullable=True)
     # 买家备注
     buyer_remark = db.Column(db.String(250), nullable=True)
     # 订单状态

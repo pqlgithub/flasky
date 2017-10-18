@@ -1,4 +1,4 @@
-<div class="modal-dialog modal-lg" role="document">
+<div class="modal-dialog" role="document">
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -9,15 +9,15 @@
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Order Serial') }}</label>
-					<div class="col-sm-4">
+					<label class="col-sm-3 control-label">{{ _('Order Serial') }}</label>
+					<div class="col-sm-5">
 						<p class="form-control-static text-danger">{{ order.serial_no }}</p>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Express') }}</label>
-					<div class="col-sm-4">
+					<label class="col-sm-3 control-label">{{ _('Express') }}</label>
+					<div class="col-sm-5">
 						<select name="express_id" class="form-control select2">
 							<option value="0">{{ _('Select Express') }}</option>
 							{% for exp in express_list %}
@@ -28,7 +28,7 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-2 control-label">{{ _('Express No.') }}</label>
+					<label class="col-sm-3 control-label">{{ _('Express No.') }}</label>
 					<div class="col-sm-8">
 						{{ form.express_no(class="form-control") }}
 					</div>

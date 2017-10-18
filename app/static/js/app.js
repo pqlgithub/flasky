@@ -377,6 +377,17 @@ mixpus.order_recount = function () {
 	$('#payable_amount').html((total_amount - total_discount).toFixed(2));
 };
 
+// 更新各个状态订单数量
+mixpus.update_order_status_count = function (status_count) {
+	for (var key in status_count) {
+		if (status_count[key] && status_count[key] > 0) {
+			$('#' + key).text(status_count[key]).show();
+		} else {
+			$('#' + key).text(0).hide();
+		}
+	}
+};
+
 // 文件上传管理器
 mixpus.upload_file_manager = function () {
 	// Image Manager

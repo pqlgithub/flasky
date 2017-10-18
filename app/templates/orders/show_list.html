@@ -41,14 +41,17 @@
 			if (selected.length){
 				$.post('{{ url_for("main.ajax_verify_order") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
 					if (result.success) {
-						ids = result.data;
+						ids = result.data.selected_sns;
 						for (var i=0,l=ids.length;i<l;i++) {
 							$('#tr_' + ids[i] + '_parent').remove();
 							$('#tr_' + ids[i]).remove();
 						}
+						// 更新数量
+						mixpus.update_order_status_count(result.data.status_count);
 					} else {
 						swal("Error", result.status.message, "error");
 					}
+
 				});
 			} else {
 				swal("Error", "First to selected the one!!!", "error");
@@ -62,6 +65,9 @@
 					rid = result.data.rid;
 					$('#tr_' + rid + '_parent').remove();
 					$('#tr_' + rid).remove();
+
+					// 更新数量
+					mixpus.update_order_status_count(result.data.status_count);
 				} else {
 					swal("Error", result.status.message, "error");
 				}
@@ -70,7 +76,7 @@
 			return false;
 		});
 
-		// 手动设置发货
+		// 手动设置完成发货状态
 		$('.ajax-deliver').click(function () {
 			var form_id = $(this).data('form-id');
 			// 检测是否选中
@@ -86,11 +92,13 @@
 
 			$.post('{{ url_for("main.ajax_shipped") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
 				if (result.success) {
-					ids = result.data;
+					ids = result.data.selected_ids;
 					for (var i=0,l=ids.length;i<l;i++) {
 						$('#tr_' + ids[i] + '_parent').remove();
 						$('#tr_' + ids[i]).remove();
 					}
+					// 更新数量
+					mixpus.update_order_status_count(result.data.status_count);
 				} else {
 					mixpus.show_error_message(result.status.message);
 				}
@@ -98,8 +106,6 @@
 
 			return false;
 		});
-
-
 
 		// 打印订单发货单
 		$('.ajax-print').click(function () {
@@ -205,8 +211,11 @@
 				$btn.prop('disabled', false);
 
 				if (!result.success) {
-					mixpus.show_error_message(result.status.message);
+					return mixpus.show_error_message(result.status.message);
 				}
+
+				// 自动刷新
+				window.location.reload();
 
 			}, 'json');
 
@@ -264,7 +273,7 @@
 				<i class="glyphicon glyphicon-send"></i>
 			</button>
 			{% endif %}
-			{% if status == 13 %}
+			{% if status == 13 or status == 16 %}
 			<button class="btn btn-primary ajax-print-eorder" data-form-id="orders-form" data-href="{{ url_for('main.print_eorder') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Eorder') }}">
 				<i class="glyphicon glyphicon-print"></i>
 			</button>
