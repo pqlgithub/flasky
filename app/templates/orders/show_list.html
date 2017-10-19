@@ -165,19 +165,20 @@
 						return false;
 					}
 					LODOP.PRINT_INIT('{{ _("Print Express") }}');
+
 					// 自定义纸张大小打印
 					LODOP.SET_PRINT_PAGESIZE(1, '100mm', '180mm', '');
 					LODOP.SET_SHOW_MODE('HIDE_SBUTTIN_PREVIEW', 1);
 
 					// 设置打印内容
-					LODOP.ADD_PRINT_HTM('10mm', '5mm', '100%', '100%', result.data);
+					LODOP.ADD_PRINT_HTM('0mm', '0mm', '100%', '100%', result.data);
 
 					// 预览
 					LODOP.PREVIEW();
 
 					// 选择打印机
 					LODOP.PRINTA();
-
+					
 					// 直接打印
 					LODOP.PRINT();
 
