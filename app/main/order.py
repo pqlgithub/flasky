@@ -279,6 +279,7 @@ def shipment_order():
         eorder['ExpType'] = 1
         # 返回电子面单模板：0-不需要；1-需要
         eorder['IsReturnPrintTemplate'] = '0'
+        eorder['TemplateSize'] = 180
 
         # 电子面单客户账号（与快递网点申请）
         eorder['CustomerName'] = express.customer_name
@@ -300,11 +301,15 @@ def shipment_order():
         receiver['CityName'] = order.buyer_city
         receiver['ExpAreaName'] = order.buyer_area
         receiver['Address'] = order.buyer_address
-        
-        commodity_one = {}
-        commodity_one['GoodsName'] = '其他'
+
         commodity = []
-        commodity.append(commodity_one)
+        for item in order.items:
+            commodity_one = {}
+            commodity_one['GoodsName'] = item.sku.product_name
+            commodity_one['GoodsCode'] = item.sku_serial_no
+            commodity_one['Goodsquantity'] = item.quantity
+            
+            commodity.append(commodity_one)
 
         eorder['Sender'] = sender
         eorder['Receiver'] = receiver
@@ -371,6 +376,7 @@ def print_eorder():
     eorder['PayType'] = 1
     eorder['ExpType'] = 1
     eorder['IsReturnPrintTemplate'] = '1'
+    eorder['TemplateSize'] = 180
 
     eorder['CustomerName'] = express.customer_name
     eorder['CustomerPwd'] = express.customer_pwd
@@ -391,11 +397,15 @@ def print_eorder():
     receiver['CityName'] = current_order.buyer_city
     receiver['ExpAreaName'] = current_order.buyer_area
     receiver['Address'] = current_order.buyer_address
-    
-    commodity_one = {}
-    commodity_one['GoodsName'] = '其他'
+
     commodity = []
-    commodity.append(commodity_one)
+    for item in current_order.items:
+        commodity_one = {}
+        commodity_one['GoodsName'] = item.sku.product_name
+        commodity_one['GoodsCode'] = item.sku_serial_no
+        commodity_one['Goodsquantity'] = item.quantity
+    
+        commodity.append(commodity_one)
 
     eorder['Sender'] = sender
     eorder['Receiver'] = receiver

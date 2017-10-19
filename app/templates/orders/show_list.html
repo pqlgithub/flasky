@@ -171,13 +171,13 @@
 					LODOP.SET_SHOW_MODE('HIDE_SBUTTIN_PREVIEW', 1);
 
 					// 设置打印内容
-					LODOP.ADD_PRINT_HTM('0mm', '0mm', '100%', '100%', result.data);
+					LODOP.ADD_PRINT_HTM(0, '5mm', '110mm', '180mm', result.data);
 
 					// 预览
-					LODOP.PREVIEW();
-					
+					//LODOP.PREVIEW();
+
 					// 选择打印机
-					LODOP.PRINTA();
+					//LODOP.PRINTA();
 
 					// 直接打印
 					LODOP.PRINT();
