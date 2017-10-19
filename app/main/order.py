@@ -305,9 +305,10 @@ def shipment_order():
         commodity = []
         for item in order.items:
             commodity_one = {}
-            commodity_one['GoodsName'] = item.sku.product_name
+            commodity_one['GoodsName'] = '%s %s' % (item.sku.product_name, item.sku.mode)
             commodity_one['GoodsCode'] = item.sku_serial_no
             commodity_one['Goodsquantity'] = item.quantity
+            commodity_one['GoodsWeight'] = 0.0
             
             commodity.append(commodity_one)
 
@@ -401,9 +402,10 @@ def print_eorder():
     commodity = []
     for item in current_order.items:
         commodity_one = {}
-        commodity_one['GoodsName'] = item.sku.product_name
+        commodity_one['GoodsName'] = '%s %s' % (item.sku.product_name, item.sku.mode)
         commodity_one['GoodsCode'] = item.sku_serial_no
         commodity_one['Goodsquantity'] = item.quantity
+        commodity_one['GoodsWeight'] = 0.0
     
         commodity.append(commodity_one)
 
@@ -417,7 +419,7 @@ def print_eorder():
     current_app.logger.debug(
         'result code: %s, success: %s' % (eorder_result['ResultCode'], eorder_result['Success']))
 
-    current_app.logger.debug('%s' % eorder_result)
+    # current_app.logger.debug('%s' % eorder_result)
 
     if eorder_result['ResultCode'] == '105' and eorder_result['Success'] == False:
         return full_response(data=eorder_result['PrintTemplate'])
