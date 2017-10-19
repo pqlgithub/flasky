@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+{% include "orders/_sub_menu.html" %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Import Express Result') }}
+		<span class="pull-right">
+			<a href="{{ url_for('main.show_orders') }}" class="btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	{% if bad_orders %}
+	<table class="table table-bordered table-striped table-hover">
+		<thead>
+		<tr>
+			<th>{{ _('Serial no') }}</th>
+			<th>{{ _('Season') }}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for m in bad_orders %}
+		<tr>
+			<td>{{ m[0] }}</td>
+			<td>
+				{% if m[1] == 1 %}
+				{{ _("Order isn't exist!") }}
+				{% endif %}
+
+				{% if m[1] == 2 %}
+				{{ _("Order status is error!") }}
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
+
+</div>
+{% endblock %}

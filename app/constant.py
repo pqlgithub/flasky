@@ -342,3 +342,10 @@ HUAZHU_ORDER_STATUS = [
     (18, '已退款'),
     (20, '已完成'),
 ]
+
+# 华住订单物流
+HUAZHU_EXPRESS_FIELDS = {
+    'serial_no': '订单号',
+    'express_name': '物流服务商',
+    'express_no': '快递单号'
+}

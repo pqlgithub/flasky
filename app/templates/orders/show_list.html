@@ -245,6 +245,11 @@
 					<li>
 						<a href="javascript:void(0);" class="ajax-deliver" data-form-id="orders-form">{{ _('Deliver Goods') }}</a>
 					</li>
+					<li>
+						<a href="{{ url_for('main.import_order_express') }}" class="ajax-modal" data-modal="import-modal">
+							{{ _('Import Express Of HuaZhu') }}
+						</a>
+					</li>
 					{% endif %}
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Update buyer info') }}</a></li>
 					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Set as blacked') }}</a></li>

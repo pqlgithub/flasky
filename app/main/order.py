@@ -21,7 +21,7 @@ from .. import db, uploader
 from ..decorators import user_has
 from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
     timestamp, datestr_to_timestamp, split_huazhu_address
-from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, SORT_TYPE_CODE, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
+from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, HUAZHU_EXPRESS_FIELDS, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
@@ -37,42 +37,6 @@ status_list = (
     (OrderStatus.FINISHED, lazy_gettext('Pending Finished')),
     (OrderStatus.REFUND, lazy_gettext('Refund'))
 )
-
-def load_common_data():
-    """
-    私有方法，装载共用数据
-    """
-    # 库房列表
-    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
-    # 店铺列表
-    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-
-    return {
-        'warehouse_list': warehouse_list,
-        'store_list': store_list,
-        'top_menu': 'orders',
-        'status_list': status_list,
-        'status_count': _recount()
-    }
-
-
-def _recount():
-    """重新计算订单的数量"""
-    pending_pay_count = Order.query.filter_by(master_uid=Master.master_uid(),
-                                              status=OrderStatus.PENDING_PAYMENT).count()
-    pending_review_count = Order.query.filter_by(master_uid=Master.master_uid(),
-                                                 status=OrderStatus.PENDING_CHECK).count()
-    pending_ship_count = Order.query.filter_by(master_uid=Master.master_uid(),
-                                               status=OrderStatus.PENDING_SHIPMENT).count()
-    unprinting_count = Order.query.filter_by(master_uid=Master.master_uid(), status=OrderStatus.PENDING_PRINT).count()
-    
-    return {
-        'pending_pay_count': pending_pay_count,
-        'pending_review_count': pending_review_count,
-        'pending_ship_count': pending_ship_count,
-        'unprinting_count': unprinting_count
-    }
-    
 
 @main.route('/orders')
 @main.route('/orders/<int:page>')
@@ -524,212 +488,6 @@ def print_order_pdf():
     return resp
 
 
-def auto_gen_outwarehouse(order_list):
-    """同步自动生成出库单"""
-
-    for order in order_list:
-        # 检测是否已存在出库单
-        if OutWarehouse.query.filter_by(master_uid=Master.master_uid(),
-                                        target_serial_no=order.serial_no,warehouse_id=order.warehouse_id).first():
-            # 已存在，则跳过
-            continue
-
-        out_serial_no = gen_serial_no('CK')
-        out_warehouse = OutWarehouse(
-            master_uid=Master.master_uid(),
-            serial_no=out_serial_no,
-            target_serial_no=order.serial_no,
-            target_type=1,
-            warehouse_id=order.warehouse_id,
-            total_quantity=order.total_quantity,
-            out_quantity=0,
-            # 出库状态： 1、未出库 2、出库中 3、出库完成
-            out_status=1,
-            # 出库流程状态
-            status=1
-        )
-        db.session.add(out_warehouse)
-
-        # 获取库房信息
-        warehouse = Warehouse.query.get(order.warehouse_id)
-        if not warehouse:
-            return custom_response(False, gettext("Warehouse info isn't exist!"))
-        default_shelve = warehouse.default_shelve
-
-        # 出库单明细
-        for item in order.items:
-            sku_id = item.sku_id
-            product_stock = ProductStock.query.filter_by(product_sku_id=sku_id,
-                                                         warehouse_id=order.warehouse_id).first()
-            if product_stock is None:
-                return custom_response(False, gettext('This item is out of stock'))
-
-            offset_quantity = item.quantity
-            current_quantity = product_stock.current_count
-            original_quantity = current_quantity + offset_quantity
-
-            stock_history = StockHistory(
-                master_uid=Master.master_uid(),
-                warehouse_id=order.warehouse_id,
-                warehouse_shelve_id=default_shelve.id,
-                product_sku_id=sku_id,
-                sku_serial_no=item.sku_serial_no,
-
-                # 出库单/入库单 编号
-                serial_no=out_serial_no,
-                # 类型：1、入库 2：出库
-                type=2,
-                # 操作类型
-                operation_type=21,
-                # 原库存数量
-                original_quantity=original_quantity,
-                # 变化数量
-                quantity=offset_quantity,
-                # 当前数量
-                current_quantity=current_quantity,
-                # 原价格
-                ori_price=item.deal_price,
-                price=item.deal_price
-            )
-
-            db.session.add(stock_history)
-
-    db.session.commit()
-
-
-def get_key_by_value(dict_value):
-    """通过值获取key"""
-    for (key, value) in ORDER_EXCEL_FIELDS.items():
-        if value == dict_value:
-            return key
-    return None
-
-
-def get_status_by_value(val):
-    """通过值获取订单状态"""
-    for t in HUAZHU_ORDER_STATUS:
-        if t[1] == val:
-            return t[0]
-
-
-def import_order_by_dict(order_list, store_id, warehouse_id):
-    """导入订单数据"""
-
-    bad_orders = []
-    bad_skus = []
-
-    # 默认物流公司未设置
-    default_express = Express.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
-    if default_express is None:
-        flash(gettext("Default express isn't setting!"), 'danger')
-        return render_template('orders/import_result.html',
-                               bad_skus=bad_skus,
-                               bad_orders=bad_orders)
-
-    for order_info in order_list:
-        # 验证是否已经存在
-        if Order.query.filter_by(master_uid=Master.master_uid(), outside_target_id=order_info['order_serial_no']).first():
-            current_app.logger.warn("Order[%s] is already imported!" % order_info['order_serial_no'])
-            bad_orders.append(order_info['order_serial_no'])
-            continue
-
-        # 获取订单里产品
-        product = {
-            'name': order_info['order_product_name'],
-            's_model': order_info['s_model'],
-            'quantity': order_info['quantity'],
-            'cost_price': order_info['cost_price'],
-            'sale_price': order_info['sale_price'],
-            'sku_serial_no': order_info['store_product_id'].strip(), # 截取前后空格
-            'discount_total_amount': order_info['discount_total_amount']
-        }
-
-        # 验证产品是否存在
-        current_sku = ProductSku.query.filter_by(master_uid=Master.master_uid(), serial_no=product['sku_serial_no']).first()
-
-        if current_sku is None:
-            # 产品不存在
-            current_app.logger.warn("Current sku[%s] isn't exist!" % product['sku_serial_no'])
-            bad_skus.append((product['sku_serial_no'], 1))
-            continue
-        
-        # 开始导入订单
-        new_order_serial_no = Order.make_unique_serial_no(gen_serial_no('C'))
-
-        current_app.logger.debug('Ordered_at: %s' % order_info['ordered_at'])
-
-        ordered_at = order_info['ordered_at']
-        if ordered_at[:-2] == '.0':
-            ordered_at = ordered_at[:-2]
-            ordered_at = time.mktime(time.strptime(order_info['ordered_at'], '%Y-%m-%d %H:%M:%S'))
-        else:
-            ordered_at = timestamp()
-            
-        # 分解地址
-        buyer_province, buyer_city, buyer_area, buyer_address = split_huazhu_address(order_info['buyer_address'])
-
-        order = Order(
-            master_uid = Master.master_uid(),
-            outside_target_id = order_info['order_serial_no'],
-            serial_no = new_order_serial_no,
-            store_id = store_id,
-            warehouse_id = warehouse_id,
-
-            pay_amount = order_info['total_amount'] + order_info['freight'] - order_info['discount_total_amount'],
-            total_quantity = order_info['quantity'],
-            total_amount = order_info['total_amount'],
-            freight = order_info['freight'],
-            discount_amount = order_info['discount_total_amount'],
-
-            express_id = default_express.id,
-            express_no = order_info['express_no'],
-            status=get_status_by_value(order_info['order_status']),
-            remark = '',
-            # 顾客信息
-            buyer_name = order_info['buyer_name'],
-            buyer_tel = order_info['buyer_phone'],
-            buyer_phone = order_info['buyer_mobile'],
-            buyer_address = buyer_address,
-            buyer_zipcode = '',
-            buyer_country = '中国',
-            buyer_province = buyer_province,
-            buyer_city = buyer_city,
-            buyer_area = buyer_area,
-            buyer_remark = order_info['buyer_remark'],
-            created_at = ordered_at,
-            updated_at = ordered_at
-        )
-        
-        db.session.add(order)
-
-        order_item = OrderItem(
-            order = order,
-            order_serial_no = new_order_serial_no,
-            sku_id = current_sku.id,
-            sku_serial_no = current_sku.serial_no,
-            quantity = product['quantity'],
-            deal_price = product['sale_price'],
-            discount_amount = product['discount_total_amount']
-        )
-
-        db.session.add(order_item)
-
-    # 新增索引
-    flask_whooshalchemyplus.index_one_model(Order)
-    
-    db.session.commit()
-    
-    if bad_orders or bad_skus:
-        flash(gettext('Import orders is error!!!'), 'danger')
-    else:
-        flash(gettext("Import Orders is ok!"), 'success')
-
-    return render_template('orders/import_result.html',
-                           bad_skus=bad_skus,
-                           bad_orders=bad_orders,
-                           status_count=_recount())
-
-
 @main.route('/orders/import', methods=['GET', 'POST'])
 @user_has('admin_order')
 @login_required
@@ -800,11 +558,66 @@ def import_orders():
                            warehouse_list=warehouse_list)
 
 
-def _rebuild_header_value(key, current_site):
-    """重建Excel表头标题"""
-    if key in ['freight','extra_charge','total_amount',]:
-        return '{}({})'.format(ORDER_EXCEL_FIELDS[key], current_site.currency)
-    return ORDER_EXCEL_FIELDS[key]
+@main.route('/orders/import_express', methods=['GET', 'POST'])
+@user_has('admin_order')
+@login_required
+def import_order_express():
+    """导入订单物流信息"""
+    if request.method == 'POST':
+        st_id = request.form.get('store_id', type=int)
+        f = request.files['excel']
+
+        # start to save
+        sub_folder = str(time.strftime('%y%m%d'))
+        name_prefix = 'mix' + str(time.time())
+        name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
+        filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
+
+        order_file = uploader.path(filename)
+
+        current_app.logger.debug('Express file [%s]' % order_file)
+
+        # 读取文件
+        wb = load_workbook(filename=order_file)
+        sheets = wb.get_sheet_names()
+        # 默认第一个表格的名称
+        ws = wb.get_sheet_by_name(sheets[0])
+
+        # 获取行数
+        total_rows = ws.max_row
+        # 获取列数
+        total_cols = ws.max_column
+
+        # 获取表头
+        counter = 1
+        header = []
+        for row in ws.rows:
+            if counter == 1: # 仅获取第一行
+                header = [col.value for col in row]
+            counter += 1
+
+        # 文件转化为列表
+        order_list = []
+        for row_idx in range(2, total_rows + 1):
+            order_info = {}
+            for col_idx in range(1, total_cols + 1):
+                key = get_express_key_by_value(header[col_idx - 1])
+                cell_value = ws.cell(row=row_idx, column=col_idx).value
+
+                current_app.logger.debug('Express,%s:%s' % (key, cell_value))
+
+                order_info[key] = cell_value
+
+            order_list.append(order_info)
+
+        # 开始导入订单物流信息
+        return import_express_of_order(order_list, st_id)
+    
+    # 店铺列表
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+
+    return render_template('orders/_modal_import_express.html',
+                           store_list=store_list)
 
 
 @main.route('/orders/export', methods=['GET', 'POST'])
@@ -1241,25 +1054,6 @@ def ajax_verify_order():
     return full_response(True, R200_OK, dict({'selected_sns': selected_sns, 'status_count': _recount()}))
     
 
-def _validate_order_stock(order_items, warehouse_id):
-    """验证订单明细库存"""
-    bad_skus = []
-    for item in order_items:
-        product_stock = ProductStock.query.filter_by(sku_serial_no=item.sku_serial_no,
-                                                     warehouse_id=warehouse_id).first()
-        # 产品库存不足
-        if product_stock is None or product_stock.available_count < item.quantity:
-            current_app.logger.warn("Current sku[%s] inventory is not enough!" % item.sku_serial_no)
-            bad_skus.append(item.sku_serial_no)
-            continue
-            
-        # 同步减去库存
-        product_stock.current_count -= item.quantity
-        product_stock.saled_count += item.quantity
-        
-    return bad_skus
-    
-
 @main.route('/orders/ajax_shipped', methods=['POST'])
 @login_required
 @user_has('admin_order')
@@ -1354,3 +1148,329 @@ def download_order_tpl():
     resp.headers['Content-Disposition'] = 'attachment; filename={};'.format(dest_filename)
 
     return resp
+
+
+@main.route('/orders/download_express_tpl')
+@login_required
+def download_express_tpl():
+    """下载物流批量发货模板"""
+    dest_filename = r'mic_template_express.xlsx'
+    export_path = current_app.root_path + '/static/tpl/'
+    export_file = '{}{}'.format(export_path, dest_filename)
+    
+    resp = make_response(send_file(export_file))
+    resp.headers['Content-Disposition'] = 'attachment; filename={};'.format(dest_filename)
+    
+    return resp
+
+
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    # 库房列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid()).all()
+    # 店铺列表
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    
+    return {
+        'warehouse_list': warehouse_list,
+        'store_list': store_list,
+        'top_menu': 'orders',
+        'status_list': status_list,
+        'status_count': _recount()
+    }
+
+
+def _recount():
+    """重新计算订单的数量"""
+    pending_pay_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                              status=OrderStatus.PENDING_PAYMENT).count()
+    pending_review_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                                 status=OrderStatus.PENDING_CHECK).count()
+    pending_ship_count = Order.query.filter_by(master_uid=Master.master_uid(),
+                                               status=OrderStatus.PENDING_SHIPMENT).count()
+    unprinting_count = Order.query.filter_by(master_uid=Master.master_uid(), status=OrderStatus.PENDING_PRINT).count()
+    
+    return {
+        'pending_pay_count': pending_pay_count,
+        'pending_review_count': pending_review_count,
+        'pending_ship_count': pending_ship_count,
+        'unprinting_count': unprinting_count
+    }
+
+
+def _validate_order_stock(order_items, warehouse_id):
+    """验证订单明细库存"""
+    bad_skus = []
+    for item in order_items:
+        product_stock = ProductStock.query.filter_by(sku_serial_no=item.sku_serial_no,
+                                                     warehouse_id=warehouse_id).first()
+        # 产品库存不足
+        if product_stock is None or product_stock.available_count < item.quantity:
+            current_app.logger.warn("Current sku[%s] inventory is not enough!" % item.sku_serial_no)
+            bad_skus.append(item.sku_serial_no)
+            continue
+        
+        # 同步减去库存
+        product_stock.current_count -= item.quantity
+        product_stock.saled_count += item.quantity
+    
+    return bad_skus
+
+
+def _rebuild_header_value(key, current_site):
+    """重建Excel表头标题"""
+    if key in ['freight','extra_charge','total_amount',]:
+        return '{}({})'.format(ORDER_EXCEL_FIELDS[key], current_site.currency)
+    return ORDER_EXCEL_FIELDS[key]
+
+
+def import_order_by_dict(order_list, store_id, warehouse_id):
+    """导入订单数据"""
+    
+    bad_orders = []
+    bad_skus = []
+    
+    # 默认物流公司未设置
+    default_express = Express.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
+    if default_express is None:
+        flash(gettext("Default express isn't setting!"), 'danger')
+        return render_template('orders/import_result.html',
+                               bad_skus=bad_skus,
+                               bad_orders=bad_orders)
+    
+    for order_info in order_list:
+        # 验证是否已经存在
+        if Order.query.filter_by(master_uid=Master.master_uid(),
+                                 outside_target_id=order_info['order_serial_no']).first():
+            current_app.logger.warn("Order[%s] is already imported!" % order_info['order_serial_no'])
+            bad_orders.append(order_info['order_serial_no'])
+            continue
+        
+        # 获取订单里产品
+        product = {
+            'name': order_info['order_product_name'],
+            's_model': order_info['s_model'],
+            'quantity': order_info['quantity'],
+            'cost_price': order_info['cost_price'],
+            'sale_price': order_info['sale_price'],
+            'sku_serial_no': order_info['store_product_id'].strip(),  # 截取前后空格
+            'discount_total_amount': order_info['discount_total_amount']
+        }
+        
+        # 验证产品是否存在
+        current_sku = ProductSku.query.filter_by(master_uid=Master.master_uid(),
+                                                 serial_no=product['sku_serial_no']).first()
+        
+        if current_sku is None:
+            # 产品不存在
+            current_app.logger.warn("Current sku[%s] isn't exist!" % product['sku_serial_no'])
+            bad_skus.append((product['sku_serial_no'], 1))
+            continue
+        
+        # 开始导入订单
+        new_order_serial_no = Order.make_unique_serial_no(gen_serial_no('C'))
+        
+        current_app.logger.debug('Ordered_at: %s' % order_info['ordered_at'])
+        
+        ordered_at = order_info['ordered_at']
+        if ordered_at[:-2] == '.0':
+            ordered_at = ordered_at[:-2]
+            ordered_at = time.mktime(time.strptime(order_info['ordered_at'], '%Y-%m-%d %H:%M:%S'))
+        else:
+            ordered_at = timestamp()
+        
+        # 分解地址
+        buyer_province, buyer_city, buyer_area, buyer_address = split_huazhu_address(order_info['buyer_address'])
+        
+        order = Order(
+            master_uid=Master.master_uid(),
+            outside_target_id=order_info['order_serial_no'],
+            serial_no=new_order_serial_no,
+            store_id=store_id,
+            warehouse_id=warehouse_id,
+            
+            pay_amount=order_info['total_amount'] + order_info['freight'] - order_info['discount_total_amount'],
+            total_quantity=order_info['quantity'],
+            total_amount=order_info['total_amount'],
+            freight=order_info['freight'],
+            discount_amount=order_info['discount_total_amount'],
+            
+            express_id=default_express.id,
+            express_no=order_info['express_no'],
+            status=get_status_by_value(order_info['order_status']),
+            remark='',
+            # 顾客信息
+            buyer_name=order_info['buyer_name'],
+            buyer_tel=order_info['buyer_phone'],
+            buyer_phone=order_info['buyer_mobile'],
+            buyer_address=buyer_address,
+            buyer_zipcode='',
+            buyer_country='中国',
+            buyer_province=buyer_province,
+            buyer_city=buyer_city,
+            buyer_area=buyer_area,
+            buyer_remark=order_info['buyer_remark'],
+            created_at=ordered_at,
+            updated_at=ordered_at
+        )
+        
+        db.session.add(order)
+        
+        order_item = OrderItem(
+            order=order,
+            order_serial_no=new_order_serial_no,
+            sku_id=current_sku.id,
+            sku_serial_no=current_sku.serial_no,
+            quantity=product['quantity'],
+            deal_price=product['sale_price'],
+            discount_amount=product['discount_total_amount']
+        )
+        
+        db.session.add(order_item)
+    
+    # 新增索引
+    flask_whooshalchemyplus.index_one_model(Order)
+    
+    db.session.commit()
+    
+    if bad_orders or bad_skus:
+        flash(gettext('Import orders is error!!!'), 'danger')
+    else:
+        flash(gettext("Import Orders is ok!"), 'success')
+    
+    return render_template('orders/import_result.html',
+                           bad_skus=bad_skus,
+                           bad_orders=bad_orders,
+                           status_count=_recount())
+
+
+def import_express_of_order(order_list, store_id):
+    """导入订单物流数据"""
+    bad_orders = []
+    
+    for order_info in order_list:
+        # 验证是否已经存在
+        current_order=  Order.query.filter_by(master_uid=Master.master_uid(),
+                                 outside_target_id=order_info['serial_no']).first()
+        if current_order is None:
+            current_app.logger.warn("Order[%s] isn't exist!" % order_info['serial_no'])
+            bad_orders.append((order_info['serial_no'], 1))
+            continue
+            
+        if current_order.status not in [OrderStatus.PENDING_PRINT, OrderStatus.PENDING_SHIPMENT]:
+            bad_orders.append((order_info['serial_no'], 2))
+            continue
+        
+        # 更新物流单号
+        current_order.express_no = order_info['express_no']
+        # 标记状态为待打印
+        current_order.mark_print_status()
+    
+    db.session.commit()
+    
+    if bad_orders:
+        flash(gettext('Import express is error!!!'), 'danger')
+    else:
+        flash(gettext("Import express is ok!"), 'success')
+    
+    return render_template('orders/import_express_result.html',
+                           bad_orders=bad_orders,
+                           status_count=_recount())
+
+
+def auto_gen_outwarehouse(order_list):
+    """同步自动生成出库单"""
+
+    for order in order_list:
+        # 检测是否已存在出库单
+        if OutWarehouse.query.filter_by(master_uid=Master.master_uid(),
+                                        target_serial_no=order.serial_no,warehouse_id=order.warehouse_id).first():
+            # 已存在，则跳过
+            continue
+
+        out_serial_no = gen_serial_no('CK')
+        out_warehouse = OutWarehouse(
+            master_uid=Master.master_uid(),
+            serial_no=out_serial_no,
+            target_serial_no=order.serial_no,
+            target_type=1,
+            warehouse_id=order.warehouse_id,
+            total_quantity=order.total_quantity,
+            out_quantity=0,
+            # 出库状态： 1、未出库 2、出库中 3、出库完成
+            out_status=1,
+            # 出库流程状态
+            status=1
+        )
+        db.session.add(out_warehouse)
+
+        # 获取库房信息
+        warehouse = Warehouse.query.get(order.warehouse_id)
+        if not warehouse:
+            return custom_response(False, gettext("Warehouse info isn't exist!"))
+        default_shelve = warehouse.default_shelve
+
+        # 出库单明细
+        for item in order.items:
+            sku_id = item.sku_id
+            product_stock = ProductStock.query.filter_by(product_sku_id=sku_id,
+                                                         warehouse_id=order.warehouse_id).first()
+            if product_stock is None:
+                return custom_response(False, gettext('This item is out of stock'))
+
+            offset_quantity = item.quantity
+            current_quantity = product_stock.current_count
+            original_quantity = current_quantity + offset_quantity
+
+            stock_history = StockHistory(
+                master_uid=Master.master_uid(),
+                warehouse_id=order.warehouse_id,
+                warehouse_shelve_id=default_shelve.id,
+                product_sku_id=sku_id,
+                sku_serial_no=item.sku_serial_no,
+
+                # 出库单/入库单 编号
+                serial_no=out_serial_no,
+                # 类型：1、入库 2：出库
+                type=2,
+                # 操作类型
+                operation_type=21,
+                # 原库存数量
+                original_quantity=original_quantity,
+                # 变化数量
+                quantity=offset_quantity,
+                # 当前数量
+                current_quantity=current_quantity,
+                # 原价格
+                ori_price=item.deal_price,
+                price=item.deal_price
+            )
+
+            db.session.add(stock_history)
+
+    db.session.commit()
+    
+
+def get_key_by_value(dict_value):
+    """通过值获取key"""
+    for (key, value) in ORDER_EXCEL_FIELDS.items():
+        if value == dict_value:
+            return key
+    return None
+
+
+def get_express_key_by_value(dict_value):
+    """通过值获取key"""
+    for (key, value) in HUAZHU_EXPRESS_FIELDS.items():
+        if value == dict_value:
+            return key
+    return None
+
+
+def get_status_by_value(val):
+    """通过值获取订单状态"""
+    for t in HUAZHU_ORDER_STATUS:
+        if t[1] == val:
+            return t[0]
