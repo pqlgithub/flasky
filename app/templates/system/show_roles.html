@@ -62,12 +62,10 @@
 	</div>
 
 	{% import "block/_macros.html" as macros %}
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_roles, '.show_roles') }}
-			</nav>
-		</div>
+	<div class="pages-box link">
+		<nav aria-label="Page navigation">
+			{{ macros.pagination_widget(paginated_roles, '.show_roles') }}
+		</nav>
 	</div>
 
 {% endblock %}

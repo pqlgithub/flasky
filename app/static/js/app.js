@@ -254,7 +254,8 @@ mixpus.hook_filter_search = function (callback) {
 
 // 自定义每页数量更新
 mixpus.hook_per_page_select = function () {
-	$('.per-page.select2').change(function (e) {
+	$('.pages-box.link .per-page').change(function (e) {
+		e.preventDefault();
 		var url = $(this).find('option:selected').data('href');
 		window.location.href = url;
     });

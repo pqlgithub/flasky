@@ -1,103 +1,92 @@
-<div id="table-refresh-box">
-	<div class="m-t-10 text-right">
-		{% if total_amount and total_amount[0] %}
-		{{ _('Stock Total Amount') }}: <label class="text-danger m-r-15">{{ total_amount[0]|round(2) }} {{ current_site.currency }}</label>
-		{{ _('Stock Quantity') }}: <label class="text-danger m-r-10">{{ total_quantity[0]|int }}</label>
-		{% endif %}
-	</div>
-	<div class="table-responsive">
-		<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+<div class="m-t-10 text-right">
+	{% if total_amount and total_amount[0] %}
+	{{ _('Stock Total Amount') }}: <label class="text-danger m-r-15">{{ total_amount[0]|round(2) }} {{ current_site.currency }}</label>
+	{{ _('Stock Quantity') }}: <label class="text-danger m-r-10">{{ total_quantity[0]|int }}</label>
+	{% endif %}
+</div>
+<div class="table-responsive">
+	<form id="purchases-form" action="{{ url_for('main.delete_purchase') }}" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-			<table class="table table-bordered table-striped table-hover">
-				<thead>
-				<tr>
-					<th class="text-center">
-						<input name="check_all" type="checkbox" class="check-all">
-					</th>
-					<th>{{ _('Product Info') }}</th>
-					<th class="text-center">{{ _('Total Quantity') }}</th>
-					<th>{{ _('Purchasing') }}</th>
-					<th class="text-center">{{ _('Available') }}</th>
-					<th class="text-center">{{ _('Saled Quantity') }}</th>
-					<th class="text-center">{{ _('Warehouse') }}<br>{{ _('Shelve') }}</th>
-					<th class="text-right">{{ _('Price') }}</th>
-					<th class="text-right">{{ _('Total Amount') }}</th>
-					<th class="text-right">{{ _('Update Date') }}</th>
-					<th class="text-right">{{ _('Action') }}</th>
-				</tr>
-				</thead>
-				<tbody>
-					{% for stock in paginated_stocks.items %}
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+			<tr>
+				<th class="text-center">
+					<input name="check_all" type="checkbox" class="check-all">
+				</th>
+				<th>{{ _('Product Info') }}</th>
+				<th class="text-center">{{ _('Total Quantity') }}</th>
+				<th>{{ _('Purchasing') }}</th>
+				<th class="text-center">{{ _('Available') }}</th>
+				<th class="text-center">{{ _('Saled Quantity') }}</th>
+				<th class="text-center">{{ _('Warehouse') }}<br>{{ _('Shelve') }}</th>
+				<th class="text-right">{{ _('Price') }}</th>
+				<th class="text-right">{{ _('Total Amount') }}</th>
+				<th class="text-right">{{ _('Update Date') }}</th>
+				<th class="text-right">{{ _('Action') }}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for stock in paginated_stocks.items %}
 
-					{% if stock.product_sku %}
-					<tr id="tr_{{ stock.id }}">
-						<td class="text-center">
-							<input name="selected[]" class="check-one" value="{{ stock.id }}" type="checkbox"> {{ stock.id }}
-						</td>
-						<td>
-							<img src="{{ stock.cover.view_url }}" width="60px" class="pull-left">
-							<div class="product-info">
-								<b>{{ stock.product_sku.serial_no }}</b><br>
-								{{ stock.product_sku.product.name }}<br>
-								<small>({{ stock.product_sku.mode }})</small>
-							</div>
-						</td>
-						<td class="text-center">
-							{{ stock.total_count }}
-						</td>
-						<td class="text-center">
-							{{ stock.purchasing_count }}
-						</td>
-						<td class="text-center">
-							{{ stock.available_count }} {% if stock.min_count %}<span class="label label-warning">{{ stock.min_count }}</span>{% endif %}
-						</td>
-						<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
-							{{ stock.saled_count }}
-						</td>
-						<td class="text-center">
-							{{ stock.warehouse.name }}<br>
-							{{ stock.warehouse_shelve.name }}
-						</td>
-						<td class="text-right">
-							{{ stock.product_sku.cost_price }} {{ current_site.currency }}
-						</td>
-						<td class="text-right">
-							{{ stock.current_count*stock.product_sku.cost_price }} {{ current_site.currency }}
-						</td>
-						<td class="text-right">
-							{{ stock.updated_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
-						</td>
-						<td class="text-right">
-							<div class="dropdown">
-								<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ stock.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-									{{ _('More') }}
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ stock.id }}-actions">
-									<li><a href="{{ url_for('main.edit_stock', id=stock.id) }}">{{ _('Update') }}</a></li>
-									<li><a href="#" class="disabled">{{ _('Remark') }}</a></li>
-									<li><a href="{{ url_for('main.sku_of_orders', rid=stock.sku_serial_no) }}" class="pjax" target="_blank">{{ _('Related Orders') }}</a></li>
-									<li role="separator" class="divider"></li>
-									<li><a href="#" class="disabled">{{ _('Mark Defective') }}</a></li>
-								</ul>
-							</div>
-						</td>
-					</tr>
-					{% endif %}
-					{% endfor %}
+			{% if stock.product_sku %}
+			<tr id="tr_{{ stock.id }}">
+				<td class="text-center">
+					<input name="selected[]" class="check-one" value="{{ stock.id }}" type="checkbox"> {{ stock.id }}
+				</td>
+				<td>
+					<img src="{{ stock.cover.view_url }}" width="60px" class="pull-left">
+					<div class="product-info">
+						<b>{{ stock.product_sku.serial_no }}</b><br>
+						{{ stock.product_sku.product.name }}<br>
+						<small>({{ stock.product_sku.mode }})</small>
+					</div>
+				</td>
+				<td class="text-center">
+					{{ stock.total_count }}
+				</td>
+				<td class="text-center">
+					{{ stock.purchasing_count }}
+				</td>
+				<td class="text-center">
+					{{ stock.available_count }} {% if stock.min_count %}<span class="label label-warning">{{ stock.min_count }}</span>{% endif %}
+				</td>
+				<td class="text-center {% if stock.out_of_stock %} danger{% endif %}">
+					{{ stock.saled_count }}
+				</td>
+				<td class="text-center">
+					{{ stock.warehouse.name }}<br>
+					{{ stock.warehouse_shelve.name }}
+				</td>
+				<td class="text-right">
+					{{ stock.product_sku.cost_price }} {{ current_site.currency }}
+				</td>
+				<td class="text-right">
+					{{ stock.current_count*stock.product_sku.cost_price }} {{ current_site.currency }}
+				</td>
+				<td class="text-right">
+					{{ stock.updated_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
+				</td>
+				<td class="text-right">
+					<div class="dropdown">
+						<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ stock.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							{{ _('More') }}
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ stock.id }}-actions">
+							<li><a href="{{ url_for('main.edit_stock', id=stock.id) }}">{{ _('Update') }}</a></li>
+							<li><a href="#" class="disabled">{{ _('Remark') }}</a></li>
+							<li><a href="{{ url_for('main.sku_of_orders', rid=stock.sku_serial_no) }}" class="pjax" target="_blank">{{ _('Related Orders') }}</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#" class="disabled">{{ _('Mark Defective') }}</a></li>
+						</ul>
+					</div>
+				</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
 
-				</tbody>
-			</table>
-		</form>
-	</div>
-
-	{% import "block/_macros.html" as macros %}
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_stocks, '.show_stocks') }}
-			</nav>
-		</div>
-	</div>
+			</tbody>
+		</table>
+	</form>
 </div>

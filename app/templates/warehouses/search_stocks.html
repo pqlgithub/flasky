@@ -1,0 +1,31 @@
+{% include "warehouses/stock_table.html" %}
+
+{% import "block/_macros.html" as macros %}
+<div class="pages-box ajax">
+    <nav aria-label="Page navigation">
+        {{ macros.pagination_widget(paginated_stocks, '.search_stocks', wh_id=wh_id, q_k=q_k) }}
+    </nav>
+</div>
+
+<script type="text/javascript">
+	mixpus.hook_all_check();
+
+	mixpus.hook_tooltip_toggle();
+
+	mixpus.hook_ajax_modal();
+
+	mixpus.hook_select2();
+
+	$('.pages-box.ajax .per-page').change(function (e) {
+	    e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+		$('#table-refresh-box').load(url);
+    });
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('#table-refresh-box').load($(this).attr('href'));
+			return false;
+		});
+</script>

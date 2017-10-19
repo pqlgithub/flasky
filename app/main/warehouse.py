@@ -38,7 +38,37 @@ def load_common_data():
 def show_stocks(page=1):
     """显示库存清单"""
     per_page = request.values.get('per_page', 10, type=int)
-    wh_id = request.values.get('wh_id', 0, type=int)
+    wh_id = request.values.get('wh_id', type=int)
+    
+    builder = ProductStock.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+
+    paginated_stocks = builder.order_by('id desc').paginate(page, per_page)
+
+    # 当前库存总数
+    total_quantity = builder.with_entities(func.sum(ProductStock.current_count)).one()
+
+    # 库存总金额
+    total_amount = builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
+        .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
+
+    return render_template('warehouses/show_stocks.html',
+                           paginated_stocks=paginated_stocks,
+                           total_quantity=total_quantity,
+                           total_amount=total_amount,
+                           sub_menu='stocks',
+                           wh_id=wh_id, **load_common_data())
+
+
+@main.route('/stocks/search', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_warehouse')
+def search_stocks():
+    """搜素库存列表"""
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    wh_id = request.values.get('wh_id', type=int)
     s_t = request.values.get('s_t', 'ad')
     q_k = request.values.get('q_k')
 
@@ -49,31 +79,21 @@ def show_stocks(page=1):
     if q_k:
         builder = builder.filter_by(sku_serial_no=q_k)
 
-    sort_by = '%s desc' % sort_type
-
     paginated_stocks = builder.order_by('id desc').paginate(page, per_page)
-
-    re_builder = builder
+    
     # 当前库存总数
-    total_quantity = re_builder.with_entities(func.sum(ProductStock.current_count)).one()
+    total_quantity = builder.with_entities(func.sum(ProductStock.current_count)).one()
 
     # 库存总金额
-    total_amount = re_builder.join(ProductSku, ProductStock.product_sku_id==ProductSku.id)\
-        .with_entities(func.sum(ProductStock.current_count*ProductSku.cost_price)).one()
+    total_amount = builder.join(ProductSku, ProductStock.product_sku_id == ProductSku.id) \
+        .with_entities(func.sum(ProductStock.current_count * ProductSku.cost_price)).one()
 
-    if request.method == 'POST':
-        return render_template('warehouses/stock_table.html',
-                               paginated_stocks=paginated_stocks,
-                               total_quantity=total_quantity,
-                               total_amount=total_amount,
-                               wh_id=wh_id)
-
-    return render_template('warehouses/show_stocks.html',
+    return render_template('warehouses/search_stocks.html',
                            paginated_stocks=paginated_stocks,
                            total_quantity=total_quantity,
                            total_amount=total_amount,
-                           sub_menu='stocks',
-                           wh_id=wh_id, **load_common_data())
+                           wh_id=wh_id,
+                           q_k=q_k)
 
 
 @main.route('/stocks/<int:id>/edit', methods=['GET', 'POST'])

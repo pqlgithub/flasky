@@ -10,7 +10,7 @@
 	var submit_filter_form = function () {
 		var data = $('#filter-stocks-form').serialize();
 
-		$.post("{{ url_for('main.show_stocks') }}", data, function (result) {
+		$.post("{{ url_for('main.search_stocks') }}", data, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
 	};
@@ -141,7 +141,16 @@
 
 	</form>
 
-	{% include "warehouses/stock_table.html" %}
+	<div id="table-refresh-box" class="m-t-20">
+		{% include "warehouses/stock_table.html" %}
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box link">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_stocks, '.show_stocks', wh_id=wh_id) }}
+			</nav>
+		</div>
+	</div>
 
 </div>
 {% endblock %}
