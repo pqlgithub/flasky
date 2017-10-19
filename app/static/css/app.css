@@ -517,7 +517,17 @@ div.required .control-label:not(span)::before, td.required::before {
     margin-right: 20px;
     padding-left: 10px;
     text-align: left;
-	width: 160px;
+	width: 220px;
+    position: relative;
+}
+.table .product-quantity {
+    position: absolute;
+    z-index: 99;
+    top: 12px;
+    right: -20px;
+}
+.table > tbody + tbody {
+    border-top: 1px solid #ddd;
 }
 
 /*******************

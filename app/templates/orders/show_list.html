@@ -45,7 +45,6 @@
 					if (result.success) {
 						ids = result.data.selected_sns;
 						for (var i=0,l=ids.length;i<l;i++) {
-							$('#tr_' + ids[i] + '_parent').remove();
 							$('#tr_' + ids[i]).remove();
 						}
 						// 更新数量
@@ -65,7 +64,6 @@
 			$.post(url, {csrf_token: mixpus.csrf_token}, function(result){
 				if (result.success) {
 					rid = result.data.rid;
-					$('#tr_' + rid + '_parent').remove();
 					$('#tr_' + rid).remove();
 
 					// 更新数量
@@ -96,7 +94,6 @@
 				if (result.success) {
 					ids = result.data.selected_ids;
 					for (var i=0,l=ids.length;i<l;i++) {
-						$('#tr_' + ids[i] + '_parent').remove();
 						$('#tr_' + ids[i]).remove();
 					}
 					// 更新数量

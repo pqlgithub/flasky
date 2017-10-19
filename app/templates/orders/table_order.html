@@ -2,15 +2,12 @@
 	<form id="orders-form" action="{{ url_for('main.delete_order') }}" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-		<table class="table table-bordered table-striped table-hover">
+		<table class="table table-bordered">
 			<thead>
 			<tr>
 				<th>
 					<input name="check_all" type="checkbox" class="check-all">
 					{{ _('Product Info') }}
-				</th>
-				<th class="text-center">
-					{{ _('Quantity') }}
 				</th>
 				<th class="text-center">
 					{{ _('Total Amount') }}
@@ -30,81 +27,100 @@
 				<th class="text-right">{{ _('Action') }}</th>
 			</tr>
 			</thead>
-			<tbody>
 			{% for order in paginated_orders %}
-			<tr id="tr_{{ order.serial_no }}_parent">
-				<td>
-					<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
-					<label for="order-id-{{ order.serial_no }}">{% if order.outside_target_id %}{{ order.outside_target_id }}{% else %}{{ order.serial_no }}{% endif %}</label>
-					{% if order.type == 2 %}<small data-toggle="tooltip" title="" data-original-title="{{ _('Split Child Order') }}"><i class="glyphicon glyphicon-duplicate"></i></small> {% endif %}
-				</td>
-				<td colspan="2">
-					{{ _('Order date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
-				</td>
-				<td colspan="3">
-					{{ _('From Store') }}: <strong>{{ order.store.name }}（{{ order.store.platform_name }}）</strong>
-				</td>
-				<td colspan="2">
-					<span class="indicator {{ order.status_label[2] }}">{{ order.status_label[1] }}</span>
-				</td>
-			</tr>
-			<tr id="tr_{{ order.serial_no }}">
-				<td>
-					<img src="{{ order.cover }}" width="60px" class="pull-left">
-					<div class="product-info">
-						{{ _('Products') }}: {{ order.all_items }}
-					</div>
-				</td>
-				<td class="text-center">
-					{{ order.total_quantity }}
-				</td>
-				<td class="text-center">
-					{{ order.total_amount }} {{ current_site.currency }}
-				</td>
-				<td class="text-center">
-					{{ order.buyer_name }}
-				</td>
-				<td>
-					{{ order.buyer_tel }} {{ order.buyer_phone }}
-				</td>
-				<td>
-					{{ order.buyer_remark|supress_none }}
-				</td>
-				<td class="text-center">
-					{% if order.status not in [-1,1,5] %}
-						{% if order.express_id %}{{ order.express.name }}<br>{% endif %}
-						{% if order.express_no %}
-						<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Update Express No.') }}">
-							{{ order.express_no|supress_none }}
-						</a>
-						{% else %}
-						<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
-							{{ _('Add Express') }}
-						</a>
-						{% endif %}
-					{% endif %}
-				</td>
-				<td class="text-right">
-					<div class="dropdown">
-						<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ order.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							{{ _('More') }}
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
-							{% if order.status in [1,5] %}
-							<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
-							<li><a href="{{ url_for('main.split_order', sn=order.serial_no) }}" class="ajax-modal" data-modal="split-order-modal">{{ _('Split order') }}</a></li>
-							<li><a href="javascript:void(0);" data-href="{{ url_for('main.ajax_canceled', rid=order.serial_no) }}" class="ajax-canceled">{{ _('Canceled') }}</a></li>
+			<tbody id="tr_{{ order.serial_no }}">
+				<tr id="tr_{{ order.serial_no }}_parent" class="active">
+					<td>
+						<input id="order-id-{{ order.serial_no }}" name="selected[]" class="check-one" value="{{ order.serial_no }}" type="checkbox">
+						<label for="order-id-{{ order.serial_no }}">{% if order.outside_target_id %}{{ order.outside_target_id }}{% else %}{{ order.serial_no }}{% endif %}</label>
+						{% if order.type == 2 %}<small data-toggle="tooltip" title="" data-original-title="{{ _('Split Child Order') }}"><i class="glyphicon glyphicon-duplicate"></i></small> {% endif %}
+					</td>
+					<td colspan="2">
+						{{ _('Order date') }}: <strong>{{ order.created_at|timestamp2string() }}</strong>
+					</td>
+					<td colspan="3">
+						{{ _('From Store') }}: <strong>{{ order.store.name }}（{{ order.store.platform_name }}）</strong>
+					</td>
+					<td colspan="2">
+						<span class="indicator {{ order.status_label[2] }}">{{ order.status_label[1] }}</span>
+					</td>
+				</tr>
+				{% for item in order.items %}
+				{% if loop.index == 1 %}
+				<tr id="item_{{ item.sku_serial_no }}">
+					<td>
+						<img src="{{ item.sku.cover.view_url }}" width="60px" class="pull-left">
+						<div class="product-info">
+							{{ item.sku.product_name }}<br>
+							{{ item.sku_serial_no }}
+							<div class="product-quantity text-muted">
+								x{{ item.quantity }}
+							</div>
+						</div>
+					</td>
+					<td class="text-center" {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						{{ order.total_amount }} {{ current_site.currency }}
+					</td>
+					<td class="text-center" {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						{{ order.buyer_name }}
+					</td>
+					<td {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						{{ order.buyer_tel }} {{ order.buyer_phone }}
+					</td>
+					<td {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						{{ order.buyer_remark|supress_none }}
+					</td>
+					<td class="text-center" {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						{% if order.status not in [-1,1,5] %}
+							{% if order.express_id %}{{ order.express.name }}<br>{% endif %}
+							{% if order.express_no %}
+							<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Update Express No.') }}">
+								{{ order.express_no|supress_none }}
+							</a>
+							{% else %}
+							<a href="{{ url_for('main.order_express_no', rid=order.serial_no) }}" class="ajax-modal" data-modal="express_modal" data-toggle="tooltip" data-original-title="{{ _('Add Express No.') }}">
+								{{ _('Add Express') }}
+							</a>
 							{% endif %}
-							<li><a href="{{ url_for('main.add_remark', sn=order.serial_no) }}" class="ajax-modal" data-modal="remark-order-modal">{{ _('Add Remark') }}</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="{{ url_for('main.preview_order', sn=order.serial_no) }}" target="_blank">{{ _('Show Detail') }}</a></li>
-						</ul>
-					</div>
-				</td>
-			</tr>
-			{% endfor %}
+						{% endif %}
+					</td>
+					<td class="text-right" {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
+						<div class="dropdown">
+							<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ order.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								{{ _('More') }}
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ order.id }}-actions">
+								{% if order.status in [1,5] %}
+								<li><a href="{{ url_for('main.edit_order', sn=order.serial_no) }}">{{ _('Edit') }}</a></li>
+								<li><a href="{{ url_for('main.split_order', sn=order.serial_no) }}" class="ajax-modal" data-modal="split-order-modal">{{ _('Split order') }}</a></li>
+								<li><a href="javascript:void(0);" data-href="{{ url_for('main.ajax_canceled', rid=order.serial_no) }}" class="ajax-canceled">{{ _('Canceled') }}</a></li>
+								{% endif %}
+								<li><a href="{{ url_for('main.add_remark', sn=order.serial_no) }}" class="ajax-modal" data-modal="remark-order-modal">{{ _('Add Remark') }}</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="{{ url_for('main.preview_order', sn=order.serial_no) }}" target="_blank">{{ _('Show Detail') }}</a></li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+				{% else %}
+				<tr id="item_{{ item.sku_serial_no }}">
+					<td>
+						<img src="{{ item.sku.cover.view_url }}" width="60px" class="pull-left">
+						<div class="product-info">
+							{{ item.sku.product_name }}<br>
+							{{ item.sku_serial_no }}
+							<div class="product-quantity text-muted">
+								x{{ item.quantity }}
+							</div>
+						</div>
+					</td>
+				</tr>
+				{% endif %}
+
+				{% endfor %}
 			</tbody>
+			{% endfor %}
 		</table>
 	</form>
 </div>
