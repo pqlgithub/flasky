@@ -49,10 +49,13 @@
 						}
 						// 更新数量
 						mixpus.update_order_status_count(result.data.status_count);
+						// 失败的订单
+						if (result.data.bad_message && result.data.bad_message.length) {
+						    mixpus.show_error_message(result.data.bad_message.join('<br>'));
+						}
 					} else {
-						swal("Error", result.status.message, "error");
+					    return mixpus.show_error_message(result.status.message);
 					}
-
 				});
 			} else {
 				swal("Error", "First to selected the one!!!", "error");

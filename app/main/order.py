@@ -1036,34 +1036,41 @@ def ajax_verify_order():
         return custom_response(False, 'Verify order is NULL!')
 
     try:
+        success_ids = []
+        bad_message = []
         for sn in selected_sns:
             order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).one()
             if order is None:
-                return custom_response(False, gettext("Verify order isn't exist!"))
+                bad_message.append(gettext("Order[%s] isn't exist!" % sn))
+                continue
             
+            # 已付款，进入待审核
             if order.status == OrderStatus.PENDING_PAYMENT:
-                # 已付款，进入待审核
                 order.mark_checked_status()
-            elif order.status == OrderStatus.PENDING_CHECK:
-                # 完成审核，待发货状态
 
+            # 完成审核，待发货状态
+            elif order.status == OrderStatus.PENDING_CHECK:
                 # 订单审核时，验证库存
                 bad_skus = _validate_order_stock(order.items, order.warehouse_id)
                 # 未通过验证
                 if bad_skus:
-                    return custom_response(False, gettext("Order[%s] items[%s] isn't exist or Inventory is not enough " % (sn, bad_skus)))
-
+                    bad_message.append(gettext("Order[%s] Item[%s] isn't exist or Inventory is not enough " % (sn, bad_skus)))
+                    continue
+                # 进入待发货
                 order.mark_shipment_status()
             else:
-                pass
-
-        db.session.commit()
+                pass # nothing to do
+            
+            success_ids.append(sn)
         
+        db.session.commit()
     except:
         db.session.rollback()
         return custom_response(False, gettext("Verify order is fail!!!"))
 
-    return full_response(True, R200_OK, dict({'selected_sns': selected_sns, 'status_count': _recount()}))
+    return full_response(True, R200_OK, dict({'selected_sns': success_ids,
+                                              'bad_message': bad_message,
+                                              'status_count': _recount()}))
     
 
 @main.route('/orders/ajax_shipped', methods=['POST'])

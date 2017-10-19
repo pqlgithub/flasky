@@ -250,7 +250,7 @@ class OutWarehouse(db.Model):
     __table_args__ = (
         db.Index('ix_target_serial_type','target_serial_no', 'target_type'),
     )
-
+    
     @property
     def status_label(self):
         for s in OUTWAREHOUSE_STATUS:
