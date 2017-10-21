@@ -264,11 +264,11 @@
 								<strong id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
 							</td>
 							<td class="text-center">
-								<input type="text" name="quantity[{{ item.sku_id }}]" value="1" data-id="{{ item.sku_id }}" id="quantity_{{ item.sku_id }}" class="form-control quantity input-quantity">
+								<input type="text" name="quantity[{{ item.sku_id }}]" value="{{ item.quantity }}" data-id="{{ item.sku_id }}" id="quantity_{{ item.sku_id }}" class="form-control quantity input-quantity">
 								<input type="hidden" name="items[]" value="{{ item.sku_id }}">
 							</td>
 							<td class="text-center">
-								<input type="text" name="discount[{{ item.sku_id }}]" value="0" data-id="{{ item.sku_id }}" id="discount_{{ item.sku_id }}" class="form-control input-quantity">
+								<input type="text" name="discount[{{ item.sku_id }}]" value="{{ item.discount_amount }}" data-id="{{ item.sku_id }}" id="discount_{{ item.sku_id }}" class="form-control input-quantity">
 							</td>
 							<td class="text-right">
 								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>
