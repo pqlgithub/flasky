@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-19 11:31+0800\n"
-"PO-Revision-Date: 2017-10-19 11:33+0800\n"
+"POT-Creation-Date: 2017-10-23 12:57+0800\n"
+"PO-Revision-Date: 2017-10-23 13:00+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -215,8 +215,8 @@ msgstr "件"
 msgid "Purchase Serial"
 msgstr "采购编号"
 
-#: app/constant.py:238 app/forms/product_forms.py:61 app/main/order.py:489
-#: app/main/warehouse.py:331 app/main/warehouse.py:679
+#: app/constant.py:238 app/forms/product_forms.py:61 app/main/order.py:465
+#: app/main/warehouse.py:351 app/main/warehouse.py:699
 #: app/templates/purchases/create_and_edit.html:219
 #: app/templates/purchases/purchase_modal.html:47
 #: app/templates/purchases/purchase_tr_time.html:9
@@ -236,34 +236,34 @@ msgid "Purchase Quantity"
 msgstr "采购数量"
 
 #: app/constant.py:241 app/main/purchase.py:627 app/main/purchase.py:633
-#: app/main/warehouse.py:692
+#: app/main/warehouse.py:712
 msgid "Arrival Quantity"
 msgstr "到货数量"
 
 #: app/constant.py:242 app/forms/order_forms.py:16
-#: app/forms/purchase_forms.py:11 app/main/order.py:498
-#: app/main/purchase.py:630 app/main/warehouse.py:340 app/main/warehouse.py:694
+#: app/forms/purchase_forms.py:11 app/main/order.py:474
+#: app/main/purchase.py:630 app/main/warehouse.py:360 app/main/warehouse.py:714
 #: app/templates/orders/preview_order.html:59
 #: app/templates/purchases/view_detail.html:64
 msgid "Freight"
 msgstr "运费"
 
-#: app/constant.py:243 app/main/purchase.py:631 app/main/warehouse.py:695
+#: app/constant.py:243 app/main/purchase.py:631 app/main/warehouse.py:715
 msgid "Other Charge"
 msgstr "其他费用"
 
-#: app/constant.py:244 app/main/purchase.py:632 app/main/warehouse.py:696
+#: app/constant.py:244 app/main/purchase.py:632 app/main/warehouse.py:716
 #: app/templates/dashboard/index.html:92
 #: app/templates/orders/table_order.html:13
 #: app/templates/purchases/_modal_express.html:28
 #: app/templates/purchases/create_and_edit.html:223
 #: app/templates/purchases/view_detail.html:97
-#: app/templates/warehouses/stock_table.html:25
+#: app/templates/warehouses/stock_table.html:24
 msgid "Total Amount"
 msgstr "总额"
 
 #: app/constant.py:245 app/forms/logistics_forms.py:43
-#: app/forms/purchase_forms.py:9 app/main/warehouse.py:320
+#: app/forms/purchase_forms.py:9 app/main/warehouse.py:340
 #: app/templates/layout/base.html:84 app/templates/orders/_modal_import.html:12
 #: app/templates/purchases/_modal_arrival.html:24
 #: app/templates/purchases/_modal_export.html:12
@@ -286,7 +286,7 @@ msgstr "总额"
 #: app/templates/warehouses/show_inout.html:174
 #: app/templates/warehouses/show_outlist.html:103
 #: app/templates/warehouses/show_stocks.html:98
-#: app/templates/warehouses/stock_table.html:23
+#: app/templates/warehouses/stock_table.html:22
 msgid "Warehouse"
 msgstr "仓库"
 
@@ -315,8 +315,8 @@ msgid "Express No"
 msgstr "物流单号"
 
 #: app/constant.py:250 app/templates/finances/show_payments.html:80
-#: app/templates/orders/show_list.html:381
-#: app/templates/orders/show_list.html:391
+#: app/templates/orders/show_list.html:386
+#: app/templates/orders/show_list.html:396
 #: app/templates/products/show_list.html:135
 #: app/templates/products/show_list.html:145
 #: app/templates/purchases/pay_list.html:156
@@ -349,9 +349,9 @@ msgstr "到货日期"
 msgid "Arrival Status"
 msgstr "到货状态"
 
-#: app/constant.py:253 app/forms/order_forms.py:17 app/forms/order_forms.py:42
+#: app/constant.py:253 app/forms/order_forms.py:17 app/forms/order_forms.py:44
 #: app/forms/product_forms.py:22 app/forms/product_forms.py:95
-#: app/main/purchase.py:619 app/main/warehouse.py:691
+#: app/main/purchase.py:619 app/main/warehouse.py:711
 #: app/templates/finances/show_payments.html:86
 #: app/templates/orders/_modal_remark.html:19
 #: app/templates/orders/preview_order.html:66
@@ -363,7 +363,7 @@ msgstr "到货状态"
 #: app/templates/suppliers/show_list.html:101
 #: app/templates/warehouses/edit_in_warehouse.html:58
 #: app/templates/warehouses/in_warehouse_modal.html:56
-#: app/templates/warehouses/stock_table.html:79
+#: app/templates/warehouses/stock_table.html:78
 msgid "Remark"
 msgstr "备注"
 
@@ -457,7 +457,7 @@ msgstr "物流名称[%s]已存在。"
 
 #: app/forms/logistics_forms.py:45 app/forms/product_forms.py:20
 #: app/forms/warehouse_forms.py:19 app/main/purchase.py:617
-#: app/main/warehouse.py:689 app/templates/logistics/show_shippers.html:35
+#: app/main/warehouse.py:709 app/templates/logistics/show_shippers.html:35
 #: app/templates/orders/preview_order.html:83
 #: app/templates/suppliers/search_result.html:14
 #: app/templates/suppliers/show_list.html:99
@@ -491,7 +491,7 @@ msgstr "地区"
 
 #: app/forms/logistics_forms.py:53 app/forms/order_forms.py:25
 #: app/forms/product_forms.py:21 app/forms/warehouse_forms.py:12
-#: app/main/purchase.py:616 app/main/warehouse.py:688
+#: app/main/purchase.py:616 app/main/warehouse.py:708
 #: app/templates/logistics/show_shippers.html:36
 #: app/templates/orders/preview_order.html:90
 msgid "Address"
@@ -520,7 +520,7 @@ msgstr "第三方编号."
 msgid "From Store"
 msgstr "所属店铺"
 
-#: app/forms/order_forms.py:12 app/forms/order_forms.py:37
+#: app/forms/order_forms.py:12 app/forms/order_forms.py:39
 #: app/templates/orders/_modal_express.html:19
 #: app/templates/orders/preview_order.html:55
 #: app/templates/orders/table_order.html:25
@@ -533,7 +533,7 @@ msgstr "物流"
 msgid "From Warehouse"
 msgstr "从仓库"
 
-#: app/forms/order_forms.py:15 app/main/order.py:500 app/main/warehouse.py:342
+#: app/forms/order_forms.py:15 app/main/order.py:476 app/main/warehouse.py:362
 #: app/templates/orders/_modal_split.html:30
 #: app/templates/orders/create_and_edit.html:233
 #: app/templates/orders/preview_order.html:114
@@ -553,14 +553,14 @@ msgstr "电话"
 msgid "Country"
 msgstr "国家"
 
-#: app/forms/order_forms.py:32 app/main/order.py:484 app/main/warehouse.py:326
+#: app/forms/order_forms.py:32 app/main/order.py:460 app/main/warehouse.py:346
 #: app/templates/orders/preview_order.html:99
 #: app/templates/orders/table_order.html:22
 msgid "Buyer Remark"
 msgstr "客户备注"
 
-#: app/forms/order_forms.py:38 app/forms/purchase_forms.py:19
-#: app/main/purchase.py:629 app/main/warehouse.py:693
+#: app/forms/order_forms.py:40 app/forms/purchase_forms.py:19
+#: app/main/purchase.py:629 app/main/warehouse.py:713
 #: app/templates/orders/_modal_express.html:31
 #: app/templates/purchases/_modal_express.html:42
 #: app/templates/purchases/purchase_table.html:13
@@ -601,7 +601,7 @@ msgid "Category Name"
 msgstr "分类名称"
 
 #: app/forms/product_forms.py:27 app/templates/categories/show_list.html:46
-#: app/templates/orders/show_list.html:385
+#: app/templates/orders/show_list.html:390
 #: app/templates/products/show_list.html:139
 #: app/templates/purchases/pay_list.html:160
 #: app/templates/purchases/show_list.html:246
@@ -620,12 +620,12 @@ msgstr "父级"
 #: app/forms/product_forms.py:30 app/forms/product_forms.py:72
 #: app/forms/setting_forms.py:14 app/forms/setting_forms.py:29
 #: app/forms/warehouse_forms.py:25 app/main/purchase.py:609
-#: app/main/warehouse.py:322 app/templates/categories/show_list.html:47
+#: app/main/warehouse.py:342 app/templates/categories/show_list.html:47
 #: app/templates/dashboard/index.html:93
 #: app/templates/finances/show_payments.html:79
 #: app/templates/orders/_modal_export.html:44
 #: app/templates/orders/preview_order.html:35
-#: app/templates/orders/show_list.html:330
+#: app/templates/orders/show_list.html:335
 #: app/templates/products/sku_of_orders.html:76
 #: app/templates/products/table_product.html:18
 #: app/templates/purchases/pay_list.html:101
@@ -761,8 +761,8 @@ msgstr "其他费用"
 msgid "Estimated date of arrival"
 msgstr "预计到货日期"
 
-#: app/forms/setting_forms.py:11 app/main/order.py:479
-#: app/main/warehouse.py:316 app/templates/stores/show_list.html:31
+#: app/forms/setting_forms.py:11 app/main/order.py:455
+#: app/main/warehouse.py:336 app/templates/stores/show_list.html:31
 msgid "Store Name"
 msgstr "店铺名称"
 
@@ -916,82 +916,82 @@ msgstr "待完成"
 msgid "Refund"
 msgstr "已退款"
 
-#: app/main/order.py:178
+#: app/main/order.py:142 app/templates/orders/import_express_result.html:32
 msgid "Order isn't exist!"
 msgstr "订单不存在！"
 
-#: app/main/order.py:184
+#: app/main/order.py:148 app/templates/orders/import_express_result.html:36
 msgid "Order status is error!"
 msgstr "订单状态有误!"
 
-#: app/main/order.py:212 app/main/order.py:556
+#: app/main/order.py:176 app/main/order.py:1463
 msgid "Warehouse info isn't exist!"
 msgstr "操作仓库不存在!"
 
-#: app/main/order.py:221 app/main/order.py:565
+#: app/main/order.py:185 app/main/order.py:1472
 msgid "This item is out of stock"
 msgstr "此商品无库存"
 
-#: app/main/order.py:285
+#: app/main/order.py:249
 #, python-format
 msgid "Order[%s] status isn't pending shipment!"
 msgstr "订单[%s]状态不是待发货！"
 
-#: app/main/order.py:301
+#: app/main/order.py:265
 #, python-format
 msgid "Order[%s] express not set!"
 msgstr "订单[%s]物流信息未设置！"
 
-#: app/main/order.py:386
+#: app/main/order.py:356
 #, python-format
 msgid "Order[%s] status is error or express_no is empty!"
 msgstr "订单[%s]状态有误或物流单号为空！"
 
-#: app/main/order.py:478
+#: app/main/order.py:454
 msgid "Shipping Bill"
 msgstr "发货单"
 
-#: app/main/order.py:480 app/templates/orders/_modal_express.html:12
+#: app/main/order.py:456 app/templates/orders/_modal_express.html:12
 #: app/templates/orders/_modal_remark.html:12
 #: app/templates/orders/_modal_split.html:12
 msgid "Order Serial"
 msgstr "订单编号"
 
-#: app/main/order.py:481 app/main/warehouse.py:318
+#: app/main/order.py:457 app/main/warehouse.py:338
 msgid "Consignee"
 msgstr "收货人"
 
-#: app/main/order.py:482
+#: app/main/order.py:458
 msgid "Payed Date"
 msgstr "付款时间"
 
-#: app/main/order.py:483 app/main/warehouse.py:325
+#: app/main/order.py:459 app/main/warehouse.py:345
 msgid "Consignee name"
 msgstr "收货人姓名"
 
-#: app/main/order.py:485 app/main/warehouse.py:327
+#: app/main/order.py:461 app/main/warehouse.py:347
 msgid "Product Items"
 msgstr "商品明细"
 
-#: app/main/order.py:487 app/main/warehouse.py:329 app/main/warehouse.py:677
+#: app/main/order.py:463 app/main/warehouse.py:349 app/main/warehouse.py:697
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:56
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:57
 msgid "Order Number"
 msgstr "序号"
 
-#: app/main/order.py:488 app/main/warehouse.py:330
+#: app/main/order.py:464 app/main/warehouse.py:350
 msgid "Product Serial"
 msgstr "商品编码"
 
-#: app/main/order.py:490 app/main/warehouse.py:332 app/main/warehouse.py:681
+#: app/main/order.py:466 app/main/warehouse.py:352 app/main/warehouse.py:701
 msgid "Product Mode"
 msgstr "型号"
 
-#: app/main/order.py:491 app/main/warehouse.py:333 app/main/warehouse.py:680
+#: app/main/order.py:467 app/main/warehouse.py:353 app/main/warehouse.py:700
 msgid "Unit"
 msgstr "单位"
 
-#: app/main/order.py:492 app/main/warehouse.py:334 app/main/warehouse.py:682
+#: app/main/order.py:468 app/main/warehouse.py:354 app/main/warehouse.py:702
 #: app/templates/orders/_modal_split.html:28
 #: app/templates/orders/create_and_edit.html:231
 #: app/templates/orders/preview_order.html:112
@@ -1009,88 +1009,97 @@ msgstr "单位"
 msgid "Quantity"
 msgstr "数量"
 
-#: app/main/order.py:493 app/main/purchase.py:625 app/main/warehouse.py:335
-#: app/main/warehouse.py:683 app/templates/orders/_modal_split.html:26
+#: app/main/order.py:469 app/main/purchase.py:625 app/main/warehouse.py:355
+#: app/main/warehouse.py:703 app/templates/orders/_modal_split.html:26
 #: app/templates/orders/create_and_edit.html:229
 #: app/templates/orders/preview_order.html:110
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:59
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:60
 #: app/templates/warehouses/in_warehouse_modal.html:45
-#: app/templates/warehouses/stock_table.html:24
+#: app/templates/warehouses/stock_table.html:23
 msgid "Price"
 msgstr "单价"
 
-#: app/main/order.py:494 app/main/warehouse.py:336
+#: app/main/order.py:470 app/main/warehouse.py:356
 msgid "Discount Price"
 msgstr "折扣单价"
 
-#: app/main/order.py:495 app/main/purchase.py:628 app/main/warehouse.py:337
-#: app/main/warehouse.py:684
+#: app/main/order.py:471 app/main/purchase.py:628 app/main/warehouse.py:357
+#: app/main/warehouse.py:704
 msgid "Subtotal"
 msgstr "小计"
 
-#: app/main/order.py:496 app/templates/orders/create_and_edit.html:287
+#: app/main/order.py:472 app/templates/orders/create_and_edit.html:287
 #: app/templates/orders/preview_order.html:165
 msgid "Total"
 msgstr "总计"
 
-#: app/main/order.py:499 app/main/warehouse.py:341
+#: app/main/order.py:475 app/main/warehouse.py:361
 #: app/templates/orders/_modal_split.html:29
 #: app/templates/orders/create_and_edit.html:232
 #: app/templates/orders/preview_order.html:113
 msgid "Discount"
 msgstr "折扣"
 
-#: app/main/order.py:624
-msgid "Default express isn't setting!"
-msgstr "默认物流未设置！"
-
-#: app/main/order.py:723
-msgid "Import orders is error!!!"
-msgstr "导入订单失败！"
-
-#: app/main/order.py:725
-msgid "Import Orders is ok!"
-msgstr "导入订单成功！"
-
-#: app/main/order.py:1025
+#: app/main/order.py:789
 #, python-format
 msgid "Product sku[%d] is not exist!"
 msgstr "产品sku[%d]不存在！"
 
-#: app/main/order.py:1030
+#: app/main/order.py:794
 #, python-format
 msgid "[%s] Inventory is not enough!"
 msgstr "[%s] 库存不足！"
 
-#: app/main/order.py:1167
+#: app/main/order.py:962
 msgid "Add Remark is ok!"
 msgstr "添加备注成功!"
 
-#: app/main/order.py:1258
+#: app/main/order.py:1053
 msgid "Split order id ok!"
 msgstr "拆单已完成！"
 
-#: app/main/order.py:1278
-msgid "Verify order isn't exist!"
-msgstr "此订单不存在！"
-
-#: app/main/order.py:1290
+#: app/main/order.py:1076
 #, python-format
-msgid "Order[%s] items[%s] isn't exist or Inventory is not enough "
-msgstr "订单[%s]商品[%s] 不存在或库存不足"
+msgid "Order[%s] isn't exist!"
+msgstr "订单[%s]不存在！"
 
-#: app/main/order.py:1300
+#: app/main/order.py:1089
+#, python-format
+msgid "Order[%s] Item[%s] isn't exist or Inventory is not enough "
+msgstr "订单[%s]产品[%s]不存在或库存不足 "
+
+#: app/main/order.py:1101
 msgid "Verify order is fail!!!"
 msgstr "验证订单失败!!!"
 
-#: app/main/order.py:1388
+#: app/main/order.py:1172
 msgid "Delete order null!"
 msgstr "删除订单为空！"
 
-#: app/main/order.py:1402
+#: app/main/order.py:1186
 msgid "Delete order is ok!"
 msgstr "删除订单成功！"
+
+#: app/main/order.py:1289
+msgid "Default express isn't setting!"
+msgstr "默认物流未设置！"
+
+#: app/main/order.py:1390
+msgid "Import orders is error!!!"
+msgstr "导入订单失败！"
+
+#: app/main/order.py:1392
+msgid "Import Orders is ok!"
+msgstr "导入订单成功！"
+
+#: app/main/order.py:1425
+msgid "Import express is error!!!"
+msgstr "导入快递信息有误！"
+
+#: app/main/order.py:1427
+msgid "Import express is ok!"
+msgstr "导入快递信息成功！"
 
 #: app/main/product.py:281
 msgid "The basic information is complete and continue editing"
@@ -1152,13 +1161,13 @@ msgstr "你没有权限进行此项操作"
 msgid "Supplier Info"
 msgstr "供应商信息"
 
-#: app/main/purchase.py:612 app/main/warehouse.py:675
+#: app/main/purchase.py:612 app/main/warehouse.py:695
 msgid "Warehouse Info"
 msgstr "仓库信息"
 
-#: app/main/purchase.py:614 app/main/warehouse.py:319 app/main/warehouse.py:686
+#: app/main/purchase.py:614 app/main/warehouse.py:339 app/main/warehouse.py:706
 #: app/templates/orders/_modal_export.html:24
-#: app/templates/orders/show_list.html:352
+#: app/templates/orders/show_list.html:357
 #: app/templates/purchases/_modal_export.html:35
 #: app/templates/purchases/pay_list.html:123
 #: app/templates/purchases/show_list.html:209
@@ -1168,15 +1177,15 @@ msgstr "仓库信息"
 msgid "Date"
 msgstr "日期"
 
-#: app/main/purchase.py:615 app/main/warehouse.py:687
+#: app/main/purchase.py:615 app/main/warehouse.py:707
 msgid "Contact name"
 msgstr "联系人"
 
-#: app/main/purchase.py:618 app/main/warehouse.py:690
+#: app/main/purchase.py:618 app/main/warehouse.py:710
 msgid "E-mail"
 msgstr "邮箱"
 
-#: app/main/purchase.py:620 app/main/warehouse.py:678
+#: app/main/purchase.py:620 app/main/warehouse.py:698
 #: app/templates/finances/show_payments.html:81
 msgid "Serial Number"
 msgstr "编号"
@@ -1197,7 +1206,7 @@ msgstr "编号"
 #: app/templates/warehouses/in_warehouse_modal.html:43
 #: app/templates/warehouses/inout_table.html:12
 #: app/templates/warehouses/show_inout.html:170
-#: app/templates/warehouses/stock_table.html:18
+#: app/templates/warehouses/stock_table.html:17
 msgid "Product Info"
 msgstr "产品信息"
 
@@ -1234,17 +1243,17 @@ msgstr "重置密码操作成功！"
 msgid "Update preference setting is ok!"
 msgstr "更新偏好设置成功！"
 
-#: app/main/warehouse.py:315
+#: app/main/warehouse.py:335
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:5
 #: app/templates/warehouses/in_warehouse_modal.html:5
 msgid "In-warehouse"
 msgstr "入库"
 
-#: app/main/warehouse.py:317
+#: app/main/warehouse.py:337
 msgid "In-warehouse Serial"
 msgstr "入库单号"
 
-#: app/main/warehouse.py:321
+#: app/main/warehouse.py:341
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:15
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:16
 #: app/templates/warehouses/in_table.html:12
@@ -1253,32 +1262,32 @@ msgstr "入库单号"
 msgid "Relation Serial"
 msgstr "相关单据"
 
-#: app/main/warehouse.py:323 app/templates/purchases/purchase_table.html:14
+#: app/main/warehouse.py:343 app/templates/purchases/purchase_table.html:14
 #: app/templates/purchases/purchase_table.html:38
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:39
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:40
 #: app/templates/warehouses/edit_in_warehouse.html:70
-#: app/templates/warehouses/stock_table.html:19
+#: app/templates/warehouses/stock_table.html:18
 msgid "Total Quantity"
 msgstr "总数量"
 
-#: app/main/warehouse.py:673
+#: app/main/warehouse.py:693
 msgid "Outbound Order"
 msgstr "出库单"
 
-#: app/main/warehouse.py:674
+#: app/main/warehouse.py:694
 msgid "Outbound Serial"
 msgstr "出库单编号"
 
-#: app/main/warehouse.py:676
+#: app/main/warehouse.py:696
 msgid "Warehouse Operator"
 msgstr "仓管员"
 
-#: app/main/warehouse.py:782
+#: app/main/warehouse.py:802
 msgid "Default Shelve"
 msgstr "默认货架"
 
-#: app/main/warehouse.py:784
+#: app/main/warehouse.py:804
 msgid "default shelve, can't delete!"
 msgstr "默认货架，请勿删除！"
 
@@ -1381,7 +1390,7 @@ msgstr "新文件夹"
 #: app/templates/finances/show_receives.html:18
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
 #: app/templates/logistics/show_shippers.html:16
-#: app/templates/orders/show_list.html:291
+#: app/templates/orders/show_list.html:296
 #: app/templates/products/show_list.html:73
 #: app/templates/products/show_skus.html:51
 #: app/templates/products/sku_of_orders.html:54
@@ -1490,6 +1499,7 @@ msgstr "保存"
 #: app/templates/logistics/create_and_edit.html:20
 #: app/templates/logistics/create_edit_shipper.html:20
 #: app/templates/orders/create_and_edit.html:92
+#: app/templates/orders/import_express_result.html:12
 #: app/templates/orders/import_result.html:12
 #: app/templates/orders/preview_order.html:12
 #: app/templates/products/create_and_edit.html:97
@@ -1528,7 +1538,7 @@ msgstr "刷新"
 #: app/templates/finances/show_receives.html:15
 #: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
 #: app/templates/logistics/show_shippers.html:13
-#: app/templates/orders/show_list.html:288
+#: app/templates/orders/show_list.html:293
 #: app/templates/products/show_list.html:70
 #: app/templates/purchases/show_list.html:145
 #: app/templates/settings/show_list.html:11
@@ -1578,7 +1588,7 @@ msgstr "新增"
 #: app/templates/warehouses/select_purchase_modal.html:16
 #: app/templates/warehouses/show_inout.html:179
 #: app/templates/warehouses/show_list.html:37
-#: app/templates/warehouses/stock_table.html:27
+#: app/templates/warehouses/stock_table.html:26
 msgid "Action"
 msgstr "操作"
 
@@ -1924,7 +1934,7 @@ msgid "Logistics Code"
 msgstr "物流代码"
 
 #: app/templates/logistics/show_list.html:34
-#: app/templates/orders/show_list.html:388
+#: app/templates/orders/show_list.html:393
 #: app/templates/products/show_list.html:142
 #: app/templates/purchases/pay_list.html:163
 #: app/templates/purchases/show_list.html:249
@@ -1947,7 +1957,7 @@ msgid "From"
 msgstr "来源"
 
 #: app/templates/orders/_modal_export.html:5
-#: app/templates/orders/show_list.html:265
+#: app/templates/orders/show_list.html:270
 msgid "Export Orders"
 msgstr "导出订单"
 
@@ -1970,7 +1980,7 @@ msgstr "订单快递信息"
 
 #: app/templates/orders/_modal_export.html:59
 #: app/templates/orders/_sub_menu.html:6
-#: app/templates/orders/show_list.html:232
+#: app/templates/orders/show_list.html:237
 msgid "Order List"
 msgstr "订单列表"
 
@@ -2051,7 +2061,7 @@ msgstr "选择仓库"
 
 #: app/templates/orders/_modal_import.html:24
 #: app/templates/orders/_modal_import_express.html:12
-#: app/templates/orders/show_list.html:308
+#: app/templates/orders/show_list.html:313
 msgid "Store"
 msgstr "店铺"
 
@@ -2074,11 +2084,12 @@ msgid "Import express of orders"
 msgstr "批量导入订单物流"
 
 #: app/templates/orders/_modal_remark.html:5
-#: app/templates/orders/table_order.html:99
+#: app/templates/orders/table_order.html:100
 msgid "Add Remark"
 msgstr "添加标注"
 
 #: app/templates/orders/_modal_split.html:5
+#: app/templates/orders/table_order.html:96
 msgid "Split Order"
 msgstr "拆单"
 
@@ -2187,17 +2198,23 @@ msgstr "支付接："
 msgid "Order Remark"
 msgstr "备注"
 
-#: app/templates/orders/import_result.html:10
-msgid "Import Order Result"
-msgstr "导入订单结果"
+#: app/templates/orders/import_express_result.html:10
+msgid "Import Express Result"
+msgstr "导入快递信息结果"
 
+#: app/templates/orders/import_express_result.html:22
 #: app/templates/orders/import_result.html:22
 msgid "Serial no"
 msgstr "编码"
 
+#: app/templates/orders/import_express_result.html:23
 #: app/templates/orders/import_result.html:23
 msgid "Season"
 msgstr "原因"
+
+#: app/templates/orders/import_result.html:10
+msgid "Import Order Result"
+msgstr "导入订单结果"
 
 #: app/templates/orders/import_result.html:30
 msgid "Order is already imported!"
@@ -2215,11 +2232,11 @@ msgstr "库存不足！"
 msgid "Pay Date"
 msgstr "付款日期"
 
-#: app/templates/orders/show_list.html:167
+#: app/templates/orders/show_list.html:170
 msgid "Print Express"
 msgstr "打印快递单"
 
-#: app/templates/orders/show_list.html:240
+#: app/templates/orders/show_list.html:245
 #: app/templates/products/show_list.html:49
 #: app/templates/products/sku_of_orders.html:47
 #: app/templates/purchases/show_list.html:124
@@ -2227,57 +2244,57 @@ msgstr "打印快递单"
 msgid "Actions"
 msgstr "操作"
 
-#: app/templates/orders/show_list.html:246
+#: app/templates/orders/show_list.html:251
 msgid "Deliver Goods"
 msgstr "发货"
 
-#: app/templates/orders/show_list.html:250
+#: app/templates/orders/show_list.html:255
 msgid "Import Express Of HuaZhu"
 msgstr "批量导入物流"
 
-#: app/templates/orders/show_list.html:254
+#: app/templates/orders/show_list.html:259
 msgid "Update buyer info"
 msgstr "更新客户信息"
 
-#: app/templates/orders/show_list.html:255
+#: app/templates/orders/show_list.html:260
 msgid "Set as blacked"
 msgstr "标记黑名单"
 
-#: app/templates/orders/show_list.html:257
+#: app/templates/orders/show_list.html:262
 msgid "Synchronize orders"
 msgstr "同步订单"
 
-#: app/templates/orders/show_list.html:260
+#: app/templates/orders/show_list.html:265
 msgid "Import Orders Of HuaZhu"
 msgstr "导入华住订单"
 
-#: app/templates/orders/show_list.html:271
+#: app/templates/orders/show_list.html:276
 #: app/templates/purchases/pay_list.html:61
 #: app/templates/purchases/show_list.html:142
 #: app/templates/purchases/view_detail.html:18
 msgid "Checked"
 msgstr "审核"
 
-#: app/templates/orders/show_list.html:276
+#: app/templates/orders/show_list.html:281
 msgid "Set Logistics Info"
 msgstr "设置快递信息"
 
-#: app/templates/orders/show_list.html:281
+#: app/templates/orders/show_list.html:286
 msgid "Print Eorder"
 msgstr "打印快递单"
 
-#: app/templates/orders/show_list.html:284
+#: app/templates/orders/show_list.html:289
 msgid "Print Shipment Bill"
 msgstr "打印发货单"
 
-#: app/templates/orders/show_list.html:301
+#: app/templates/orders/show_list.html:306
 msgid "Search order serial_no or customer..."
 msgstr "搜索订单编号或客户信息..."
 
-#: app/templates/orders/show_list.html:308
-#: app/templates/orders/show_list.html:315
-#: app/templates/orders/show_list.html:330
-#: app/templates/orders/show_list.html:337
+#: app/templates/orders/show_list.html:313
+#: app/templates/orders/show_list.html:320
+#: app/templates/orders/show_list.html:335
+#: app/templates/orders/show_list.html:342
 #: app/templates/products/show_list.html:90
 #: app/templates/products/show_list.html:97
 #: app/templates/products/show_list.html:112
@@ -2316,60 +2333,60 @@ msgstr "搜索订单编号或客户信息..."
 msgid "All"
 msgstr "全部"
 
-#: app/templates/orders/show_list.html:312
+#: app/templates/orders/show_list.html:317
 msgid "Search Store"
 msgstr "搜索店铺"
 
-#: app/templates/orders/show_list.html:334
+#: app/templates/orders/show_list.html:339
 #: app/templates/purchases/pay_list.html:105
 #: app/templates/purchases/show_list.html:191
 #: app/templates/warehouses/show_outlist.html:129
 msgid "Filter Status"
 msgstr "筛选状态"
 
-#: app/templates/orders/show_list.html:352
-#: app/templates/orders/show_list.html:359
+#: app/templates/orders/show_list.html:357
+#: app/templates/orders/show_list.html:364
 #: app/templates/warehouses/show_inout.html:131
 #: app/templates/warehouses/show_inout.html:138
 msgid "Unlimited"
 msgstr "不限"
 
-#: app/templates/orders/show_list.html:356
+#: app/templates/orders/show_list.html:361
 #: app/templates/purchases/pay_list.html:127
 #: app/templates/purchases/show_list.html:213
 #: app/templates/warehouses/show_inout.html:135
 msgid "Filter Date"
 msgstr "筛选日期"
 
-#: app/templates/orders/show_list.html:362
+#: app/templates/orders/show_list.html:367
 #: app/templates/purchases/pay_list.html:133
 #: app/templates/purchases/show_list.html:219
 #: app/templates/warehouses/show_inout.html:141
 msgid "Today"
 msgstr "今天"
 
-#: app/templates/orders/show_list.html:365
+#: app/templates/orders/show_list.html:370
 #: app/templates/purchases/pay_list.html:136
 #: app/templates/purchases/show_list.html:222
 #: app/templates/warehouses/show_inout.html:144
 msgid "Yesterday"
 msgstr "昨天"
 
-#: app/templates/orders/show_list.html:368
+#: app/templates/orders/show_list.html:373
 #: app/templates/purchases/pay_list.html:139
 #: app/templates/purchases/show_list.html:225
 #: app/templates/warehouses/show_inout.html:147
 msgid "7 Days"
 msgstr "7天之内"
 
-#: app/templates/orders/show_list.html:371
+#: app/templates/orders/show_list.html:376
 #: app/templates/purchases/pay_list.html:142
 #: app/templates/purchases/show_list.html:228
 #: app/templates/warehouses/show_inout.html:150
 msgid "30 Days"
 msgstr "30天之内"
 
-#: app/templates/orders/show_list.html:381
+#: app/templates/orders/show_list.html:386
 #: app/templates/products/show_list.html:135
 #: app/templates/purchases/pay_list.html:156
 #: app/templates/purchases/show_list.html:242
@@ -2381,7 +2398,7 @@ msgstr "30天之内"
 msgid "Sort"
 msgstr "排序"
 
-#: app/templates/orders/show_list.html:394
+#: app/templates/orders/show_list.html:399
 #: app/templates/products/show_list.html:148
 #: app/templates/purchases/pay_list.html:169
 #: app/templates/purchases/show_list.html:255
@@ -2389,7 +2406,7 @@ msgstr "排序"
 #: app/templates/warehouses/show_inlist.html:137
 #: app/templates/warehouses/show_outlist.html:160
 #: app/templates/warehouses/show_stocks.html:133
-#: app/templates/warehouses/stock_table.html:26
+#: app/templates/warehouses/stock_table.html:25
 msgid "Update Date"
 msgstr "更新日期"
 
@@ -2410,15 +2427,15 @@ msgstr "更新快递号."
 #: app/templates/stores/show_list.html:59
 #: app/templates/warehouses/inout_table.html:79
 #: app/templates/warehouses/show_inout.html:237
-#: app/templates/warehouses/stock_table.html:74
+#: app/templates/warehouses/stock_table.html:73
 msgid "More"
 msgstr "更多"
 
-#: app/templates/orders/table_order.html:96
-msgid "Split order"
-msgstr "拆单"
+#: app/templates/orders/table_order.html:99
+msgid "Service Order"
+msgstr "售后订单"
 
-#: app/templates/orders/table_order.html:101
+#: app/templates/orders/table_order.html:102
 #: app/templates/purchases/purchase_table.html:82
 #: app/templates/warehouses/inout_table.html:83
 #: app/templates/warehouses/show_inout.html:241
@@ -3220,7 +3237,7 @@ msgstr "新库存"
 
 #: app/templates/warehouses/inout_table.html:17
 #: app/templates/warehouses/show_inout.html:175
-#: app/templates/warehouses/stock_table.html:23
+#: app/templates/warehouses/stock_table.html:22
 msgid "Shelve"
 msgstr "货架"
 
@@ -3333,35 +3350,35 @@ msgid "Export Stock"
 msgstr "导出库存"
 
 #: app/templates/warehouses/show_stocks.html:136
-#: app/templates/warehouses/stock_table.html:5
+#: app/templates/warehouses/stock_table.html:4
 msgid "Stock Quantity"
 msgstr "库存数量"
 
-#: app/templates/warehouses/stock_table.html:4
+#: app/templates/warehouses/stock_table.html:3
 msgid "Stock Total Amount"
 msgstr "库存总数"
 
-#: app/templates/warehouses/stock_table.html:20
+#: app/templates/warehouses/stock_table.html:19
 msgid "Purchasing"
 msgstr "采购中"
 
-#: app/templates/warehouses/stock_table.html:21
+#: app/templates/warehouses/stock_table.html:20
 msgid "Available"
 msgstr "可用的"
 
-#: app/templates/warehouses/stock_table.html:22
+#: app/templates/warehouses/stock_table.html:21
 msgid "Saled Quantity"
 msgstr "已销售数量"
 
-#: app/templates/warehouses/stock_table.html:78
+#: app/templates/warehouses/stock_table.html:77
 msgid "Update"
 msgstr "更新"
 
-#: app/templates/warehouses/stock_table.html:80
+#: app/templates/warehouses/stock_table.html:79
 msgid "Related Orders"
 msgstr "相关订单"
 
-#: app/templates/warehouses/stock_table.html:82
+#: app/templates/warehouses/stock_table.html:81
 msgid "Mark Defective"
 msgstr "标记次品"
 
@@ -3476,3 +3493,12 @@ msgstr "特色3"
 
 #~ msgid "Safety Stock"
 #~ msgstr "安全库存"
+
+#~ msgid "Verify order isn't exist!"
+#~ msgstr "此订单不存在！"
+
+#~ msgid "Order[%s] items[%s] isn't exist or Inventory is not enough "
+#~ msgstr "订单[%s]商品[%s] 不存在或库存不足"
+
+#~ msgid "Split order"
+#~ msgstr "拆单"

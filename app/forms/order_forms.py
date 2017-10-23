@@ -30,6 +30,8 @@ class OrderForm(Form):
     buyer_area = StringField(lazy_gettext('Area'))
     # 买家备注
     buyer_remark = TextAreaField(lazy_gettext('Buyer Remark'))
+    # 相关订单
+    # related_rid = StringField(lazy_gettext('Related Order'))
 
 
 

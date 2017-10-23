@@ -917,6 +917,37 @@ def edit_order(sn):
                            **load_common_data())
 
 
+@main.route('/orders/<string:rid>/service', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_order')
+def service_order(rid):
+    """添加售后服务订单"""
+    current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+    if current_order is None:
+        abort(404)
+
+    form = OrderForm()
+    
+    # 获取店铺
+    store_list = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取仓库列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    # 获取快递类型
+    express_list = Express.query.filter_by(master_uid=Master.master_uid()).all()
+
+    # 初始化选项
+    form.store_id.choices = [(store.id, store.name) for store in store_list]
+    form.warehouse_id.choices = [(warehouse.id, warehouse.name) for warehouse in warehouse_list]
+    form.express_id.choices = [(express.id, express.name) for express in express_list]
+    
+    
+    return render_template('orders/create_and_edit.html',
+                           form=form,
+                           mode='create',
+                           current_order=current_order,
+                           **load_common_data())
+
+
 @main.route('/orders/<string:sn>/add_remark', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_order')
@@ -1024,6 +1055,7 @@ def split_order(sn):
     return render_template('orders/_modal_split.html',
                            current_order=current_order,
                            **load_common_data())
+
 
 
 @main.route('/orders/ajax_verify', methods=['POST'])

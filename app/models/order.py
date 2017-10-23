@@ -140,9 +140,12 @@ class Order(db.Model):
     finished_at = db.Column(db.Integer, default=0)
     # 关闭或取消时间
     closed_at = db.Column(db.Integer, default=0)
-    # 订单类型 1、正常订单；2、拆分子订单
+    # 订单类型 1、正常订单；2、拆分子订单;7、售后订单；
     type = db.Column(db.SmallInteger, default=1)
-
+    # 相关订单
+    related_rid = db.Column(db.String(20), nullable=True)
+    
+    
     # order and items => 1 to N
     items = db.relationship(
         'OrderItem', backref='order', lazy='dynamic'
