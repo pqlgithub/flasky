@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, request, jsonify
+from flask_wtf.csrf import CSRFError
 
 from app.main import main
 
@@ -29,3 +30,8 @@ def internal_server_error(e):
         response.status_code = 500
         return response
     return render_template('error/500.html'), 500
+
+
+@main.app_errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template('error/csrf.html', reason=e.description), 400

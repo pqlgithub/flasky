@@ -1,7 +1,7 @@
-{% extends "layout/base.html" %}
+{% extends "layout/admin.html" %}
 
 {% block sidebar %}
-	{% include 'system/_sub_menu.html' %}
+	{% include 'adminlte/system/_sub_menu.html' %}
 {% endblock %}
 
 {% block after_jquery %}
@@ -72,7 +72,7 @@
 						{{ user.last_seen|timestamp2string()}}
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.reset_passwd', uid=user.id) }}" class="btn btn-link ajax-modal" data-modal="password-modal"  data-toggle="tooltip" title="" data-original-title="{{ _('Update Password') }}">
+						<a href="{{ url_for('adminlte.reset_passwd', uid=user.id) }}" class="btn btn-link ajax-modal" data-modal="password-modal"  data-toggle="tooltip" title="" data-original-title="{{ _('Update Password') }}">
 							{{ _('Update Password') }}
 						</a>
 					</td>

@@ -5,6 +5,7 @@
       <w>aclist</w>
       <w>addon</w>
       <w>addr</w>
+      <w>adminlte</w>
       <w>alicloudapi</w>
       <w>aliexpress</w>
       <w>amazonaws</w>
@@ -24,6 +25,7 @@
       <w>chigh</w>
       <w>clodop</w>
       <w>clow</w>
+      <w>cors</w>
       <w>croped</w>
       <w>cssmin</w>
       <w>datestr</w>
@@ -66,6 +68,7 @@
       <w>mimetype</w>
       <w>mishoply</w>
       <w>mixadmin</w>
+      <w>mixpu</w>
       <w>mixsaas</w>
       <w>momentjs</w>
       <w>navabr</w>

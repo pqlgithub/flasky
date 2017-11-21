@@ -1,0 +1,68 @@
+{% extends pjax("layout/base.html") %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+			{{ _('Add Client') }}
+		{% else %}
+			{{ _('Edit Client') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="client-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_clients') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</span>
+	</h2>
+
+	<div class="row">
+		<div class="col-md-9">
+			<form id="client-form" class="form-horizontal" action="" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+					{{ form.name.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.name(maxlength=32, class='form-control') }}
+
+						{% for error in form.errors.name %}
+						<span class="help-block">{{ error }}</span><br>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.limit_times.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.limit_times(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.receive_url.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.receive_url(class='form-control') }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.remark.label(class="col-md-3 control-label") }}
+					<div class="col-md-9">
+						{{ form.remark(class='form-control') }}
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

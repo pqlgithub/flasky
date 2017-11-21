@@ -1,7 +1,7 @@
-{% extends pjax("layout/base.html") %}
+{% extends pjax("layout/admin.html") %}
 
 {% block sidebar %}
-	{% include 'system/_sub_menu.html' %}
+	{% include 'adminlte/system/_sub_menu.html' %}
 {% endblock %}
 
 {% block after_jquery %}
@@ -21,7 +21,7 @@
 		{{ _('Abilities List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_ability') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('adminlte.create_ability') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="abilities-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
@@ -31,7 +31,7 @@
 	</h2>
 
 	<div class="table-responsive">
-		<form id="abilities-form" action="{{ url_for('main.delete_ability') }}" method="post">
+		<form id="abilities-form" action="{{ url_for('adminlte.delete_ability') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 			<table class="table table-bordered table-striped table-hover">
 				<thead>
@@ -57,7 +57,7 @@
 							{{ acl.title }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_ability', id=acl.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('adminlte.edit_ability', id=acl.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>

@@ -29,3 +29,11 @@ class CurrencyForm(Form):
     status = SelectField(lazy_gettext('Status'),
                          choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))],
                          coerce=int)
+
+
+class ClientForm(Form):
+    name = StringField(lazy_gettext('App Name'),
+                       validators=[DataRequired(message="App name can't empty!"), Length(2, 32)])
+    limit_times = IntegerField(lazy_gettext('Limit Times'), default=5000)
+    receive_url = StringField(lazy_gettext('Receive URL'), validators=[DataRequired(message="Receive URL can't empty!")])
+    remark = TextAreaField(lazy_gettext('Remark'))

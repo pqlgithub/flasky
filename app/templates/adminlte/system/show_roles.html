@@ -1,7 +1,7 @@
-{% extends pjax("layout/base.html") %}
+{% extends pjax("layout/admin.html") %}
 
 {% block sidebar %}
-	{% include 'system/_sub_menu.html' %}
+	{% include 'adminlte/system/_sub_menu.html' %}
 {% endblock %}
 
 {% block after_jquery %}
@@ -10,7 +10,6 @@
 		mixpus.init_page_layout();
 
 		mixpus.hook_per_page_select();
-
 	});
 </script>
 {% endblock %}

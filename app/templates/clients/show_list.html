@@ -1,0 +1,95 @@
+{% extends "layout/base.html" %}
+
+{% block sidebar %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+
+		$('.ajax-disabled').click(function (e) {
+		    e.preventDefault();
+		    var req_url = $(this).attr('href');
+            $.post(req_url, { 'csrf_token': mixpus.csrf_token }, function(result){
+                if (result.success) {
+                    mixpus.show_ok_message(result.status.message);
+                    window.refresh();
+                } else {
+                    mixpus.show_error_message(result.status.message);
+                }
+            });
+        });
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Client List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+            <a href="{{ url_for('main.create_client') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive m-t-20">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('App KEY') }}</th>
+					<th>{{ _('App Name') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for client in paginated_clients.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ client.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ client.app_key }}
+					</td>
+					<td>{{ client.name }}</td>
+					<td class="text-right">
+                        <span class="indicator {{ client.status_label[2] }}">
+							{{ client.status_label[1] }}
+						</span>
+					</td>
+					<td class="text-right">
+                        <a href="{{ url_for('main.manage_client', app_key=client.app_key) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Manage') }}">
+							{{ _('Manage') }}
+						</a>
+						<a href="{{ url_for('main.mark_disabled', app_key=client.app_key) }}" class="btn btn-link ajax-disabled"  data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
+							{{ _('Disabled') }}
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box link">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_clients, '.show_clients') }}
+			</nav>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

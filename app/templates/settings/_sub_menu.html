@@ -26,6 +26,13 @@
 		{{ _('Update Password') }}
 	</a>
 	<div class="list-group-header">
+		{{ _('Open Platform') }}
+	</div>
+	<a href="{{ url_for('main.show_clients') }}" class="pjax list-group-item {% if sub_menu == 'clients'%} active{% endif %}">
+		{{ _('App List') }}
+	</a>
+
+	<div class="list-group-header">
 		{{ _('Asset manage') }}
 	</div>
 	<a href="{{ url_for('main.show_assets') }}" class="pjax list-group-item {% if sub_menu == 'assets'%} active{% endif %}">

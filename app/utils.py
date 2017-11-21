@@ -3,6 +3,8 @@ import enum, time, random, xlrd
 from datetime import datetime
 from flask import jsonify, current_app
 from flask_login import current_user
+import hashlib
+from string import digits, ascii_letters
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
 R201_CREATED = { 'code': 201, 'message': 'All created.' }
@@ -88,6 +90,34 @@ def is_sequence(arg):
 def next_is_valid(next_url):
     """验证next url是否有效"""
     return True
+
+
+def make_unique_key(length=20):
+    """
+    生成唯一key
+    """
+    chars = ascii_letters + digits
+    
+    key = ''.join(random.sample(chars, length))
+    
+    return key
+
+
+def make_salt():
+    """加盐"""
+    salt = ''
+    for i in range(5):
+        salt = salt + random.choice(ascii_letters)
+    return salt
+
+
+def make_pw_hash(pw, salt=None):
+    """hash加密"""
+    key_bytes = pw.encode('utf-8')
+    if not salt is None:
+        key_bytes = key_bytes + salt.encode('utf-8')
+    
+    return hashlib.sha1(key_bytes).hexdigest()
 
 
 def full_response(success=True, status=R200_OK, data=None):

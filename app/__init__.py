@@ -33,6 +33,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_s3 import FlaskS3
 from .assets import assets_env, bundles
 
+# import redis
+
 # 导入配置参数
 from config import config
 from .momentjs import Momentjs
@@ -61,6 +63,10 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
+    # app.redis = redis.Redis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'],
+    #                        db=app.config['REDIS_DB'], password=app.config['REDIS_PASSWORD'])
+    # phone_number = current_app.redis.get('token:%s' % token)
+    
     bootstrap.init_app(app)
     babel.init_app(app)
     moment.init_app(app)
@@ -93,8 +99,8 @@ def create_app(config_name):
         file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.DEBUG)
-        app.logger.info('Urk startup')
-
+        app.logger.info('Mix startup')
+    
     # attach routes
 
     from .main import main as main_blueprint
@@ -102,10 +108,17 @@ def create_app(config_name):
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
-
-    #from .api_1_0 import api as api_1_0_blueprint
-    #app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
-
+    
+    from .adminlte import adminlte as admin_blueprint
+    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+    
+    from .api_1_0 import api as api_1_0_blueprint
+    app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
+    # 禁用csrf
+    csrf.exempt(api_1_0_blueprint)
+    
+    
+    
 
     from .main.filters import timestamp2string, short_filename, supress_none, break_line
     app.add_template_filter(timestamp2string, 'timestamp2string')
@@ -116,5 +129,5 @@ def create_app(config_name):
     # Jinja2 导入我们的类作为所有模板的一个全局变量
     app.jinja_env.globals['momentjs'] = Momentjs
 
-
+    
     return app

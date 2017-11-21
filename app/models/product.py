@@ -707,8 +707,28 @@ class Category(db.Model):
                 'REPLACE INTO `categories_paths` SET category_id=%d, path_id=%d, level=%d' % (cate.id, cate.id, level))
 
             Category.repair_categories(master_uid, cate.id)
-
-
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_category = {
+            'id': self.id,
+            'name': self.name,
+            'sort_order': self.sort_order,
+            'description': self.description,
+            'status': self.status
+        }
+        return json_category
+    
+    @staticmethod
+    def from_json(json_category):
+        """从json格式数据创建，对API支持"""
+        # todo: 数据验证
+        return Category(
+            name=json_category.get('name'),
+            sort_order=json_category.get('sort_order'),
+            description=json_category.get('description')
+        )
+    
     def __repr__(self):
         return '<Category %r>' % self.name
 

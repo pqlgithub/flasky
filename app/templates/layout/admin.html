@@ -9,7 +9,7 @@
 		{% if title %}
 		<title>{{ title }} - Mixpus</title>
 		{% else %}
-		<title>Mixpus - Free Cloud Based ERP Solution</title>
+		<title>Mixpu - Free Cloud Based ERP Solution</title>
 		{% endif %}
 
 		<style type="text/css">
@@ -63,40 +63,19 @@
 						<span class="icon-bar"></span>
 					</button>
 					<a href="{{ url_for('main.index') }}" class="navbar-brand">
-						{{ current_site.company_name if current_site }}
+						MixPu
 					</a>
 				</div>
 				<nav class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
-						<li {% if top_menu == 'dashboard' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.index') }}">{{ _('Index') }}</a>
+						<li {% if top_menu == 'system' %}class="active"{% endif %}>
+							<a href="{{ url_for('adminlte.show_users') }}">{{ _('Users') }}</a>
 						</li>
-						<li {% if top_menu == 'orders' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_orders') }}">{{ _('Orders') }}</a>
+						<li {% if top_menu == 'clients' %}class="active"{% endif %}>
+							<a href="{{ url_for('adminlte.show_clients') }}">{{ _('Clients') }}</a>
 						</li>
-						<li {% if top_menu == 'products' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_products') }}">{{ _('Products') }}</a>
-						</li>
-						<li {% if top_menu == 'purchases' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_purchases') }}">{{ _('Purchase') }}</a>
-						</li>
-						<li {% if top_menu == 'warehouses' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_stocks') }}">{{ _('Warehouse') }}</a>
-						</li>
-						<li {% if top_menu == 'logistics' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_expresses') }}">{{ _('Logistics') }}</a>
-						</li>
-						<li {% if top_menu == 'service' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_blacklist') }}">{{ _('Customer Service') }}</a>
-						</li>
-						<li {% if top_menu == 'finances' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_payments') }}">{{ _('Finance') }}</a>
-						</li>
-						<li>
-							<a href="{{ url_for('main.stats') }}">{{ _('Reports') }}</a>
-						</li>
-						<li {% if top_menu == 'settings' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_settings') }}">{{ _('Settings') }}</a>
+						<li {% if top_menu == 'market' %}class="active"{% endif %}>
+							<a href="{{ url_for('adminlte.show_market') }}">{{ _('Market') }}</a>
 						</li>
 					</ul>
 

@@ -65,6 +65,14 @@ def before_request():
     # 设置本地化语言
     g.locale = get_locale()
 
+@main.context_processor
+def include_init_data():
+    """注入共用的变量"""
+
+    return {
+        'support_languages': SUPPORT_LANGUAGES,
+        'current_site': g.current_site
+    }
 
 @main.before_app_request
 def make_session_permanent():
@@ -72,6 +80,19 @@ def make_session_permanent():
     session.permanent = True  # 关闭浏览器重新打开还保存session
     app.permanent_session_lifetime = timedelta(minutes=30)  # session失效时间
     login_manager.remember_cookie_duration = timedelta(minutes=30)  # cookie失效时间
+
+
+# 针对程序全局请求的钩子，
+@main.after_app_request
+def after_request(response):
+    """
+    Such a function is executed after each request, even if outside of the blueprint.
+    """
+    for query in get_debug_queries():
+        if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
+            current_app.logger.warn("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                                       (query.statement, query.parameters, query.duration, query.context))
+    return response
 
 
 @main.route('/<string:lang>')
@@ -89,15 +110,6 @@ def choose_locale(lang):
 
     return redirect(request.args.get('next') or url_for('main.index'))
 
-
-@main.context_processor
-def include_init_data():
-    """注入共用的变量"""
-
-    return {
-        'support_languages': SUPPORT_LANGUAGES,
-        'current_site': g.current_site
-    }
 
 @main.route('/change_currency')
 def change_currency():
@@ -121,16 +133,3 @@ def change_currency():
         current_rate = (current_rate * float(to_currency.value))/float(from_currency.value)
 
     return full_response(success=True, data={'rate': current_rate})
-
-
-# 针对程序全局请求的钩子，
-@main.after_app_request
-def after_request(response):
-    """
-    Such a function is executed after each request, even if outside of the blueprint.
-    """
-    for query in get_debug_queries():
-        if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
-            current_app.logger.warn("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-                                       (query.statement, query.parameters, query.duration, query.context))
-    return response
