@@ -19,7 +19,8 @@ __all__ = [
     'Supplier',
     'SupplyStats',
     'Category',
-    'CategoryPath'
+    'CategoryPath',
+    'Wishlist'
 ]
 
 
@@ -749,6 +750,23 @@ class CategoryPath(db.Model):
 
     def __repr__(self):
         return '<CategoryPath %r>' % self.category_id
+
+
+class Wishlist(db.Model):
+    """愿望清单"""
+    
+    __tablename__ = 'wishlist'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    
+    user_id = db.Column(db.Integer, default=0)
+    product_id = db.Column(db.Integer, default=0)
+    
+    created_at = db.Column(db.Integer, default=timestamp)
+    
+    def __repr__(self):
+        return '<Wishlist {}>'.format(self.id)
 
 
 # 添加监听事件, 实现触发器

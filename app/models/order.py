@@ -12,6 +12,7 @@ __all__ = [
     'Order',
     'OrderItem',
     'OrderStatus',
+    'Cart'
 ]
 
 # 发票类型
@@ -298,6 +299,44 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return '<OrderItem %r>' % self.id
+
+
+class Cart(db.Model):
+    """购物车"""
+    __tablename__ = 'carts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    
+    # session id
+    sess_id = db.Column(db.String(128), nullable=False)
+    user_id = db.Column(db.Integer, default=0)
+    
+    api_id = db.Column(db.Integer, default=0)
+    recurring_id = db.Column(db.Integer, default=0)
+    
+    sku_rid = db.Column(db.String(12))
+    option = db.Column(db.Text)
+    quantity = db.Column(db.Integer, default=1)
+    
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_cart = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'sku': self.sku,
+            'quantity': self.quantity,
+            'option': self.option
+        }
+        return json_cart
+    
+    
+    def __repr__(self):
+        return '<Cart {}>'.format(self.id)
 
 
 # 添加监听事件, 实现触发器
