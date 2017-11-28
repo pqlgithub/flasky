@@ -48,10 +48,11 @@ def preference():
 @user_has('admin_setting')
 def child_users():
     master_uid = Master.master_uid()
+    page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 50, type=int)
-
-    paginated_users = User.query.filter_by(master_uid=master_uid).order_by('created_at desc').paginate(1, per_page)
-
+    
+    paginated_users = User.query.filter_by(master_uid=master_uid).order_by('created_at desc').paginate(page, per_page)
+    
     return render_template('users/child_users.html',
                            paginated_users=paginated_users,
                            sub_menu='child_users')
@@ -67,11 +68,12 @@ def add_child_user():
         user = User(
             master_uid = master_uid,
             email = form.email.data,
-            username = form.username.data,
-            password = form.password.data,
-            confirmed = True,
-            is_setting = True,
-            time_zone = 'zh')
+            username=form.username.data,
+            password=form.password.data,
+            confirmed=True,
+            is_setting=True,
+            time_zone='zh'
+        )
         db.session.add(user)
         db.session.commit()
 

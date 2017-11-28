@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random, string
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, AnonymousUserMixin
@@ -35,7 +36,7 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-
+    sn = db.Column(db.String(11), unique=True, index=True, nullable=True)
     # 主账号，默认为0
     master_uid = db.Column(db.Integer, index=True, default=0)
 
@@ -58,7 +59,10 @@ class User(UserMixin, db.Model):
 
     # 是否配置站点信息
     is_setting = db.Column(db.Boolean, default=False)
-
+    
+    # 身份类型：1、供应商、2、分销商、9、消费者
+    id_type = db.Column(db.SmallInteger, default=1)
+    
     # 本地化
     locale = db.Column(db.String(4), default='zh')
     language = db.Column(db.String(4), default='en')
@@ -68,7 +72,7 @@ class User(UserMixin, db.Model):
     # if online or offline
     online = db.Column(db.Boolean, default=False)
     last_seen = db.Column(db.Integer, default=timestamp)
-
+    
     created_at = db.Column(db.Integer, default=timestamp)
     # update time of last time
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -114,7 +118,6 @@ class User(UserMixin, db.Model):
         """生成一个令牌，有效期默认为一小时."""
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
-
 
     @property
     def is_master(self):
@@ -167,13 +170,14 @@ class User(UserMixin, db.Model):
             data = s.loads(token)
         except:
             return None
-
+        
         return User.query.get(data['id'])
-
+    
     def g_avatar(self, size):
         """user avatar"""
         return 'http://www.gravatar.com/avatar/' + md5(self.email.encode('utf8')).hexdigest() + '?d=mm&s=' + str(size)
 
+    
     @staticmethod
     def make_unique_username(username):
         if User.query.filter_by(username=username).first() == None:
@@ -185,18 +189,38 @@ class User(UserMixin, db.Model):
                 break
             version += 1
         return new_username
+    
+    @staticmethod
+    def make_unique_sn(prefix='1'):
+        """生成用户编号"""
+        sn = prefix + ''.join(random.sample(string.digits, 10))
+        if User.query.filter_by(sn=sn).first() == None:
+            return sn
+        
+        while True:
+            new_sn = prefix + ''.join(random.sample(string.digits, 10))
+            if User.query.filter_by(sn=sn).first() == None:
+                break
+        return new_sn
 
+    @staticmethod
+    def on_before_insert(mapper, connection, target):
+        # 自动生成用户编号
+        target.sn = User.make_unique_sn()
+    
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_user = {
             'id': self.id,
+            'uid': self.sn,
             'username': self.username,
             'email': self.email,
             'master_uid': self.master_uid,
             'last_seen': self.last_seen
         }
         return json_user
-
+    
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -245,7 +269,7 @@ class Role(db.Model):
             existing_ability = Ability.query.filter_by(name=ability).first()
             if existing_ability and existing_ability in self.abilities:
                 self.abilities.remove(existing_ability)
-
+    
 
     def __init__(self, name, master_uid, title=None, description=None):
         self.name = name.lower()
@@ -354,3 +378,8 @@ class Site(db.Model):
 
     def __repr__(self):
         return '<Site %r>' % self.company_name
+
+
+
+# 监听事件
+db.event.listen(User, 'before_insert', User.on_before_insert)

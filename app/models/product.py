@@ -182,7 +182,23 @@ class Product(db.Model):
             cost_price=json_product.get('cost_price'),
             status=json_product.get('status')
         )
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_product = {
+            'rid': self.serial_no,
+            'name': self.name,
+            'cover': self.cover.view_url,
+            'id_code': self.id_code,
+            'sale_price': self.sale_price,
+            's_weight': self.s_weight,
+            's_length': self.s_length,
+            's_width': self.s_width,
+            's_height': self.s_height
+        }
+        return json_product
 
+    
     def __repr__(self):
         return '<Product %r>' % self.name
 

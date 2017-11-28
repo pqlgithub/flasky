@@ -2,7 +2,6 @@
 from flask import g, current_app, request, url_for, abort
 from app.models import Category
 from app import db
-import json
 from . import api
 from .utils import *
 
@@ -17,7 +16,7 @@ def get_categories():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     
-    pagination = Category.query.paginate(page, per_page=per_page, error_out=False)
+    pagination = Category.query.filter_by(master_uid=g.master_uid).paginate(page, per_page=per_page, error_out=False)
     categories = pagination.items
     prev = None
     if pagination.has_prev:
@@ -57,12 +56,16 @@ def create_category():
     if not request.json or not 'name' in request.json:
         abort(400)
     
+    # 添加master_uid
+    request.json['master_uid'] = g.master_uid
+    
     category = Category.from_json(request.json)
     
     db.session.add(category)
     db.session.commit()
     
     return full_response(R201_CREATED, category.to_json())
+
 
 @api.route('/categories/<int:id>', methods=['PUT'])
 def edit_category(id):

@@ -76,7 +76,7 @@ class Client(db.Model):
             'nonce_str': args['nonce_str']
         }
         
-        tmp_str = '&'.join(['%s=%s' % (key.lower(), ret[key]) for key in sorted(ret)])
+        tmp_str = ''.join(['%s=%s' % (key.lower(), ret[key]) for key in sorted(ret)])
         
         sign = hashlib.sha1(tmp_str.encode('utf-8') + app_secret.encode('utf-8')).hexdigest()
         

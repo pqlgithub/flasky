@@ -5,24 +5,27 @@ R200_OK = { 'code': 200, 'message': 'Ok all right.' }
 R201_CREATED = { 'code': 201, 'message': 'All created.' }
 R204_NOCONTENT = { 'code': 204, 'message': 'All deleted.' }
 R400_BADREQUEST = { 'code': 400, 'message': 'Bad request.' }
+R401_AUTHORIZED = { 'code': 401, 'message': 'Unauthorized access.' }
 R403_FORBIDDEN = { 'code': 403, 'message': 'You can not do this.' }
 R404_NOTFOUND = { 'code': 404, 'message': 'No result matched.' }
 
-def full_response(status, data):
+def full_response(status, data, success=True):
 	"""
 	结果响应：带数据和状态信息
 	"""
 	return jsonify({
+		'data': data,
 		'status': status,
-		'data': data
+		'success': success
 	})
 
-def status_response(status):
+def status_response(status, success=True):
 	"""
 	结果响应：状态信息
 	"""
 	return jsonify({
-		'status': status
+		'status': status,
+		'success': success
 	})
 
 
