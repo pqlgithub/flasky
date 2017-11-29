@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from app import db
 from ..utils import timestamp
-from ..constant import SUPPORT_PLATFORM
+
+__all__ = [
+    'Currency'
+]
 
 class Currency(db.Model):
     """支持币种"""
@@ -21,6 +24,7 @@ class Currency(db.Model):
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
     last_updated = db.Column(db.Integer, default=timestamp)
 
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_currency = {
@@ -32,5 +36,6 @@ class Currency(db.Model):
         }
         return json_currency
 
+    
     def __repr__(self):
         return '<Currency {}>'.format(self.id)

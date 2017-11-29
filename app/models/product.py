@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random, string
 from sqlalchemy import text, event
 from sqlalchemy.sql import func
 from flask_babelex import gettext, lazy_gettext
@@ -66,7 +67,10 @@ class Product(db.Model):
 
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-
+    
+    # 所属品牌
+    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'))
+    
     name = db.Column(db.String(128), nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
     # commodity codes
@@ -92,6 +96,7 @@ class Product(db.Model):
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    published_at = db.Column(db.Integer, default=0)
 
     # product and sku => 1 to N
     skus = db.relationship(
@@ -623,15 +628,18 @@ class Brand(db.Model):
 
     __tablename__ = 'brands'
     id = db.Column(db.Integer, primary_key=True)
-
-    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-
+    sn = db.Column(db.String(9), unique=True, index=True, nullable=True)
+    
     master_uid = db.Column(db.Integer, index=True, default=0)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    
     name = db.Column(db.String(64), unique=True, index=True)
     features = db.Column(db.String(100))
     description = db.Column(db.Text())
+    
     logo_id = db.Column(db.Integer, default=0)
-
+    banner_id = db.Column(db.Integer, default=0)
+    
     # sort number
     sort_order = db.Column(db.SmallInteger, default=1)
     # status: 1, default; 2, online
@@ -642,14 +650,43 @@ class Brand(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-
-    def __repr__(self):
-        return '<Brand %r>' % self.name
-
+    # brand and product => 1 to N
+    products = db.relationship(
+        'Product', backref='brand', lazy='dynamic'
+    )
+    
     @property
     def logo(self):
         """logo asset info"""
         return Asset.query.get(self.logo_id) if self.logo_id else None
+
+    
+    @property
+    def banner(self):
+        """brand asset info"""
+        return Asset.query.get(self.banner_id) if self.banner_id else None
+
+    @staticmethod
+    def make_unique_sn(prefix='8'):
+        """生成用户编号"""
+        sn = prefix + ''.join(random.sample(string.digits, 8))
+        if Brand.query.filter_by(sn=sn).first() == None:
+            return sn
+    
+        while True:
+            new_sn = prefix + ''.join(random.sample(string.digits, 8))
+            if Brand.query.filter_by(sn=sn).first() == None:
+                break
+        return new_sn
+    
+
+    @staticmethod
+    def on_before_insert(mapper, connection, target):
+        # 自动生成用户编号
+        target.sn = Brand.make_unique_sn()
+    
+    def __repr__(self):
+        return '<Brand %r>' % self.name
 
 
 class Category(db.Model):
@@ -788,3 +825,5 @@ class Wishlist(db.Model):
 # 添加监听事件, 实现触发器
 event.listen(ProductSku, 'after_insert', SupplyStats.on_sync_change)
 event.listen(Purchase, 'after_insert', SupplyStats.on_sync_change)
+# 监听Brand事件
+event.listen(Brand, 'before_insert', Brand.on_before_insert)

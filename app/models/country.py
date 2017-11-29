@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from app import db
 from ..utils import timestamp
-from ..constant import SUPPORT_PLATFORM
+
+__all__ = [
+    'Country'
+]
 
 class Country(db.Model):
     """开通的国家列表"""
