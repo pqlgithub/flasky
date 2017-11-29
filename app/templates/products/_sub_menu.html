@@ -9,6 +9,9 @@
 	<div class="list-group-header">
 		{{ _('Supplier manage') }}
 	</div>
+	<a href="{{ url_for('main.show_brands') }}" class="pjax list-group-item {% if sub_menu == 'brands'%} active{% endif %}">
+		{{ _('Brands List') }}
+	</a>
 	<a href="{{ url_for('main.show_suppliers') }}" class="pjax list-group-item {% if sub_menu == 'suppliers'%} active{% endif %}">
 		{{ _('Supplier List') }}
 	</a>

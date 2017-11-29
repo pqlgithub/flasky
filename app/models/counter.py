@@ -56,6 +56,18 @@ class Counter(db.Model):
     
     
     @staticmethod
+    def gen_brand_sn(length=8):
+        serial_no = '6'
+        rd = str(Counter.get_next_sequence())
+        z = ''
+        if len(rd) < length:
+            for i in range(length - len(rd)):
+                z += '0'
+    
+        return ''.join([serial_no, z, rd])
+    
+    
+    @staticmethod
     def gen_user_xid(length=8):
         serial_no = '1'
         serial_no += time.strftime('%d')

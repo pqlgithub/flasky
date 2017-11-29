@@ -4,12 +4,14 @@ from sqlalchemy import text, event
 from sqlalchemy.sql import func
 from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
-from app import db, uploader
-from ..utils import timestamp, gen_serial_no, create_db_session
+from app import db
 from .asset import Asset
-from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
 from .purchase import Purchase
-from app.models.currency import Currency
+from .counter import Counter
+from .currency import Currency
+from ..utils import timestamp, gen_serial_no, create_db_session
+from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
+
 
 __all__ = [
     'Product',
@@ -667,15 +669,15 @@ class Brand(db.Model):
         return Asset.query.get(self.banner_id) if self.banner_id else None
 
     @staticmethod
-    def make_unique_sn(prefix='8'):
-        """生成用户编号"""
-        sn = prefix + ''.join(random.sample(string.digits, 8))
+    def make_unique_sn():
+        """生成品牌编号"""
+        sn = Counter.gen_brand_sn()
         if Brand.query.filter_by(sn=sn).first() == None:
             return sn
     
         while True:
-            new_sn = prefix + ''.join(random.sample(string.digits, 8))
-            if Brand.query.filter_by(sn=sn).first() == None:
+            new_sn = Counter.gen_brand_sn()
+            if Brand.query.filter_by(sn=new_sn).first() == None:
                 break
         return new_sn
     
@@ -684,6 +686,23 @@ class Brand(db.Model):
     def on_before_insert(mapper, connection, target):
         # 自动生成用户编号
         target.sn = Brand.make_unique_sn()
+        
+        
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_brand = {
+            'rid': self.sn,
+            'name': self.name,
+            'logo': self.logo.view_url,
+            'banner': self.banner.view_url,
+            'features': self.features,
+            'description': self.description,
+            'sort_order': self.sort_order,
+            'is_recommended': self.is_recommended,
+            'status': self.status
+        }
+        return json_brand
+    
     
     def __repr__(self):
         return '<Brand %r>' % self.name

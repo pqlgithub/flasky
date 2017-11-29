@@ -1,0 +1,29 @@
+<tr>
+	<td class="text-center">
+		<input name="selected[]" class="check-one" value="{{ brand.id }}" type="checkbox">
+	</td>
+    <td class="text-center">
+        <img src="{{ brand.logo.view_url }}" width="60px">
+    </td>
+	<td class="text-center">
+        {{ brand.name }}
+	</td>
+	<td class="text-center">
+		{{ brand.features }}
+	</td>
+	 <td>
+		 {{ brand.supplier.short_name }}
+	 </td>
+    <td class="text-right">
+        {% if brand.status == 1 %}
+        <span class="indicator success">{{ _('Enabled') }}</span>
+        {% else %}
+        <span class="indicator warning">{{ _('Disabled') }}</span>
+        {% endif %}
+    </td>
+	<td class="text-right">
+		<a href="{{ url_for('main.edit_brand', id=brand.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			{{ _('Edit') }}
+		</a>
+	</td>
+</tr>

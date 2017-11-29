@@ -22,6 +22,21 @@ class SupplierForm(Form):
     remark = TextAreaField(lazy_gettext('Remark'))
 
 
+class BrandForm(Form):
+    supplier_id = IntegerField(lazy_gettext('Supplier'))
+    name = StringField(lazy_gettext('Brand Name'), validators=[DataRequired()])
+    features = StringField(lazy_gettext('Features'))
+    is_recommended = BooleanField(lazy_gettext('Is Recommended?'), default=False)
+    description = TextAreaField(lazy_gettext('Description'))
+    sort_order = IntegerField(lazy_gettext('Sort Order'))
+    logo_id = IntegerField(lazy_gettext('Logo'), default=0)
+    banner_id = IntegerField(lazy_gettext('Banner'), default=0)
+    
+    status = SelectField(lazy_gettext('Status'), choices=[
+        (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
+    ], coerce=int, default=-1)
+
+
 class CategoryForm(Form):
     name = StringField(lazy_gettext('Category Name'), validators=[DataRequired()])
     sort_order = IntegerField(lazy_gettext('Sort Order'))

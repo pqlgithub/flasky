@@ -60,7 +60,7 @@ class User(UserMixin, db.Model):
     # 是否配置站点信息
     is_setting = db.Column(db.Boolean, default=False)
     
-    # 身份类型：1、供应商、2、分销商、9、消费者
+    # 身份类型：1、供应商、2、分销客户、9、消费者
     id_type = db.Column(db.SmallInteger, default=1)
     
     # 本地化
