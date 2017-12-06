@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import random, string
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, AnonymousUserMixin
@@ -9,6 +8,7 @@ from ..utils import timestamp
 from ..constant import SUPPORT_DOMAINS,SUPPORT_LANGUAGES, SUPPORT_COUNTRIES, SUPPORT_CURRENCIES
 from app import db, login_manager
 from app.models.currency import Currency
+from app.helpers import MixGenId
 
 __all__ = [
     'User',
@@ -191,15 +191,15 @@ class User(UserMixin, db.Model):
         return new_username
     
     @staticmethod
-    def make_unique_sn(prefix='1'):
+    def make_unique_sn():
         """生成用户编号"""
-        sn = prefix + ''.join(random.sample(string.digits, 10))
+        sn = MixGenId.gen_user_xid(length=10)
         if User.query.filter_by(sn=sn).first() == None:
             return sn
         
         while True:
-            new_sn = prefix + ''.join(random.sample(string.digits, 10))
-            if User.query.filter_by(sn=sn).first() == None:
+            new_sn = MixGenId.gen_user_xid(length=10)
+            if User.query.filter_by(sn=new_sn).first() == None:
                 break
         return new_sn
 
@@ -212,12 +212,15 @@ class User(UserMixin, db.Model):
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_user = {
-            'id': self.id,
             'uid': self.sn,
             'username': self.username,
             'email': self.email,
             'master_uid': self.master_uid,
-            'last_seen': self.last_seen
+            'last_seen': self.last_seen,
+            'name': self.name,
+            'mobile': self.mobile,
+            'about_me': self.about_me,
+            'description': self.description
         }
         return json_user
     

@@ -76,13 +76,8 @@
 
 		</form>
 	</div>
+
 	{% import "block/_macros.html" as macros %}
-	<div class="pages-box">
-		<div class="pull-left">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_directory, '.show_assets', pid=pid) }}
-			</nav>
-		</div>
-	</div>
+	{{ macros.pagination_widget(paginated_directory, '.show_assets', pid=pid) }}
 </div>
 {% endblock %}

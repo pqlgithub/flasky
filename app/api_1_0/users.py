@@ -8,13 +8,6 @@ from .auth import auth
 from .utils import *
 
 
-@api.route('/users')
-@auth.login_required
-def get_users():
-    """获取用户列表"""
-    return "This is a user."
-
-
 @api.route('/users', methods=['POST'])
 def new_user():
     """创建新用户"""
@@ -54,14 +47,22 @@ def get_user():
 @auth.login_required
 def update_user():
     """更新用户信息"""
-    username = request.json.get('username')
+    username = request.json.get('username', g.current_user.username)
+    name = request.json.get('name', g.current_user.name)
+    about_me = request.json.get('about_me', g.current_user.about_me)
+    mobile = request.json.get('mobile', g.current_user.mobile)
+    description = request.json.get('description',  g.current_user.description)
     
     # 验证username是否存在
-    if User.query.filter_by(username=username).first():
-        return status_response(R403_FORBIDDEN, False)
+    if username and User.query.filter_by(username=username).first():
+        return status_response(custom_status('{} already existed!'.format(username), 400), False)
     
     g.current_user.username = username
+    g.current_user.name = name
+    g.current_user.about_me = about_me
+    g.current_user.mobile = mobile
+    g.current_user.description = description
     
     db.session.commit()
     
-    return status_response(R200_OK)
+    return full_response(R200_OK, g.current_user.to_json())

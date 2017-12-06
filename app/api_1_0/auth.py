@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask import g, jsonify
+from flask import g, request, abort
 from flask_httpauth import HTTPBasicAuth
 from app.models import User, AnonymousUser, Client
 from .errors import forbidden, unauthorized
 from .decorators import api_sign_required
 
+from .. import db
 from . import api
-from .utils import status_response, R401_AUTHORIZED
+from .utils import *
 
 auth = HTTPBasicAuth()
 
@@ -43,8 +44,31 @@ def auth_error():
 @api.route('/auth/register', methods=['POST'])
 def register():
 	"""用户注册"""
-	pass
-
+	email = request.json.get('email')
+	username = request.json.get('username')
+	password = request.json.get('password')
+	
+	if email is None or password is None or username is None:
+		abort(400)
+	
+	# 验证账号是否存在
+	if User.query.filter_by(email=email).first() is not None:
+		abort(400)
+	
+	# 添加用户
+	user = User()
+	
+	user.email = email
+	user.username = username
+	user.password = password
+	user.time_zone = 'zh'
+	user.id_type = 9
+	
+	db.session.add(user)
+	db.session.commit()
+	
+	return status_response(R201_CREATED)
+	
 
 @api.route('/auth/login', methods=['POST'])
 def login():

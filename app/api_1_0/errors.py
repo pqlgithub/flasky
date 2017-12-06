@@ -2,23 +2,43 @@
 from flask import jsonify
 from app.exceptions import ValidationError
 from . import api
+from .utils import *
 
-def bad_request(message):
-	response = jsonify({'error': 'bad request', 'message': message})
-	response.status_code = 400
-	return response
 
-def unauthorized(message):
-	response = jsonify({'error': 'unauthorized', 'message': message})
-	response.status_code = 401
-	return response
+@api.errorhandler(400)
+def bad_request(e):
+	return status_response({
+		'code': 400,
+		'message': 'Bad request'
+	}, False)
 
-def forbidden(message):
-	response = jsonify({'error': 'forbidden', 'message': message})
-	response.status_code = 403
-	return response
+
+@api.errorhandler(401)
+def unauthorized(e):
+	return status_response({
+		'code': 401,
+		'message': 'Unauthorized'
+	}, False)
+
+
+@api.errorhandler(403)
+def forbidden(e):
+	return status_response({
+		'code': 403,
+		'message': 'Forbidden'
+	}, False)
+
+
+@api.errorhandler(404)
+def not_found(e):
+	return status_response({
+		'code': 404,
+		'message': 'Not Found'
+	}, False)
 
 
 @api.errorhandler(ValidationError)
 def validation_error(e):
 	return bad_request(e.args[0])
+
+

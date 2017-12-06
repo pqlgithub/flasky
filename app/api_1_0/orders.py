@@ -1,30 +1,51 @@
 # -*- coding: utf-8 -*-
 from flask import request, abort, g, url_for
-from app.models import User, Product
 
 from .. import db
 from . import api
 from .auth import auth
 from .utils import *
+from app.models import Order
 
 
 @api.route('/orders')
 @auth.login_required
 def get_orders():
-    """
-    订单列表
+    """订单列表"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+    status = request.values.get('status', type=int)
+    prev = None
+    next = None
 
-    :return: json
-    """
-    return "This is orders list."
+    builder = Order.query.filter_by(master_uid=g.master_uid)
+    if status:
+        builder = builder.filter_by(status=status)
+    
+    pagination = builder.order_by('created_at desc').paginate(page, per_page, error_out=False)
 
+    orders = pagination.items
+    if pagination.has_prev:
+        prev = url_for('api.get_orders', status=status, page=page - 1, _external=True)
+
+    if pagination.has_next:
+        next = url_for('api.get_orders', status=status, page=page + 1, _external=True)
+    
+    return full_response(R200_OK, {
+        'products': [order.to_json() for order in orders],
+        'prev': prev,
+        'next': next,
+        'count': pagination.total
+    })
 
 
 @api.route('/orders/<string:rid>')
 @auth.login_required
 def get_order(rid):
     """订单详情"""
-    pass
+    order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    
+    return full_response(R200_OK, order.to_json())
 
 
 @api.route('/orders/nowpay', methods=['POST'])

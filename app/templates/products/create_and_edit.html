@@ -91,7 +91,7 @@
 			<button type="submit" form="product-form" class="btn btn-icon btn-warning" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
-			<button type="button" class="btn btn-icon btn-save-continue btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
+			<button type="button" class="btn btn-icon btn-save-continue btn-success" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
 				<i class="glyphicon glyphicon-floppy-saved"></i>
 			</button>
 			<a href="{{ url_for('main.show_products') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
@@ -140,16 +140,16 @@
 					</div>
 				</div>
 
-				<div class="form-group m-b-25 required {% if form.errors.supplier_id %} has-error{% endif %}">
-					{{ form.supplier_id.label(class="col-sm-2 control-label") }}
+				<div class="form-group m-b-25 required {% if form.errors.brand_rid %} has-error{% endif %}">
+					{{ form.brand_rid.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
-						<select name="supplier_id" id="supplier_id" class="form-control select2">
-							<option value="0">{{ _('Select supplier...') }}</option>
-							{% for supplier in paginated_suppliers.items %}
-							<option value="{{ supplier.id }}" {% if supplier.id == product.supplier_id %}selected="selected"{% endif %}>{{ supplier.short_name|safe }}</option>
+						<select name="brand_rid" id="brand_rid" class="form-control select2">
+							<option value="0">{{ _('Select brand...') }}</option>
+							{% for brand in paginated_brands.items %}
+							<option value="{{ brand.sn }}" {% if brand.sn == product.brand_rid %}selected="selected"{% endif %}>{{ brand.name|safe }}</option>
 							{% endfor %}
 						</select>
-						{% for error in form.errors.supplier_id %}
+						{% for error in form.errors.brand_rid %}
 						<span class="help-block">{{ error }}</span>
 						{% endfor %}
 					</div>

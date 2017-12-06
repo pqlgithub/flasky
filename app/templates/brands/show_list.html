@@ -35,7 +35,7 @@
 		{{ _('Brands List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_brand') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_brand') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="brands-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
@@ -105,13 +105,7 @@
 		</div>
 
 		{% import "block/_macros.html" as macros %}
-		<div class="pages-box link">
-			<div class="pull-left">
-				<nav aria-label="Page navigation">
-					{{ macros.pagination_widget(paginated_brands, '.show_brands') }}
-				</nav>
-			</div>
-		</div>
+		{{ macros.pagination_widget(paginated_brands, '.show_brands') }}
 	</div>
 
 </div>

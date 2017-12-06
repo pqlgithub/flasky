@@ -33,10 +33,6 @@
 
 		{% block private_styles %}{% endblock %}
 
-		{% assets "app_css" %}
-		<link href="{{ ASSET_URL }}" type="text/css" rel="stylesheet">
-  		{% endassets %}
-
 		{% assets "themes_css" %}
 		<link href="{{ ASSET_URL }}" type="text/css" rel="stylesheet">
   		{% endassets %}
@@ -51,126 +47,70 @@
 		{{ moment.lang(g.locale) }}
 	</head>
 
-	<body>
-		{% block header %}
-		<header class="admin navbar navbar-masthead navbar-default navbar-fixed-top">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<button class="navbar-toggle collapsed" type="button" data-target="#bs-navbar" data-toggle="collapse" aria-expanded="false">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a href="{{ url_for('main.index') }}" class="navbar-brand">
-						{{ current_site.company_name if current_site }}
-					</a>
-				</div>
-				<nav class="collapse navbar-collapse">
-					<ul class="nav navbar-nav">
-						<li {% if top_menu == 'dashboard' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.index') }}">{{ _('Index') }}</a>
-						</li>
-						<li {% if top_menu == 'orders' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_orders') }}">{{ _('Orders') }}</a>
-						</li>
-						<li {% if top_menu == 'products' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_products') }}">{{ _('Products') }}</a>
-						</li>
-						<li {% if top_menu == 'purchases' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_purchases') }}">{{ _('Purchase') }}</a>
-						</li>
-						<li {% if top_menu == 'warehouses' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_stocks') }}">{{ _('Warehouse') }}</a>
-						</li>
-						<li {% if top_menu == 'logistics' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_expresses') }}">{{ _('Logistics') }}</a>
-						</li>
-						<li {% if top_menu == 'service' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_blacklist') }}">{{ _('Customer Service') }}</a>
-						</li>
-						<li {% if top_menu == 'finances' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_payments') }}">{{ _('Finance') }}</a>
-						</li>
-						<li>
-							<a href="{{ url_for('main.stats') }}">{{ _('Reports') }}</a>
-						</li>
-						<li {% if top_menu == 'settings' %}class="active"{% endif %}>
-							<a href="{{ url_for('main.show_settings') }}">{{ _('Settings') }}</a>
-						</li>
-					</ul>
-
-					<ul class="nav navbar-nav navbar-right">
-						<li>
-							<a href="javascript:void(0);" title="{{ _('Select languages') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">
-								<span class="glyphicon glyphicon-globe"></span>
-							</a>
-							<ul class="dropdown-menu">
-								{% for lang in support_languages %}
-								<li {% if g.locale == lang[1] %}class="active"{% endif %}>
-									<a href="/{{ lang[1] }}">{{ lang[2] }}</a>
-								</li>
-								{% endfor %}
-							</ul>
-						</li>
-						<li>
-							<a href="javascript:void(0);">
-								<span class="glyphicon glyphicon-bell"></span>
-							</a>
-						</li>
-						<li class="dropdown">
-							<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"  aria-haspopup="true" aria-expanded="true">
-								<span class="glyphicon glyphicon-user"></span>
-								{% if current_user.is_authenticated %}
-									 {{ current_user.username }}
-								{% endif %}
-							</a>
-							<ul class="dropdown-menu">
-								<li><a href="{{ url_for('main.preference') }}">{{ _('Preference Setting') }}</a></li>
-								<li><a href="{{ url_for('main.passwd') }}">{{ _('Update Password') }}</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a></li>
-							</ul>
-						</li>
-					</ul>
-				</nav>
-			</div>
-		</header>
-		{% endblock %}
-
-		<div class="container-fluid">
-			{% block content %}
-			<div class="col-sm-3 col-md-2 sidebar">
-				{% block sidebar %}{% endblock %}
-			</div>
-			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="pjax-container">
-				{% with messages = get_flashed_messages(with_categories=true) %}
-					{% if messages %}
-					<div class="flashes">
-						{% for category, message in messages %}
-						<div class="alert alert-{{ category }} alert-dismissable">
-							<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
-							{% if category == 'success' %}
-							<strong>Well done!</strong>
-							{% endif %}
-
-							{% if category == 'danger' %}
-							<strong>Oh snap!</strong>
-							{% endif %}
-
-							{{ message }}
-						</div>
-						{% endfor %}
-					</div>
-					{% endif %}
-				{% endwith %}
-
-				{% block mainbar %}{% endblock %}
-			</div>
+	<body class="skin-green-light" style="height: auto; min-height: 100%">
+		<div class="wrapper">
+			{% block header %}
+				{% include 'block/main-header.html' %}
 			{% endblock %}
-		</div> <!-- /container -->
 
-		{% block footer %}{% endblock %}
+			{% block content %}
+				{% include 'block/main-sidebar.html' %}
+
+				<div class="content-wrapper">
+					<section class="content">
+						<div class="main" id="pjax-container">
+							{% with messages = get_flashed_messages(with_categories=true) %}
+							{% if messages %}
+							<div class="flashes">
+								{% for category, message in messages %}
+								<div class="alert alert-{{ category }} alert-dismissable">
+									<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+									{% if category == 'success' %}
+									<strong>Well done!</strong>
+									{% endif %}
+
+									{% if category == 'danger' %}
+									<strong>Oh snap!</strong>
+									{% endif %}
+
+									{{ message }}
+								</div>
+								{% endfor %}
+							</div>
+							{% endif %}
+							{% endwith %}
+
+							{% block mainbar %}{% endblock %}
+						</div>
+					</section>
+				</div>
+			{% endblock %}
+
+			{% block footer %}
+				{% include  'block/main-footer.html' %}
+			{% endblock %}
+
+			<aside class="control-sidebar control-sidebar-dark">
+				<ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+					<li class="active">
+						<a href="#control-sidebar-theme-demo-options-tab" data-toggle="tab" aria-expanded="true">
+							<i class="fa fa-wrench"></i>
+						</a>
+					</li>
+					<li class="">
+						<a href="#control-sidebar-home-tab" data-toggle="tab" aria-expanded="false">
+							<i class="fa fa-home"></i>
+						</a>
+					</li>
+					<li class="">
+						<a href="#control-sidebar-settings-tab" data-toggle="tab" aria-expanded="false">
+							<i class="fa fa-gears"></i>
+						</a>
+					</li>
+				</ul>
+			</aside>
+		</div>
+
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		{% assets "admin_js" %}
   		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
@@ -197,8 +137,18 @@
 			// 打开页面时加载进度条。
 			NProgress.start();
 
+			mixpus.hook_window_resize();
+
 			$(function(){
 				NProgress.done();
+
+				$(window).resize(function () {
+					mixpus.hook_window_resize();
+    			});
+
+				$('a[data-toggle="push-menu"]').click(function () {
+					$('body').toggleClass('.sidebar-mini')
+                });
 
 				mixpus.hook_pjax_link();
 

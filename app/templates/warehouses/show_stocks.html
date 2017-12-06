@@ -145,11 +145,8 @@
 		{% include "warehouses/stock_table.html" %}
 
 		{% import "block/_macros.html" as macros %}
-		<div class="pages-box link">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_stocks, '.show_stocks', wh_id=wh_id) }}
-			</nav>
-		</div>
+		{{ macros.pagination_widget(paginated_stocks, '.show_stocks', wh_id=wh_id) }}
+
 	</div>
 
 </div>

@@ -10,7 +10,7 @@ from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
-    Currency, Order, OrderItem
+    Currency, Order, OrderItem, Brand
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
     custom_response, import_product_from_excel
@@ -244,11 +244,17 @@ def create_product():
 
         new_serial_no = form.serial_no.data
         current_app.logger.warn('Product new serial_no [%s] -----!!!' % new_serial_no)
+        
+        # 根据品牌获取供应商
+        if form.brand_rid.data:
+            brand = Brand.query.filter_by(master_uid=Master.master_uid(), sn=form.brand_rid.data).first()
+            form.supplier_id.data = brand.supplier_id if brand else 0
 
         product = Product(
             master_uid=Master.master_uid(),
             serial_no=new_serial_no,
             supplier_id=form.supplier_id.data,
+            brand_rid=form.brand_rid.data,
             name=form.name.data,
             cover_id=form.cover_id.data,
             currency_id=form.currency_id.data,
@@ -273,7 +279,7 @@ def create_product():
             product.update_categories(*categories)
         
         # 新增索引
-        flask_whooshalchemyplus.index_one_model(Product)
+        # flask_whooshalchemyplus.index_one_model(Product)
 
         db.session.commit()
 
@@ -292,7 +298,7 @@ def create_product():
     form.currency_id.data = g.current_site.currency_id
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
+    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
 
     return render_template('products/create_and_edit.html',
                            form=form,
@@ -301,7 +307,7 @@ def create_product():
                            current_currency_unit=g.current_site.currency,
                            product=None,
                            paginated_categories=paginated_categories,
-                           paginated_suppliers=paginated_suppliers,
+                           paginated_brands=paginated_brands,
                            **load_common_data())
 
 
@@ -318,15 +324,21 @@ def edit_product(rid):
     form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
+    
+        # 根据品牌获取供应商
+        if form.brand_rid.data:
+            brand = Brand.query.filter_by(master_uid=Master.master_uid(), sn=form.brand_rid.data).first()
+            form.supplier_id.data = brand.supplier_id if brand else 0
+        
         form.populate_obj(product)
-
+        
         # 更新所属分类
         if form.category_id.data:
             categories = []
             categories.append(Category.query.get(form.category_id.data))
 
             product.update_categories(*categories)
-
+        
         db.session.commit()
 
         next_action = request.form.get('next_action', 'finish_save')
@@ -343,6 +355,7 @@ def edit_product(rid):
 
     form.serial_no.data = product.serial_no
     form.supplier_id.data = product.supplier_id
+    form.brand_rid.data = product.brand_rid
     form.name.data = product.name
     form.cover_id.data = product.cover_id
     # 默认为官网默认货币
@@ -366,7 +379,8 @@ def edit_product(rid):
         current_currency_unit = g.current_site.currency
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
+    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1,
+                                                                                                                  1000)
 
     return render_template('products/create_and_edit.html',
                            form=form,
@@ -375,7 +389,7 @@ def edit_product(rid):
                            product=product,
                            current_currency_unit=current_currency_unit,
                            paginated_categories=paginated_categories,
-                           paginated_suppliers=paginated_suppliers,
+                           paginated_brands=paginated_brands,
                            **load_common_data())
 
 

@@ -7,7 +7,7 @@
 	</a>
 
 	<div class="list-group-header">
-		{{ _('Supplier manage') }}
+
 	</div>
 	<a href="{{ url_for('main.show_brands') }}" class="pjax list-group-item {% if sub_menu == 'brands'%} active{% endif %}">
 		{{ _('Brands List') }}
@@ -15,9 +15,7 @@
 	<a href="{{ url_for('main.show_suppliers') }}" class="pjax list-group-item {% if sub_menu == 'suppliers'%} active{% endif %}">
 		{{ _('Supplier List') }}
 	</a>
-	<a href="{{ url_for('main.supply_list') }}" class="pjax list-group-item {% if sub_menu == 'supply'%} active{% endif %}">
-		{{ _('Supply Relation') }}
-	</a>
+
 	<div class="list-group-header">
 		{{ _('Category manage') }}
 	</div>

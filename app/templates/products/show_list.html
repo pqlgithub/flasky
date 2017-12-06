@@ -40,9 +40,9 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Product List') }}
-		<span class="pull-right">
+		<div class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<div class="btn-group">
 				<button class="btn btn-default dropdown-toggle" type="button" id="copy-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -67,14 +67,14 @@
 					</li>
 				</ul>
 			</div>
-			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="products-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
-		</span>
-	</h2>
+		</div>
+	</div>
 
 	<form class="form-inline filter-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
@@ -157,13 +157,7 @@
 		{% include "products/table_product.html" %}
 
 		{% import "block/_macros.html" as macros %}
-		<div class="pages-box link">
-			<div class="pull-left">
-				<nav aria-label="Page navigation">
-					{{ macros.pagination_widget(pagination, '.show_products') }}
-				</nav>
-			</div>
-		</div>
+		{{ macros.pagination_widget(pagination, '.show_products') }}
 	</div>
 </div>
 {% endblock %}

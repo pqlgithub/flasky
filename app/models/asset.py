@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from ..utils import timestamp
-from app import db, uploader
 from flask import current_app
+from app import db, uploader
+from ..utils import timestamp
+from app.helpers import Dictate
+
 
 __all__ = [
     'Directory',
@@ -68,7 +70,20 @@ class Asset(db.Model):
 
         return url
 
-
+    @staticmethod
+    def default_logo():
+        """默认图-Logo"""
+        return Dictate({
+            'view_url': ''
+        })
+        
+    @staticmethod
+    def default_banner():
+        """默认图-Banner"""
+        return Dictate({
+            'view_url': ''
+        })
+    
     def __repr__(self):
         return '<Asset {}>'.format(self.filepath)
 

@@ -69,9 +69,10 @@ class EditCategoryForm(CategoryForm):
 
 class ProductForm(Form):
 
-    supplier_id = IntegerField(lazy_gettext('Supplier'))
+    supplier_id = IntegerField(lazy_gettext('Supplier'), default=0)
+    brand_rid = StringField(lazy_gettext('Brand'))
     category_id = IntegerField(lazy_gettext('Category'))
-
+    
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     name = StringField(lazy_gettext('Product Name'), validators=[DataRequired()])
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)

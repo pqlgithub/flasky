@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import time
+import time, random, string
 from app import db
 
 __all__ = [
@@ -17,15 +17,16 @@ class Counter(db.Model):
     @staticmethod
     def get_next_sequence():
         current_counter = Counter.query.first()
-        if current_counter is not None:
-            total_count = current_counter.total_count
+        if current_counter:
+            total_count = current_counter.total_count + 1
+            
             # 同步递增
             current_counter.total_count += 1
         else:
-            total_count = 1
+            total_count = 1010
             new_counter = Counter(total_count=total_count)
             db.session.add(new_counter)
-
+        
         return total_count
 
     
@@ -46,31 +47,6 @@ class Counter(db.Model):
     @staticmethod
     def gen_store_sn(length=7):
         serial_no = '2'
-        rd = str(Counter.get_next_sequence())
-        z = ''
-        if len(rd) < length:
-            for i in range(length - len(rd)):
-                z += '0'
-
-        return ''.join([serial_no, z, rd])
-    
-    
-    @staticmethod
-    def gen_brand_sn(length=8):
-        serial_no = '6'
-        rd = str(Counter.get_next_sequence())
-        z = ''
-        if len(rd) < length:
-            for i in range(length - len(rd)):
-                z += '0'
-    
-        return ''.join([serial_no, z, rd])
-    
-    
-    @staticmethod
-    def gen_user_xid(length=8):
-        serial_no = '1'
-        serial_no += time.strftime('%d')
         rd = str(Counter.get_next_sequence())
         z = ''
         if len(rd) < length:

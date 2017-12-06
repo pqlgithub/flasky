@@ -7,10 +7,10 @@ from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
 from .asset import Asset
 from .purchase import Purchase
-from .counter import Counter
 from .currency import Currency
 from ..utils import timestamp, gen_serial_no, create_db_session
 from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
+from app.helpers import MixGenId
 
 
 __all__ = [
@@ -71,7 +71,7 @@ class Product(db.Model):
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     
     # 所属品牌
-    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'))
+    brand_rid = db.Column(db.String(9), nullable=True)
     
     name = db.Column(db.String(128), nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
@@ -174,6 +174,28 @@ class Product(db.Model):
             if Product.query.filter_by(serial_no=new_serial_no).first() == None:
                 break
         return new_serial_no
+    
+        
+    @classmethod
+    def always_category(cls, path=0, page=1, per_page=20, uid=0):
+        """get category tree"""
+        sql = "SELECT cp.category_id, group_concat(c.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') AS name, c2.id, c2.sort_order, c2.status FROM categories_paths AS cp"
+        sql += " LEFT JOIN categories c ON (cp.path_id=c.id)"
+        sql += " LEFT JOIN categories AS c2 ON (cp.category_id=c2.id)"
+    
+        sql += " WHERE c2.master_uid=%d" % uid
+        sql += " GROUP BY cp.category_id"
+        sql += " ORDER BY cp.category_id ASC, c2.sort_order ASC"
+    
+        if page == 1:
+            offset = 0
+        else:
+            offset = (page - 1) * per_page
+    
+        sql += ' LIMIT %d, %d' % (offset, per_page)
+    
+        return db.engine.execute(text(sql))
+    
 
     @staticmethod
     def from_json(json_product, master_uid):
@@ -198,6 +220,7 @@ class Product(db.Model):
             'cover': self.cover.view_url,
             'id_code': self.id_code,
             'sale_price': self.sale_price,
+            'description': self.description,
             's_weight': self.s_weight,
             's_length': self.s_length,
             's_width': self.s_width,
@@ -325,7 +348,7 @@ class ProductSku(db.Model):
             if ProductSku.query.filter_by(serial_no=new_serial_no).first() == None:
                 break
         return new_serial_no
-
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_sku = {
@@ -651,32 +674,28 @@ class Brand(db.Model):
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-
-    # brand and product => 1 to N
-    products = db.relationship(
-        'Product', backref='brand', lazy='dynamic'
-    )
     
     @property
     def logo(self):
         """logo asset info"""
-        return Asset.query.get(self.logo_id) if self.logo_id else None
+        return Asset.query.get(self.logo_id) if self.logo_id else Asset.default_logo()
 
     
     @property
     def banner(self):
         """brand asset info"""
-        return Asset.query.get(self.banner_id) if self.banner_id else None
+        return Asset.query.get(self.banner_id) if self.banner_id else Asset.default_banner()
 
+    
     @staticmethod
     def make_unique_sn():
         """生成品牌编号"""
-        sn = Counter.gen_brand_sn()
+        sn = MixGenId.gen_brand_sn()
         if Brand.query.filter_by(sn=sn).first() == None:
             return sn
-    
+        
         while True:
-            new_sn = Counter.gen_brand_sn()
+            new_sn = MixGenId.gen_brand_sn()
             if Brand.query.filter_by(sn=new_sn).first() == None:
                 break
         return new_sn
@@ -702,7 +721,19 @@ class Brand(db.Model):
             'status': self.status
         }
         return json_brand
-    
+
+    @staticmethod
+    def from_json(json_brand):
+        """从json格式数据创建，对API支持"""
+        # todo: 数据验证
+        return Brand(
+            supplier_id=json_brand.get('supplier_id'),
+            name=json_brand.get('name'),
+            features=json_brand.get('features'),
+            is_recommended=json_brand.get('is_recommended'),
+            sort_order=json_brand.get('sort_order'),
+            description=json_brand.get('description')
+        )
     
     def __repr__(self):
         return '<Brand %r>' % self.name
@@ -729,13 +760,13 @@ class Category(db.Model):
 
     # category and product => N to N
     products = db.relationship(
-        'Product', secondary=product_category_table, backref='categories'
+        'Product', secondary=product_category_table, backref=db.backref('Category', lazy='select'), lazy='dynamic'
     )
-
+    
     category_paths = db.relationship(
         'CategoryPath', backref='category', cascade='delete'
     )
-
+    
     @classmethod
     def always_category(cls, path=0, page=1, per_page=20, uid=0):
         """get category tree"""
@@ -786,6 +817,7 @@ class Category(db.Model):
         json_category = {
             'id': self.id,
             'name': self.name,
+            'pid': self.pid,
             'sort_order': self.sort_order,
             'description': self.description,
             'status': self.status

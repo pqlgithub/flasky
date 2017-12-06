@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from flask import request, abort, g, url_for
+from flask import request, abort, g, url_for, current_app
+from sqlalchemy.exc import IntegrityError
 from app.models import Brand
 
 from .. import db
@@ -44,19 +45,63 @@ def get_brand(rid):
 @auth.login_required
 def create_brand():
     """添加新品牌"""
-    return 'new brand'
-
+    if not request.json or not 'name' in request.json:
+        abort(400)
+    
+    # todo: 数据验证
+    
+    brand = Brand.from_json(request.json)
+    # 添加 master_uid
+    brand.master_uid = g.master_uid
+    
+    try:
+        db.session.add(brand)
+        db.session.commit()
+    except (IntegrityError) as err:
+        current_app.logger.error('Create brand fail: {}'.format(str(err)))
+        
+        db.session.rollback()
+        return status_response(custom_status('Create failed!', 400), False)
+    
+    return full_response(R201_CREATED, brand.to_json())
+    
 
 @api.route('/brands/<string:rid>', methods=['PUT'])
 @auth.login_required
 def update_brand(rid):
     """更新品牌信息"""
-    pass
+    json_brand = request.json
+    
+    brand = Brand.query.filter_by(master_uid=g.master_uid, sn=rid).first()
+    if brand is None:
+        abort(404)
+    
+    brand.name = json_brand.get('name', brand.name)
+    brand.supplier_id = json_brand.get('supplier_id', brand.supplier_id)
+    brand.features = json_brand.get('features', brand.features)
+    brand.is_recommended = json_brand.get('is_recommended', brand.is_recommended)
+    brand.sort_order = json_brand.get('sort_order', brand.sort_order)
+    brand.description = json_brand.get('description', brand.description)
+    
+    try:
+        db.session.commit()
+    except (IntegrityError) as err:
+        current_app.logger.error('Update brand fail: {}'.format(str(err)))
+        db.session.rollback()
+        return status_response(custom_status('Update failed!', 400), False)
+    
+    return full_response(R200_OK, brand.to_json())
 
 
 @api.route('/brands/<string:rid>', methods=['DELETE'])
 @auth.login_required
 def delete_brand(rid):
     """删除品牌"""
-    pass
-
+    brand = Brand.query.filter_by(master_uid=g.master_uid, sn=rid).first()
+    
+    if brand is None:
+        abort(404)
+    
+    db.session.delete(brand)
+    
+    return status_response(R200_OK)

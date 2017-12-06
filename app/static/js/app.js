@@ -96,6 +96,13 @@ mixpus.init_page_layout = function () {
 
 };
 
+// 窗口变化
+mixpus.hook_window_resize = function () {
+	var min_height = $(window).height() - 50; // 减去导航条高度
+
+	$('.content-wrapper > .content').css({'min-height': min_height});
+};
+
 mixpus.hook_select2 = function () {
 	$('.select2').each(function (i, obj) {
 		if (!$(obj).data("select2")) {

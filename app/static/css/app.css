@@ -442,24 +442,6 @@ img.card-img-top {
 .main .page-header {
 	margin-top: 0;
 }
-.table-responsive {
-	min-height: 450px;
-}
-.pages-entries {
-	line-height: 50px;
-}
-.custom-per-page {
-    margin: 18px 30px 18px 0;
-    display: inline-block;
-    width: 80px;
-    float: left;
-}
-.pages-mini .pagination {
-    margin: 5px 0;
-}
-.pages-mini .custom-per-page {
-    display: none;
-}
 .table > thead > tr > th {
 	background-color: #eee;
 	vertical-align: middle;
@@ -506,6 +488,7 @@ div.required .control-label:not(span)::before, td.required::before {
 .fa-5x {
     font-size: 5em;
 }
+
 .input-quantity {
 	width: 60px;
 	margin: 0 auto;
