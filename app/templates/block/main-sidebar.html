@@ -85,7 +85,7 @@
                     <i class="fa fa-cubes fa-2x"></i>
                     <span>{{ _('Products') }}</span>
                 </a>
-                <div class="treeview-menu tree-3x">
+                <div class="treeview-menu tree-2x">
                      <ul class="subtree">
                          <li class="header">{{ _('Product Manage') }}</li>
                          <li>
@@ -118,14 +118,6 @@
                          </li>
 
                      </ul>
-                     <ul class="subtree">
-                        <li class="header">{{ _('Price Setting') }}</li>
-                        <li>
-                            <a href="" class="pjax">
-		                        {{ _('Price Formwork') }}
-	                        </a>
-                        </li>
-                     </ul>
                  </div>
             </li>
             <li class="{% if sub_menu == 'customers'%}active {% endif %} treeview">
@@ -149,6 +141,11 @@
                                  {{ _('Customer Grade') }}
                              </a>
                          </li>
+                         <li>
+                            <a href="{{ url_for('main.show_discount_templets') }}" class="pjax">
+		                        {{ _('Price Templet') }}
+	                        </a>
+                        </li>
                      </ul>
                  </div>
             </li>

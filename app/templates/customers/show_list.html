@@ -76,13 +76,18 @@
 
 	<ul class="nav nav-tabs">
 		<li class="active">
-			<a href="{{ url_for('main.show_customers') }}" id="customers-tab" aria-controls="customers" aria-expanded="true">
+			<a href="{{ url_for('main.show_customers') }}" aria-controls="customers" aria-expanded="true">
 				{{ _('Customers') }}
 			</a>
 		</li>
 		<li>
-			<a href="{{ url_for('main.show_grades') }}" id="customer-grade-tab" aria-controls="customer-grade">
+			<a href="{{ url_for('main.show_grades') }}" aria-controls="customer-grade">
 				{{ _('Customer Grade') }}
+			</a>
+		</li>
+        <li>
+			<a href="{{ url_for('main.show_discount_templets') }}" aria-controls="customer-discount-templet">
+				{{ _('Price Templet') }}
 			</a>
 		</li>
 	</ul>

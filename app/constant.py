@@ -238,6 +238,11 @@ CUSTOMER_STATUS = [
     (-1, lazy_gettext('Disabled'), 'default'),
 ]
 
+# 分销价格模板
+DISCOUNT_TEMPLET_TYPES= (
+    (1, lazy_gettext('By Category')),
+    (2, lazy_gettext('By Brand'))
+)
 
 # 导出采购单头格式 / 采购单对应的字段
 PURCHASE_EXCEL_FIELDS = {

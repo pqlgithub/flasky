@@ -24,7 +24,8 @@ def show_clients(page=1):
     paginated_clients = query.order_by(Client.created_at.desc()).paginate(page, per_page)
 
     return render_template('adminlte/clients/show_list.html',
-                           paginated_clients=paginated_clients)
+                           paginated_clients=paginated_clients,
+                           top_menu='clients')
 
 
 @adminlte.route('/clients/approved', methods=['POST'])

@@ -20,5 +20,5 @@ from .language import Language
 from .address import Address
 from .banner import Banner, BannerImage
 from .shop import Shop, ShopSeo
-from .customer import Customer, CustomerGrade
+from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, DiscountTempletItem
 from .counter import Counter

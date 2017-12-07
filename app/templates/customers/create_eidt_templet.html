@@ -1,0 +1,80 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<div class="page-header">
+		{% if mode == 'create' %}
+			{{ _('Add Discount Templet') }}
+		{% else %}
+			{{ _('Edit Discount Templet') }}
+		{% endif %}
+
+		<div class="pull-right">
+			<button type="submit" form="discount-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_discount_templets') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="glyphicon glyphicon-share-alt"></i>
+			</a>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-9">
+			<form id="discount-form" class="form-horizontal" action="" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+					{{ form.name.label(class="col-md-3 control-label") }}
+					<div class="col-md-5">
+						{{ form.name(maxlength=32, class='form-control') }}
+
+						{% for error in form.errors.name %}
+						<span class="help-block">{{ error }}</span><br>
+						{% endfor %}
+					</div>
+				</div>
+
+                {% if mode == 'create' %}
+				<div class="form-group required">
+					{{ form.type.label(class="col-md-3 control-label") }}
+					<div class="col-md-5">
+						{{ form.type(class='form-control select2') }}
+                        <span class="help-block">
+                            <i class="fa fa-info"></i> {{ _('Once submitted, no further modification will be made!') }}
+                        </span>
+					</div>
+				</div>
+                {% endif %}
+
+				<div class="form-group required">
+					{{ form.default_discount.label(class="col-md-3 control-label") }}
+					<div class="col-md-5">
+						{{ form.default_discount(class='form-control', placeholder='%') }}
+                        <span class="help-block">
+                            <i class="fa fa-info"></i> {{ _('Default Value: 1-100') }}
+                        </span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.description.label(class="col-md-3 control-label") }}
+					<div class="col-md-5">
+						{{ form.description(class='form-control', rows='5') }}
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

@@ -1257,6 +1257,8 @@ a:focus,
 .main-header .navbar-brand {
     color:#fff
 }
+
+
 @media (max-width:991px) {
     .navbar-custom-menu .navbar-nav>li {
         float:left
@@ -1405,6 +1407,15 @@ a:focus,
     position:absolute;
     right:0;
     left:auto
+}
+/* Adminlte */
+.navbar-fixed-top {
+    position: fixed !important;
+}
+.navbar-menu > li > a {
+    padding-top:15px;
+    padding-bottom:15px;
+    line-height:20px
 }
 @media (max-width:991px) {
     .navbar-custom-menu>.navbar-nav {
@@ -1832,3 +1843,4 @@ table.text-center,table.text-center td,table.text-center th {
 .control-sidebar-light .control-sidebar-menu>li>a .menu-info>p {
  color:#5e5e5e
 }
+

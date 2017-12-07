@@ -7,8 +7,8 @@ from flask_babelex import gettext
 from flask_sqlalchemy import Pagination
 from . import main
 from .. import db
-from app.models import Customer, CustomerGrade, User
-from app.forms import CustomerForm, CustomerGradeForm, CustomerEditForm
+from app.models import Customer, CustomerGrade, User, DiscountTemplet, Category, Brand, DiscountTempletItem
+from app.forms import CustomerForm, CustomerGradeForm, CustomerEditForm, DiscountTempletForm, DiscountTempletEditForm
 from app.helpers import MixGenId
 from ..utils import Master, custom_response, status_response, full_response, R200_OK
 from ..decorators import user_has
@@ -343,3 +343,165 @@ def delete_grade():
         flash('Delete grade is fail!', 'danger')
     
     return redirect(url_for('.show_grades'))
+
+
+@main.route('/discount_templets')
+@main.route('/discount_templets/<int:page>')
+def show_discount_templets(page=1):
+    """经销折扣等级"""
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    paginated_discount_templets = DiscountTemplet.query.filter_by(master_uid=Master.master_uid()) \
+        .order_by(DiscountTemplet.created_at.desc()).paginate(page, per_page)
+    
+    return render_template('customers/show_discount_templets.html',
+                           paginated_discount_templets=paginated_discount_templets,
+                           **load_common_data())
+
+
+@main.route('/discount_templets/create', methods=['GET', 'POST'])
+def create_discount_templet():
+    form = DiscountTempletForm()
+    form.type.choices = [(1, gettext('By Category')), (2, gettext('By Brand'))]
+    if form.validate_on_submit():
+        discount_templet = DiscountTemplet(
+            master_uid=Master.master_uid(),
+            name=form.name.data,
+            default_discount=form.default_discount.data,
+            type=form.type.data,
+            description=form.description.data
+        )
+        db.session.add(discount_templet)
+        db.session.commit()
+        
+        flash(gettext('Add Templet Grade is ok!'), 'success')
+        
+        return redirect(url_for('main.show_discount_templets'))
+    
+    mode = 'create'
+    return render_template('customers/create_eidt_templet.html',
+                           mode=mode,
+                           form=form)
+
+
+@main.route('/discount_templets/<int:id>/edit', methods=['GET', 'POST'])
+def edit_discount_templet(id):
+    discount_templet = DiscountTemplet.query.get_or_404(id)
+    if not Master.is_can(discount_templet.master_uid):
+        abort(401)
+    
+    form = DiscountTempletEditForm()
+    if form.validate_on_submit():
+        
+        discount_templet.name = form.name.data
+        discount_templet.default_discount = form.default_discount.data
+        discount_templet.description = form.description.data
+        
+        db.session.commit()
+        
+        flash(gettext('Update Templet Grade is ok!'), 'success')
+        
+        return redirect(url_for('main.show_discount_templets'))
+    else:
+        current_app.logger.warn(form.errors)
+    
+    mode = 'edit'
+    
+    form.name.data = discount_templet.name
+    form.default_discount.data = discount_templet.default_discount
+    form.description.data = discount_templet.description
+
+    return render_template('customers/create_eidt_templet.html',
+                           mode=mode,
+                           form=form)
+
+
+@main.route('/discount_templets/delete', methods=['POST'])
+def delete_discount_templet():
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash('Delete discount template is null!', 'danger')
+        abort(404)
+    
+    try:
+        for id in selected_ids:
+            discount_templet = DiscountTemplet.query.get_or_404(int(id))
+            if not Master.is_can(discount_templet.master_uid):
+                abort(401)
+            
+            db.session.delete(discount_templet)
+        
+        db.session.commit()
+        
+        flash('Delete discount template is ok!', 'success')
+    except:
+        db.session.rollback()
+        flash('Delete discount template is fail!', 'danger')
+    
+    return redirect(url_for('.show_discount_templets'))
+
+
+@main.route('/discount_templets/<int:id>/set_discount', methods=['GET', 'POST'])
+def set_discount(id):
+    """设置折扣值"""
+    discount_templet = DiscountTemplet.query.get_or_404(id)
+    if not Master.is_can(discount_templet.master_uid):
+        abort(401)
+
+    categories = []
+    brands = []
+    selected_items = {}
+    
+    if request.method == 'POST':
+        categories = request.form.getlist('categories[]')
+        brands = request.form.getlist('brands[]')
+        valid_discount = []
+        for cid in categories:
+            discount = request.form.get('discount_%s' % cid, type=float)
+            if discount:
+                item = DiscountTempletItem(
+                    master_uid=Master.master_uid(),
+                    category_id=cid,
+                    discount=discount
+                )
+                valid_discount.append(item)
+                
+        for bid in brands:
+            discount = request.form.get('discount_%s' % bid, type=float)
+            if discount:
+                item = DiscountTempletItem(
+                    master_uid=Master.master_uid(),
+                    brand_id=bid,
+                    discount=discount
+                )
+                valid_discount.append(item)
+        
+        if len(valid_discount):
+            discount_templet.items = valid_discount
+        
+        db.session.commit()
+        
+        flash(gettext('Set Discount is ok!'), 'success')
+        
+        return redirect(url_for('main.show_discount_templets'))
+    
+    # 按分类
+    if discount_templet.type == 1:
+        categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+        
+        for item in discount_templet.items:
+            selected_items[item.category_id] = item.discount
+    
+    # 按品牌
+    if discount_templet.type == 2:
+        brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
+        
+        for item in discount_templet.items:
+            selected_items[item.brand_id] = item.discount
+    
+    
+    return render_template('customers/set_discount.html',
+                           discount_templet=discount_templet,
+                           selected_items=selected_items,
+                           categories=categories,
+                           brands=brands)

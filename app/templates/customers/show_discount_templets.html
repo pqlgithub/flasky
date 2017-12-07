@@ -15,10 +15,10 @@
 		{{ _('Customer Grade Manage') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_grade') }}" data-toggle="tooltip" class="pjax btn btn-mixpus ajax-modal" data-modal="create-modal" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_discount_templet') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="glyphicon glyphicon-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="grades-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="discount-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
@@ -30,12 +30,12 @@
 				{{ _('Customers') }}
 			</a>
 		</li>
-		<li class="active">
+		<li>
 			<a href="{{ url_for('main.show_grades') }}" aria-controls="customer-grade">
 				{{ _('Customer Grade') }}
 			</a>
 		</li>
-        <li>
+        <li class="active">
 			<a href="{{ url_for('main.show_discount_templets') }}" aria-controls="customer-discount-templet">
 				{{ _('Price Templet') }}
 			</a>
@@ -44,7 +44,7 @@
 
     <div class="tab-content m-t-30">
         <div class="table-responsive m-t-20">
-            <form id="grades-form" action="{{ url_for('main.delete_grade') }}" method="post">
+            <form id="discount-form" action="{{ url_for('main.delete_discount_templet') }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
                 <table class="table table-bordered table-striped table-hover">
@@ -53,25 +53,36 @@
                         <th class="text-center">
                             <input name="check_all" type="checkbox" class="check-all">
                         </th>
-                        <th>{{ _('Grade Name') }}</th>
-                        <th>{{ _('Created At') }}</th>
+                        <th>{{ _('Discount Name') }}</th>
+                        <th class="text-center">{{ _('Default Discount') }} (%)</th>
+                        <th class="text-center">{{ _('By Type') }}</th>
+                        <th class="text-right">{{ _('Created At') }}</th>
                         <th class="text-right">{{ _('Action') }}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for grade in paginated_grades.items %}
+                    {% for tpl in paginated_discount_templets.items %}
                     <tr>
                         <td class="text-center">
-                            <input name="selected[]" class="check-one" value="{{ grade.id }}" type="checkbox">
+                            <input name="selected[]" class="check-one" value="{{ tpl.id }}" type="checkbox">
                         </td>
                         <td>
-                            {{ grade.name }}
+                            {{ tpl.name }}
                         </td>
-                        <td>
-                            {{ grade.created_at|timestamp2string('%Y-%m-%d %H:%M') }}
+                        <td class="text-center">
+                            {{ tpl.default_discount }}%
+                        </td>
+                        <td class="text-center">
+                            {{ tpl.type_label[1] }}
                         </td>
                         <td class="text-right">
-                            <a href="{{ url_for('main.edit_grade', id=grade.id) }}" class="btn-link ajax-modal" data-modal="create-modal" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                            {{ tpl.created_at|timestamp2string('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td class="text-right">
+                            <a href="{{ url_for('main.set_discount', id=tpl.id) }}" class="btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Set Discount') }}">
+                                {{ _('Set Discount') }}
+                            </a>
+                            <a href="{{ url_for('main.edit_discount_templet', id=tpl.id) }}" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
                                 {{ _('Edit') }}
                             </a>
                         </td>
@@ -83,7 +94,7 @@
         </div>
 
         {% import "block/_macros.html" as macros %}
-        {{ macros.pagination_widget(paginated_grades, '.show_grades') }}
+        {{ macros.pagination_widget(paginated_discount_templets, '.show_discount_templets') }}
     </div>
 
 </div>
