@@ -1,0 +1,23 @@
+{% include 'customers/table_customer.html' %}
+
+{% import "block/_macros.html" as macros %}
+{{ macros.pagination_widget(pagination, '.search_orders', qk=qk, sk=sk, store_id=store_id, s=s, date=date) }}
+
+<script type="text/javascript">
+	mixpus.hook_all_check();
+
+	mixpus.hook_tooltip_toggle();
+
+	$('.ajax .per-page').change(function (e) {
+	    e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+		$('#table-refresh-box').load(url);
+    });
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('#table-refresh-box').load($(this).attr('href'));
+			return false;
+		});
+</script>

@@ -80,6 +80,11 @@ class MixGenId():
         prefix = '9'
         return ''.join([prefix, MixGenId.gen_digits(length)])
     
+    @staticmethod
+    def gen_customer_sn(length=7):
+        """生成分销商编号"""
+        prefix = '1'
+        return ''.join([prefix, MixGenId.gen_digits(length)])
     
     @staticmethod
     def gen_user_xid(length=10):

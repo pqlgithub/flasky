@@ -19,5 +19,6 @@ from .market import AppService, SubscribeService, SubscribeRecord
 from .language import Language
 from .address import Address
 from .banner import Banner, BannerImage
-from .counter import Counter
 from .shop import Shop, ShopSeo
+from .customer import Customer, CustomerGrade
+from .counter import Counter

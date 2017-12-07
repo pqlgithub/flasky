@@ -295,107 +295,107 @@
 	</div>
 
 	<form class="form-inline filter-form" method="post" action="">
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<div class="form-group">
-					<input type="text" class="form-control searcher" name="qk" size="45" placeholder="{{ _('Search order serial_no or customer...') }}">
-				</div>
+		<div class="form-group">
+			<input type="text" class="form-control searcher" name="qk" size="45" placeholder="{{ _('Search order serial_no or customer...') }}">
+		</div>
 
-				<div class="form-group m-l-5">
-					<div class="dropdown">
-						<input type="hidden" name="store_id" value="{{ store_id }}">
-						<button class="btn btn-default dropdown-toggle" id="filter-store" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							{{ _('Store') }}: <b>{{ _('All') }}</b>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-select-menu" data-target="store_id" aria-labelledby="filter-warehouse">
-							<li class="dropdown-header">{{ _('Search Store')}}</li>
-							<li class="divider" role="separator"></li>
-							<li>
-								<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
-							</li>
-							{% for st in store_list %}
-							<li>
-								<a href="javascript:void(0);" data-id="{{ st.id }}" class="option">{{ st.name }} -- {{ st.platform_name }}</a>
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="store_id" value="{{ store_id }}">
+				<button class="btn btn-default dropdown-toggle" id="filter-store" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Store') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="store_id" aria-labelledby="filter-warehouse">
+					<li class="dropdown-header">{{ _('Search Store')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for st in store_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ st.id }}" class="option">{{ st.name }} -- {{ st.platform_name }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
 
-				<div class="form-group m-l-5">
-					<div class="dropdown">
-						<input type="hidden" name="s" value="{{ s }}">
-						<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							{{ _('Status') }}: <b>{{ _('All') }}</b>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-select-menu" data-target="s" aria-labelledby="filter-status">
-							<li class="dropdown-header">{{ _('Filter Status')}}</li>
-							<li class="divider" role="separator"></li>
-							<li>
-								<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
-							</li>
-							{% for s in status_list %}
-							<li>
-								<a href="javascript:void(0);" data-id="{{ s[0] }}" class="option">{{ s[1] }}</a>
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="s" value="{{ s }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Status') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="s" aria-labelledby="filter-status">
+					<li class="dropdown-header">{{ _('Filter Status')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for s in status_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ s[0] }}" class="option">{{ s[1] }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
 
-				<div class="form-group m-l-5">
-					<div class="dropdown">
-						<input type="hidden" name="date" value="{{ date }}">
-						<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							{{ _('Date') }}: <b>{{ _('Unlimited') }}</b>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-select-menu" data-target="date" aria-labelledby="filter-date">
-							<li class="dropdown-header">{{ _('Filter Date')}}</li>
-							<li class="divider" role="separator"></li>
-							<li>
-								<a href="javascript:void(0);" data-id="0" class="option">{{ _('Unlimited') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="1" class="option">{{ _('Today') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="2" class="option">{{ _('Yesterday') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="7" class="option">{{ _('7 Days') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="30" class="option">{{ _('30 Days') }}</a>
-							</li>
-						</ul>
-					</div>
-				</div>
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="date" value="{{ date }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Date') }}: <b>{{ _('Unlimited') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="date" aria-labelledby="filter-date">
+					<li class="dropdown-header">{{ _('Filter Date')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('Unlimited') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Today') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="2" class="option">{{ _('Yesterday') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="7" class="option">{{ _('7 Days') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="30" class="option">{{ _('30 Days') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
 
-				<div class="form-group pull-right">
-					<div class="dropdown">
-						<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
-						<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
-							<li class="dropdown-header">{{ _('Sort Order')}}</li>
-							<li class="divider" role="separator"></li>
-							<li>
-								<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
-							</li>
-							<li>
-								<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
-							</li>
-						</ul>
-					</div>
-				</div>
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
 
 	</form>
 

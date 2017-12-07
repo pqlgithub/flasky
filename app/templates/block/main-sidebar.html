@@ -127,7 +127,31 @@
                         </li>
                      </ul>
                  </div>
-             </li>
+            </li>
+            <li class="{% if sub_menu == 'customers'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.show_customers') }}">
+                    <i class="fa fa-sitemap fa-2x"></i>
+                    <span>{{ _('Customer') }}</span>
+                </a>
+                <div class="treeview-menu tree-2x">
+                     <ul class="subtree">
+                         <li class="header">{{ _('Customer Manage') }}</li>
+                         <li>
+                             <a href="{{ url_for('main.show_customers') }}" class="pjax">
+                                 {{ _('Customer List') }}
+                             </a>
+                         </li>
+                     </ul>
+                     <ul class="subtree">
+                         <li class="header">{{ _('Customer Setting') }}</li>
+                         <li>
+                             <a href="{{ url_for('main.show_grades') }}" class="pjax">
+                                 {{ _('Customer Grade') }}
+                             </a>
+                         </li>
+                     </ul>
+                 </div>
+            </li>
 
             <li class="treeview">
                 <a href="#">

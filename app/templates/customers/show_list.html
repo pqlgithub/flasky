@@ -1,0 +1,203 @@
+{% extends pjax("layout/base.html") %}
+
+
+
+{% block after_jquery %}
+<script type="text/javascript">
+	var submit_filter_form = function () {
+		var data = $('.filter-form').serialize();
+
+		$.post("{{ url_for('main.search_customers') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+
+		return false;
+	};
+
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		mixpus.hook_per_page_select();
+
+		// 审核 全部 or 单个
+		$('button.verify-all').click(function () {
+			var form_id = $(this).data('form-id');
+			// 检测是否选中
+			selected = [];
+			$('#' + form_id).find('.check-one:checked').each(function () {
+				var id = $(this).val();
+				selected.push(id);
+			});
+			if (selected.length){
+				$.post('{{ url_for("main.ajax_verify_customer") }}', {'selected[]': selected, csrf_token: mixpus.csrf_token}, function (result) {
+					if (result.success) {
+						ids = result.data.selected_sns;
+						for (var i=0,l=ids.length;i<l;i++) {
+							$('#status_' + ids[i])
+								.removeClass('danger')
+								.addClass('success')
+								.text("{{ _('Enabled') }}");
+						}
+					} else {
+					    return mixpus.show_error_message(result.status.message);
+					}
+				});
+			} else {
+			    mixpus.show_error_message("First to selected the one!!!");
+			}
+		});
+
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Customer Manage') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<a href="{{ url_for('main.create_customer') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-warning verify-all" data-form-id="customers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
+				<i class="glyphicon glyphicon-ok"></i>
+			</button>
+			<button class="btn btn-danger delete-all hidden" data-form-id="customers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<ul class="nav nav-tabs">
+		<li class="active">
+			<a href="{{ url_for('main.show_customers') }}" id="customers-tab" aria-controls="customers" aria-expanded="true">
+				{{ _('Customers') }}
+			</a>
+		</li>
+		<li>
+			<a href="{{ url_for('main.show_grades') }}" id="customer-grade-tab" aria-controls="customer-grade">
+				{{ _('Customer Grade') }}
+			</a>
+		</li>
+	</ul>
+
+	<form class="form-inline filter-form m-t-20" method="post" action="">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control searcher" name="qk" size="45" placeholder="{{ _('Search customer name or code...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="g" value="{{ g }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-grade" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Grade') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="g" aria-labelledby="filter-status">
+					<li class="dropdown-header">{{ _('Filter Grade')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for g in grade_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ g.id }}" class="option">{{ g.name }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="s" value="{{ s }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Status') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="s" aria-labelledby="filter-status">
+					<li class="dropdown-header">{{ _('Filter Status')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for s in customer_status %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ s[0] }}" class="option">{{ s[1] }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="date" value="{{ date }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-date" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Join Date') }}: <b>{{ _('Unlimited') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="date" aria-labelledby="filter-date">
+					<li class="dropdown-header">{{ _('Filter Date')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('Unlimited') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Today') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="2" class="option">{{ _('Yesterday') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="7" class="option">{{ _('7 Days') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="30" class="option">{{ _('30 Days') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div id="table-refresh-box" class="m-t-20">
+		{% include "customers/table_customer.html" %}
+
+		{% import "block/_macros.html" as macros %}
+		{{ macros.pagination_widget(pagination, '.show_customers') }}
+	</div>
+
+</div>
+{% endblock %}

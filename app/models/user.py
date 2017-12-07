@@ -82,7 +82,12 @@ class User(UserMixin, db.Model):
     roles = db.relationship(
         'Role', secondary=user_role_table, backref='users'
     )
-
+    
+    # 分销商客户
+    customer = db.relationship(
+        'Customer', backref='user', uselist=False, cascade='delete'
+    )
+    
     @property
     def role_group(self):
         return ' / '.join(self.has_roles())

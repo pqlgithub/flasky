@@ -23,7 +23,7 @@ var mixpus = {
 			text: null,
 			type: 'success',
 			confirmButtonText: 'Ok',
-			confirmButtonColor: '#28a5a8'
+			confirmButtonColor: '#008749'
 		 });
 	},
 	show_warning_message: function (message) {

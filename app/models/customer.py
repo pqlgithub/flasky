@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
+from flask_babelex import lazy_gettext
+from jieba.analyse.analyzer import ChineseAnalyzer
+import flask_whooshalchemyplus
 from app import db
 from ..utils import timestamp
+from ..constant import CUSTOMER_STATUS
 
 __all__ = [
-    'Distributor',
-    'DistributorGrade'
+    'Customer',
+    'CustomerGrade'
 ]
 
-class Distributor(db.Model):
+class Customer(db.Model):
     """分销客户"""
     
-    __tablename__ = 'distributors'
+    __tablename__ = 'customers'
+
+    __searchable__ = ['name', 'sn', 'mobile']
+    __analyzer__ = ChineseAnalyzer()
     
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
     name = db.Column(db.String(20), nullable=False)
     sn = db.Column(db.String(20), nullable=False)
-    grade_id = db.Column(db.Integer, db.ForeignKey('distributor_grades.id'))
+    grade_id = db.Column(db.Integer, db.ForeignKey('customer_grades.id'))
     
     province = db.Column(db.String(100))
     city = db.Column(db.String(50))
@@ -34,17 +43,22 @@ class Distributor(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
+
+    @property
+    def status_label(self):
+        for s in CUSTOMER_STATUS:
+            if s[0] == self.status:
+                return s
     
     def __repr__(self):
-        return '<Distributor {}>'.format(self.name)
+        return '<Customer {}>'.format(self.name)
     
     
     
-class DistributorGrade(db.Model):
+class CustomerGrade(db.Model):
     """分销商等级"""
     
-    __tablename__ = 'distributor_grades'
+    __tablename__ = 'customer_grades'
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
@@ -54,8 +68,13 @@ class DistributorGrade(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
     
+    # grade => customer 1 => N
+    customers = db.relationship(
+        'Customer', backref='customer_grade', lazy='dynamic'
+    )
+    
     
     def __repr__(self):
-        return '<DistributorGrade {}>'.format(self.name)
+        return '<CustomerGrade {}>'.format(self.name)
     
     

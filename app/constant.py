@@ -231,6 +231,13 @@ PRODUCT_DEFAULT_UNIT = (
     (1, lazy_gettext('piece'))
 )
 
+# 分销商客户的状态
+CUSTOMER_STATUS = [
+    (2, lazy_gettext('Enabled'), 'success'),
+    (1, lazy_gettext('Pending Approval'), 'danger'),
+    (-1, lazy_gettext('Disabled'), 'default'),
+]
+
 
 # 导出采购单头格式 / 采购单对应的字段
 PURCHASE_EXCEL_FIELDS = {

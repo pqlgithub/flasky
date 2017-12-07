@@ -26,6 +26,11 @@ class Master:
             return current_user.id
         else:
             return current_user.master_uid if current_user else None
+        
+    @staticmethod
+    def is_can(uid):
+        return uid == Master.master_uid()
+        
 
 class DBEnum(enum.Enum):
 

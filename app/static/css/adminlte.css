@@ -137,6 +137,9 @@
 .font-13 {
     font-size: 13px;
 }
+.font-14 {
+    font-size: 14px;
+}
 .wrapper-md {
     padding: 20px;
 }
@@ -1127,6 +1130,12 @@ body {
     padding:15px;
     margin-right:auto;
     margin-left:auto;
+}
+div.required .control-label:not(span)::before,
+td.required::before {
+    color: #dd4b39;
+    content: "* ";
+    font-weight: bold;
 }
 h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
     font-family:'Source Sans Pro',sans-serif;

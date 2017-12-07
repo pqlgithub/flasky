@@ -122,6 +122,7 @@ class Order(db.Model):
     suspend = db.Column(db.Boolean, default=False)
     # 过期时间
     expired_time = db.Column(db.Integer, nullable=True)
+    
     # 来源终端
     from_client = db.Column(db.SmallInteger, default=0)
     # 推广码

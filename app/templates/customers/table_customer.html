@@ -1,0 +1,62 @@
+<div class="table-responsive">
+    <form id="customers-form" action="{{ url_for('main.delete_customer') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">
+                    <input name="check_all" type="checkbox" class="check-all">
+                </th>
+                <th>{{ _('Customer Account') }}</th>
+                <th>{{ _('Customer Name') }}</th>
+                <th class="text-center">{{ _('Code') }}</th>
+                <th class="text-center">{{ _('Grade') }}</th>
+                <th>{{ _('Mobile') }}</th>
+                <th>{{ _('Area') }}</th>
+                <th class="text-right">{{ _('Status') }}</th>
+                <th class="text-right">{{ _('Join At') }}</th>
+                <th class="text-right">{{ _('Action') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for customer in paginated_customers %}
+            <tr id="tr_{{ customer.sn }}">
+                <td class="text-center">
+                    <input name="selected[]" class="check-one" value="{{ customer.sn }}" type="checkbox">
+                </td>
+                <td>
+                    {{ customer.user.email }}
+                </td>
+                <td>
+                    {{ customer.name }}
+                </td>
+                <td class="text-center text-green">
+                    {{ customer.sn }}
+                </td>
+                <td class="text-center">
+                    {{ customer.customer_grade.name }}
+                </td>
+                <td>
+                    {{ customer.mobile }}
+                </td>
+                <td>
+                    {{ customer.province }} {{ customer.city }}
+                </td>
+                <td class="text-right">
+                    <span class="indicator {{ customer.status_label[2] }}" id="status_{{ customer.sn }}">{{ customer.status_label[1] }}</span>
+                </td>
+                <td class="text-right">
+                    {{ customer.created_at|timestamp2string('%Y-%m-%d %H:%M') }}
+                </td>
+                <td class="text-right">
+                    <a href="{{ url_for('main.edit_customer', sn=customer.sn) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                        {{ _('Edit') }}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>

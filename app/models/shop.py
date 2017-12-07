@@ -10,7 +10,7 @@ from sqlalchemy.sql import func
 from flask import current_app
 from app import db, config
 from app.utils import timestamp
-from app.models import Language, Currency, Counter
+from app.models import Language, Currency
 
 __all__ = [
     'Shop',
