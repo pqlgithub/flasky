@@ -140,16 +140,16 @@
 					</div>
 				</div>
 
-				<div class="form-group m-b-25 required {% if form.errors.brand_rid %} has-error{% endif %}">
-					{{ form.brand_rid.label(class="col-sm-2 control-label") }}
+				<div class="form-group m-b-25 required {% if form.errors.brand_id %} has-error{% endif %}">
+					{{ form.brand_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
-						<select name="brand_rid" id="brand_rid" class="form-control select2">
+						<select name="brand_id" id="brand_id" class="form-control select2">
 							<option value="0">{{ _('Select brand...') }}</option>
 							{% for brand in paginated_brands.items %}
-							<option value="{{ brand.sn }}" {% if brand.sn == product.brand_rid %}selected="selected"{% endif %}>{{ brand.name|safe }}</option>
+							<option value="{{ brand.id }}" {% if brand.id == product.brand_id %}selected="selected"{% endif %}>{{ brand.name|safe }}</option>
 							{% endfor %}
 						</select>
-						{% for error in form.errors.brand_rid %}
+						{% for error in form.errors.brand_id %}
 						<span class="help-block">{{ error }}</span>
 						{% endfor %}
 					</div>

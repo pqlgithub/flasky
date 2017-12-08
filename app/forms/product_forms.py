@@ -70,7 +70,7 @@ class EditCategoryForm(CategoryForm):
 class ProductForm(Form):
 
     supplier_id = IntegerField(lazy_gettext('Supplier'), default=0)
-    brand_rid = StringField(lazy_gettext('Brand'))
+    brand_id = IntegerField(lazy_gettext('Brand'))
     category_id = IntegerField(lazy_gettext('Category'))
     
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
@@ -109,3 +109,6 @@ class ProductSkuForm(Form):
     s_color = StringField(lazy_gettext('Color'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0.00)
     remark = TextAreaField(lazy_gettext('Remark'))
+    
+class ProductGroupForm(Form):
+    name = StringField(lazy_gettext('Group Name'), validators=[DataRequired("Group Name can't empty!")])

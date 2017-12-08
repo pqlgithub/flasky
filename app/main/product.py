@@ -10,8 +10,8 @@ from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no
 from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
-    Currency, Order, OrderItem, Brand
-from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm
+    Currency, Order, OrderItem, Brand, ProductPacket
+from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
     custom_response, import_product_from_excel
 from ..decorators import user_has
@@ -246,15 +246,15 @@ def create_product():
         current_app.logger.warn('Product new serial_no [%s] -----!!!' % new_serial_no)
         
         # 根据品牌获取供应商
-        if form.brand_rid.data:
-            brand = Brand.query.filter_by(master_uid=Master.master_uid(), sn=form.brand_rid.data).first()
+        if form.brand_id.data:
+            brand = Brand.query.filter_by(master_uid=Master.master_uid(), id=form.brand_id.data).first()
             form.supplier_id.data = brand.supplier_id if brand else 0
 
         product = Product(
             master_uid=Master.master_uid(),
             serial_no=new_serial_no,
             supplier_id=form.supplier_id.data,
-            brand_rid=form.brand_rid.data,
+            brand_id=form.brand_id.data,
             name=form.name.data,
             cover_id=form.cover_id.data,
             currency_id=form.currency_id.data,
@@ -326,8 +326,8 @@ def edit_product(rid):
     if form.validate_on_submit():
     
         # 根据品牌获取供应商
-        if form.brand_rid.data:
-            brand = Brand.query.filter_by(master_uid=Master.master_uid(), sn=form.brand_rid.data).first()
+        if form.brand_id.data:
+            brand = Brand.query.filter_by(master_uid=Master.master_uid(), id=form.brand_id.data).first()
             form.supplier_id.data = brand.supplier_id if brand else 0
         
         form.populate_obj(product)
@@ -355,7 +355,7 @@ def edit_product(rid):
 
     form.serial_no.data = product.serial_no
     form.supplier_id.data = product.supplier_id
-    form.brand_rid.data = product.brand_rid
+    form.brand_id.data = product.brand_id
     form.name.data = product.name
     form.cover_id.data = product.cover_id
     # 默认为官网默认货币
@@ -1094,3 +1094,209 @@ def delete_supplier():
 
 
 
+@main.route('/product_groups', methods=['GET', 'POST'])
+@main.route('/product_groups/<int:page>', methods=['GET', 'POST'])
+@login_required
+@user_has('admin_product')
+def show_product_groups(page=1):
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    paginated_groups = ProductPacket.query.filter_by(master_uid=Master.master_uid()).order_by(ProductPacket.created_at.desc()).paginate(page, per_page)
+    
+    return render_template('products/show_groups.html',
+                           paginated_groups=paginated_groups,
+                           **load_common_data())
+
+
+@main.route('/product_groups/create', methods=['GET', 'POST'])
+@user_has('admin_product')
+def create_product_group():
+    form = ProductGroupForm()
+    if form.validate_on_submit():
+        if ProductPacket.query.filter_by(master_uid=Master.master_uid(), name=form.name.data).first():
+            return custom_response(False, gettext('Name already exist!'))
+        
+        group = ProductPacket(
+            master_uid=Master.master_uid(),
+            name=form.name.data,
+        )
+        db.session.add(group)
+        db.session.commit()
+        
+        flash(gettext('Add product group is ok!'), 'success')
+        return custom_response(True)
+    
+    mode = 'create'
+    return render_template('products/_modal_create_group.html',
+                           mode=mode,
+                           post_url=url_for('main.create_product_group'),
+                           form=form)
+
+
+@main.route('/product_groups/<int:id>/edit', methods=['GET', 'POST'])
+@user_has('admin_product')
+def edit_product_group(id):
+    group = ProductPacket.query.get_or_404(id)
+    if not Master.is_can(group.master_uid):
+        abort(401)
+    
+    form = ProductGroupForm()
+    if form.validate_on_submit():
+        if group.name != form.name.data \
+                and ProductPacket.query.filter_by(master_uid=Master.master_uid(), name=form.name.data).first():
+            return custom_response(False, gettext('Name already exist!'))
+        
+        group.name = form.name.data
+        
+        db.session.commit()
+        
+        flash(gettext('Update product group is ok!'), 'success')
+        return custom_response(True)
+    
+    mode = 'edit'
+    form.name.data = group.name
+    return render_template('products/_modal_create_group.html',
+                           mode=mode,
+                           post_url=url_for('main.edit_product_group', id=id),
+                           form=form)
+
+
+@main.route('/product_groups/delete', methods=['POST'])
+@user_has('admin_product')
+def delete_product_group():
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash('Delete product group is null!', 'danger')
+        abort(404)
+    
+    try:
+        for id in selected_ids:
+            group = ProductPacket.query.get_or_404(int(id))
+            
+            if not Master.is_can(group.master_uid):
+                abort(401)
+            
+            db.session.delete(group)
+        
+        db.session.commit()
+        
+        flash('Delete product group is ok!', 'success')
+    except:
+        db.session.rollback()
+        flash('Delete product group is fail!', 'danger')
+    
+    return redirect(url_for('.show_product_groups'))
+
+
+@main.route('/product_groups/<int:id>/show', methods=['GET', 'POST'])
+@user_has('admin_product')
+def show_group_products(id):
+    """显示组商品列表"""
+    per_page = request.args.get('per_page', 10, type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    product_packet = ProductPacket.query.get_or_404(id)
+    if not Master.is_can(product_packet.master_uid):
+        abort(401)
+    
+    # 已选择商品
+    builder = product_packet.products.filter_by(master_uid=Master.master_uid())
+    selected_products = builder.order_by(Product.created_at.desc()).paginate(page, per_page)
+    
+    return render_template('products/show_set_groups.html',
+                           product_group=product_packet,
+                           selected_products=selected_products,
+                           **load_common_data())
+
+
+@main.route('/product_groups/<int:id>/products', methods=['GET', 'POST'])
+@user_has('admin_product')
+def ajax_product_for_group(id):
+    """为商品组选择商品"""
+    per_page = request.values.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    cid = request.values.get('cid', type=int)
+    bid = request.values.get('bid', type=int)
+
+    product_packet = ProductPacket.query.get_or_404(id)
+    if not Master.is_can(product_packet.master_uid):
+        abort(401)
+
+    # 已选择商品
+    builder = product_packet.products.filter_by(master_uid=Master.master_uid())
+    selected_products = builder.order_by(Product.created_at.desc()).all()
+    selected_product_ids = [p.id for p in selected_products]
+    
+    # 获取全部商品
+    product_builder = Product.query.filter_by(master_uid=Master.master_uid())
+    if bid:
+        product_builder = product_builder.filter_by(brand_id=bid)
+    
+    if selected_product_ids:
+        product_builder = product_builder.filter(Product.id.notin_(selected_product_ids))
+
+    paginated_products = product_builder.paginate(page, per_page)
+    
+    brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
+    categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+    
+    return render_template('products/_modal_select_products.html',
+                           paginated_products=paginated_products,
+                           product_packet=product_packet,
+                           categories=categories,
+                           brands=brands,
+                           bid=bid,
+                           cid=cid)
+
+@main.route('/product_groups/<int:id>/submit', methods=['POST'])
+@user_has('admin_product')
+def submit_product_for_group(id):
+    rid = request.values.get('rid')
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids and not rid:
+        return custom_response(False, gettext("Product isn't null!"))
+    
+    product_packet = ProductPacket.query.get_or_404(id)
+    if not Master.is_can(product_packet.master_uid):
+        return custom_response(False, gettext("Product can't authorization!"))
+
+    product_list = []
+    if rid:
+        product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+        if product is None:
+            return custom_response(False, gettext("Product isn't exist!"))
+        product_list.append(product)
+    
+    if selected_ids:
+        product_list = Product.query.filter_by(master_uid=Master.master_uid())\
+            .filter(Product.serial_no.in_(selected_ids)).all()
+    
+    product_packet.push_product(*product_list)
+    
+    db.session.commit()
+    
+    return status_response(True, gettext("Select product is ok!"))
+
+@main.route('/product_groups/<int:id>/remove', methods=['POST'])
+@user_has('admin_product')
+def remove_product_from_group(id):
+    rid = request.values.get('rid')
+    if not rid:
+        return custom_response(False, gettext("Product isn't null!"))
+    
+    product_packet = ProductPacket.query.get_or_404(id)
+    if not Master.is_can(product_packet.master_uid):
+        return custom_response(False, gettext("Product can't authorization!"))
+
+    product_list = []
+    if rid:
+        product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+        if product is None:
+            return custom_response(False, gettext("Product isn't exist!"))
+        product_list.append(product)
+        
+    product_packet.remove_product(*product_list)
+
+    db.session.commit()
+
+    return status_response(True, gettext("Cancel select is ok!"))

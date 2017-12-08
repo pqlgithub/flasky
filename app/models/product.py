@@ -71,7 +71,7 @@ class Product(db.Model):
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     
     # 所属品牌
-    brand_rid = db.Column(db.String(9), nullable=True)
+    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'))
     
     name = db.Column(db.String(128), nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
@@ -674,6 +674,11 @@ class Brand(db.Model):
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    # brand and product => 1 to N
+    products = db.relationship(
+        'Product', backref='brand', lazy='dynamic'
+    )
     
     @property
     def logo(self):
@@ -743,6 +748,7 @@ class Category(db.Model):
     """产品类别"""
 
     __tablename__ = 'categories'
+    
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     name = db.Column(db.String(32), index=True)
@@ -760,7 +766,7 @@ class Category(db.Model):
 
     # category and product => N to N
     products = db.relationship(
-        'Product', secondary=product_category_table, backref=db.backref('Category', lazy='select'), lazy='dynamic'
+        'Product', secondary=product_category_table, backref=db.backref('categories', lazy='select'), lazy='dynamic'
     )
     
     category_paths = db.relationship(

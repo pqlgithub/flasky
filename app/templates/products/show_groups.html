@@ -1,0 +1,76 @@
+{% extends pjax("layout/base.html") %}
+
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Product Group List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<a href="{{ url_for('main.create_product_group') }}" data-toggle="tooltip" class="pjax btn btn-mixpus ajax-modal" data-modal="create-modal" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+
+			<button class="btn btn-danger delete-all hidden" data-form-id="groups-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+    <div class="tab-content m-t-30">
+        <div class="table-responsive m-t-20">
+            <form id="groups-form" action="{{ url_for('main.delete_product_group') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            <input name="check_all" type="checkbox" class="check-all">
+                        </th>
+                        <th>{{ _('Group Name') }}</th>
+                        <th class="text-right">{{ _('Product Count') }}</th>
+                        <th class="text-right">{{ _('Action') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for group in paginated_groups.items %}
+                    <tr>
+                        <td class="text-center">
+                            <input name="selected[]" class="check-one" value="{{ group.id }}" type="checkbox">
+                        </td>
+                        <td>
+                            {{ group.name }}
+                        </td>
+                        <td class="text-right">
+                            {{ group.total_count }}
+                        </td>
+                        <td class="text-right">
+                            <a href="{{ url_for('main.show_group_products', id=group.id) }}" class="btn-link m-r-10" data-modal="create-modal" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                                {{ _('View Products') }}
+                            </a>
+                            <a href="{{ url_for('main.edit_product_group', id=group.id) }}" class="btn-link ajax-modal" data-modal="create-modal" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                                {{ _('Edit') }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        {% import "block/_macros.html" as macros %}
+        {{ macros.pagination_widget(paginated_groups, '.show_product_groups') }}
+    </div>
+
+</div>
+{% endblock %}

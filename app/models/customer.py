@@ -103,11 +103,28 @@ class ProductPacket(db.Model):
     master_uid = db.Column(db.Integer, default=0)
 
     name = db.Column(db.String(20), nullable=False)
-    
     discount_templet_id = db.Column(db.Integer, db.ForeignKey('discount_templets.id'))
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    # packet and product => N to N
+    products = db.relationship(
+        'Product', secondary=product_packet_table, backref=db.backref('ProductPacket', lazy='select'), lazy='dynamic'
+    )
+    
+    @property
+    def total_count(self):
+        return self.products.count()
+    
+    def push_product(self, *product_list):
+        """追加产品到组"""
+        self.products.extend([product for product in product_list if product not in self.products])
+    
+    
+    def remove_product(self, *product_list):
+        """从组删除产品"""
+        self.products = [product for product in self.products if product not in product_list]
     
     
     def __repr__(self):
@@ -124,10 +141,11 @@ class DiscountTemplet(db.Model):
     
     name = db.Column(db.String(20), nullable=False)
     default_discount = db.Column(db.Numeric(precision=10, scale=2), default=100.00)
+    is_default = db.Column(db.Boolean, default=False)
     # 计算方式
     type = db.Column(db.SmallInteger, default=1)
     description = db.Column(db.String(200))
-
+    
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
     

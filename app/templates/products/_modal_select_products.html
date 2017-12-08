@@ -1,0 +1,240 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{{ _('Search Products') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form form-inline" action="" method="post" id="products-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+                <input type="hidden" name="packet_id" value="{{ product_packet.id }}" >
+
+				<div class="form-group">
+					<input type="text" name="qk" size="30" class="form-control searcher" placeholder="{{ _('Search sku or name...') }}" >
+				</div>
+                <div class="form-group">
+                    <div class="dropdown">
+                        <input type="hidden" name="cid">
+                        <button class="btn btn-default dropdown-toggle" id="filter-cid" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            {{ _('Category') }}: <b>{{ _('All') }}</b>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-select-menu" data-target="cid" aria-labelledby="filter-cid">
+                            <li class="dropdown-header">{{ _('Search Brand')}}</li>
+                            <li class="divider" role="separator"></li>
+                            <li>
+                                <a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+                            </li>
+                            {% for c in categories %}
+                            <li>
+                                <a href="javascript:void(0);" data-id="{{ c.id }}" class="option">{{ c.name|safe }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="dropdown">
+                        <input type="hidden" name="bid">
+                        <button class="btn btn-default dropdown-toggle" id="filter-bid" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            {{ _('Brand') }}: <b>{{ _('All') }}</b>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-select-menu" data-target="bid" aria-labelledby="filter-bid">
+                            <li class="dropdown-header">{{ _('Search Brand')}}</li>
+                            <li class="divider" role="separator"></li>
+                            <li>
+                                <a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+                            </li>
+                            {% for r in brands %}
+                            <li>
+                                <a href="javascript:void(0);" data-id="{{ r.id }}" class="option">{{ r.name|safe }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+				<table class="table table-bordered m-t-20 m-b-20">
+					<thead>
+						<tr>
+                    <th class="text-center">
+                        <input name="check_all" type="checkbox" class="check-all">
+                    </th>
+                    <th class="text-center">{{ _('Image') }}</th>
+                    <th>{{ _('Product Info') }}</th>
+                    <th>{{ _('Category') }}</th>
+                    <th>{{ _('Brand') }}</th>
+                    <th class="text-right">{{ _('Sale Price') }}</th>
+                    <th class="text-right">{{ _('Stock') }}</th>
+                    <th class="text-right">{{ _('Status') }}</th>
+                    <th class="text-right">{{ _('Action') }}</th>
+                </tr>
+					</thead>
+					<tbody>
+					{% for product in paginated_products.items %}
+					<tr id="product-{{ product.serial_no }}">
+                    <td class="text-center">
+                        <input name="selected[]" class="check-one" value="{{ product.serial_no }}" type="checkbox">
+                    </td>
+                    <td class="text-center">
+                        <img src="{{ product.cover.view_url }}" width="60px">
+                    </td>
+                    <td>
+                        {% if product.region_id == 1 %}
+                        <span class="text-mixpus">{{ product.serial_no }}</span>
+                        {% else %}
+                        <span class="text-warning">{{ product.serial_no }}</span>
+                        {% endif %}
+                        <br>
+                        {{ product.name|safe }}
+                    </td>
+                    <td>
+                        {% for c in product.categories %}
+                        <span>{{ c.name }}</span>{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ product.brand.name }}
+                    </td>
+                    <td class="text-right">
+                        {{ product.sale_price|round(precision=2) }} {{ product.currency_unit }}
+                    </td>
+                    <td class="text-right">
+
+                    </td>
+                    <td class="text-right">
+                        <span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
+                    </td>
+                    <td class="text-right">
+                        <a href="javascript:void(0);" data-sn="{{ product.serial_no }}" class="btn-link btn-select" data-toggle="tooltip" data-original-title="{{ _('Selected') }}">
+                            {{ _('Selected') }}
+                        </a>
+                    </td>
+                </tr>
+					{% endfor %}
+					</tbody>
+				</table>
+
+				{% import "block/_macros.html" as macros %}
+				{{ macros.pagination_widget(paginated_products, '.ajax_product_for_group', id=product_packet.id, cid=cid, qk=qk, bid=bid) }}
+
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="product-submit-btn" class="btn btn-mixpus">{{ _('Batch Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+    mixpus.hook_select2();
+
+	var submit_search_handler = function (url) {
+		var qk = $('input[name=qk]').val();
+		var cid = $('input[name=cid]').val();
+		var bid = $('input[name=bid]').val();
+
+		// 检测是否选中
+		var selected = [];
+		$('#products-form').find('.check-one:checked').each(function () {
+			selected.push($(this).val());
+		});
+
+		var post_url = url || "{{ url_for('main.ajax_product_for_group', id=product_packet.id) }}";
+
+		$.post(post_url, {'qk': qk, 'cid': cid, 'bid':bid, 'selected':selected,
+            'csrf_token': mixpus.csrf_token }, function (result) {
+			$('#products-modal').html(result);
+		}, 'html');
+	};
+
+	$('input.searcher').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			submit_search_handler();
+			return false;
+		}
+	});
+
+	mixpus.hook_dropdown_menu(submit_search_handler);
+
+	$('.pagination a').on('click', function(e) {
+		e.preventDefault();
+
+		submit_search_handler($(this).attr('href'));
+	});
+
+	$('.custom-per-page .per-page').change(function (e) {
+		e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+		submit_search_handler(url);
+    });
+
+	// 全选 or 反选
+	$('#products-form').find('input.check-all').bind('click', function() {
+		if ($(this).is(':checked')){
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', true);
+		} else {
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', false);
+		}
+	});
+
+	$('#products-form').find('input.check-one').click(function () {
+		// 取消全选
+		if (!$(this).is(':checked')) {
+			$('input.check-all')
+				.prop('checked', false);
+		}
+	});
+
+	$('a.btn-select').click(function (e) {
+	    e.preventDefault();
+
+		var rid = $(this).data('sn'), csrf_token= $("input[name='csrf_token']").val();
+		$.post("{{ url_for('main.submit_product_for_group', id=product_packet.id) }}",
+            {'csrf_token': csrf_token, 'rid':rid }, function (result) {
+                if (result.success) {
+                    $('#product-'+rid).remove();
+                } else {
+                    return mixpus.show_error_message(result.status.message)
+                }
+            });
+	});
+
+    $('#products-modal').on('hidden.bs.modal', function (e) {
+        window.location.reload();
+    });
+
+	$('#product-submit-btn').click(function (e) {
+		$.ajax({
+			url: "{{ url_for('main.submit_product_for_group', id=product_packet.id) }}",
+			type: 'post',
+			data: $('#products-form').serialize(),
+			dataType: 'json',
+			beforeSend: function () {
+				$('#product-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#product-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				$('#products-modal').modal('hide');
+                // 自动刷新
+				window.location.reload();
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>
