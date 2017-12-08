@@ -23,9 +23,9 @@ class OrderDeal(object):
                             * item.quantity - float(item.discount_amount), 2)
 
         created_at = datetime.fromtimestamp(self.order_obj.created_at)
-        # 该订支付年份
+        # 该订单创建年份
         self.year = created_at.strftime("%Y")
-        # 支付月份
+        # 创建月份
         self.month = created_at.strftime("%Y%m")
         # 上一年
         self.last_year = (str)(created_at.year - 1)
