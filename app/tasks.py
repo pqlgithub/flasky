@@ -149,17 +149,17 @@ def sales_statistics(order_id):
     #                     * item.quantity - float(item.discount_amount), 2)
 
     # # 支付时间
-    # payed_at = datetime.fromtimestamp(order_obj.payed_at)
+    # created_at = datetime.fromtimestamp(order_obj.created_at)
     # # 该订单年、月
-    # year = payed_at.strftime("%Y")
-    # month = payed_at.strftime("%Y%m")
+    # year = created_at.strftime("%Y")
+    # month = created_at.strftime("%Y%m")
     # # 上一年
-    # last_year = (str)(payed_at.year - 1)
+    # last_year = (str)(created_at.year - 1)
     # # 上一月
-    # last_month = (payed_at - timedelta(days=payed_at.day)
+    # last_month = (created_at - timedelta(days=created_at.day)
     #               ).strftime("%Y%m")
     # # 上年同一月
-    # last_year_month = last_year + str(payed_at.month)
+    # last_year_month = last_year + str(created_at.month)
 
     # try:
 

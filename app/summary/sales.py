@@ -22,18 +22,18 @@ class OrderDeal(object):
             self.profit += round((float(item.deal_price) - float(sku.cost_price))
                             * item.quantity - float(item.discount_amount), 2)
 
-        payed_at = datetime.fromtimestamp(self.order_obj.payed_at)
+        created_at = datetime.fromtimestamp(self.order_obj.created_at)
         # 该订支付年份
-        self.year = payed_at.strftime("%Y")
+        self.year = created_at.strftime("%Y")
         # 支付月份
-        self.month = payed_at.strftime("%Y%m")
+        self.month = created_at.strftime("%Y%m")
         # 上一年
-        self.last_year = (str)(payed_at.year - 1)
+        self.last_year = (str)(created_at.year - 1)
         # 上一月
-        self.last_month = (payed_at - timedelta(days=payed_at.day)
+        self.last_month = (created_at - timedelta(days=created_at.day)
                       ).strftime("%Y%m")
         # 上年同一月
-        self.last_year_month = self.last_year + str(payed_at.month)
+        self.last_year_month = self.last_year + str(created_at.month)
 
 
     def order_pay(self):
