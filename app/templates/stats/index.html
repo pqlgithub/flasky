@@ -35,7 +35,7 @@
 	};
 
 	// 使用刚指定的配置项和数据显示图表。
-	// world_map_chart.setOption(option);
+	world_map_chart.setOption(option);
 
 {#</script>#}
 {% endblock %}
@@ -55,7 +55,48 @@
 		<div class="col-md-12">
 			<div class="card m-b-20">
 				<div class="card-block">
+					<h3 class="card-title">{{ _('Master Sales') }}</h3>
+					<div class="col-md-3">{{_('销售收入')}}：{{ master_statistics.income or '--' }}</div>
+					<div class="col-md-3">{{_('销售同比')}}：{{ master_statistics.income_yoy or '--' }}%</div>
+					<div class="col-md-3">{{_('利润')}}：{{master_statistics.profit or '--'}}</div>
+					<div class="col-md-3">{{_('利润同比')}}：{{ master_statistics.profit_yoy or '--' }}%</div>
+				</div>
+			</div>
+
+			<div class="card m-b-20">
+				<div class="card-block">
+					<h3 class="card-title">{{ _('各部门销售') }}</h3>
+					<table class="table table-hover">
+					<th>
+						<td>店铺</td>
+						<td>收入</td>
+						<td>收入同比</td>
+						<td>收入环比</td>
+						<td>利润</td>
+						<td>利润同比</td>
+						<td>利润环比</td>
+					</th>
+					{% for store in store_statistics %}
+					<tr>
+						<td></td>
+						<td>{{ store.store_id }}</td>
+						<td>{{store.income}}</td>
+						<td>{{store.income_yoy or '--'}}%</td>
+						<td>{{store.income_mom or '--'}}%</td>
+						<td>{{store.profit}}</td>
+						<td>{{store.profit_yoy or '--'}}%</td>
+						<td>{{store.profit_mom or '--'}}%</td>
+					</tr>
+					{% endfor %}
+					</table>
+					
+				</div>
+			</div>
+
+			<div class="card m-b-20">
+				<div class="card-block">
 					<h3 class="card-title">{{ _('World Map') }}</h3>
+					<div id="world-map" style="width: 600px;height:400px;"></div>
 				</div>
 			</div>
 

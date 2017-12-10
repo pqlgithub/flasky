@@ -27,6 +27,7 @@ from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store,
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
 from app.helpers import kdniao
+from app import tasks
 
 status_list = (
     (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment')),
@@ -1079,6 +1080,7 @@ def ajax_verify_order():
             # 已付款，进入待审核
             if order.status == OrderStatus.PENDING_PAYMENT:
                 order.mark_checked_status()
+                tasks.sales_statistics.delay(order.id)
 
             # 完成审核，待发货状态
             elif order.status == OrderStatus.PENDING_CHECK:

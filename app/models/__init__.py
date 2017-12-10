@@ -22,3 +22,4 @@ from .banner import Banner, BannerImage
 from .shop import Shop, ShopSeo
 from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, DiscountTempletItem, CustomerDistributePacket
 from .counter import Counter
+from .statistics import MasterStatistics, StoreStatistics
