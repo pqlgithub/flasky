@@ -21,7 +21,7 @@ class MasterStatistics(db.Model):
     income_mom = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
     profit_yoy = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
     profit_mom = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
-
+    
     __table_args__ = (
         db.Index('master_uid','time'),
     )
@@ -46,7 +46,7 @@ class StoreStatistics(db.Model):
     income_mom = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
     profit_yoy = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
     profit_mom = db.Column(db.Numeric(precision=10, scale=2),nullable=True)
-
+    
     __table_args__ = (
         db.Index('master_uid','time','store_id'),
     )

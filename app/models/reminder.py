@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import event
 from app import db
-from app.tasks import on_reminder_save
+#from app.tasks import on_reminder_save
 
 __all__ = [
     'Reminder'
@@ -25,4 +25,4 @@ class Reminder(db.Model):
         return '<Reminder `{}`>'.format(self.text[:20])
 
 # Will be callback on_reminder_save when insert recond into table `reminder`.
-event.listen(Reminder, 'after_insert', on_reminder_save)
+#event.listen(Reminder, 'after_insert', on_reminder_save)

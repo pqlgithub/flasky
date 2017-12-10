@@ -8,7 +8,7 @@ from flask_mail import Message
 from app import db
 from app.extensions import flask_celery
 from app.utils import string_to_timestamp
-from app.models import Currency, Site, Order, OrderItem,ProductSku
+from app.models import Currency, Site, Order, OrderItem, ProductSku
 from datetime import datetime, timedelta
 from app.summary import OrderDeal
 
@@ -128,6 +128,7 @@ def send_async_email(msg):
 @flask_celery.task
 def sales_statistics(order_id):
     """主账户、各店铺 销售订单付款统计"""
+    
     OrderDeal(order_id).order_pay()
 
     # from app.models import MasterStatistics, StoreStatistics
