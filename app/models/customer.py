@@ -11,14 +11,9 @@ __all__ = [
     'CustomerGrade',
     'ProductPacket',
     'DiscountTemplet',
-    'DiscountTempletItem'
+    'DiscountTempletItem',
+    'CustomerDistributePacket'
 ]
-
-# customer and product => N to N
-customer_packet_table = db.Table('customer_packets',
-    db.Column('customer_id', db.Integer, db.ForeignKey('customers.id')),
-    db.Column('product_packet_id', db.Integer, db.ForeignKey('product_packets.id'))
-)
 
 # product and product_packet => N to N
 product_packet_table = db.Table('packet_products',
@@ -60,6 +55,11 @@ class Customer(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    # customer and product_packet => 1 to N
+    distribute_packets = db.relationship(
+        'CustomerDistributePacket', backref='customer', lazy='dynamic'
+    )
+    
     @property
     def status_label(self):
         for s in CUSTOMER_STATUS:
@@ -103,11 +103,10 @@ class ProductPacket(db.Model):
     master_uid = db.Column(db.Integer, default=0)
 
     name = db.Column(db.String(20), nullable=False)
-    discount_templet_id = db.Column(db.Integer, db.ForeignKey('discount_templets.id'))
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-
+    
     # packet and product => N to N
     products = db.relationship(
         'Product', secondary=product_packet_table, backref=db.backref('ProductPacket', lazy='select'), lazy='dynamic'
@@ -156,11 +155,6 @@ class DiscountTemplet(db.Model):
             if self.type == t[0]:
                 return t
     
-    # discount_templet => product_packets 1 to N
-    product_packets = db.relationship(
-        'ProductPacket', backref='discount_templet', lazy='dynamic', cascade='delete'
-    )
-
     # discount_templet and items => 1 to N
     items = db.relationship(
         'DiscountTempletItem', backref='discount_templet', lazy='dynamic', cascade='delete'
@@ -190,3 +184,21 @@ class DiscountTempletItem(db.Model):
     
     def __repr__(self):
         return '<DiscountTempletItem {}>'.format(self.id)
+
+
+class CustomerDistributePacket(db.Model):
+    """客户与产品组关系表"""
+    
+    __tablename__ = 'customer_distribute_packets'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+    
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    product_packet_id = db.Column(db.Integer, db.ForeignKey('product_packets.id'))
+    discount_templet_id = db.Column(db.Integer, db.ForeignKey('discount_templets.id'))
+    
+    def __repr__(self):
+        return '<CustomerDistributePacket {}>'.format(self.id)
+    
+    

@@ -1,0 +1,110 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">
+                {{ _('Distribute Products') }}
+            </h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="distribute-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+                <table class="table table-bordered vertical-middle">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            <input name="check_all" type="checkbox" class="check-all">
+                        </th>
+                        <th>{{ _('Product Group') }}</th>
+                        <th>
+                            {{ _('Discount Templet') }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for packet in product_packets %}
+                    <tr>
+                        <td class="text-center">
+                            <input name="selected[]" class="check-one" value="{{ packet.id }}" {% if packet.id in distributed_packet.keys() %}checked="checked"{% endif %} type="checkbox">
+                        </td>
+                        <td>
+                            <p class="form-control-static">
+                                {{ packet.name }}
+                            </p>
+                        </td>
+                        <td>
+                            <select name="discount_tpl_{{ packet.id }}" class="select2">
+                                <option value="0">{{ _('Select Discount Templet') }}</option>
+                                {% for tpl in discount_templets %}
+                                <option value="{{ tpl.id }}" {% if tpl.id == distributed_packet[packet.id] %}selected="selected"{% endif %}>{{ tpl.name }} / {{ tpl.default_discount }}%</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="distribute-submit-btn" class="btn btn-mixpus">{{ _('Submit Distribute') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+    mixpus.hook_select2();
+
+    // 全选 or 反选
+	$('#distribute-form').find('input.check-all').bind('click', function() {
+		if ($(this).is(':checked')){
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', true);
+		} else {
+			$(this)
+				.parents('table')
+				.find('.check-one')
+				.prop('checked', false);
+		}
+	});
+
+	$('#distribute-form').find('input.check-one').click(function () {
+		// 取消全选
+		if (!$(this).is(':checked')) {
+			$('input.check-all')
+				.prop('checked', false);
+		}
+	});
+
+	$('#distribute-submit-btn').click(function (e) {
+		var $form=$('#distribute-form'), data = $form.serialize(), $btn=$('#distribute-submit-btn');
+
+		$.ajax({
+			url: "{{ post_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+				    location.reload();
+				} else {
+					$form.prepend(mixpus.display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

@@ -8,6 +8,8 @@
 
 	mixpus.hook_tooltip_toggle();
 
+	mixpus.hook_ajax_modal();
+
 	$('.ajax .per-page').change(function (e) {
 	    e.preventDefault();
 		var url = $(this).find('option:selected').data('href');

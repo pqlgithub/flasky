@@ -5,9 +5,11 @@ from flask import g, render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from flask_sqlalchemy import Pagination
+
 from . import main
 from .. import db
-from app.models import Customer, CustomerGrade, User, DiscountTemplet, Category, Brand, DiscountTempletItem
+from app.models import Customer, CustomerGrade, User, DiscountTemplet, Category, Brand, DiscountTempletItem, \
+    ProductPacket, CustomerDistributePacket
 from app.forms import CustomerForm, CustomerGradeForm, CustomerEditForm, DiscountTempletForm, DiscountTempletEditForm
 from app.helpers import MixGenId
 from ..utils import Master, custom_response, status_response, full_response, R200_OK
@@ -204,6 +206,55 @@ def edit_customer(sn):
                            mode=mode,
                            form=form,
                            **load_common_data())
+
+
+@main.route('/customers/<string:sn>/distribute', methods=['GET', 'POST'])
+@login_required
+def distribute_products(sn):
+    """为客户分发商品"""
+    customer = Customer.query.filter_by(sn=sn).first_or_404()
+    if not Master.is_can(customer.master_uid):
+        abort(401)
+    
+    if request.method == 'POST':
+        selected_ids = request.form.getlist('selected[]')
+        
+        for packet_id in selected_ids:
+            discount_templet_id = request.form.get('discount_tpl_%s' % packet_id)
+            if discount_templet_id:
+                # 检测是否设置
+                distribute_packet = CustomerDistributePacket.query.filter_by(customer_id=customer.id, product_packet_id=packet_id).first()
+                if distribute_packet is None:
+                    # 新增
+                    new_distribute_packet = CustomerDistributePacket(
+                        master_uid=Master.master_uid(),
+                        customer_id=customer.id,
+                        product_packet_id=packet_id,
+                        discount_templet_id=discount_templet_id
+                    )
+                    db.session.add(new_distribute_packet)
+                else:
+                    # 更新
+                    distribute_packet.discount_templet_id = discount_templet_id
+        
+        db.session.commit()
+        
+        return status_response(True, gettext('Distribute products is ok!'))
+    
+    product_packets = ProductPacket.query.filter_by(master_uid=Master.master_uid()).all()
+    discount_templets = DiscountTemplet.query.filter_by(master_uid=Master.master_uid()).all()
+    
+    # 已分发商品组
+    distributed_packet = {}
+    for dp in customer.distribute_packets.all():
+        distributed_packet[dp.product_packet_id] = dp.discount_templet_id
+    
+    return render_template('customers/_modal_distribute.html',
+                           product_packets=product_packets,
+                           discount_templets=discount_templets,
+                           distributed_packet=distributed_packet,
+                           post_url=url_for('main.distribute_products', sn=sn))
+    
 
 @main.route('/customers/ajax_verify', methods=['POST'])
 @login_required

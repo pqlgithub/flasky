@@ -1159,6 +1159,15 @@ a:focus,
     color:#00a65a;
 }
 
+.vertical-middle.table>tbody>tr>td,
+.vertical-middle.table>tbody>tr>th,
+.vertical-middle.table>tfoot>tr>td,
+.vertical-middle.table>tfoot>tr>th,
+.vertical-middle.table>thead>tr>td,
+.vertical-middle.table>thead>tr>th {
+    vertical-align: middle;
+}
+
 .main-header {
     position:relative;
     max-height:100px;

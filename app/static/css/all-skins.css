@@ -191,3 +191,11 @@
         border-left:1px solid #d2d6de
     }
 }
+.skin-green-light .checkbox input[type=checkbox]:focus,
+.skin-green-light .checkbox-inline input[type=checkbox]:focus,
+.skin-green-light .radio input[type=radio]:focus,
+.skin-green-light .radio-inline input[type=radio]:focus,
+.skin-green-light input[type=radio]:focus,
+.skin-green-light input[type=checkbox]:focus {
+    border-color: #00a65a;
+}
