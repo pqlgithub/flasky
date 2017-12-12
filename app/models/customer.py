@@ -65,6 +65,18 @@ class Customer(db.Model):
         for s in CUSTOMER_STATUS:
             if s[0] == self.status:
                 return s
+            
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_customer = {
+            'rid': self.sn,
+            'name': self.name,
+            'grade': self.grade.name,
+            'mobile': self.mobile,
+            'address': self.street_address,
+            'status': self.status
+        }
+        return json_customer
     
     def __repr__(self):
         return '<Customer {}>'.format(self.name)
@@ -86,7 +98,7 @@ class CustomerGrade(db.Model):
     
     # grade => customer 1 => N
     customers = db.relationship(
-        'Customer', backref='customer_grade', lazy='dynamic'
+        'Customer', backref='grade', lazy='dynamic'
     )
     
     
@@ -109,7 +121,7 @@ class ProductPacket(db.Model):
     
     # packet and product => N to N
     products = db.relationship(
-        'Product', secondary=product_packet_table, backref=db.backref('ProductPacket', lazy='select'), lazy='dynamic'
+        'Product', secondary=product_packet_table, backref=db.backref('product_packets', lazy='select'), lazy='dynamic'
     )
     
     @property
