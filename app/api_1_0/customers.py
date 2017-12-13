@@ -45,7 +45,7 @@ def get_customer(rid):
 @api.route('/customers', methods=['POST'])
 @auth.login_required
 def create_customer():
-    """添加新品牌"""
+    """添加新分销客户"""
     if not request.json or not 'name' in request.json:
         abort(400)
     

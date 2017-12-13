@@ -29,6 +29,16 @@ def status_response(status, success=True):
 	})
 
 
+def custom_response(message, code=200, success=True):
+	"""
+	结果响应：状态信息
+	"""
+	return jsonify({
+		'status': custom_status(message, code),
+		'success': success
+	})
+
+
 def custom_status(message, code=200):
 	"""
 	自定义状态信息

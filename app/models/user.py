@@ -15,7 +15,8 @@ __all__ = [
     'Role',
     'Ability',
     'Site',
-    'AnonymousUser'
+    'AnonymousUser',
+    'UserIdType'
 ]
 
 # 定义user与role关系的辅助表
@@ -29,6 +30,16 @@ role_ability_table = db.Table('roles_abilities',
     db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
     db.Column('ability_id', db.Integer, db.ForeignKey('abilities.id'))
 )
+
+class UserIdType:
+    # 供应商, 默认erp使用者
+    SUPPLIER = 1
+    
+    # 分销客户
+    CUSTOMER = 2
+    
+    # 普通消费者
+    BUYER = 9
 
 
 class User(UserMixin, db.Model):
@@ -61,7 +72,7 @@ class User(UserMixin, db.Model):
     is_setting = db.Column(db.Boolean, default=False)
     
     # 身份类型：1、供应商、2、分销客户、9、消费者
-    id_type = db.Column(db.SmallInteger, default=1)
+    id_type = db.Column(db.SmallInteger, default=UserIdType.SUPPLIER)
     
     # 本地化
     locale = db.Column(db.String(4), default='zh')
@@ -123,12 +134,18 @@ class User(UserMixin, db.Model):
         """生成一个令牌，有效期默认为一小时."""
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
-
+    
+    
     @property
     def is_master(self):
         """是否为主账号"""
         return self.master_uid == 0
-
+    
+    def is_adminstractor(self):
+        """判断用户是否具有管理员权限"""
+        return self.is_admin == True
+    
+    
     def mark_as_setting(self):
         """设置已配置站点信息"""
         self.is_setting = True
@@ -152,6 +169,7 @@ class User(UserMixin, db.Model):
 
         return True
 
+    
     def ping(self):
         """每次收到用户的请求时都要调用ping()方法"""
         self.last_seen = timestamp()
@@ -161,13 +179,15 @@ class User(UserMixin, db.Model):
         db.session.add(self)
 
         return last_online != self.online
+    
 
     # API基于令牌的认证
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'],
                        expires_in=expiration)
         return s.dumps({'id': self.id})
-
+    
+    
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -177,6 +197,7 @@ class User(UserMixin, db.Model):
             return None
         
         return User.query.get(data['id'])
+    
     
     def g_avatar(self, size):
         """user avatar"""

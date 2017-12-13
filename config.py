@@ -23,7 +23,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'Mic#2018%0110!'
 
     # 默认语言, zh_CN,
-    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_LOCALE = 'zh'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
 
     DB_PREFIX = 'fp_'

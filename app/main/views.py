@@ -103,8 +103,8 @@ def choose_locale(lang):
         # 设置默认语言
         lang = current_app.config['BABEL_DEFAULT_LOCALE']
 
-    current_user.locale = lang
-
+    g.user.locale = lang
+    
     # remove the locale from the session if it's there
     # session.pop('locale', None)
 

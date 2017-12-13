@@ -2,13 +2,13 @@
     <section class="sidebar">
         <ul class="sidebar-menu tree" data-widget="tree">
             <li class="header">MAIN NAVIGATION</li>
-            <li class="treeview">
+            <li class="{% if sub_menu == 'dashboard'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.index') }}">
                     <i class="fa fa-dashboard fa-2x"></i>
-                    <span>Dashboard</span>
+                    <span>{{ _('Dashboard') }}</span>
                 </a>
             </li>
-             <li class="treeview">
+             <li class="{% if sub_menu == 'orders'%}active {% endif %} treeview">
                  <a href="{{ url_for('main.show_orders') }}">
                      <i class="fa fa-shopping-cart fa-2x"></i>
                      <span>{{ _('Sales') }}</span>
@@ -80,7 +80,7 @@
                      </ul>
                  </div>
              </li>
-            <li class="treeview">
+            <li class="{% if sub_menu == 'products'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_products') }}">
                     <i class="fa fa-cubes fa-2x"></i>
                     <span>{{ _('Products') }}</span>
@@ -155,8 +155,8 @@
                  </div>
             </li>
 
-            <li class="treeview">
-                <a href="#">
+            <li class="{% if sub_menu == 'purchases'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.show_purchases') }}">
                     <i class="fa fa-file-text fa-2x"></i>
                     <span>{{ _('Purchase') }}</span>
                 </a>
@@ -200,8 +200,8 @@
                  </div>
              </li>
 
-            <li class="treeview">
-                <a href="#">
+            <li class="{% if sub_menu == 'stocks'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.show_stocks') }}">
                     <i class="fa fa-truck fa-2x"></i>
                     <span>{{ _('Stock') }}</span>
                 </a>
@@ -231,7 +231,7 @@
                  </div>
              </li>
 
-            <li class="treeview">
+            <li class="{% if sub_menu == 'statistics'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-pie-chart fa-2x"></i>
                     <span>{{ _('Statistics') }}</span>
@@ -287,7 +287,7 @@
                  </div>
              </li>
 
-            <li class="treeview">
+            <li class="{% if sub_menu == 'finance'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-yen fa-2x"></i>
                     <span>{{ _('Finance') }}</span>
@@ -332,13 +332,13 @@
                      </ul>
                  </div>
             </li>
-            <li class="treeview">
+            <li class="{% if sub_menu == 'market'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-shopping-bag fa-2x"></i>
                     <span>{{ _('Market') }}</span>
                 </a>
             </li>
-            <li class="treeview">
+            <li class="{% if sub_menu == 'scrm'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-users fa-2x"></i>
                     <span>{{ _('SCRM') }}</span>

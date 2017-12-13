@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from flask import g, request, abort
+from flask import g, request, abort, current_app
 from flask_httpauth import HTTPBasicAuth
-from app.models import User, AnonymousUser, Client
+from sqlalchemy.exc import IntegrityError
+from app.models import User, AnonymousUser, Client, UserIdType
 from .errors import forbidden, unauthorized
 from .decorators import api_sign_required
 
@@ -16,6 +17,12 @@ auth = HTTPBasicAuth()
 def before_request():
 	if not g.master_uid:
 		forbidden('App Key is dangerous!')
+
+
+@auth.error_handler
+def auth_error():
+	"""Return a 401 error to the client."""
+	return status_response(R401_AUTHORIZED, False)
 
 
 @auth.verify_password
@@ -35,12 +42,6 @@ def verify_password(email_or_token, password):
 	return True
 
 
-@auth.error_handler
-def auth_error():
-	"""Return a 401 error to the client."""
-	return status_response(R401_AUTHORIZED, False)
-
-
 @api.route('/auth/register', methods=['POST'])
 def register():
 	"""用户注册"""
@@ -53,33 +54,53 @@ def register():
 	
 	# 验证账号是否存在
 	if User.query.filter_by(email=email).first() is not None:
-		abort(400)
+		return status_response(custom_status('Email already exist!', 400), False)
 	
-	# 添加用户
-	user = User()
+	# 验证用户名是否唯一
+	if User.query.filter_by(username=username).first() is not None:
+		return status_response(custom_status('Username already exist!', 400), False)
 	
-	user.email = email
-	user.username = username
-	user.password = password
-	user.time_zone = 'zh'
-	user.id_type = 9
-	
-	db.session.add(user)
-	db.session.commit()
+	try:
+		# 添加用户
+		user = User()
+		
+		user.email = email
+		user.username = username
+		user.password = password
+		user.time_zone = 'zh'
+		user.id_type = UserIdType.BUYER
+		
+		db.session.add(user)
+		
+		db.session.commit()
+	except (IntegrityError) as err:
+		current_app.logger.error('Register user fail: {}'.format(str(err)))
+		
+		db.session.rollback()
+		return status_response(custom_status('Register failed!', 400), False)
 	
 	return status_response(R201_CREATED)
 	
 
 @api.route('/auth/login', methods=['POST'])
+@auth.login_required
 def login():
 	"""用户登录"""
-	pass
+	if g.token_used:
+		return custom_response('Email or Password is error!', 400, False)
+	
+	expired_time = 7200
+	
+	return full_response(R200_OK, {
+		'token': g.current_user.generate_auth_token(expiration=expired_time),
+		'expiration': expired_time
+	})
 
 
 @api.route('/auth/logout', methods=['POST'])
 def logout():
 	"""安全退出"""
-	pass
+	return custom_response('Logout', 401)
 
 
 @api.route('/auth/find_pwd', methods=['POST'])

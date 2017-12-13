@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .user import User, Role, Ability, AnonymousUser, Site
+from .user import User, Role, Ability, AnonymousUser, Site, UserIdType
 from .product import Product, ProductSku, ProductStock, CustomsDeclaration, Supplier, SupplyStats, Brand, Category, \
     CategoryPath, DANGEROUS_GOODS_TYPES, BUSINESS_MODE, Wishlist
 from .asset import Asset, Directory

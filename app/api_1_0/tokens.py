@@ -15,14 +15,19 @@ def get_token():
     Request a user token.
     This endpoint is requires basic auth with email and password.
     """
+    # auth = request.authorization
+    # auth.username
+    # auth.password
+    
     expired_time = 7200
+    
     token = g.current_user.generate_auth_token(expiration=expired_time)
     
     return full_response(R200_OK, {
         'token': token,
         'expiration': expired_time
     })
-
+    
 
 @api.route('/tokens', methods=['DELETE'])
 @auth.login_required

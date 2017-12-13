@@ -4,7 +4,6 @@ from app.exceptions import ValidationError
 from . import api
 from .utils import *
 
-
 @api.errorhandler(400)
 def bad_request(e):
 	return status_response({
