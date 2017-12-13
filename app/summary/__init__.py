@@ -1,1 +1,1 @@
-from .sales import OrderDeal
+from .sales import StoreSales, StoreProductSales
