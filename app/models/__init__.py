@@ -14,4 +14,4 @@ from .finance import PayAccount, TransactDetail, Invoice
 from .country import Country
 from .currency import Currency
 from .reminder import Reminder
-from .statistics import MasterStatistics, StoreStatistics, ProductStatistics
+from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, DaySalesStatistics
