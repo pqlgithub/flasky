@@ -81,7 +81,7 @@ class Config:
     # css/js
     # BOOTSTRAP_SERVE_LOCAL = False
 
-    UPLOADED_PHOTOS_DEST = '/Users/xiaoyi/Project/micku/public/uploads'
+    UPLOADED_PHOTOS_DEST = basedir + '/public/uploads'
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
 
@@ -89,7 +89,7 @@ class Config:
     WTF_CSRF_ENABLED = True
 
     # Whoose Index of Full Text Search
-    WHOOSH_BASE = '/Users/xiaoyi/Project/micku/whooses'
+    WHOOSH_BASE = basedir + '/whooses'
     MAX_SEARCH_RESULTS = 50
 
     # Pjax base template
@@ -177,10 +177,28 @@ class ProductionConfig(Config):
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
 
 
+class LllConfig(Config):
+    DEBUG = True
+
+    # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/micku_test'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@mixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixSaaS?charset=utf8'
+
+     # Redis 配置
+    REDIS_URL = 'redis://localhost:6379/0'
+
+     # Celery Options
+    CELERY_IMPORTS = (
+        'app.tasks'
+    )
+    CELERY_BROKER_URL = 'redis://localhost:6379/5'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/6'
+
+
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-
-    'default': DevelopmentConfig
+    'default': DevelopmentConfig,
+    'llh': LllConfig,
 }

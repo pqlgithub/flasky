@@ -2,7 +2,7 @@
 	<div class="list-group-header">
 		{{ _('Information') }}
 	</div>
-	<a href="#" class="list-group-item {% if sub_menu == 'stats'%} active{% endif %}">
+	<a href="{{ url_for('main.stats') }}" class="list-group-item {% if sub_menu == 'stats'%} active{% endif %}">
 		{{ _('All Aggregation') }}
 	</a>
 
@@ -12,7 +12,7 @@
 	<a href="#" class="list-group-item">
 		{{ _('New Products') }}
 	</a>
-	<a href="#" class="list-group-item">
+	<a href="{{url_for('main.sales_statistic')}}" class="list-group-item {% if sub_menu == 'sales'%} active{% endif %}">
 		{{ _('Sales Statistics') }}
 	</a>
 

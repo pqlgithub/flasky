@@ -52,7 +52,7 @@ class StoreSales(Sales):
             # 主账户按年统计处理
             self.__master_year()
             # 主账户按月统计处理
-            self.__master_year()
+            self.__master_month()
             # 子账户按年统计处理
             self.__store_year()
             # 子账户按月统计处理
@@ -69,7 +69,7 @@ class StoreSales(Sales):
             # 退款时主账户按年统计处理
             self.__refund_master_year()
             # 退款时主账户按月统计处理
-            self.__refund_master_year()
+            self.__refund_master_month()
             # 退款时子账户按年统计处理
             self.__refund_store_year()
             # 退款时子账户按月统计处理

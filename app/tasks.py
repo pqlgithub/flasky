@@ -10,7 +10,7 @@ from app.extensions import flask_celery
 from app.utils import string_to_timestamp
 from app.models import Currency, Site, Order, OrderItem,ProductSku
 from datetime import datetime, timedelta
-from app.summary import StoreSales, StoreProductSales
+from app.summary import StoreSales, StoreProductSales, SalesLog
 
 @flask_celery.task(bind=True)
 def add_together(self, a, b):
@@ -127,8 +127,22 @@ def send_async_email(msg):
 
 @flask_celery.task
 def sales_statistics(order_id):
-    """订单付款时 主账户、各店铺及sku 销售统计"""
+    SalesLog(order_id).order_pay()
+
+    # 订单付款时 主账户、各店铺及sku 销售统计
     StoreSales(order_id).order_pay()
-    
     StoreProductSales(order_id).order_pay()
+
+
+@flask_celery.task
+def refund_statistics(order_id):
+    
+    SalesLog(order_id).order_refund()
+
+    # 订单退款时 主账户、各店铺及sku 销售统计
+    StoreSales(order_id).order_refund()
+    StoreProductSales(order_id).order_refund()
+
+
+
 
