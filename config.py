@@ -191,6 +191,7 @@ class LllConfig(Config):
     CELERY_IMPORTS = (
         'app.tasks'
     )
+    CELERYD_CONCURRENCY = 1
     CELERY_BROKER_URL = 'redis://localhost:6379/5'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/6'
 

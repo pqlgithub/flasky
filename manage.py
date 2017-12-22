@@ -24,6 +24,7 @@ from app.assets import assets_env
 
 from commands.initial_data import InitialData
 from commands.fix_data import FixData
+from commands.init_summary import InitSummary
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -84,6 +85,9 @@ manager.add_command('db', MigrateCommand)
 
 server = Server(host='0.0.0.0', port=5000)
 manager.add_command('runserver', server)
+
+# 统计数据初始化
+manager.add_command('init_summary', InitSummary)
 
 # 更新API doc文档
 manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',
