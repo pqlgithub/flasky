@@ -49,6 +49,11 @@ class Store(db.Model):
         'Order', backref='store', lazy='dynamic'
     )
 
+    # store and store_statistics => 1 to N
+    store_statistics = db.relationship(
+        'StoreStatistics', backref='store', lazy='dynamic'
+    )
+
     @property
     def platform_name(self):
         for plat in SUPPORT_PLATFORM:

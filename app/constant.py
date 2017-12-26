@@ -101,7 +101,8 @@ DEFAULT_EXPRESS = {
     'contact_mobile': '13866666666',
     'contact_phone': '13866666666',
     'description': 'This is default express!',
-    'is_default': True
+    'is_default': True,
+    'code': 'default'
 }
 
 # 默认供应商

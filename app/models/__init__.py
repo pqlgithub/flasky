@@ -14,6 +14,7 @@ from .finance import PayAccount, TransactDetail, Invoice
 from .country import Country
 from .currency import Currency
 from .reminder import Reminder
+
 from .client import Client, ClientStatus
 from .market import AppService, SubscribeService, SubscribeRecord
 from .language import Language
@@ -22,4 +23,4 @@ from .banner import Banner, BannerImage
 from .shop import Shop, ShopSeo
 from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, DiscountTempletItem, CustomerDistributePacket
 from .counter import Counter
-from .statistics import MasterStatistics, StoreStatistics
+from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, SalesLogStatistics, DaySkuStatistics

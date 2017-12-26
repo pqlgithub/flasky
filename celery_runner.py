@@ -5,6 +5,13 @@ from celery import Celery
 
 from app import create_app
 
+# 加载环境变量
+if os.path.exists('.env'):
+    print('Importing environment from .env...')
+    for line in open('.env'):
+        var = line.strip().split('=')
+        if len(var) == 2:
+            os.environ[var[0]] = var[1]
 
 def make_celery(app):
     """Create the celery process."""

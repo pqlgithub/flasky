@@ -12,30 +12,79 @@
 {% block jquery %}
 {#<script type="text/javascript">#}
 	// 基于准备好的dom，初始化echarts实例
-	var world_map_chart = echarts.init(document.getElementById('world-map'));
+	var store_product_sales = echarts.init(document.getElementById('store-product-sales'));
 
 	// 指定图表的配置项和数据
 	var option = {
+		color: ['#3398DB'],
 		title: {
-			text: 'Order for the last 30 days'
+			text: '{{ _("Store Sales Top10") }}',
+			subtext: ''
 		},
-		tooltip: {},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		tooltip: {
+			trigger: 'axis',
+        	axisPointer: {
+            type: 'shadow'
+        	}
+		},
 		legend: {
-			data:['销量']
+			data:['销售金额']
 		},
 		xAxis: {
-			data: ["消费电子",'智能产品', '家居', '厨房', "衬衫", "羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+			
 		},
-		yAxis: {},
+		yAxis: {
+			data: []
+		},
 		series: [{
-			name: '销量',
+			name: '销售金额',
 			type: 'bar',
-			data: [5, 20, 24, 18, 50, 34, 36, 10, 5, 20, 24, 18, 50, 18, 50, 34, 36, 10, 34, 36, 10, 10, 20, 18, 50, 34, 36, 10, 10, 20]
+			data: []
 		}]
 	};
+	store_product_sales.setOption(option);
 
-	// 使用刚指定的配置项和数据显示图表。
-	world_map_chart.setOption(option);
+	(function (){
+		var store_id = $(".store-id").eq(0).attr('value');
+		loadOption(store_id)
+	}());
+
+	function loadOption(stroe_id){
+		$.post("{{ url_for('main.store_sku_top') }}",{'store_id':stroe_id, 'csrf_token': mixpus.csrf_token}, function(e){
+			if(e.status.code == 200){
+				var sku_data = [];
+				var income_data = [];
+				for (var key = 0; key < e.data.length; key++){
+					sku_data.unshift(e.data[key].sku_serial_no);
+					income_data.unshift(e.data[key].income);
+				}
+
+				option.yAxis.data = sku_data;
+				option.series[0].data = income_data;
+				store_product_sales.setOption({
+					yAxis: {
+						data: sku_data
+					},
+					series: [{
+						type: 'bar',
+						data: income_data
+					}]
+				});
+			}
+		},'json');
+	}
+
+	$(".store-id").click(function(){
+		var store_id = $(this).attr('value');
+		loadOption(store_id)
+	});
+	
 
 {#</script>#}
 {% endblock %}
@@ -56,30 +105,30 @@
 			<div class="card m-b-20">
 				<div class="card-block">
 					<h3 class="card-title">{{ _('Master Sales') }}</h3>
-					<div class="col-md-3">{{_('销售收入')}}：{{ master_statistics.income or '--' }}</div>
-					<div class="col-md-3">{{_('销售同比')}}：{{ master_statistics.income_yoy or '--' }}%</div>
-					<div class="col-md-3">{{_('利润')}}：{{master_statistics.profit or '--'}}</div>
-					<div class="col-md-3">{{_('利润同比')}}：{{ master_statistics.profit_yoy or '--' }}%</div>
+					<div class="col-md-3">{{_('Sales revenue')}}：{{ master_statistics.income or '--' }}</div>
+					<div class="col-md-3">{{_('Sales year on year')}}：{{ master_statistics.income_yoy or '--' }}%</div>
+					<div class="col-md-3">{{_('Profit')}}：{{master_statistics.profit or '--'}}</div>
+					<div class="col-md-3">{{_('Profit year on year')}}：{{ master_statistics.profit_yoy or '--' }}%</div>
 				</div>
 			</div>
 
 			<div class="card m-b-20">
 				<div class="card-block">
-					<h3 class="card-title">{{ _('各部门销售') }}</h3>
+					<h3 class="card-title">{{ _('Store Sales') }}</h3>
 					<table class="table table-hover">
 					<th>
-						<td>店铺</td>
-						<td>收入</td>
-						<td>收入同比</td>
-						<td>收入环比</td>
-						<td>利润</td>
-						<td>利润同比</td>
-						<td>利润环比</td>
+						<td>Store Name</td>
+						<td>Revenue</td>
+						<td>Revenue year on year</td>
+						<td>Revenue ring</td>
+						<td>Profit</td>
+						<td>Profit year on year</td>
+						<td>Profit ring</td>
 					</th>
 					{% for store in store_statistics %}
-					<tr>
+					<tr class="store-id" value="{{store.store_id}}">
 						<td></td>
-						<td>{{ store.store_id }}</td>
+						<td>{{ store.store.name }}</td>
 						<td>{{store.income}}</td>
 						<td>{{store.income_yoy or '--'}}%</td>
 						<td>{{store.income_mom or '--'}}%</td>
@@ -95,8 +144,7 @@
 
 			<div class="card m-b-20">
 				<div class="card-block">
-					<h3 class="card-title">{{ _('World Map') }}</h3>
-					<div id="world-map" style="width: 600px;height:400px;"></div>
+					<div id="store-product-sales" style="width: 800px;height:400px;"></div>
 				</div>
 			</div>
 
