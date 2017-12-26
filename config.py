@@ -180,9 +180,7 @@ class ProductionConfig(Config):
 class LllConfig(Config):
     DEBUG = True
 
-    # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/micku_test'
-    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@mixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixSaaS?charset=utf8'
 
      # Redis 配置
     REDIS_URL = 'redis://localhost:6379/0'
@@ -191,7 +189,7 @@ class LllConfig(Config):
     CELERY_IMPORTS = (
         'app.tasks'
     )
-    CELERYD_CONCURRENCY = 1
+    CELERYD_CONCURRENCY = 2
     CELERY_BROKER_URL = 'redis://localhost:6379/5'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/6'
 

@@ -30,7 +30,8 @@ class DaySummary(object):
             func(sales_log, income, profit, sales_day)
 
     def __add(self, sales_log, income, profit, sales_day):
-        day_sku = DaySkuStatistics.query.filter_by(
+        # 查询加独占锁
+        day_sku = DaySkuStatistics.query.with_for_update(read=False).filter_by(
             store_id=sales_log.store_id,
             sku_id=sales_log.sku_id,
             time=sales_day).first()
@@ -50,10 +51,13 @@ class DaySummary(object):
             db.session.add(day_sku)
         else:
             day_sku.income = float(day_sku.income) + income
-            day_sku.profit = float(day_sku.profit) + income
+            day_sku.profit = float(day_sku.profit) + profit
+
+        db.session.commit()
 
     def __delete(self, sales_log, income, profit, sales_day):
-        day_sku = DaySkuStatistics.query.filter_by(
+        # 加独占锁
+        day_sku = DaySkuStatistics.query.with_for_update(read=False).filter_by(
             store_id=sales_log.store_id,
             sku_id=sales_log.sku_id,
             time=sales_day).first()
@@ -62,4 +66,5 @@ class DaySummary(object):
             pass
         else:
             day_sku.income = float(day_sku.income) - income
-            day_sku.profit = float(day_sku.profit) - income
+            day_sku.profit = float(day_sku.profit) - profit
+        db.session.commit()
