@@ -11,7 +11,7 @@
 				<h1 class="logo">
 					<a href="{{ url_for('main.web_index') }}">
 						<span class="logo-icon"></span>
-						<span class="text">MIXPUS</span>
+						<span class="text">eLingShop</span>
 					</a>
 				</h1>
 			</div>
@@ -22,7 +22,7 @@
 					<div class="form-box col-md-offset-3 col-sm-offset-0 xs-offset-0 col-xs-12 col-md-6">
 						<div class="form-box-inner">
 							<div class="row">
-								<h2 class="title text-center">{{ _('Log in to Mixpus') }}</h2>
+								<h2 class="title text-center">{{ _('Log in to eLingShop') }}</h2>
 
 								<form class="form-signin" action="" method="post" name="login">
 									{{ form.hidden_tag() }}
@@ -68,7 +68,7 @@
 										<a href="reset-password.html">Forgot password?</a>
 									</p>
 
-									<button class="btn btn-lg btn-cta btn-cta-primary btn-block" type="submit">{{ _('Login in') }}</button>
+									<button class="btn btn-lg btn-mixpus btn-block" type="submit">{{ _('Login in') }}</button>
 
 									<div class="checkbox remember">
 										<label>
@@ -77,7 +77,7 @@
 									</div>
 
 									<div class="lead">
-										{{ _("Don't have a Mixpus account yet? ") }} <br>
+										{{ _("Don't have a eLingShop account yet? ") }}
 										<a href="{{ url_for('auth.signup') }}">{{ _('Create your account now') }}</a>
 									</div>
 

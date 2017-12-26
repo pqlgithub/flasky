@@ -17,7 +17,7 @@ def load_common_data():
     """
     return {
         'top_menu': 'settings',
-        'sub_menu': 'clients',
+        'sub_menu': 'clients'
     }
 
 @main.route('/clients')
@@ -83,7 +83,6 @@ def create_client():
     return render_template('clients/create_and_edit.html',
                            mode=mode,
                            form=form,
-                           sub_menu='clients',
                            **load_common_data())
 
 

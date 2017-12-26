@@ -50,7 +50,7 @@ def register():
 	password = request.json.get('password')
 	
 	if email is None or password is None or username is None:
-		abort(400)
+		return custom_response('Params is error!', 400, False)
 	
 	# 验证账号是否存在
 	if User.query.filter_by(email=email).first() is not None:

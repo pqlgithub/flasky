@@ -1,0 +1,13 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Service Market') }}
+	</div>
+	<a href="{{ url_for('adminlte.show_applications') }}" class="pjax list-group-item {% if sub_menu == 'users'%} active{% endif %}">
+		{{ _('All List') }}
+	</a>
+    {% for type in service_types %}
+	<a href="{{ url_for('adminlte.show_applications') }}?t={{ type[0] }}" class="pjax list-group-item {% if type == type[0] %} active{% endif %}">
+		{{ type[1] }}
+	</a>
+    {% endfor %}
+</div>

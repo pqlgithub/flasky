@@ -1,0 +1,92 @@
+{% extends "layout/base.html" %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('App List') }}
+	</h2>
+
+	<form class="form-inline" id="filter-supplier-form" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control searcher" size="60" name="qk" autocomplete="off" placeholder="{{ _('Search name...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="type">
+				<button class="btn btn-default dropdown-toggle" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Type') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="type" aria-labelledby="filter-type">
+					<li class="dropdown-header">{{ _('Search Type')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for t in app_types %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ t[0] }}" class="option">{{ t[1] }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="m-t-20">
+		<div class="row">
+			{% for a in paginated_apps %}
+			<div class="col-sm-4 col-md-3">
+				<div class="thumbnail horizontal clearfix">
+					<img src="{{ a.icon.view_url }}" alt="{{ a.name }}">
+					<div class="caption">
+						<h4>{{ a.name }}</h4>
+						<p class="description">{{ a.description }}</p>
+						<p><a href="{{ url_for('main.subscribe_app', sn=a.serial_no) }}" class="btn btn-mixpus" role="button">GET</a></p>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+
+	</div>
+</div>
+{% endblock %}

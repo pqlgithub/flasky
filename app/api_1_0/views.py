@@ -19,3 +19,11 @@ from .utils import *
 def get_slide():
     """大图轮换列表"""
     pass
+
+@api.route('/demo')
+def demo():
+    """测试示例"""
+    resp = jsonify({'error': False})
+    # 跨域设置
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp

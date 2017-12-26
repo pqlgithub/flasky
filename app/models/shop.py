@@ -11,6 +11,7 @@ from flask import current_app
 from app import db, config
 from app.utils import timestamp
 from app.models import Language, Currency
+from app.helpers import MixGenId
 
 __all__ = [
     'Shop',
@@ -131,11 +132,11 @@ class Shop(db.Model):
     
     @staticmethod
     def make_unique_serial_no():
-        serial_no = Counter.gen_store_sn()
+        serial_no = MixGenId.gen_shop_sn()
         if Shop.query.filter_by(sn=serial_no).first() == None:
             return serial_no
         while True:
-            new_serial_no = Counter.gen_store_sn()
+            new_serial_no = MixGenId.gen_shop_sn()
             if Shop.query.filter_by(sn=new_serial_no).first() == None:
                 break
         return new_serial_no
@@ -145,6 +146,20 @@ class Shop(db.Model):
     def on_sync_change(mapper, connection, target):
         """同步事件"""
         target.visit_url = target.sn
+        
+        
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_shop = {
+            'rid': self.sn,
+            'name': self.name,
+            'favicon': self.favicon,
+            'description': self.description,
+            'copyright': self.copyright,
+            'domain': self.domain,
+            'status': self.status
+        }
+        return json_shop
     
     
     def __repr__(self):

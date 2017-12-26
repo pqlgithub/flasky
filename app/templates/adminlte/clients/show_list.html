@@ -1,7 +1,20 @@
 {% extends "layout/admin.html" %}
 
 {% block sidebar %}
-	{% include 'adminlte/system/_sub_menu.html' %}
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('Client List') }}
+	</div>
+	<a href="{{ url_for('adminlte.show_clients') }}" class="pjax list-group-item {% if sub_menu == 'users'%} active{% endif %}">
+		{{ _('All List') }}
+	</a>
+	<a href="{{ url_for('adminlte.show_clients') }}?status=1" class="pjax list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
+		{{ _('Pending List') }}
+	</a>
+	<a href="{{ url_for('adminlte.show_clients') }}?status=2" class="pjax list-group-item {% if sub_menu == 'abilities'%} active{% endif %}">
+		{{ _('Approved List') }}
+	</a>
+</div>
 {% endblock %}
 
 {% block after_jquery %}

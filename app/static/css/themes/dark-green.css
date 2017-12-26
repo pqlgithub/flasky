@@ -293,6 +293,7 @@ fieldset[disabled] .btn-flat-mixpus.focus {
 .form-control:focus {
 	border-color: #28A5A8;
 }
+
 .text-highlight {
 	color: #0b2c2c;
 }
@@ -306,40 +307,6 @@ select {
 	appearance: none;
 	/* for mobile safari */
 	-webkit-appearance: none;
-}
-.video-container iframe {
-  max-width: 100%;
-}
-
-#topcontrol {
-	background: #5d80a1;
-	color: #fff;
-	text-align: center;
-	display: inline-block;
-	width: 35px;
-	height: 35px;
-	border: none;
-	-webkit-border-radius: 50%;
-	-moz-border-radius: 50%;
-	-ms-border-radius: 50%;
-	-o-border-radius: 50%;
-	border-radius: 50%;
-	-moz-background-clip: padding;
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
-	-webkit-transition: all 0.4s ease-in-out;
-	-moz-transition: all 0.4s ease-in-out;
-	-ms-transition: all 0.4s ease-in-out;
-	-o-transition: all 0.4s ease-in-out;
-	z-index: 30;
-}
-#topcontrol:hover {
-	background: #384d60;
-}
-#topcontrol .fa {
-	position: relative;
-	top: 3px;
-	font-size: 25px;
 }
 
 

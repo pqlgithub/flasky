@@ -20,4 +20,4 @@ def before_request():
 @adminlte.route('/')
 def admin_index():
     """管理首页"""
-    return render_template('adminlte/index.html')
+    return redirect(url_for('.show_users'))

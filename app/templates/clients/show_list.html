@@ -30,7 +30,7 @@
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('App List') }}
+		{{ _('My Apps') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
             <a href="{{ url_for('main.create_client') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
@@ -71,10 +71,10 @@
 						</span>
 					</td>
 					<td class="text-right">
-                        <a href="{{ url_for('main.manage_client', app_key=client.app_key) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Manage') }}">
+                        <a href="{{ url_for('main.manage_client', app_key=client.app_key) }}" class="btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Manage') }}">
 							{{ _('Manage') }}
 						</a>
-						<a href="{{ url_for('main.mark_disabled', app_key=client.app_key) }}" class="btn btn-link ajax-disabled"  data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
+						<a href="{{ url_for('main.mark_disabled', app_key=client.app_key) }}" class="btn-link ajax-disabled"  data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
 							{{ _('Disabled') }}
 						</a>
 					</td>

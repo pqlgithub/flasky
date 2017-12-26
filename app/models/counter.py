@@ -30,31 +30,5 @@ class Counter(db.Model):
         return total_count
 
     
-    @staticmethod
-    def gen_product_sn(length=8):
-        """生成产品sku"""
-        serial_no = '8'
-        serial_no += time.strftime('%m')
-        rd = str(Counter.get_next_sequence())
-        z = ''
-        if len(rd) < length:
-            for i in range(length - len(rd)):
-                z += '0'
-
-        return ''.join([serial_no, z, rd])
-
-    
-    @staticmethod
-    def gen_store_sn(length=7):
-        serial_no = '2'
-        rd = str(Counter.get_next_sequence())
-        z = ''
-        if len(rd) < length:
-            for i in range(length - len(rd)):
-                z += '0'
-
-        return ''.join([serial_no, z, rd])
-
-    
     def __repr__(self):
         return '<Counter {}>'.format(self.id)

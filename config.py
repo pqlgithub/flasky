@@ -19,7 +19,7 @@ class Config:
 
     MODE = 'dev'
 
-    CSRF_ENABLED = True
+    CSRF_ENABLED = False
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'Mic#2018%0110!'
 
     # 默认语言, zh_CN,

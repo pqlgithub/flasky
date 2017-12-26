@@ -1,18 +1,38 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy import event
 from flask_babelex import lazy_gettext
 from app import db
+from .asset import Asset
 from ..utils import timestamp
+from ..constant import SERVICE_TYPES
+from app.helpers import MixGenId
 
 __all__ = [
     'AppService',
     'SubscribeService',
-    'SubscribeRecord'
+    'SubscribeRecord',
+    'ApplicationStatus'
 ]
 
 # 产品的状态
 STORE_STATUS = [
     (1, lazy_gettext('Enabled'), 'success'),
     (-1, lazy_gettext('Disabled'), 'danger')
+]
+
+class ApplicationStatus:
+    # 通过审核
+    ENABLED = 2
+    # 等待审核
+    PENDING = 1
+    # 禁用
+    DISABLED = -1
+
+# 应用的状态
+APPLICATION_STATUS = [
+    (ApplicationStatus.ENABLED, lazy_gettext('Published'), 'success'),
+    (ApplicationStatus.PENDING, lazy_gettext('Pending'), 'success'),
+    (ApplicationStatus.DISABLED, lazy_gettext('Disabled'), 'danger')
 ]
 
 class AppService(db.Model):
@@ -45,12 +65,56 @@ class AppService(db.Model):
     sale_count = db.Column(db.Integer, default=0)
     
     # 状态 -1：禁用；1：待审核； 2：已上架
-    status = db.Column(db.SmallInteger, default=1)
+    status = db.Column(db.SmallInteger, default=ApplicationStatus.PENDING)
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
 
+    @property
+    def status_label(self):
+        for s in APPLICATION_STATUS:
+            if s[0] == self.status:
+                return s
+
+    @property
+    def type_label(self):
+        for s in SERVICE_TYPES:
+            if s[0] == self.type:
+                return s
+
+    @property
+    def icon(self):
+        """logo asset info"""
+        return Asset.query.get(self.icon_id) if self.icon_id else Asset.default_logo()
+    
+    def mark_set_published(self):
+        """发布上架状态"""
+        self.status = ApplicationStatus.ENABLED
+        
+    def mark_set_disabled(self):
+        """设置禁用状态"""
+        self.status = ApplicationStatus.DISABLED
+    
+    @staticmethod
+    def make_unique_sn():
+        """生成品牌编号"""
+        sn = MixGenId.gen_app_sn()
+        if AppService.query.filter_by(serial_no=sn).first() == None:
+            return sn
+        
+        while True:
+            new_sn = MixGenId.gen_app_sn()
+            if AppService.query.filter_by(serial_no=new_sn).first() == None:
+                break
+        return new_sn
+    
+    
+    @staticmethod
+    def on_before_insert(mapper, connection, target):
+        # 自动生成用户编号
+        target.serial_no = AppService.make_unique_sn()
+
+    
     def __repr__(self):
         return '<AppService %r>' % self.name
     
@@ -98,4 +162,6 @@ class SubscribeRecord(db.Model):
     # 订购天数, 15天试用期
     ordered_days = db.Column(db.Integer, default=15)
     
-    
+
+# 监听Brand事件
+event.listen(AppService, 'before_insert', AppService.on_before_insert)

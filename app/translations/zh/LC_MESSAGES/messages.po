@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-12-13 10:27+0800\n"
-"PO-Revision-Date: 2017-12-13 10:56+0800\n"
+"POT-Creation-Date: 2017-12-26 11:21+0800\n"
+"PO-Revision-Date: 2017-12-26 11:25+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -210,11 +210,11 @@ msgstr "控制台查看"
 msgid "piece"
 msgstr "件"
 
-#: app/constant.py:236 app/forms/product_forms.py:36
-#: app/forms/product_forms.py:46 app/forms/product_forms.py:89
-#: app/forms/setting_forms.py:15 app/forms/setting_forms.py:30
-#: app/forms/warehouse_forms.py:26 app/models/market.py:14
-#: app/models/product.py:47 app/models/store.py:16
+#: app/constant.py:236 app/forms/application_forms.py:20
+#: app/forms/product_forms.py:36 app/forms/product_forms.py:46
+#: app/forms/product_forms.py:89 app/forms/setting_forms.py:15
+#: app/forms/setting_forms.py:30 app/forms/warehouse_forms.py:26
+#: app/models/market.py:18 app/models/product.py:47 app/models/store.py:16
 #: app/templates/brands/table_brand.html:19
 #: app/templates/categories/show_list.html:61
 #: app/templates/customers/show_list.html:43
@@ -225,12 +225,14 @@ msgstr "正常"
 msgid "Pending Approval"
 msgstr "待审核"
 
-#: app/constant.py:238 app/forms/product_forms.py:36
-#: app/forms/product_forms.py:46 app/forms/product_forms.py:89
-#: app/forms/setting_forms.py:15 app/forms/setting_forms.py:30
-#: app/forms/warehouse_forms.py:26 app/models/client.py:24
-#: app/models/market.py:15 app/models/product.py:48 app/models/store.py:17
-#: app/templates/adminlte/clients/show_list.html:75
+#: app/constant.py:238 app/forms/application_forms.py:22
+#: app/forms/product_forms.py:36 app/forms/product_forms.py:46
+#: app/forms/product_forms.py:89 app/forms/setting_forms.py:15
+#: app/forms/setting_forms.py:30 app/forms/warehouse_forms.py:26
+#: app/models/client.py:24 app/models/market.py:19 app/models/market.py:34
+#: app/models/product.py:48 app/models/store.py:17
+#: app/templates/adminlte/applications/show_list.html:38
+#: app/templates/adminlte/clients/show_list.html:88
 #: app/templates/brands/table_brand.html:21
 #: app/templates/categories/show_list.html:63
 #: app/templates/clients/show_list.html:77
@@ -246,13 +248,29 @@ msgstr "按类别划分"
 msgid "By Brand"
 msgstr "按品牌划分"
 
-#: app/constant.py:249 app/main/purchase.py:608
+#: app/constant.py:251
+msgid "Marketing"
+msgstr "营销插件"
+
+#: app/constant.py:252
+msgid "Channel Application"
+msgstr "渠道应用"
+
+#: app/constant.py:253
+msgid "Supply Management"
+msgstr "供销管理"
+
+#: app/constant.py:254
+msgid "Theme"
+msgstr "主题皮肤"
+
+#: app/constant.py:259 app/main/purchase.py:608
 #: app/templates/purchases/_modal_express.html:12
 #: app/templates/purchases/purchase_pay_table.html:12
 msgid "Purchase Serial"
 msgstr "采购编号"
 
-#: app/constant.py:250 app/forms/product_forms.py:77 app/main/order.py:466
+#: app/constant.py:260 app/forms/product_forms.py:77 app/main/order.py:466
 #: app/main/warehouse.py:351 app/main/warehouse.py:699
 #: app/templates/purchases/create_and_edit.html:219
 #: app/templates/purchases/purchase_modal.html:47
@@ -262,22 +280,22 @@ msgstr "采购编号"
 msgid "Product Name"
 msgstr "产品名称"
 
-#: app/constant.py:251
+#: app/constant.py:261
 msgid "Product SKU"
 msgstr "产品SKU"
 
-#: app/constant.py:252 app/main/purchase.py:626
+#: app/constant.py:262 app/main/purchase.py:626
 #: app/templates/purchases/create_and_edit.html:222
 #: app/templates/purchases/view_detail.html:96
 msgid "Purchase Quantity"
 msgstr "采购数量"
 
-#: app/constant.py:253 app/main/purchase.py:627 app/main/purchase.py:633
+#: app/constant.py:263 app/main/purchase.py:627 app/main/purchase.py:633
 #: app/main/warehouse.py:712
 msgid "Arrival Quantity"
 msgstr "到货数量"
 
-#: app/constant.py:254 app/forms/order_forms.py:16
+#: app/constant.py:264 app/forms/order_forms.py:16
 #: app/forms/purchase_forms.py:11 app/main/order.py:475
 #: app/main/purchase.py:630 app/main/warehouse.py:360 app/main/warehouse.py:714
 #: app/templates/orders/preview_order.html:59
@@ -285,11 +303,11 @@ msgstr "到货数量"
 msgid "Freight"
 msgstr "运费"
 
-#: app/constant.py:255 app/main/purchase.py:631 app/main/warehouse.py:715
+#: app/constant.py:265 app/main/purchase.py:631 app/main/warehouse.py:715
 msgid "Other Charge"
 msgstr "其他费用"
 
-#: app/constant.py:256 app/main/purchase.py:632 app/main/warehouse.py:716
+#: app/constant.py:266 app/main/purchase.py:632 app/main/warehouse.py:716
 #: app/templates/dashboard/index.html:84
 #: app/templates/orders/table_order.html:13
 #: app/templates/purchases/_modal_express.html:28
@@ -299,7 +317,7 @@ msgstr "其他费用"
 msgid "Total Amount"
 msgstr "总额"
 
-#: app/constant.py:257 app/forms/logistics_forms.py:43
+#: app/constant.py:267 app/forms/logistics_forms.py:43
 #: app/forms/purchase_forms.py:9 app/main/warehouse.py:340
 #: app/templates/orders/_modal_import.html:12
 #: app/templates/purchases/_modal_arrival.html:24
@@ -327,7 +345,7 @@ msgstr "总额"
 msgid "Warehouse"
 msgstr "仓库"
 
-#: app/constant.py:258 app/forms/product_forms.py:26
+#: app/constant.py:268 app/forms/product_forms.py:26
 #: app/forms/product_forms.py:72 app/forms/purchase_forms.py:10
 #: app/main/purchase.py:610 app/templates/brands/show_list.html:93
 #: app/templates/products/_modal_import.html:24
@@ -339,20 +357,20 @@ msgstr "仓库"
 msgid "Supplier"
 msgstr "供应商"
 
-#: app/constant.py:259 app/forms/logistics_forms.py:13
+#: app/constant.py:269 app/forms/logistics_forms.py:13
 #: app/forms/logistics_forms.py:44
 msgid "Contact Name"
 msgstr "联系人"
 
-#: app/constant.py:260 app/forms/logistics_forms.py:15
+#: app/constant.py:270 app/forms/logistics_forms.py:15
 msgid "Contact Phone"
 msgstr "联系电话"
 
-#: app/constant.py:261 app/templates/warehouses/select_purchase_modal.html:15
+#: app/constant.py:271 app/templates/warehouses/select_purchase_modal.html:15
 msgid "Express No"
 msgstr "物流单号"
 
-#: app/constant.py:262 app/templates/brands/show_list.html:58
+#: app/constant.py:272 app/templates/brands/show_list.html:58
 #: app/templates/brands/show_list.html:68
 #: app/templates/customers/show_list.html:179
 #: app/templates/customers/show_list.html:189
@@ -381,17 +399,18 @@ msgstr "物流单号"
 msgid "Add Date"
 msgstr "创建日期"
 
-#: app/constant.py:263 app/templates/purchases/pay_list.html:172
+#: app/constant.py:273 app/templates/purchases/pay_list.html:172
 #: app/templates/purchases/show_list.html:258
 #: app/templates/purchases/view_detail.html:37
 msgid "Arrival Date"
 msgstr "到货日期"
 
-#: app/constant.py:264
+#: app/constant.py:274
 msgid "Arrival Status"
 msgstr "到货状态"
 
-#: app/constant.py:265 app/forms/order_forms.py:17 app/forms/order_forms.py:44
+#: app/constant.py:275 app/forms/application_forms.py:18
+#: app/forms/order_forms.py:17 app/forms/order_forms.py:44
 #: app/forms/product_forms.py:22 app/forms/product_forms.py:111
 #: app/forms/setting_forms.py:39 app/main/purchase.py:619
 #: app/main/warehouse.py:711 app/templates/brands/search_result.html:16
@@ -409,6 +428,18 @@ msgstr "到货状态"
 #: app/templates/warehouses/stock_table.html:78
 msgid "Remark"
 msgstr "备注"
+
+#: app/adminlte/applications.py:61
+msgid "Add Application is ok!"
+msgstr "添加应用成功！"
+
+#: app/adminlte/applications.py:84
+msgid "Update Application is ok!"
+msgstr "更新应用成功！"
+
+#: app/adminlte/applications.py:116
+msgid "Application has already published!"
+msgstr "应用已发布上架！"
 
 #: app/adminlte/clients.py:46
 msgid "App has already approved!"
@@ -442,6 +473,7 @@ msgstr "记住我"
 
 #: app/auth/forms.py:18 app/forms/user_forms.py:23
 #: app/templates/adminlte/system/password_modal.html:12
+#: app/templates/adminlte/system/show_list.html:38
 #: app/templates/users/add_child_user.html:26
 #: app/templates/users/child_users.html:67 app/templates/users/passwd.html:23
 msgid "Username"
@@ -466,6 +498,95 @@ msgstr "此账号或密码有误！"
 #: app/auth/views.py:53
 msgid "确认邮件已发送到你注册的邮箱."
 msgstr "确认邮件已发送到你注册的邮箱."
+
+#: app/forms/application_forms.py:10
+msgid "Application Name"
+msgstr "应用名称"
+
+#: app/forms/application_forms.py:11
+msgid "Application Icon"
+msgstr "应用图片"
+
+#: app/forms/application_forms.py:12
+#: app/templates/adminlte/applications/show_list.html:56
+msgid "Summary"
+msgstr "摘要"
+
+#: app/forms/application_forms.py:13
+#: app/templates/adminlte/applications/show_list.html:54
+#: app/templates/orders/_modal_export.html:55
+#: app/templates/warehouses/inout_table.html:20
+#: app/templates/warehouses/show_inout.html:105
+#: app/templates/warehouses/show_inout.html:178
+msgid "Type"
+msgstr "类型"
+
+#: app/forms/application_forms.py:14
+msgid "Is free"
+msgstr "是否免费"
+
+#: app/forms/application_forms.py:16 app/forms/product_forms.py:82
+#: app/forms/product_forms.py:107
+#: app/templates/products/_modal_select_products.html:69
+#: app/templates/products/select_product_modal.html:26
+#: app/templates/products/show_set_groups.html:63
+#: app/templates/products/table_product.html:17
+msgid "Sale Price"
+msgstr "销售价"
+
+#: app/forms/application_forms.py:17 app/forms/customer_forms.py:62
+#: app/forms/customer_forms.py:68 app/forms/logistics_forms.py:16
+#: app/forms/product_forms.py:30 app/forms/product_forms.py:44
+#: app/forms/product_forms.py:91 app/forms/purchase_forms.py:14
+#: app/forms/setting_forms.py:17 app/forms/user_forms.py:18
+#: app/forms/user_forms.py:42 app/forms/warehouse_forms.py:14
+#: app/templates/adminlte/system/show_roles.html:39
+#: app/templates/purchases/view_detail.html:139
+#: app/templates/settings/site.html:63
+#: app/templates/warehouses/show_list.html:35
+msgid "Description"
+msgstr "描述"
+
+#: app/forms/application_forms.py:19 app/forms/product_forms.py:35
+#: app/forms/product_forms.py:45 app/forms/product_forms.py:88
+#: app/forms/setting_forms.py:14 app/forms/setting_forms.py:29
+#: app/forms/warehouse_forms.py:25 app/main/purchase.py:609
+#: app/main/warehouse.py:342
+#: app/templates/adminlte/applications/show_list.html:57
+#: app/templates/adminlte/clients/show_list.html:64
+#: app/templates/adminlte/system/show_list.html:41
+#: app/templates/brands/show_list.html:94
+#: app/templates/categories/show_list.html:47
+#: app/templates/clients/show_list.html:54
+#: app/templates/customers/show_list.html:128
+#: app/templates/customers/table_customer.html:17
+#: app/templates/dashboard/index.html:85
+#: app/templates/finances/show_payments.html:79
+#: app/templates/orders/_modal_export.html:44
+#: app/templates/orders/preview_order.html:35
+#: app/templates/orders/show_list.html:330
+#: app/templates/products/_modal_select_products.html:71
+#: app/templates/products/show_set_groups.html:65
+#: app/templates/products/sku_of_orders.html:76
+#: app/templates/products/table_product.html:18
+#: app/templates/purchases/pay_list.html:101
+#: app/templates/purchases/purchase_pay_table.html:11
+#: app/templates/purchases/purchase_table.html:15
+#: app/templates/purchases/show_list.html:187
+#: app/templates/stores/show_list.html:34
+#: app/templates/users/child_users.html:69
+#: app/templates/warehouses/_modal_preview_inwarehouse.html:30
+#: app/templates/warehouses/_modal_preview_outwarehouse.html:31
+#: app/templates/warehouses/out_table.html:16
+#: app/templates/warehouses/scan_out_warehouse.html:78
+#: app/templates/warehouses/show_outlist.html:125
+msgid "Status"
+msgstr "状态"
+
+#: app/forms/application_forms.py:21 app/models/client.py:23
+#: app/models/market.py:33
+msgid "Pending"
+msgstr "待核对"
 
 #: app/forms/customer_forms.py:10 app/forms/customer_forms.py:38
 #: app/forms/logistics_forms.py:21
@@ -513,7 +634,7 @@ msgstr "邮编"
 
 #: app/forms/customer_forms.py:21 app/forms/customer_forms.py:47
 #: app/forms/logistics_forms.py:46 app/forms/order_forms.py:23
-#: app/templates/adminlte/system/show_list.html:38
+#: app/templates/adminlte/system/show_list.html:39
 #: app/templates/customers/table_customer.html:15
 msgid "Mobile"
 msgstr "手机号"
@@ -571,19 +692,6 @@ msgstr "默认折扣"
 #: app/templates/customers/show_discount_templets.html:58
 msgid "By Type"
 msgstr "依据类型"
-
-#: app/forms/customer_forms.py:62 app/forms/customer_forms.py:68
-#: app/forms/logistics_forms.py:16 app/forms/product_forms.py:30
-#: app/forms/product_forms.py:44 app/forms/product_forms.py:91
-#: app/forms/purchase_forms.py:14 app/forms/setting_forms.py:17
-#: app/forms/user_forms.py:18 app/forms/user_forms.py:42
-#: app/forms/warehouse_forms.py:14
-#: app/templates/adminlte/system/show_roles.html:39
-#: app/templates/purchases/view_detail.html:139
-#: app/templates/settings/site.html:63
-#: app/templates/warehouses/show_list.html:35
-msgid "Description"
-msgstr "描述"
 
 #: app/forms/logistics_forms.py:10 app/forms/purchase_forms.py:18
 #: app/templates/purchases/_modal_express.html:35
@@ -762,40 +870,6 @@ msgstr "Logo"
 msgid "Banner"
 msgstr "Banner"
 
-#: app/forms/product_forms.py:35 app/forms/product_forms.py:45
-#: app/forms/product_forms.py:88 app/forms/setting_forms.py:14
-#: app/forms/setting_forms.py:29 app/forms/warehouse_forms.py:25
-#: app/main/purchase.py:609 app/main/warehouse.py:342
-#: app/templates/adminlte/clients/show_list.html:51
-#: app/templates/adminlte/system/show_list.html:40
-#: app/templates/brands/show_list.html:94
-#: app/templates/categories/show_list.html:47
-#: app/templates/clients/show_list.html:54
-#: app/templates/customers/show_list.html:128
-#: app/templates/customers/table_customer.html:17
-#: app/templates/dashboard/index.html:85
-#: app/templates/finances/show_payments.html:79
-#: app/templates/orders/_modal_export.html:44
-#: app/templates/orders/preview_order.html:35
-#: app/templates/orders/show_list.html:330
-#: app/templates/products/_modal_select_products.html:71
-#: app/templates/products/show_set_groups.html:65
-#: app/templates/products/sku_of_orders.html:76
-#: app/templates/products/table_product.html:18
-#: app/templates/purchases/pay_list.html:101
-#: app/templates/purchases/purchase_pay_table.html:11
-#: app/templates/purchases/purchase_table.html:15
-#: app/templates/purchases/show_list.html:187
-#: app/templates/stores/show_list.html:34
-#: app/templates/users/child_users.html:69
-#: app/templates/warehouses/_modal_preview_inwarehouse.html:30
-#: app/templates/warehouses/_modal_preview_outwarehouse.html:31
-#: app/templates/warehouses/out_table.html:16
-#: app/templates/warehouses/scan_out_warehouse.html:78
-#: app/templates/warehouses/show_outlist.html:125
-msgid "Status"
-msgstr "状态"
-
 #: app/forms/product_forms.py:41 app/templates/categories/show_list.html:45
 #: app/templates/customers/set_discount.html:63
 msgid "Category Name"
@@ -847,14 +921,6 @@ msgstr "面向区域"
 #: app/templates/purchases/purchase_tr_time.html:11
 msgid "Cost Price"
 msgstr "成本价"
-
-#: app/forms/product_forms.py:82 app/forms/product_forms.py:107
-#: app/templates/products/_modal_select_products.html:69
-#: app/templates/products/select_product_modal.html:26
-#: app/templates/products/show_set_groups.html:63
-#: app/templates/products/table_product.html:17
-msgid "Sale Price"
-msgstr "销售价"
 
 #: app/forms/product_forms.py:83 app/forms/product_forms.py:97
 #: app/forms/product_forms.py:110
@@ -977,7 +1043,8 @@ msgid "Value"
 msgstr "值"
 
 #: app/forms/setting_forms.py:35
-#: app/templates/adminlte/clients/show_list.html:50
+#: app/templates/adminlte/applications/show_list.html:53
+#: app/templates/adminlte/clients/show_list.html:63
 #: app/templates/clients/show_list.html:53
 msgid "App Name"
 msgstr "应用名称"
@@ -1527,13 +1594,13 @@ msgstr "默认货架"
 msgid "default shelve, can't delete!"
 msgstr "默认货架，请勿删除！"
 
-#: app/models/client.py:22 app/templates/adminlte/clients/show_list.html:76
+#: app/models/client.py:22 app/templates/adminlte/clients/show_list.html:89
 msgid "Approved"
 msgstr "已审核"
 
-#: app/models/client.py:23
-msgid "Pending"
-msgstr "待核对"
+#: app/models/market.py:32
+msgid "Published"
+msgstr "已发布"
 
 #: app/models/order.py:56
 msgid "UnApprove"
@@ -1561,6 +1628,7 @@ msgid "Rated"
 msgstr "已评价"
 
 #: app/models/product.py:32
+#: app/templates/adminlte/applications/show_list.html:76
 msgid "No"
 msgstr "无"
 
@@ -1629,7 +1697,7 @@ msgstr "上传"
 msgid "New Folder"
 msgstr "新文件夹"
 
-#: app/templates/adminlte/clients/show_list.html:36
+#: app/templates/adminlte/clients/show_list.html:49
 #: app/templates/adminlte/system/show_abilities.html:27
 #: app/templates/adminlte/system/show_list.html:24
 #: app/templates/adminlte/system/show_roles.html:22
@@ -1667,22 +1735,121 @@ msgstr "新文件夹"
 msgid "Delete"
 msgstr "删除"
 
-#: app/templates/adminlte/clients/show_list.html:33
-msgid "Client List"
-msgstr "应用列表"
+#: app/templates/adminlte/applications/_sub_menu.html:3
+msgid "Service Market"
+msgstr "应用市场"
 
-#: app/templates/adminlte/clients/show_list.html:49
-#: app/templates/clients/show_list.html:52
-msgid "App KEY"
-msgstr "应用 KEY"
+#: app/templates/adminlte/applications/_sub_menu.html:6
+#: app/templates/adminlte/clients/show_list.html:9
+msgid "All List"
+msgstr "全部列表"
 
-#: app/templates/adminlte/clients/show_list.html:52
+#: app/templates/adminlte/applications/create_and_edit.html:23
+msgid "Add Market"
+msgstr ""
+
+#: app/templates/adminlte/applications/create_and_edit.html:26
+#: app/templates/adminlte/system/create_edit_ability.html:13
+#: app/templates/brands/create_and_edit.html:26
+#: app/templates/categories/create_and_edit.html:26
+#: app/templates/clients/client_detail.html:34
+#: app/templates/clients/create_and_edit.html:17
+#: app/templates/currencies/create_and_edit.html:17
+#: app/templates/customers/create_and_edit.html:21
+#: app/templates/customers/create_eidt_templet.html:21
+#: app/templates/customers/set_discount.html:21
+#: app/templates/finances/create_and_edit.html:18
+#: app/templates/layout/form.html:18
+#: app/templates/logistics/create_and_edit.html:17
+#: app/templates/logistics/create_edit_shipper.html:17
+#: app/templates/orders/create_and_edit.html:89
+#: app/templates/products/create_and_edit.html:91
+#: app/templates/purchases/create_and_edit.html:159
+#: app/templates/settings/setting_site.html:13
+#: app/templates/stores/create_and_edit.html:13
+#: app/templates/suppliers/create_and_edit.html:25
+#: app/templates/users/edit_profile.html:13 app/templates/users/passwd.html:13
+#: app/templates/users/preference.html:13 app/templates/users/profile.html:13
+#: app/templates/warehouses/create_and_edit.html:20
+#: app/templates/warehouses/create_and_edit.html:94
+#: app/templates/warehouses/edit_in_warehouse.html:25
+msgid "Save"
+msgstr "保存"
+
+#: app/templates/adminlte/applications/create_and_edit.html:29
+#: app/templates/adminlte/system/create_edit_ability.html:16
+#: app/templates/brands/create_and_edit.html:29
+#: app/templates/categories/create_and_edit.html:29
+#: app/templates/clients/client_detail.html:37
+#: app/templates/clients/create_and_edit.html:20
+#: app/templates/currencies/create_and_edit.html:20
+#: app/templates/customers/create_and_edit.html:24
+#: app/templates/customers/create_eidt_templet.html:24
+#: app/templates/customers/set_discount.html:24
+#: app/templates/finances/create_and_edit.html:21
+#: app/templates/layout/form.html:21
+#: app/templates/logistics/create_and_edit.html:20
+#: app/templates/logistics/create_edit_shipper.html:20
+#: app/templates/orders/create_and_edit.html:92
+#: app/templates/orders/import_express_result.html:12
+#: app/templates/orders/import_result.html:12
+#: app/templates/orders/preview_order.html:12
+#: app/templates/products/create_and_edit.html:97
+#: app/templates/products/show_set_groups.html:36
+#: app/templates/purchases/create_and_edit.html:162
+#: app/templates/settings/setting_site.html:16
+#: app/templates/stores/create_and_edit.html:16
+#: app/templates/suppliers/create_and_edit.html:28
+#: app/templates/users/edit_profile.html:16
+#: app/templates/warehouses/create_and_edit.html:97
+#: app/templates/warehouses/edit_in_warehouse.html:28
+#: app/templates/warehouses/scan_out_warehouse.html:48
+msgid "Cancel"
+msgstr "取消"
+
+#: app/templates/adminlte/applications/show_list.html:32
+msgid "Service List"
+msgstr "服务列表"
+
+#: app/templates/adminlte/applications/show_list.html:35
+#: app/templates/adminlte/system/show_abilities.html:24
+#: app/templates/brands/show_list.html:38
+#: app/templates/categories/show_list.html:26
+#: app/templates/clients/show_list.html:36
+#: app/templates/currencies/show_currencies.html:34
+#: app/templates/customers/show_discount_templets.html:18
+#: app/templates/customers/show_grades.html:18
+#: app/templates/customers/show_list.html:65
+#: app/templates/finances/show_payments.html:60
+#: app/templates/finances/show_receives.html:15
+#: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
+#: app/templates/logistics/show_shippers.html:13
+#: app/templates/orders/show_list.html:288
+#: app/templates/products/show_groups.html:18
+#: app/templates/products/show_list.html:70
+#: app/templates/purchases/show_list.html:145
+#: app/templates/settings/show_list.html:11
+#: app/templates/settings/show_roles.html:41
+#: app/templates/stores/show_list.html:12
+#: app/templates/suppliers/show_list.html:41
+#: app/templates/users/child_users.html:49
+#: app/templates/warehouses/show_list.html:12
+msgid "Add New"
+msgstr "新增"
+
+#: app/templates/adminlte/applications/show_list.html:55
+msgid "Is Free"
+msgstr "是否免费"
+
+#: app/templates/adminlte/applications/show_list.html:58
+#: app/templates/adminlte/clients/show_list.html:65
 msgid "Created at"
 msgstr "创建日期"
 
-#: app/templates/adminlte/clients/show_list.html:53
+#: app/templates/adminlte/applications/show_list.html:59
+#: app/templates/adminlte/clients/show_list.html:66
 #: app/templates/adminlte/system/show_abilities.html:44
-#: app/templates/adminlte/system/show_list.html:42
+#: app/templates/adminlte/system/show_list.html:43
 #: app/templates/brands/search_result.html:17
 #: app/templates/brands/show_list.html:95
 #: app/templates/categories/show_list.html:48
@@ -1731,6 +1898,80 @@ msgstr "创建日期"
 msgid "Action"
 msgstr "操作"
 
+#: app/templates/adminlte/applications/show_list.html:74
+#: app/templates/warehouses/create_and_edit.html:150
+msgid "Yes"
+msgstr "是"
+
+#: app/templates/adminlte/applications/show_list.html:89
+#: app/templates/adminlte/applications/show_list.html:90
+msgid "Publish"
+msgstr "发布上架"
+
+#: app/templates/adminlte/applications/show_list.html:92
+#: app/templates/adminlte/applications/show_list.html:93
+#: app/templates/adminlte/system/show_abilities.html:60
+#: app/templates/adminlte/system/show_abilities.html:61
+#: app/templates/brands/table_brand.html:25
+#: app/templates/brands/table_brand.html:26
+#: app/templates/categories/show_list.html:67
+#: app/templates/categories/show_list.html:68
+#: app/templates/currencies/show_currencies.html:81
+#: app/templates/currencies/show_currencies.html:82
+#: app/templates/customers/show_discount_templets.html:85
+#: app/templates/customers/show_discount_templets.html:86
+#: app/templates/customers/show_grades.html:74
+#: app/templates/customers/show_grades.html:75
+#: app/templates/customers/table_customer.html:56
+#: app/templates/customers/table_customer.html:57
+#: app/templates/finances/show_payments.html:126
+#: app/templates/finances/show_payments.html:127
+#: app/templates/layout/list.html:51 app/templates/logistics/show_list.html:66
+#: app/templates/logistics/show_list.html:67
+#: app/templates/logistics/show_shippers.html:62
+#: app/templates/logistics/show_shippers.html:63
+#: app/templates/orders/table_order.html:95
+#: app/templates/products/create_and_edit.html:411
+#: app/templates/products/create_and_edit.html:412
+#: app/templates/products/show_groups.html:57
+#: app/templates/products/show_groups.html:60
+#: app/templates/products/show_groups.html:61
+#: app/templates/products/show_skus.html:48
+#: app/templates/products/show_skus.html:49
+#: app/templates/products/table_product.html:67
+#: app/templates/products/table_product.html:68
+#: app/templates/purchases/purchase_pay_table.html:49
+#: app/templates/purchases/purchase_table.html:78
+#: app/templates/settings/show_assets.html:60
+#: app/templates/settings/show_roles.html:79
+#: app/templates/settings/show_roles.html:80
+#: app/templates/settings/site.html:13 app/templates/stores/show_list.html:63
+#: app/templates/suppliers/table_supplier.html:36
+#: app/templates/suppliers/table_supplier.html:37
+#: app/templates/users/child_users.html:104
+#: app/templates/warehouses/show_list.html:69
+#: app/templates/warehouses/show_list.html:70
+msgid "Edit"
+msgstr "编辑"
+
+#: app/templates/adminlte/clients/show_list.html:6
+#: app/templates/adminlte/clients/show_list.html:46
+msgid "Client List"
+msgstr "应用列表"
+
+#: app/templates/adminlte/clients/show_list.html:12
+msgid "Pending List"
+msgstr "待审核列表"
+
+#: app/templates/adminlte/clients/show_list.html:15
+msgid "Approved List"
+msgstr "已审核列表"
+
+#: app/templates/adminlte/clients/show_list.html:62
+#: app/templates/clients/show_list.html:52
+msgid "App KEY"
+msgstr "应用 KEY"
+
 #: app/templates/adminlte/system/_sub_menu.html:3
 #: app/templates/settings/_sub_menu.html:15
 msgid "Privilege manage"
@@ -1753,63 +1994,6 @@ msgstr "权限列表"
 #: app/templates/adminlte/system/create_edit_ability.html:10
 msgid "Add ability"
 msgstr "新增权限"
-
-#: app/templates/adminlte/system/create_edit_ability.html:13
-#: app/templates/brands/create_and_edit.html:26
-#: app/templates/categories/create_and_edit.html:26
-#: app/templates/clients/client_detail.html:34
-#: app/templates/clients/create_and_edit.html:17
-#: app/templates/currencies/create_and_edit.html:17
-#: app/templates/customers/create_and_edit.html:21
-#: app/templates/customers/create_eidt_templet.html:21
-#: app/templates/customers/set_discount.html:21
-#: app/templates/finances/create_and_edit.html:18
-#: app/templates/layout/form.html:18
-#: app/templates/logistics/create_and_edit.html:17
-#: app/templates/logistics/create_edit_shipper.html:17
-#: app/templates/orders/create_and_edit.html:89
-#: app/templates/products/create_and_edit.html:91
-#: app/templates/purchases/create_and_edit.html:159
-#: app/templates/settings/setting_site.html:13
-#: app/templates/stores/create_and_edit.html:13
-#: app/templates/suppliers/create_and_edit.html:25
-#: app/templates/users/edit_profile.html:13 app/templates/users/passwd.html:13
-#: app/templates/users/preference.html:13 app/templates/users/profile.html:13
-#: app/templates/warehouses/create_and_edit.html:20
-#: app/templates/warehouses/create_and_edit.html:94
-#: app/templates/warehouses/edit_in_warehouse.html:25
-msgid "Save"
-msgstr "保存"
-
-#: app/templates/adminlte/system/create_edit_ability.html:16
-#: app/templates/brands/create_and_edit.html:29
-#: app/templates/categories/create_and_edit.html:29
-#: app/templates/clients/client_detail.html:37
-#: app/templates/clients/create_and_edit.html:20
-#: app/templates/currencies/create_and_edit.html:20
-#: app/templates/customers/create_and_edit.html:24
-#: app/templates/customers/create_eidt_templet.html:24
-#: app/templates/customers/set_discount.html:24
-#: app/templates/finances/create_and_edit.html:21
-#: app/templates/layout/form.html:21
-#: app/templates/logistics/create_and_edit.html:20
-#: app/templates/logistics/create_edit_shipper.html:20
-#: app/templates/orders/create_and_edit.html:92
-#: app/templates/orders/import_express_result.html:12
-#: app/templates/orders/import_result.html:12
-#: app/templates/orders/preview_order.html:12
-#: app/templates/products/create_and_edit.html:97
-#: app/templates/products/show_set_groups.html:36
-#: app/templates/purchases/create_and_edit.html:162
-#: app/templates/settings/setting_site.html:16
-#: app/templates/stores/create_and_edit.html:16
-#: app/templates/suppliers/create_and_edit.html:28
-#: app/templates/users/edit_profile.html:16
-#: app/templates/warehouses/create_and_edit.html:97
-#: app/templates/warehouses/edit_in_warehouse.html:28
-#: app/templates/warehouses/scan_out_warehouse.html:48
-msgid "Cancel"
-msgstr "取消"
 
 #: app/templates/adminlte/system/password_modal.html:5
 msgid "Reset Password"
@@ -1860,75 +2044,6 @@ msgstr "提交更新"
 msgid "Abilities List"
 msgstr "权限列表"
 
-#: app/templates/adminlte/system/show_abilities.html:24
-#: app/templates/brands/show_list.html:38
-#: app/templates/categories/show_list.html:26
-#: app/templates/clients/show_list.html:36
-#: app/templates/currencies/show_currencies.html:34
-#: app/templates/customers/show_discount_templets.html:18
-#: app/templates/customers/show_grades.html:18
-#: app/templates/customers/show_list.html:65
-#: app/templates/finances/show_payments.html:60
-#: app/templates/finances/show_receives.html:15
-#: app/templates/layout/list.html:14 app/templates/logistics/show_list.html:13
-#: app/templates/logistics/show_shippers.html:13
-#: app/templates/orders/show_list.html:288
-#: app/templates/products/show_groups.html:18
-#: app/templates/products/show_list.html:70
-#: app/templates/purchases/show_list.html:145
-#: app/templates/settings/show_list.html:11
-#: app/templates/settings/show_roles.html:41
-#: app/templates/stores/show_list.html:12
-#: app/templates/suppliers/show_list.html:41
-#: app/templates/users/child_users.html:49
-#: app/templates/warehouses/show_list.html:12
-msgid "Add New"
-msgstr "新增"
-
-#: app/templates/adminlte/system/show_abilities.html:60
-#: app/templates/adminlte/system/show_abilities.html:61
-#: app/templates/brands/table_brand.html:25
-#: app/templates/brands/table_brand.html:26
-#: app/templates/categories/show_list.html:67
-#: app/templates/categories/show_list.html:68
-#: app/templates/currencies/show_currencies.html:81
-#: app/templates/currencies/show_currencies.html:82
-#: app/templates/customers/show_discount_templets.html:85
-#: app/templates/customers/show_discount_templets.html:86
-#: app/templates/customers/show_grades.html:74
-#: app/templates/customers/show_grades.html:75
-#: app/templates/customers/table_customer.html:56
-#: app/templates/customers/table_customer.html:57
-#: app/templates/finances/show_payments.html:126
-#: app/templates/finances/show_payments.html:127
-#: app/templates/layout/list.html:51 app/templates/logistics/show_list.html:66
-#: app/templates/logistics/show_list.html:67
-#: app/templates/logistics/show_shippers.html:62
-#: app/templates/logistics/show_shippers.html:63
-#: app/templates/orders/table_order.html:95
-#: app/templates/products/create_and_edit.html:411
-#: app/templates/products/create_and_edit.html:412
-#: app/templates/products/show_groups.html:57
-#: app/templates/products/show_groups.html:60
-#: app/templates/products/show_groups.html:61
-#: app/templates/products/show_skus.html:48
-#: app/templates/products/show_skus.html:49
-#: app/templates/products/table_product.html:67
-#: app/templates/products/table_product.html:68
-#: app/templates/purchases/purchase_pay_table.html:49
-#: app/templates/purchases/purchase_table.html:78
-#: app/templates/settings/show_assets.html:60
-#: app/templates/settings/show_roles.html:79
-#: app/templates/settings/show_roles.html:80
-#: app/templates/settings/site.html:13 app/templates/stores/show_list.html:63
-#: app/templates/suppliers/table_supplier.html:36
-#: app/templates/suppliers/table_supplier.html:37
-#: app/templates/users/child_users.html:104
-#: app/templates/warehouses/show_list.html:69
-#: app/templates/warehouses/show_list.html:70
-msgid "Edit"
-msgstr "编辑"
-
 #: app/templates/adminlte/system/show_list.html:37
 #: app/templates/auth/login.html:52 app/templates/auth/signup.html:52
 #: app/templates/users/add_child_user.html:19
@@ -1936,52 +2051,51 @@ msgstr "编辑"
 msgid "Account"
 msgstr "账号"
 
-#: app/templates/adminlte/system/show_list.html:39
+#: app/templates/adminlte/system/show_list.html:40
 msgid "Master"
 msgstr "主账号"
 
-#: app/templates/adminlte/system/show_list.html:41
+#: app/templates/adminlte/system/show_list.html:42
 #: app/templates/users/child_users.html:70
 msgid "Last Seen"
 msgstr "上次访问"
 
-#: app/templates/adminlte/system/show_list.html:57
+#: app/templates/adminlte/system/show_list.html:61
 msgid "This is the master"
 msgstr "这是一个主账号"
 
-#: app/templates/adminlte/system/show_list.html:63
+#: app/templates/adminlte/system/show_list.html:67
 #: app/templates/users/child_users.html:92
 msgid "Confirmed"
 msgstr "已确认"
 
-#: app/templates/adminlte/system/show_list.html:67
+#: app/templates/adminlte/system/show_list.html:71
 #: app/templates/users/child_users.html:96
 msgid "Pending Confirm"
 msgstr "待确认"
-
-#: app/templates/adminlte/system/show_list.html:75
-#: app/templates/adminlte/system/show_list.html:76
-#: app/templates/block/main-header.html:81 app/templates/layout/admin.html:92
-#: app/templates/settings/_sub_menu.html:26 app/templates/users/passwd.html:10
-msgid "Update Password"
-msgstr "更新密码"
 
 #: app/templates/adminlte/system/show_roles.html:40
 #: app/templates/settings/show_roles.html:61
 msgid "Has Abilities"
 msgstr "已有权限"
 
+#: app/templates/app_store/show_list.html:17
+#: app/templates/clients/show_list.html:33
+#: app/templates/settings/_sub_menu.html:32
+msgid "App List"
+msgstr "应用列表"
+
 #: app/templates/auth/login.html:25
-msgid "Log in to Mixpus"
-msgstr "登录Mixpus"
+msgid "Log in to eLingShop"
+msgstr ""
 
 #: app/templates/auth/login.html:71
 msgid "Login in"
 msgstr "现在登录"
 
 #: app/templates/auth/login.html:80
-msgid "Don't have a Mixpus account yet? "
-msgstr "已有Mixpus账号? "
+msgid "Don't have a eLingShop account yet? "
+msgstr ""
 
 #: app/templates/auth/login.html:81
 msgid "Create your account now"
@@ -2038,10 +2152,19 @@ msgstr "快捷链接"
 msgid "Preference Setting"
 msgstr "偏好设置"
 
+#: app/templates/block/main-header.html:81 app/templates/layout/admin.html:92
+#: app/templates/settings/_sub_menu.html:26 app/templates/users/passwd.html:10
+msgid "Update Password"
+msgstr "更新密码"
+
 #: app/templates/block/main-header.html:85 app/templates/layout/admin.html:96
 #: app/templates/layout/web.html:89
 msgid "Logout"
 msgstr "退出"
+
+#: app/templates/block/main-sidebar.html:8 app/templates/layout/web.html:87
+msgid "Dashboard"
+msgstr "控制台"
 
 #: app/templates/block/main-sidebar.html:14
 msgid "Sales"
@@ -2278,6 +2401,7 @@ msgid "Funds Manage"
 msgstr "资金管理"
 
 #: app/templates/block/main-sidebar.html:301
+#: app/templates/block/main-sidebar.html:346
 msgid "Capital account"
 msgstr "资金账户"
 
@@ -2302,11 +2426,23 @@ msgstr "账户设置"
 msgid "Items Setting"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:338 app/templates/layout/admin.html:69
-msgid "Market"
+#: app/templates/block/main-sidebar.html:338
+msgid "App Store"
 msgstr "应用市场"
 
-#: app/templates/block/main-sidebar.html:344
+#: app/templates/block/main-sidebar.html:343
+msgid "App Manage"
+msgstr "应用管理"
+
+#: app/templates/block/main-sidebar.html:351
+msgid "Subscribe App"
+msgstr "已购买应用"
+
+#: app/templates/block/main-sidebar.html:354
+msgid "H5 Mall"
+msgstr "微商城"
+
+#: app/templates/block/main-sidebar.html:363
 msgid "SCRM"
 msgstr ""
 
@@ -2459,11 +2595,6 @@ msgstr "添加应用"
 #: app/templates/clients/create_and_edit.html:13
 msgid "Edit Client"
 msgstr "编辑应用"
-
-#: app/templates/clients/show_list.html:33
-#: app/templates/settings/_sub_menu.html:32
-msgid "App List"
-msgstr "应用列表"
 
 #: app/templates/clients/show_list.html:74
 #: app/templates/clients/show_list.html:75
@@ -2838,6 +2969,10 @@ msgstr "用户"
 
 #: app/templates/layout/admin.html:66
 msgid "Clients"
+msgstr "客户端"
+
+#: app/templates/layout/admin.html:69
+msgid "Applications"
 msgstr "应用"
 
 #: app/templates/layout/admin.html:153 app/templates/layout/base.html:128
@@ -2879,10 +3014,6 @@ msgstr "博客"
 #: app/templates/layout/web.html:76
 msgid "About Us"
 msgstr "关于我们"
-
-#: app/templates/layout/web.html:87
-msgid "Dashboard"
-msgstr "控制台"
 
 #: app/templates/layout/web.html:88
 msgid "My Account"
@@ -2959,13 +3090,6 @@ msgstr "导出订单"
 #: app/templates/orders/_modal_import_express.html:15
 msgid "Select Store"
 msgstr "选择店铺"
-
-#: app/templates/orders/_modal_export.html:55
-#: app/templates/warehouses/inout_table.html:20
-#: app/templates/warehouses/show_inout.html:105
-#: app/templates/warehouses/show_inout.html:178
-msgid "Type"
-msgstr "类型"
 
 #: app/templates/orders/_modal_export.html:58
 msgid "Order Express"
@@ -3896,10 +4020,6 @@ msgstr "基本信息"
 msgid "Shelves"
 msgstr "货架"
 
-#: app/templates/warehouses/create_and_edit.html:150
-msgid "Yes"
-msgstr "是"
-
 #: app/templates/warehouses/create_and_edit.html:211
 msgid "Add Shelve"
 msgstr "新增货架"
@@ -4285,3 +4405,18 @@ msgstr "特色3"
 
 #~ msgid "Supplier manage"
 #~ msgstr "供应商管理"
+
+#~ msgid "Log in to Mixpus"
+#~ msgstr "登录Mixpus"
+
+#~ msgid "Don't have a Mixpus account yet? "
+#~ msgstr "已有Mixpus账号? "
+
+#~ msgid "Market"
+#~ msgstr "应用市场"
+
+#~ msgid "Service Manage"
+#~ msgstr "应用管理"
+
+#~ msgid "Subscribe Service"
+#~ msgstr "已订阅应用"

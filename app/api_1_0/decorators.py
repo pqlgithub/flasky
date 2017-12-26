@@ -11,10 +11,7 @@ def api_sign_required(func):
     @wraps(func)
     
     def validate_api_sign(*args, **kwargs):
-        if request.method == 'GET':
-            sign_args = request.args
-        else:
-            sign_args = request.json
+        sign_args = request.args
         
         app_key = sign_args.get('app_key')
         # 验证请求参数

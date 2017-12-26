@@ -60,6 +60,14 @@ class MixGenId():
         return ''.join(random.sample(string.ascii_letters, length))
     
     
+    
+    @staticmethod
+    def gen_app_sn(length=9):
+        """生成开放市场应用sn"""
+        prefix = '3'
+        return ''.join([prefix, MixGenId.gen_digits(length)])
+    
+    
     @staticmethod
     def gen_brand_sn(length=8):
         """生成品牌sn"""
