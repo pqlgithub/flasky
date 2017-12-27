@@ -123,6 +123,16 @@ def send_async_email(msg):
 
     with app.app_context():
         app.mail.send(msg)
+        
+        
+@flask_celery.task
+def build_default_setting(master_uid):
+    """主账号创建成功后，自动为账号创建默认配置信息"""
+    # 1、创建附件默认目录
+    
+    # 2、默认币种
+    
+    pass
 
 
 @flask_celery.task

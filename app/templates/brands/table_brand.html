@@ -3,7 +3,7 @@
 		<input name="selected[]" class="check-one" value="{{ brand.id }}" type="checkbox">
 	</td>
     <td class="text-center">
-        <img src="{{ brand.logo.view_url }}" width="60px">
+        <img src="{{ brand.logo.view_url }}" width="30px">
     </td>
 	<td class="text-center">
         {{ brand.name }}
@@ -22,7 +22,7 @@
         {% endif %}
     </td>
 	<td class="text-right">
-		<a href="{{ url_for('main.edit_brand', id=brand.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+		<a href="{{ url_for('main.edit_brand', id=brand.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 			{{ _('Edit') }}
 		</a>
 	</td>

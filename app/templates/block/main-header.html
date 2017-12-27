@@ -1,6 +1,6 @@
 <header class="main-header">
     <a class="logo" href="{{ url_for('main.index') }}">
-        eLingShop
+        {{ current_site.company_abbr|default('eLingShop') }}
     </a>
     <nav class="navbar navbar-static-top">
         <a class="sidebar-toggle" href="#" data-toggle="push-menu" role="button">
@@ -61,14 +61,23 @@
                             {{ _('Quick Links') }}
                         </li>
                         <li>
-                            <a href="{{ url_for('main.preference') }}">{{ _('Preference Setting') }}</a>
+                            <a href="{{ url_for('main.setting_site') }}">{{ _('Company Setting') }}</a>
                         </li>
                         <li>
-                            <a href="{{ url_for('main.passwd') }}">{{ _('Update Password') }}</a>
+                            <a href="{{ url_for('main.preference') }}">
+                                {{ _('Preference Setting') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.passwd') }}">
+                                {{ _('Update Password') }}
+                            </a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
-                            <a href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a>
+                            <a href="{{ url_for('auth.logout') }}">
+                                 {{ _('Logout') }}
+                            </a>
                         </li>
                     </ul>
                 </li>

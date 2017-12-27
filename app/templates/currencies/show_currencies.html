@@ -1,16 +1,12 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'settings/_sub_menu.html' %}
-{% endblock %}
-
-{% block jquery %}
+{% block after_jquery %}
 <script type="text/javascript">
 	$(function () {
 		mixpus.init_page_layout();
 
 		$('.btn-sync').click(function () {
-			$.post("{{ url_for('main.sync_exchange_rate') }}", {csrf_token: mixpus.csrf_token}, function(result){
+			$.post("{{ url_for('main.sync_exchange_rate') }}", { csrf_token: mixpus.csrf_token }, function(result){
 				if (result.success) {
 					mixpus.show_ok_message(result.status.message);
 				}
@@ -78,7 +74,7 @@
 						{{ currency.last_updated|timestamp2string(format='%Y-%m-%d %H:%M') }}
 					</td>
 					<td class="actions text-right">
-						<a href="{{ url_for('main.edit_currency', id=currency.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						<a href="{{ url_for('main.edit_currency', id=currency.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 							{{ _('Edit') }}
 						</a>
 					</td>

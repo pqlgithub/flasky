@@ -74,52 +74,52 @@
 				{{ _('Latest Orders') }}
 			</h3>
 			<div class="table-responsive">
-						<table class="table table-bordered">
-							<thead>
-								<tr class="active">
-									<th>{{ _('Order ID') }}</th>
-									<th>{{ _('From Store') }}</th>
-									<th class="text-center">{{ _('Customer「Country」') }}</th>
-									<th class="text-right">{{ _('Date Added') }}</th>
-									<th class="text-right">{{ _('Total Amount') }}</th>
-									<th class="text-right">{{ _('Status') }}</th>
-									<th class="text-right">{{ _('Action') }}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for order in top_orders %}
-								<tr>
-									<td>
-										<span class="text-green">{{ order.serial_no }}</span>
-									</td>
-									<td>
-										{{ order.store.name }} ({{ order.store.platform_name }})
-									</td>
-									<td class="text-center">
-										{{ order.buyer_name }} {% if order.buyer_country %}「{{ order.buyer_country }}」{% endif %}
-									</td>
-									<td class="text-right">
-										{{ order.created_at|timestamp2string() }}
-									</td>
-									<td class="text-right">
-										{{ order.total_amount }} {{ current_site.currency }}
-									</td>
-									<td class="text-right">
-										<span class="indicator {{ order.status_label[2] }}">{{ order.status_label[1] }}</span>
-									</td>
-									<td class="text-right">
-										<a href="{{ url_for('main.preview_order', sn=order.serial_no) }}" class="btn btn-sm" target="_blank">
-											{{ _('View') }}
-										</a>
-									</td>
-								</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-						<a class="btn btn-sm btn-default btn-flat pull-right" href="{{ url_for('main.show_orders') }}">
-						{{ _('View all orders') }}
-					</a>
-					</div>
+				<table class="table table-bordered">
+					<thead>
+					<tr class="active">
+						<th>{{ _('Order ID') }}</th>
+						<th>{{ _('From Store') }}</th>
+						<th class="text-center">{{ _('Customer「Country」') }}</th>
+						<th class="text-right">{{ _('Date Added') }}</th>
+						<th class="text-right">{{ _('Total Amount') }}</th>
+						<th class="text-right">{{ _('Status') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+					</thead>
+					<tbody>
+					{% for order in top_orders %}
+					<tr>
+						<td>
+							<span class="text-green">{{ order.serial_no }}</span>
+						</td>
+						<td>
+							{{ order.store.name }} ({{ order.store.platform_name }})
+						</td>
+						<td class="text-center">
+							{{ order.buyer_name }} {% if order.buyer_country %}「{{ order.buyer_country }}」{% endif %}
+						</td>
+						<td class="text-right">
+							{{ order.created_at|timestamp2string() }}
+						</td>
+						<td class="text-right">
+							{{ order.total_amount }} {{ current_site.currency }}
+						</td>
+						<td class="text-right">
+							<span class="indicator {{ order.status_label[2] }}">{{ order.status_label[1] }}</span>
+						</td>
+						<td class="text-right">
+							<a href="{{ url_for('main.preview_order', sn=order.serial_no) }}" class="btn-link">
+								{{ _('View') }}
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+				<a class="btn btn-sm btn-default btn-flat pull-right" href="{{ url_for('main.show_orders') }}">
+					{{ _('View all orders') }}
+				</a>
+			</div>
 		</div>
 		<div class="col-md-3">
 

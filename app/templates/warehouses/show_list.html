@@ -51,8 +51,8 @@
 						</td>
 						<td class="text-center">
 							{% if warehouse.is_default %}
-							<span class="label label-success">
-								<i class="glyphicon glyphicon-ok"></i>
+							<span class="text-success">
+								<i class="fa fa-check-circle"></i>
 							</span>
 							{% endif %}
 						</td>
@@ -66,7 +66,7 @@
 							{{ warehouse.shelves.count() }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_warehouse', id=warehouse.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>

@@ -62,7 +62,7 @@
 
         <div class="form-group required">
             {{ form.logo_id.label(class="col-sm-2 control-label") }}
-            <div class="col-sm-10">
+            <div class="col-sm-8">
                 {% if mode == 'create' %}
                 <a href="javascript:void(0);" id="logo_thumb_image" data-target="logo" data-toggle="image" class="img-thumbnail">
                     <img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
@@ -78,7 +78,7 @@
 
         <div class="form-group required">
             {{ form.banner_id.label(class="col-sm-2 control-label") }}
-            <div class="col-sm-10">
+            <div class="col-sm-8">
                 {% if mode == 'create' %}
                 <a href="javascript:void(0);" id="banner_thumb_image" data-target="banner" data-toggle="image" class="img-thumbnail">
                     <img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
@@ -92,9 +92,16 @@
             </div>
         </div>
 
+		<div class="form-group">
+			{{ form.sort_order.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.sort_order(id="sort_order", class="form-control") }}
+			</div>
+		</div>
+
 		<div class="form-group required {% if form.errors.features %} has-error{% endif %}">
 			{{ form.features.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-10">
+			<div class="col-sm-8">
 				{{ form.features(id="features", class="form-control") }}
 				{% for error in form.errors.features %}
 				<span class="help-block">{{ error }}</span>
@@ -104,22 +111,15 @@
 
 		<div class="form-group">
 			{{ form.description.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-10">
+			<div class="col-sm-8">
 				{{ form.description(id="description", class="form-control") }}
-			</div>
-		</div>
-
-		<div class="form-group">
-			{{ form.sort_order.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.sort_order(id="sort_order", class="form-control") }}
 			</div>
 		</div>
 
         <div class="form-group m-b-25">
 			{{ form.status.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-5">
-				{{ form.status(id="status", class="form-control select2") }}
+				{{ form.status(id="status", class="radio-inline-group") }}
 			</div>
 		</div>
 

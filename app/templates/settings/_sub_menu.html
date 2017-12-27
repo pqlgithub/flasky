@@ -2,15 +2,6 @@
 	<div class="list-group-header">
 		{{ _('settings') }}
 	</div>
-	<a href="{{ url_for('main.site') }}" class="pjax list-group-item {% if sub_menu == 'sites'%} active{% endif %}">
-		{{ _('Site Info') }}
-	</a>
-	<a href="{{ url_for('main.show_stores') }}" class="pjax list-group-item {% if sub_menu == 'stores'%} active{% endif %}">
-		{{ _('Store List') }}
-	</a>
-	<a href="{{ url_for('main.show_currencies') }}" class="pjax list-group-item {% if sub_menu == 'currencies'%} active{% endif %}">
-		{{ _('Currency List') }}
-	</a>
 	<div class="list-group-header">
 		{{ _('Privilege manage') }}
 	</div>
@@ -24,18 +15,5 @@
 	</a>
 	<a href="{{ url_for('main.passwd') }}" class="pjax list-group-item {% if sub_menu == 'passwd'%} active{% endif %}">
 		{{ _('Update Password') }}
-	</a>
-	<div class="list-group-header">
-		{{ _('Open Platform') }}
-	</div>
-	<a href="{{ url_for('main.show_clients') }}" class="pjax list-group-item {% if sub_menu == 'clients'%} active{% endif %}">
-		{{ _('App List') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Asset manage') }}
-	</div>
-	<a href="{{ url_for('main.show_assets') }}" class="pjax list-group-item {% if sub_menu == 'assets'%} active{% endif %}">
-		{{ _('Asset List') }}
 	</a>
 </div>

@@ -45,10 +45,10 @@
 			{{ sku.remark }}
 		</td>
 		<td class="text-right">
-			<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn ajax-edit-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="ajax-edit-sku btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 				{{ _('Edit') }}
 			</a>
-			<a href="{{ url_for('main.delete_sku', rid=sku.serial_no) }}" class="btn ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+			<a href="{{ url_for('main.delete_sku', rid=sku.serial_no) }}" class="ajax-delete-sku btn-link" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				{{ _('Remove') }}
 			</a>
 		</td>

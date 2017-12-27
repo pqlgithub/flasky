@@ -74,14 +74,14 @@ class Asset(db.Model):
     def default_logo():
         """默认图-Logo"""
         return Dictate({
-            'view_url': ''
+            'view_url': '/static/img/no_img100x100.png'
         })
         
     @staticmethod
     def default_banner():
         """默认图-Banner"""
         return Dictate({
-            'view_url': ''
+            'view_url': '/static/img/no_img100x100.png'
         })
     
     def __repr__(self):

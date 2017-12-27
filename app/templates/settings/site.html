@@ -1,13 +1,9 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include "settings/_sub_menu.html" %}
-{% endblock %}
-
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
-		{{ _('Site Info') }}
+		{{ _('Company Info') }}
 
 		<span class="pull-right">
 			<a href="{{ url_for('main.setting_site') }}" class="pjax btn btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
@@ -23,7 +19,7 @@
 					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Site Name') }}</label>
+						<label class="col-sm-2 control-label">{{ _('Company Name') }}</label>
 						<div class="col-sm-10">
 							<p class="form-control-static">{{ site.company_name }} <code>{{ site.company_abbr }}</code></p>
 						</div>

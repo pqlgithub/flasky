@@ -66,11 +66,11 @@
 						{{ purchase.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.ajax_arrival', rid=purchase.serial_no)}}" class="ajax-arrival btn btn-link active" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
+						<a href="{{ url_for('main.ajax_arrival', rid=purchase.serial_no)}}" class="ajax-arrival btn-link active m-r-10" data-toggle="tooltip" data-original-title="{{ _('Arrival') }}">
 							{{ _('Arrival') }}
 						</a>
 						<div class="dropdown">
-							<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							<button class="btn-link dropdown-toggle" type="button" id="more-{{ purchase.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 								{{ _('More') }}
 								<span class="caret"></span>
 							</button>

@@ -60,9 +60,9 @@ class Product(db.Model):
 
     __tablename__ = 'products'
 
-    __searchable__ = ['serial_no', 'name', 'description', 'supplier_name', 'all_sku']
+    __searchable__ = ['serial_no', 'name', 'description', 'supplier_name', 'brand_name', 'all_sku']
     __analyzer__ = ChineseAnalyzer()
-
+    
     id = db.Column(db.Integer, primary_key=True)
     # 产品编号
     serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
@@ -123,6 +123,10 @@ class Product(db.Model):
     def supplier_name(self):
         current_supplier = self.supplier
         return '{} {}'.format(current_supplier.short_name, current_supplier.full_name)
+    
+    @property
+    def brand_name(self):
+        return self.brand_name
 
     @property
     def all_sku(self):

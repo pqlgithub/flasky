@@ -118,9 +118,9 @@
 					<li>
 						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
-					{% for r in paginated_suppliers.items %}
+					{% for r in paginated_brands.items %}
 					<li>
-						<a href="javascript:void(0);" data-id="{{ r.id }}" class="option">{{ r.short_name|safe }}</a>
+						<a href="javascript:void(0);" data-id="{{ r.id }}" class="option">{{ r.name|safe }}</a>
 					</li>
 					{% endfor %}
 				</ul>

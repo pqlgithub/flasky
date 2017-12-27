@@ -7,15 +7,15 @@
 	</td>
 	<td class="text-center">
 		{% if supplier.type == 'C' %}
-		<span class="label label-primary">
+		<span class="indicator success">
 			{{ supplier.desc_type[2] }}
 		</span>
 		{% elif supplier.type == 'Q'%}
-		<span class="label label-warning">
+		<span class="indicator warning">
 			{{ supplier.desc_type[2] }}
 		</span>
 		{% else %}
-		<span class="label label-info">
+		<span class="indicator error">
 			{{ supplier.desc_type[2] }}
 		</span>
 		{% endif %}
@@ -33,7 +33,7 @@
 		{{ supplier.remark }}
 	</td>
 	<td class="text-right">
-		<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+		<a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 			{{ _('Edit') }}
 		</a>
 	</td>

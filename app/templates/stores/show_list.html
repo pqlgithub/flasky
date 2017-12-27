@@ -55,9 +55,8 @@
 					</td>
 					<td class="text-right">
 						<div class="dropdown">
-							<button class="btn btn-link dropdown-toggle" type="button" id="more-{{ store.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							<button class="btn-link dropdown-toggle" type="button" id="more-{{ store.id }}-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 								{{ _('More') }}
-								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="more-{{ store.id }}-actions">
 								<li><a href="{{ url_for('main.edit_store', id=store.id) }}" class="pjax">{{ _('Edit') }}</a></li>

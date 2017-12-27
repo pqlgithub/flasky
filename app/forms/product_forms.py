@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
 from wtforms.fields import StringField, TextAreaField, IntegerField, FloatField, SelectField, RadioField, BooleanField
@@ -32,7 +31,7 @@ class BrandForm(Form):
     logo_id = IntegerField(lazy_gettext('Logo'), default=0)
     banner_id = IntegerField(lazy_gettext('Banner'), default=0)
     
-    status = SelectField(lazy_gettext('Status'), choices=[
+    status = RadioField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
     ], coerce=int, default=-1)
 

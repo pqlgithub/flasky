@@ -1662,7 +1662,6 @@ table.text-center,table.text-center td,table.text-center th {
 .thumbnail.horizontal {
 
 }
-
 .thumbnail.horizontal a>img,
 .thumbnail.horizontal>img {
     width: 80px;
@@ -1681,6 +1680,17 @@ table.text-center,table.text-center td,table.text-center th {
 .thumbnail.horizontal .caption .description {
     min-height: 50px;
 }
+
+.radio-inline-group {
+    list-style-type: none;
+    margin: 0;
+    padding: 6px 0 0;
+}
+.radio-inline-group li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
 
 #topcontrol {
 	background: #5d80a1;

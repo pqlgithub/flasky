@@ -38,14 +38,14 @@ def show_products(page=1):
     paginated_result = builder.order_by('created_at desc').paginate(page, per_page)
     
     # 品牌列表
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(
+    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by(Brand.created_at.asc()).paginate(
         1, 1000)
     
     return render_template('products/show_list.html',
                            sub_menu='products',
                            paginated_products=paginated_result.items,
                            pagination=paginated_result,
-                           paginated_suppliers=paginated_suppliers,
+                           paginated_brands=paginated_brands,
                            **load_common_data())
 
 
@@ -67,8 +67,8 @@ def search_products():
     if reg_id:
         builder = builder.filter_by(region_id=reg_id)
     if bra_id:
-        builder = builder.filter_by(supplier_id=bra_id)
-
+        builder = builder.filter_by(brand_id=bra_id)
+    
     qk = qk.strip()
     if qk:
         builder = builder.whoosh_search(qk, like=True)

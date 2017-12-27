@@ -101,7 +101,7 @@
 						{{ user.last_seen|timestamp2string()}}
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.set_role', user_id=user.id)}}" class="btn btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						<a href="{{ url_for('main.set_role', user_id=user.id)}}" class="btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 							{{ _('Set Role') }}
 						</a>
 					</td>

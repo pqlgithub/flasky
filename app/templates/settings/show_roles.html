@@ -73,10 +73,10 @@
 						</td>
 						<td>{{ role.ability_group }}</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.set_ability', role_id=role.id)}}" class="btn btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Set Ability') }}">
+							<a href="{{ url_for('main.set_ability', role_id=role.id)}}" class="btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Set Ability') }}">
 								{{ _('Set Ability') }}
 							</a>
-							<a href="{{ url_for('main.edit_role', id=role.id)}}" class="btn ajax-role btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_role', id=role.id)}}" class="ajax-role btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>
@@ -85,7 +85,6 @@
 				</tbody>
 			</table>
 		</form>
-
 
 	</div>
 

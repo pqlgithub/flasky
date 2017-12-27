@@ -36,7 +36,7 @@
 		<strong id="subtotal_{{ stock.product_sku_id }}">{{ stock.product_sku.sale_price *  1 }}</strong>
 	</td>
 	<td class="text-right">
-		<a href="javascript:void(0);" data-id="{{ stock.product_sku_id }}" class="btn btn-link ajax-remove-item">{{ _('Remove') }}</a>
+		<a href="javascript:void(0);" data-id="{{ stock.product_sku_id }}" class="btn-link ajax-remove-item">{{ _('Remove') }}</a>
 	</td>
 </tr>
 {% endfor %}

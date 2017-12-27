@@ -4,7 +4,7 @@ Erp for mic
 ## 系统要求：
 - Python 3.6+、Flask 1.0+、virtualenv3.5
 - Mysql 5.0+
-- nginx/1.8.0
+- Nginx/1.8.0
 - gevent (1.1.2)
 - gunicorn (19.6.0)
 

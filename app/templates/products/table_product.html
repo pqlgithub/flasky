@@ -11,7 +11,7 @@
 					<th class="text-center">{{ _('Image') }}</th>
 					<th>{{ _('Product Info') }}</th>
 					<th>{{ _('Mode/Color') }}</th>
-					<th class="text-center">{{ _('Supplier') }}</th>
+					<th class="text-center">{{ _('Brand') }}</th>
 					<th class="text-center">{{ _('Region') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
 					<th class="text-right">{{ _('Sale Price') }}</th>
@@ -30,7 +30,7 @@
 					</td>
 					<td>
 						{% if product.region_id == 1 %}
-							<span class="text-mixpus">{{ product.serial_no }}</span>
+							<span class="text-success">{{ product.serial_no }}</span>
 						{% else %}
 							<span class="text-warning">{{ product.serial_no }}</span>
 						{% endif %}
@@ -39,11 +39,11 @@
 					</td>
 					<td>
 						{{ _('sku') }}: {{ product.skus.count() }}<br>
-						<a href="#" rel="popover" data-content="{% for sku in product.skus %}<label class='text-mixpus m-r-10'>{{ sku.serial_no }} <small class='text-warning'>(
+						<a href="#" rel="popover" data-content="{% for sku in product.skus %}<label class='text-success m-r-10'>{{ sku.serial_no }} <small class='text-warning'>(
 				{% if sku.s_model %}{{ sku.s_model|supress_none }}{% endif %} {% if sku.s_color %}{{ sku.s_color|supress_none }}{% endif %} )</small></label>{% endfor %}" data-original-title="{{ _('Product Sku') }}">{{ _('Show') }}</a>
 					</td>
 					<td class="text-center">
-						{{ product.supplier.short_name }}
+						{{ product.brand.name }}
 					</td>
 					<td class="text-center">
 						{% if product.region_id == 1 %}
@@ -64,7 +64,7 @@
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+						<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 							{{ _('Edit') }}
 						</a>
 					</td>

@@ -17,7 +17,7 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Order Manage') }}</li>
                          <li>
-                             <a href="{{ url_for('main.show_orders') }}" class="pjax {% if status == 0 %} active{% endif %}">
+                             <a href="{{ url_for('main.show_orders') }}" class="pjax">
 		                         {{ _('Order List') }}
 	                         </a>
                          </li>
@@ -103,7 +103,7 @@
                          </li>
                          <li>
                              <a href="{{ url_for('main.show_brands') }}" class="pjax">
-                                 {{ _('Brands List') }}
+                                 {{ _('Brand List') }}
                              </a>
                          </li>
                          <li>
@@ -182,17 +182,17 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Warehouse Setting') }}</li>
                          <li>
-                             <a href="{{ url_for('main.show_suppliers') }}" class="pjax {% if sub_menu == 'suppliers'%} active{% endif %}">
+                             <a href="{{ url_for('main.show_suppliers') }}" class="pjax">
                                  {{ _('Supplier List') }}
                              </a>
                          </li>
                          <li>
-                             <a href="{{ url_for('main.supply_list') }}" class="pjax {% if sub_menu == 'supply'%} active{% endif %}">
+                             <a href="{{ url_for('main.supply_list') }}" class="pjax">
                                  {{ _('Supply Relation') }}
                              </a>
                          </li>
                          <li>
-                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax {% if sub_menu == 'warehouses'%} active{% endif %}">
+                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax">
                                  {{ _('Warehouse List') }}
                              </a>
                          </li>
@@ -210,12 +210,12 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Stock Manage') }}</li>
                          <li>
-                             <a href="{{ url_for('main.show_stocks') }}" class="pjax {% if sub_menu == 'stocks'%} active{% endif %}">
+                             <a href="{{ url_for('main.show_stocks') }}" class="pjax">
                                  {{ _('Stock List') }}
                              </a>
                          </li>
                          <li>
-                             <a href="{{ url_for('main.show_inout') }}" class="pjax {% if sub_menu == 'inout'%} active{% endif %}">
+                             <a href="{{ url_for('main.show_inout') }}" class="pjax">
                                  {{ _('In-out Stock') }}
                              </a>
                          </li>
@@ -223,7 +223,7 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Stock Setting') }}</li>
                          <li>
-                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax {% if sub_menu == 'warehouses'%} active{% endif %}">
+                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax">
                                  {{ _('Warehouse List') }}
                              </a>
                          </li>
@@ -364,15 +364,60 @@
                                  {{ _('H5 Mall') }}
                              </a>
                          </li>
+                         <li>
+                             <a href="{{ url_for('main.show_stores') }}" class="pjax">
+                                 {{ _('Authorized Store') }}
+                             </a>
+                         </li>
+
                      </ul>
                  </div>
             </li>
+            <li class="{% if sub_menu == 'settings'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.site') }}">
+                    <i class="fa fa-gears fa-2x"></i>
+                    <span>{{ _('Setting') }}</span>
+                </a>
+
+                <div class="treeview-menu tree-2x">
+                    <ul class="subtree">
+                        <li class="header">{{ _('Privilege manage') }}</li>
+                        {% if g.user.is_master %}
+                        <li>
+                            <a href="{{ url_for('main.child_users') }}" class="pjax">
+                                {{ _('User List') }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ url_for('main.setting_roles') }}" class="pjax">
+                                {{ _('Acl List') }}
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="subtree">
+                        <li class="header">{{ _('General Settings') }}</li>
+                        <li>
+                            <a href="{{ url_for('main.site') }}" class="pjax">
+                                {{ _('Company Info') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.show_currencies') }}" class="pjax">
+                                {{ _('Currency List') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="{% if sub_menu == 'scrm'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-users fa-2x"></i>
                     <span>{{ _('SCRM') }}</span>
                 </a>
             </li>
+
         </ul>
     </section>
 </aside>

@@ -67,7 +67,7 @@ class MasterStatistics(db.Model):
     profit_yoy = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
     profit_mom = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
 
-    __table_args__ = (db.Index('master_uid', 'time'), db.UniqueConstraint('master_uid', 'type', 'time'))
+    __table_args__ = (db.UniqueConstraint('master_uid', 'type', 'time'),)
 
     def __repr__(self):
         return '<MasterStatistics %r>' % self.id

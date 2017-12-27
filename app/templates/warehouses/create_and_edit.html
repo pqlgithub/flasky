@@ -28,7 +28,7 @@
 					'name': $('input[name="name_'+ n +'"]').val(),
 					'type': $('input[name="type_'+ n +'"]:checked').val(),
 					'warehouse_id': warehouse_id,
-					'csrf_token': csrf_token
+					'csrf_token': mixpus.csrf_token
 				};
 				$.post({
 					url: '{{ url_for("main.add_shelve") }}',
