@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_assets import Environment, Bundle
 
-
 # Create the Flask-Assets instance
 assets_env = Environment()
 

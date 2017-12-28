@@ -121,13 +121,19 @@ class Config:
         }
     }
 
+    # 缓存类型
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = 'localhost'
+    CACHE_REDIS_PORT = '6379'
+    CACHE_REDIS_PASSWORD = 'Fr%bird@201403$01'
+    CACHE_REDIS_DB = '0'
+    
     # Currency API
     CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
     CURRENCY_API_HOST = 'http://jisuhuilv.market.alicloudapi.com'
     CURRENCY_API_SINGLE = '/exchange/single'
     CURRENCY_API_CONVERT = '/exchange/convert'
     CURRENCY_API_ALL = '/exchange/currency'
-
 
     # 快递鸟
     KDN_APP_ID = '1302778'
@@ -142,6 +148,9 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
 
+    # 缓存类型
+    CACHE_TYPE = 'null'
+    
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/mixshopy'
     #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@mixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixSaaS?charset=utf8'
@@ -158,6 +167,13 @@ class ProductionConfig(Config):
     DEBUG_LOG = False
     DEBUG = False
 
+    # 缓存类型 redis
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = 'localhost'
+    CACHE_REDIS_PORT = '6379'
+    CACHE_REDIS_PASSWORD = ''
+    CACHE_REDIS_DB = '0'
+    
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
     FLASKS3_USE_HTTPS = False

@@ -6,18 +6,18 @@ from email.mime.text import MIMEText
 from flask import current_app
 from flask_mail import Message
 from app import db
-from app.extensions import flask_celery
+from app.extensions import celery
 from app.utils import string_to_timestamp
 from app.models import Currency, Site, Order, OrderItem, ProductSku
 from datetime import datetime, timedelta
 from app.summary import StoreSales, StoreProductSales, SalesLog
 
-@flask_celery.task(bind=True)
+@celery.task(bind=True)
 def add_together(self, a, b):
     return a + b
 
 
-@flask_celery.task(bind=True)
+@celery.task(bind=True)
 def async_currency_rate(self):
     """定期同步当日汇率"""
     with current_app.app_context():
@@ -79,7 +79,7 @@ def async_currency_rate(self):
     return
 
 
-@flask_celery.task(
+@celery.task(
     bind=True,
     igonre_result=True,
     default_retry_delay=300,
@@ -116,7 +116,7 @@ def on_reminder_save(mapper, connect, self):
     remind.apply_async(args=(self.id), eta=self.date)
 
 
-@flask_celery.task
+@celery.task
 def send_async_email(msg):
     """Background task to send an email with Flask-Mail."""
     from .wsgi_aux import app
@@ -125,7 +125,7 @@ def send_async_email(msg):
         app.mail.send(msg)
         
         
-@flask_celery.task
+@celery.task
 def build_default_setting(master_uid):
     """主账号创建成功后，自动为账号创建默认配置信息"""
     # 1、创建附件默认目录
@@ -135,7 +135,7 @@ def build_default_setting(master_uid):
     pass
 
 
-@flask_celery.task
+@celery.task
 def sales_statistics(order_id):
     SalesLog(order_id).order_pay()
 
@@ -144,7 +144,7 @@ def sales_statistics(order_id):
     StoreProductSales(order_id).order_pay()
 
 
-@flask_celery.task
+@celery.task
 def refund_statistics(order_id):
     
     SalesLog(order_id).order_refund()

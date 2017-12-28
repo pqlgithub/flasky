@@ -79,6 +79,13 @@ Supervisor运行于 `Python2.7` 环境下：
 
     supervisorctl -c supervisor.conf status
 
+## 常用扩展说明
+** flower - 针对Celery的基于网页的实时管理工具, 启动命令：
+
+    celery flower -A celery_runner --loglevel=info
+
+
+
 
 ### 文献资料参考：
 

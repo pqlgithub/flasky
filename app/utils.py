@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import enum, time, random, xlrd
 from datetime import datetime
-from flask import jsonify, current_app
+from flask import jsonify, current_app, request
 from flask_login import current_user
 import hashlib
 from string import digits, ascii_letters
@@ -275,4 +275,13 @@ def split_huazhu_address(address_str):
     address = '-'.join(addr_ary)
     
     return (province, city, area, address)
+
+
+def make_cache_key(*args, **kwargs):
+    """生成缓存唯一Key"""
+    path = request.path
+    args = str(hash(frozenset(request.args.items())))
+    #lang = get_locale()
+    lang = 'zh_cn'
+    return (path + args + lang).encode('utf-8')
     

@@ -1,0 +1,6 @@
+CKEDITOR.editorConfig = function( config ) {
+  // ...
+  // file upload url
+  config.filebrowserUploadUrl = '/ckupload/';
+  // ...
+};

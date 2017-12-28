@@ -322,14 +322,18 @@ class Cart(db.Model):
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
     
     
+    @property
+    def product(self):
+        return ProductSku.query.filter_by(serial_no=self.sku_rid).one()
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_cart = {
-            'id': self.id,
+            'rid': self.sku_rid,
             'user_id': self.user_id,
-            'sku': self.sku,
             'quantity': self.quantity,
-            'option': self.option
+            'option': self.option,
+            'product': self.product.to_json()
         }
         return json_cart
     

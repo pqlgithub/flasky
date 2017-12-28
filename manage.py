@@ -12,6 +12,7 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from flask_script import Server, Manager, Shell
+from flask_script.commands import ShowUrls, Clean
 from flask_migrate import Migrate, MigrateCommand
 from flask_apidoc.commands import GenerateApiDoc
 from flask_assets import ManageAssets
@@ -82,24 +83,25 @@ def run_sql():
 # 常用操作命令
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
+manager.add_command('show-urls', ShowUrls())
+# 清除工作目录中Python编译的.pyc和.pyo文件
+manager.add_command('clean', Clean())
 
+# 启动测试服务器
 server = Server(host='0.0.0.0', port=5000)
-manager.add_command('runserver', server)
-
+manager.add_command('server', server)
+# 初始化系统命令
+manager.add_command('initial', InitialData())
 # 统计数据初始化
 manager.add_command('init_summary', InitSummary)
-
 # 更新API doc文档
 manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',
                                              output_path='public/docs'))
-
 # css/js 静态文件压缩
 manager.add_command('assets', ManageAssets(assets_env))
-
-# 初始化系统命令
-manager.add_command('initial', InitialData())
-
+# 修正数据
 manager.add_command('fix_data', FixData())
+
 
 
 # 项目的代理设置

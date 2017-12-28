@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import random, string, time
 
+
 __all__ = [
     'Dictate',
     'MixGenId'

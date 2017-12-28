@@ -1,7 +1,7 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'products/_sub_menu.html' %}
+{% block private_js %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/ckeditor/ckeditor.js') }}"></script>
 {% endblock %}
 
 {% block after_jquery %}
@@ -112,6 +112,11 @@
 				</a>
 			</li>
 			<li role="presentation">
+				<a href="#product-content" role="tab" id="content-tab" data-toggle="tab" aria-controls="product-content">
+					{{ _('Content') }}
+				</a>
+			</li>
+			<li role="presentation">
 				<a href="#customs-declaration" role="tab" id="customs-tab" data-toggle="tab" aria-controls="customs-declaration">
 					{{ _('Customs Declaration') }}
 				</a>
@@ -191,22 +196,6 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					{{ form.currency_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
-						{{ form.currency_id(class="form-control change-currency select2") }}
-						<span class="help-block">
-							<a href="{{ url_for('main.show_currencies') }}" target="_blank">
-								<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Currency exchange rate') }}
-							</a>
-						</span>
-					</div>
-					{{ form.region_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
-						{{ form.region_id(class="form-control select2") }}
-					</div>
-				</div>
-
 				<div class="form-group required">
 					{{ form.cost_price.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-3">
@@ -271,6 +260,36 @@
 				</div>
 
 				<div class="form-group">
+					{{ form.description.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-9">
+						{{ form.description(id="description", class="form-control", rows="5") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.status.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.status(id="status", class="radio-inline-group") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.currency_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-3">
+						{{ form.currency_id(class="form-control change-currency select2") }}
+						<span class="help-block">
+							<a href="{{ url_for('main.show_currencies') }}" target="_blank">
+								<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Currency exchange rate') }}
+							</a>
+						</span>
+					</div>
+					{{ form.region_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-3">
+						{{ form.region_id(class="form-control select2") }}
+					</div>
+				</div>
+
+				<div class="form-group">
 					{{ form.from_url.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-9">
 						<div class="input-group">
@@ -282,20 +301,21 @@
 					</div>
 				</div>
 
+			</div>
+
+			<div id="product-content" class="tab-pane fade in" role="tabpanel" aria-labelledby="content-tab">
 				<div class="form-group">
-					{{ form.description.label(class="col-sm-2 control-label") }}
+					{{ form.tags.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-9">
-						{{ form.description(id="description", class="form-control", rows="8") }}
+						{{ form.tags(id="tags", class="form-control")}}
 					</div>
 				</div>
-
-				<div class="form-group required">
-					{{ form.status.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.status(id="status", class="form-control select2") }}
+				<div class="form-group">
+					{{ form.content.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-9">
+						{{ form.content(id="mix_editor", rows="20", class="form-control ckeditor")}}
 					</div>
 				</div>
-
 			</div>
 
 			<div id="customs-declaration" class="tab-pane fade in" role="tabpanel" aria-labelledby="customs-tab">
@@ -357,7 +377,7 @@
 
 			{% if mode == 'edit'%}
 			<div id="sku-group" class="tab-pane fade in" role="tabpanel" aria-labelledby="sku-tab">
-				<a href="{{ url_for('main.add_sku', rid=product.serial_no) }}" class="btn btn-warning ajax-sku" role="button">
+				<a href="{{ url_for('main.add_sku', rid=product.serial_no) }}" class="btn btn-mixpus ajax-sku" role="button">
 					<i class="glyphicon glyphicon-plus"></i> {{ _('Add SKU') }}
 				</a>
 				<div id="product-skus">

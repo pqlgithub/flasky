@@ -9,7 +9,7 @@ import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku, ProductStock, WarehouseShelve, Asset, SupplyStats,\
+from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, SupplyStats,\
     Currency, Order, OrderItem, Brand, ProductPacket
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
@@ -269,30 +269,42 @@ def create_product():
             status=form.status.data,
             description=form.description.data
         )
+
         db.session.add(product)
+        
+        # 更新内容详情
+        if form.tags.data or form.content.data:
+            detail = ProductContent(
+                master_uid=Master.master_uid(),
+                tags = form.tags.data,
+                content = form.content.data
+            )
+            detail.product = product
+            db.session.add(detail)
 
         # 更新所属分类
         if form.category_id.data:
             categories = []
             categories.append(Category.query.get(form.category_id.data))
-
             product.update_categories(*categories)
         
+        db.session.commit()
+
         # 新增索引
         # flask_whooshalchemyplus.index_one_model(Product)
-
-        db.session.commit()
 
         if next_action == 'continue_save':
             flash(gettext('The basic information is complete and continue editing'), 'success')
             return redirect(url_for('.edit_product', rid=product.serial_no))
 
         flash(gettext('The basic information is complete'), 'success')
+        
         return redirect(url_for('.show_products'))
     else:
         current_app.logger.debug(form.errors)
 
     mode = 'create'
+    
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
     # 默认为官网默认货币
     form.currency_id.data = g.current_site.currency_id
@@ -324,13 +336,26 @@ def edit_product(rid):
     form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
-    
         # 根据品牌获取供应商
         if form.brand_id.data:
             brand = Brand.query.filter_by(master_uid=Master.master_uid(), id=form.brand_id.data).first()
             form.supplier_id.data = brand.supplier_id if brand else 0
         
         form.populate_obj(product)
+
+        # 更新内容详情
+        if form.tags.data or form.content.data:
+            if product.details: # 已存在，则更新
+                product.details.tags = form.tags.data
+                product.details.content = form.content.data
+            else:
+                detail = ProductContent(
+                    master_uid=Master.master_uid(),
+                    tags=form.tags.data,
+                    content=form.content.data
+                )
+                detail.product = product
+                db.session.add(detail)
         
         # 更新所属分类
         if form.category_id.data:
@@ -370,7 +395,11 @@ def edit_product(rid):
     form.from_url.data = product.from_url
     form.status.data = product.status
     form.description.data = product.description
-
+    # 内容详情
+    if product.details:
+        form.tags.data = product.details.tags
+        form.content.data = product.details.content
+    
     # 当前货币类型
     if product.currency_id:
         current_currency = Currency.query.get(product.currency_id)

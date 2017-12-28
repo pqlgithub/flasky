@@ -4,7 +4,7 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import User, Product, Category, Customer, ProductPacket
+from app.models import User, Product, Category, Customer, ProductPacket, ProductSku
 
 
 @api.route('/products')
@@ -116,6 +116,27 @@ def get_product(rid):
     
     return full_response(R200_OK, product.to_json())
 
+
+@api.route('/products/<string:rid>/detail')
+def get_product_detail(rid):
+    """获取商品的内容详情"""
+    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
+    if product is None:
+        abort(404)
+    
+    return full_response(R200_OK, product.details.to_json())
+
+@api.route('/products/<string:rid>/skus')
+def get_product_skus(rid):
+    """获取商品的Skus"""
+    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
+    if product is None:
+        abort(404)
+    
+    product_skus = [sku.to_json() for sku in product.skus]
+    
+    return full_response(R200_OK, product_skus)
+    
 
 @api.route('/products', methods=['POST'])
 def create_product():

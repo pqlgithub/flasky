@@ -17,6 +17,7 @@ __all__ = [
     'Product',
     'ProductSku',
     'ProductStock',
+    'ProductContent',
     'CustomsDeclaration',
     'Brand',
     'Supplier',
@@ -56,7 +57,7 @@ product_category_table = db.Table('categories_products',
 
 
 class Product(db.Model):
-    """产品信息"""
+    """产品基本信息"""
 
     __tablename__ = 'products'
 
@@ -105,11 +106,16 @@ class Product(db.Model):
         'ProductSku', backref='product', lazy='dynamic', cascade='delete'
     )
 
+    # product and content => 1 to 1
+    details = db.relationship(
+        'ProductContent', backref='product', uselist=False, cascade='delete'
+    )
+    
     # product and customs declaration => 1 to 1
     declaration = db.relationship(
         'CustomsDeclaration', backref='product', uselist=False, cascade='delete'
     )
-
+    
     @property
     def currency_unit(self):
         """当前货币单位"""
@@ -237,6 +243,36 @@ class Product(db.Model):
         return '<Product %r>' % self.name
 
 
+class ProductContent(db.Model):
+    """产品内容详情"""
+    
+    __tablename__ = 'product_contents'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    
+    content = db.Column(db.Text, nullable=True)
+    tags = db.Column(db.String(200), nullable=True)
+
+    created_at = db.Column(db.Integer, index=True, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'tags': self.tags,
+            'content': self.content
+        }
+        return json_obj
+    
+    
+    def __repr__(self):
+        return '<ProductContent {}>'.format(self.product_id)
+    
+    
+
 class ProductSku(db.Model):
     """产品的SKU"""
 
@@ -327,7 +363,7 @@ class ProductSku(db.Model):
     def no_arrival_count(self):
         """product sku no arrival count"""
         return ProductStock.stock_count_of_no_arrival(self.id)
-
+    
     @staticmethod
     def validate_unique_id_code(id_code, region_id=None, master_uid=0):
         """验证id_code是否唯一"""
@@ -356,15 +392,17 @@ class ProductSku(db.Model):
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_sku = {
-            'id': self.id,
             'product_name': self.product_name,
-            'serial_no': self.serial_no,
+            'rid': self.serial_no,
             'mode': self.mode,
+            'id_code': self.id_code,
             's_model': self.s_model,
             's_color': self.s_color,
             'cover': self.cover.view_url,
             'cost_price': str(self.cost_price),
-            's_weight': str(self.s_weight)
+            'sale_price': str(self.sale_price),
+            's_weight': str(self.s_weight),
+            'stock_count': self.stock_count
         }
         return json_sku
 

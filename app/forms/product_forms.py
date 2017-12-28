@@ -84,11 +84,15 @@ class ProductForm(Form):
     s_width = FloatField(lazy_gettext('Width'), default=0.0)
     s_height = FloatField(lazy_gettext('Height'), default=0.0)
     from_url = StringField(lazy_gettext('View Url'))
-    status = SelectField(lazy_gettext('Status'), choices=[
+    status = RadioField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (0, lazy_gettext('Disabled'))
-    ], coerce=int)
+    ], coerce=int, default=1)
     description = TextAreaField(lazy_gettext('Description'))
-
+    
+    # 详情信息
+    tags = StringField(lazy_gettext('Tags'))
+    content = TextAreaField(lazy_gettext('Content'))
+    
     # 报关信息
     dangerous_goods = RadioField(lazy_gettext('Dangerous Goods'), choices=DANGEROUS_GOODS_TYPES, coerce=str, default='N')
     local_name = StringField(lazy_gettext('Locale Name'))

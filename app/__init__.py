@@ -3,56 +3,36 @@
 	__init__.py
 	~~~~~~~~~~~~~~
 
-	:copyright: (c) 2017 by mic.
+	:copyright: (c) 2017 by mix.
 """
-import os
 from flask import Flask
-# 脚本化管理
-from flask_script import Manager, Shell
-# 装载静态文件
-from flask_bootstrap import Bootstrap, WebCDN
-# 本地化日期和时间
-from flask_moment import Moment
-# 邮件
-from flask_mail import Mail
-# 数据库连接
-from flask_sqlalchemy import SQLAlchemy
-# 管理用户认证系统中的认证状态
-from flask_login import LoginManager, current_user
-# 国际化和本地化
-from flask_babelex import Babel
-# 定时任务
-from app.extensions import flask_celery
+# 导入扩展
+from .extensions import (
+    db,
+    s3,
+    mail,
+    csrf,
+    pjax,
+    babel,
+    cache,
+    celery,
+    moment,
+    bootstrap,
+    login_manager
+)
 # 全文检索
 import flask_whooshalchemyplus as whooshalchemyplus
-# pjax
-from flask_pjax import PJAX
 # 导入上传
-from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
-from flask_wtf.csrf import CSRFProtect
-from flask_s3 import FlaskS3
-from .assets import assets_env, bundles
-
+from flask_uploads import UploadSet, configure_uploads, patch_request_class
 # import redis
-
+from .assets import assets_env, bundles
 # 导入配置参数
 from config import config
 from .momentjs import Momentjs
 
-bootstrap = Bootstrap()
-moment = Moment()
-db = SQLAlchemy()
-mail = Mail()
-babel = Babel()
-csrf = CSRFProtect()
-s3 = FlaskS3()
-pjax = PJAX()
 
 # 创建set
 uploader = UploadSet('photos', extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv'))
-
-# Flask-Login初始化
-login_manager = LoginManager()
 # 属性可以设为None、'basic' 或'strong'
 login_manager.session_protection = 'strong'
 # 设置登录页面的端点
@@ -66,30 +46,30 @@ def create_app(config_name):
     # app.redis = redis.Redis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'],
     #                        db=app.config['REDIS_DB'], password=app.config['REDIS_PASSWORD'])
     # phone_number = current_app.redis.get('token:%s' % token)
-    
+    db.init_app(app)
     bootstrap.init_app(app)
+    mail.init_app(app)
     babel.init_app(app)
     moment.init_app(app)
-    db.init_app(app)
-    mail.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
     whooshalchemyplus.init_app(app)
-
+    
     assets_env.init_app(app)
     assets_env.register(bundles)
     s3.init_app(app)
-
+    # 缓存
+    cache.init_app(app)
     # Init the Flask-Celery-Helper via app object
     # Register the celery object into app object
-    flask_celery.init_app(app)
+    celery.init_app(app)
     pjax.init_app(app)
-
-    # 初始化
+    
+    # 初始化上传
     configure_uploads(app, uploader)
     # 文件大小限制，默认为16MB
     patch_request_class(app)
-
+    
     # logging setting
     if not app.debug:
         import logging
@@ -118,8 +98,6 @@ def create_app(config_name):
     csrf.exempt(api_1_0_blueprint)
     
     
-    
-
     from .main.filters import timestamp2string, short_filename, supress_none, break_line
     app.add_template_filter(timestamp2string, 'timestamp2string')
     app.add_template_filter(short_filename, 'short_filename')

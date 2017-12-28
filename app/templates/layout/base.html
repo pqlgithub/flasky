@@ -120,6 +120,8 @@
   		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
   		{% endassets %}
 
+		{% block private_js %}{% endblock %}
+
 		<script type="text/javascript">
 			// 加载js执行前的配置信息
 			mixpus.csrf_token = "{{ csrf_token() }}";
@@ -158,7 +160,6 @@
 			});
 		</script>
 
-		{% block private_js %}{% endblock %}
 		{% block after_jquery %}
 		<script type="text/javascript">
 			$(function () {
