@@ -5,13 +5,13 @@
 	<div class="list-group-header">
 		{{ _('Client List') }}
 	</div>
-	<a href="{{ url_for('adminlte.show_clients') }}" class="pjax list-group-item {% if sub_menu == 'users'%} active{% endif %}">
+	<a href="{{ url_for('adminlte.show_clients') }}" class="pjax list-group-item {% if not status %} active{% endif %}">
 		{{ _('All List') }}
 	</a>
-	<a href="{{ url_for('adminlte.show_clients') }}?status=1" class="pjax list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
+	<a href="{{ url_for('adminlte.show_clients') }}?status=1" class="pjax list-group-item {% if status == 1 %} active{% endif %}">
 		{{ _('Pending List') }}
 	</a>
-	<a href="{{ url_for('adminlte.show_clients') }}?status=2" class="pjax list-group-item {% if sub_menu == 'abilities'%} active{% endif %}">
+	<a href="{{ url_for('adminlte.show_clients') }}?status=2" class="pjax list-group-item {% if status == 2 %} active{% endif %}">
 		{{ _('Approved List') }}
 	</a>
 </div>
@@ -46,15 +46,18 @@
 		{{ _('Client List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<button class="btn btn-danger delete-all hidden" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+			<button class="btn btn-danger delete-all hidden" data-form-id="clients-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
 	</h2>
 
 	<div class="table-responsive m-t-20">
-		<table class="table table-bordered table-striped table-hover">
-			<thead>
+		<form id="places-form" action="{{ url_for('adminlte.delete_place') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
 				<tr>
 					<th class="text-center">
 						<input name="check_all" type="checkbox" class="check-all">
@@ -65,8 +68,8 @@
 					<th class="text-right">{{ _('Created at') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
-			</thead>
-			<tbody>
+				</thead>
+				<tbody>
 				{% for client in paginated_clients.items %}
 				<tr>
 					<td class="text-center">
@@ -91,15 +94,13 @@
 					</td>
 				</tr>
 				{% endfor %}
-			</tbody>
-		</table>
+				</tbody>
+			</table>
+		</form>
+
 
 		{% import "block/_macros.html" as macros %}
-		<div class="pages-box link">
-			<nav aria-label="Page navigation">
-				{{ macros.pagination_widget(paginated_clients, '.show_clients') }}
-			</nav>
-		</div>
+		{{ macros.pagination_widget(paginated_clients, '.show_clients') }}
 
 	</div>
 </div>

@@ -32,7 +32,7 @@ def show_applications(page=1):
 
     return render_template('adminlte/applications/show_list.html',
                            paginated_markets=paginated_markets,
-                           type=type,
+                           t=type,
                            **load_common_data())
 
 

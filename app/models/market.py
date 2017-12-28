@@ -11,7 +11,9 @@ __all__ = [
     'AppService',
     'SubscribeService',
     'SubscribeRecord',
-    'ApplicationStatus'
+    'ApplicationStatus',
+    'Invitation',
+    'Bonus'
 ]
 
 # 产品的状态
@@ -162,6 +164,65 @@ class SubscribeRecord(db.Model):
     # 订购天数, 15天试用期
     ordered_days = db.Column(db.Integer, default=15)
     
+
+class Invitation(db.Model):
+    """邀请注册好礼"""
+
+    __tablename__ = 'invitations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+    code = db.Column(db.String(16), nullable=False)
+    user_id = db.Column(db.Integer, default=0)
+    
+    used_by = db.Column(db.Integer, default=0)
+    # 是否使用
+    is_used = db.Column(db.Boolean, default=False)
+    used_at = db.Column(db.Integer, default=0)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    
+    def __repr__(self):
+        return '<Invitation {}>'.format(self.id)
+
+
+class Bonus(db.Model):
+    """促销红包"""
+
+    __tablename__ = 'bonus'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+    
+    code = db.Column(db.String(16), nullable=False)
+    amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 过期时间
+    expired_at = db.Column(db.Integer, default=0)
+    # 限制最近消费金额
+    min_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 限制使用某个商品
+    product_rid = db.Column(db.String(12), nullable=True)
+    # 活动编号
+    xname = db.Column(db.String(8), nullable=True)
+    # 状态
+    status = db.Column(db.SmallInteger, default=0)
+    
+    # 所属人
+    user_id = db.Column(db.Integer, default=0)
+    # 获得时间
+    get_at = db.Column(db.Integer, default=0)
+    
+    # 使用者
+    used_by = db.Column(db.Integer, default=0)
+    used_at = db.Column(db.Integer, default=0)
+    is_used = db.Column(db.Boolean, default=False)
+    # 使用在某个订单上
+    order_rid = db.Column(db.String(12), nullable=True)
+    
+    def __repr__(self):
+        return '<Bonus {}>'.format(self.code)
+
 
 # 监听Brand事件
 event.listen(AppService, 'before_insert', AppService.on_before_insert)

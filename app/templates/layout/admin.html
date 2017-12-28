@@ -68,6 +68,9 @@
 					<li {% if top_menu == 'applications' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.show_applications') }}">{{ _('Applications') }}</a>
 					</li>
+					<li {% if top_menu == 'address' %}class="active"{% endif %}>
+						<a href="{{ url_for('adminlte.show_places') }}">{{ _('Address') }}</a>
+					</li>
 				</ul>
 				<div class="navbar-custom-menu">
 					<ul class="nav navbar-nav">

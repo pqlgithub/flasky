@@ -25,6 +25,7 @@ def show_clients(page=1):
 
     return render_template('adminlte/clients/show_list.html',
                            paginated_clients=paginated_clients,
+                           status=status,
                            top_menu='clients')
 
 

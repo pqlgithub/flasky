@@ -1,0 +1,139 @@
+{% extends "layout/admin.html" %}
+
+{% block sidebar %}
+	{% include 'adminlte/places/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Place List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+            <a href="{{ url_for('adminlte.create_place') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+				<i class="glyphicon glyphicon-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="places-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+    <form class="form-inline filter-form" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control searcher" name="qk" size="60" placeholder="{{ _('Search name...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="st">
+				<button class="btn btn-default dropdown-toggle" id="filter-st" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Status') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="st" aria-labelledby="filter-st">
+					<li class="dropdown-header">{{ _('Search Brand')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Enabled') }}</a>
+					</li>
+                    <li>
+						<a href="javascript:void(0);" data-id="-1" class="option">{{ _('Disabled') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="table-responsive m-t-20">
+        <form id="places-form" action="{{ url_for('adminlte.delete_place') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="text-center">
+                        <input name="check_all" type="checkbox" class="check-all">
+                    </th>
+                    <th>{{ _('Name') }}</th>
+                    <th class="text-center">{{ _('Sort By') }}</th>
+                    <th class="text-right">{{ _('Status') }}</th>
+                    <th class="text-right">{{ _('Created at') }}</th>
+                    <th class="text-right">{{ _('Action') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for place in paginated_places.items %}
+                <tr>
+                    <td class="text-center">
+                        <input name="selected[]" class="check-one" value="{{ place.id }}" type="checkbox">
+                    </td>
+                    <td>{{ place.name }}</td>
+                    <td class="text-center">{{ place.sort_by }}</td>
+                    <td class="text-right">
+                        <span class="indicator {{ place.status_label[2] }}">
+							{{ place.status_label[1] }}
+						</span>
+                    </td>
+                    <td class="text-right">
+                        {{ place.created_at|timestamp2string() }}
+                    </td>
+                    <td class="text-right">
+                        <a href="{{ url_for('adminlte.create_place') }}?pid={{ place.id }}" class="btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Add Next Child') }}">
+                            <i class="fa fa-sitemap"></i> {{ _('Add Child') }}
+                        </a>
+                        <a href="{{ url_for('adminlte.edit_place', id=place.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                            {{ _('Edit') }}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </form>
+
+		{% import "block/_macros.html" as macros %}
+		{{ macros.pagination_widget(paginated_places, '.show_places') }}
+
+	</div>
+</div>
+{% endblock %}

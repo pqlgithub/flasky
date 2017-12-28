@@ -149,7 +149,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
     # 缓存类型
-    CACHE_TYPE = 'null'
+    CACHE_TYPE = 'simple'
     
     # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/mixshopy'

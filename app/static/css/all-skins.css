@@ -199,3 +199,14 @@
 .skin-green-light input[type=checkbox]:focus {
     border-color: #00a65a;
 }
+
+/* 后台系统 */
+.adminlte.skin-green-light .sidebar a {
+    color:#666;
+}
+.adminlte.skin-green-light .list-group-item.active,
+.adminlte.skin-green-light .list-group-item.active:focus,
+.adminlte.skin-green-light .list-group-item.active:hover {
+    border-left-color: #222d32;
+    border-left-width: 3px;
+}

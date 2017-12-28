@@ -1,0 +1,88 @@
+{% extends "layout/admin.html" %}
+
+{% block sidebar %}
+	{% include 'adminlte/places/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Country List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+            <a href="{{ url_for('adminlte.create_country') }}" class="btn btn-icon btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
+				<i class="fa fa-plus"></i>
+			</a>
+			<button type="button" data-form-id="form-countries" class="btn btn-icon btn-danger delete-all hidden" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="fa fa-trash-o"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive m-t-20">
+		<form id="form-countries" action="{{ url_for('adminlte.delete_country') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+			<table class="table table-bordered table-hover" role="grid">
+				<thead>
+				<tr role="row">
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Country Name') }}</th>
+					<th>{{ _('ISO Code') }}</th>
+					<th>{{ _('ISO Code (2)') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				{% for country in paginated_countries.items %}
+				<tr role="row">
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ country.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ country.name }}
+					</td>
+					<td>{{ country.code }}</td>
+					<td>{{ country.code2 }}</td>
+					<td class="text-right">
+						{% if country.status == 1%}
+						<span class="indicator success">{{ _('Enabled') }}</span>
+						{% else %}
+						<span class="indicator danger">{{ _('Disabled') }}</span>
+						{% endif %}
+					</td>
+					<td class="actions text-right">
+						<a href="{{ url_for('adminlte.edit_country', id=country.id) }}" class="btn-link pjax" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							{{ _('Edit') }}
+						</a>
+					</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box link">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_countries, '.show_countries') }}
+			</nav>
+		</div>
+
+	</div>
+</div>
+{% endblock %}
