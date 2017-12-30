@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy import text, event
 from flask_babelex import lazy_gettext
 from app import db
+from app.helpers import MixGenId
+from app.exceptions import ValidationError
 from ..utils import timestamp
 
 __all__ = [
@@ -23,8 +26,8 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     master_uid = db.Column(db.Integer, index=True, default=0)
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    serial_no = db.Column(db.String(11), unique=True, index=True, nullable=True)
     
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -57,6 +60,97 @@ class Address(db.Model):
     def ship_country(self):
         return Country.query.get(self.country_id)
     
+    @property
+    def full_name(self):
+        return ''.join([self.first_name, self.last_name])
+
+    @staticmethod
+    def make_unique_serial_no():
+        serial_no = MixGenId.gen_address_sn(9)
+        if Address.query.filter_by(serial_no=serial_no).first() is None:
+            return serial_no
+        while True:
+            new_serial_no = MixGenId.gen_address_sn(9)
+            if Address.query.filter_by(serial_no=new_serial_no).first() is None:
+                break
+        return new_serial_no
+    
+    @staticmethod
+    def on_sync_change(mapper, connection, target):
+        """同步事件"""
+        if target.province_id:
+            province_row = Place.query.get(target.province_id)
+            target.province = province_row.name if province_row else ''
+            target.country_id = province_row.country_id
+        if target.city_id:
+            city_row = Place.query.get(target.city_id)
+            target.city = city_row.name if city_row else ''
+        if target.town_id:
+            town_row = Place.query.get(target.town_id)
+            target.town = town_row.name if town_row else ''
+        if target.area_id:
+            area_row = Place.query.get(target.area_id)
+            target.area = area_row.name if area_row else ''
+    
+    
+    @staticmethod
+    def validate_required_fields(json_address):
+        """验证必须数据格式"""
+        # 数据验证
+        first_name = json_address.get('first_name')
+        last_name = json_address.get('last_name')
+        if first_name is None and last_name is None:
+            raise ValidationError("Name can't empty!")
+        
+        if json_address.get('province_id') is None:
+            raise ValidationError("Province can't empty!")
+        
+        return True
+    
+    
+    @staticmethod
+    def from_json(json_address):
+        """从json格式数据创建，对API支持"""
+        
+        if not Address.validate_required_fields(json_address):
+            raise ValidationError("Fields validate error!")
+        
+        return Address(
+            first_name=json_address.get('first_name'),
+            last_name=json_address.get('last_name'),
+            phone=json_address.get('phone'),
+            mobile=json_address.get('mobile'),
+            province_id=json_address.get('province_id'),
+            city_id=json_address.get('city_id'),
+            town_id=json_address.get('town_id'),
+            area_id=json_address.get('area_id'),
+            street_address=json_address.get('street_address'),
+            street_address_two=json_address.get('street_address_two'),
+            zipcode=json_address.get('zipcode'),
+            is_default=bool(json_address.get('is_default'))
+        )
+    
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.serial_no,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'full_name': self.full_name,
+            'phone': self.phone,
+            'mobile': self.mobile,
+            'province': self.province,
+            'city': self.city,
+            'town': self.town,
+            'area': self.area,
+            'street_address': self.street_address,
+            'street_address_two': self.street_address_two,
+            'zipcode': self.zipcode,
+            'is_default': self.is_default
+        }
+        return json_obj
+    
     
     def __repr__(self):
         return '<Address {}>'.format(self.id)
@@ -77,6 +171,19 @@ class Country(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.id,
+            'name': self.name,
+            'en_name': self.en_name,
+            'code': self.code,
+            'code2': self.code2
+        }
+        return json_obj
+    
     
     def __repr__(self):
         return '<Country %r>' % self.code
@@ -158,7 +265,22 @@ class Place(db.Model):
             builder = builder.filter_by(pid=pid)
         
         return builder.order_by(Place.sort_by.asc()).all()
-        
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.id,
+            'name': self.name,
+            'pid': self.pid,
+            'sort_by': self.sort_by,
+            'status': self.status
+        }
+        return json_obj
     
     def __repr__(self):
         return '<Area {}>'.format(self.name)
+
+
+# 添加监听事件, 实现触发器
+event.listen(Address, 'before_insert', Address.on_sync_change)
+event.listen(Address, 'before_update', Address.on_sync_change)

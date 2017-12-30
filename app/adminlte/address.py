@@ -44,13 +44,18 @@ def create_place():
     form.country_id.choices = [(country.id, country.name) for country in Country.query.filter_by(status=True).all()]
     if form.validate_on_submit():
         pid = form.pid.data
-        parent_node = Place.query.get_or_404(int(pid))
-        next_layer = parent_node.layer + 1
+        if pid:
+            parent_node = Place.query.get_or_404(int(pid))
+            next_layer = parent_node.layer + 1
+        else:
+            pid = 0
+            next_layer = 1
+        
         # 添加下一级
         place = Place(
             country_id=form.country_id.data,
             name=form.name.data,
-            pid=form.pid.data,
+            pid=pid,
             layer=next_layer,
             status=form.status.data
         )

@@ -8,4 +8,4 @@ api = Blueprint('api', __name__)
 CORS(api)
 
 from . import auth, tokens, users, errors, categories, products, orders, brands, \
-    customers, shop, views, cart
+    customers, shop, views, cart, address

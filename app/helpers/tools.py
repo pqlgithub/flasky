@@ -50,16 +50,15 @@ class MixGenId():
     """生成各种sn/sku"""
     
     @staticmethod
-    def gen_digits(self, length=7):
+    def gen_digits(length=7):
         """生成数字串"""
         return ''.join(random.sample(string.digits, length))
     
     
     @staticmethod
-    def gen_letters(self, length=20):
+    def gen_letters(length=20):
         """生成字符串"""
         return ''.join(random.sample(string.ascii_letters, length))
-    
     
     
     @staticmethod
@@ -87,6 +86,11 @@ class MixGenId():
     def gen_shop_sn(length=7):
         """生成商店sn"""
         prefix = '9'
+        return ''.join([prefix, MixGenId.gen_digits(length)])
+    
+    @staticmethod
+    def gen_address_sn(length=10):
+        prefix = '5'
         return ''.join([prefix, MixGenId.gen_digits(length)])
     
     @staticmethod

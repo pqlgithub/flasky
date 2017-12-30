@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import jsonify
 from app.exceptions import ValidationError
+
 from . import api
 from .utils import *
+
 
 @api.errorhandler(400)
 def bad_request(e):
@@ -38,6 +40,8 @@ def not_found(e):
 
 @api.errorhandler(ValidationError)
 def validation_error(e):
-	return bad_request(e.args[0])
-
+	return status_response({
+		'code': e.status_code,
+		'message': e.message
+	}, False)
 
