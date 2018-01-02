@@ -128,10 +128,13 @@ def send_async_email(msg):
 @celery.task
 def build_default_setting(master_uid):
     """主账号创建成功后，自动为账号创建默认配置信息"""
-    # 1、创建附件默认目录
+    # 1、默认权限组
     
     # 2、默认币种
     
+    # 3、创建附件默认目录及分组目录
+    
+    # 4、创建默认
     pass
 
 

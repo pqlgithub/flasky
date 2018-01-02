@@ -1,12 +1,8 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'settings/_sub_menu.html' %}
-{% endblock %}
-
 {% block mainbar %}
 	<h2 class="page-header">
-		{{ _('Store List') }}
+		{{ _('Channel List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.create_store') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
@@ -28,9 +24,10 @@
 					<th class="text-center">
 						<input name="check_all" type="checkbox" class="check-all">
 					</th>
-					<th>{{ _('Store Name') }}</th>
+					<th>{{ _('Channel Name') }}</th>
+					<th>{{ _('Type') }}</th>
 					<th>{{ _('Platform') }}</th>
-					<th class="text-center">{{ _('Operator') }}</th>
+					<th class="text-center">{{ _('Manager') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -43,6 +40,9 @@
 					</td>
 					<td>
 						{{ store.name }}
+					</td>
+					<td>
+						{{ store.type_label[1] }}
 					</td>
 					<td>
 						{{ store.platform_name }}

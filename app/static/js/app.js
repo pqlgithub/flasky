@@ -322,7 +322,7 @@ mixpus.hook_delete_all = function () {
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonText: "Yes, delete it!",
-			confirmButtonColor: '#28a5a8',
+			confirmButtonColor: '#008749',
 			closeOnConfirm: true
 		}, function (is_confirm) {
 			if (is_confirm) {

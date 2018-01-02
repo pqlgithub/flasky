@@ -99,6 +99,11 @@ class User(UserMixin, db.Model):
         'Customer', backref='user', uselist=False, cascade='delete'
     )
     
+    # 用户与订单 1 => N
+    orders = db.relationship(
+        'Order', backref='user', lazy='dynamic'
+    )
+    
     @property
     def role_group(self):
         return ' / '.join(self.has_roles())
@@ -172,12 +177,13 @@ class User(UserMixin, db.Model):
     
     def ping(self):
         """每次收到用户的请求时都要调用ping()方法"""
-        self.last_seen = timestamp()
         last_online = self.online
+        
+        self.last_seen = timestamp()
         self.online = True
-
+        
         db.session.add(self)
-
+        
         return last_online != self.online
     
 
@@ -233,6 +239,20 @@ class User(UserMixin, db.Model):
     def on_before_insert(mapper, connection, target):
         # 自动生成用户编号
         target.sn = User.make_unique_sn()
+
+    @staticmethod
+    def find_offline_users():
+        """查找离线用户"""
+        users = User.query.filter(User.last_seen < timestamp() - 60,
+                                  User.online == True).all()
+        # 设置用户离线状态
+        for user in users:
+            user.online = False
+            db.session.add(user)
+    
+        db.session.commit()
+    
+        return users
     
     
     def to_json(self):
@@ -249,6 +269,7 @@ class User(UserMixin, db.Model):
             'description': self.description
         }
         return json_user
+    
     
     def __repr__(self):
         return '<User %r>' % self.username

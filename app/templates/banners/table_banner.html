@@ -1,0 +1,29 @@
+<tr>
+	<td class="text-center">
+		<input name="selected[]" class="check-one" value="{{ banner.id }}" type="checkbox">
+	</td>
+	<td class="text-center">
+		<img src="{{ banner.image.view_url }}" width="30px">
+	</td>
+	<td class="text-center">
+		{{ banner.title }}
+	</td>
+	<td class="text-center">
+		{{ banner.spot.name }}<span class="text-success"> [ {{ banner.spot.serial_no }} ] </span>
+	</td>
+	<td class="text-right">
+		{{ banner.sort_order }}
+	</td>
+	<td class="text-right">
+		{% if banner.status == 1 %}
+		<span class="indicator success">{{ _('Enabled') }}</span>
+		{% else %}
+		<span class="indicator warning">{{ _('Disabled') }}</span>
+		{% endif %}
+	</td>
+	<td class="text-right">
+		<a href="{{ url_for('main.edit_banner', id=banner.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			{{ _('Edit') }}
+		</a>
+	</td>
+</tr>

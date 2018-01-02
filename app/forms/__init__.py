@@ -11,3 +11,4 @@ from .application_forms import ApplicationForm
 from .customer_forms import CustomerForm, CustomerGradeForm, CustomerEditForm, DiscountTempletForm, DiscountTempletEditForm
 from .h5mall_forms import H5mallForm
 from .address_forms import PlaceForm, CountryForm, EditCountryForm
+from .channel_forms import BannerForm, BannerImageForm

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import random, string, time
+import random, string, datetime
 
 
 __all__ = [
@@ -66,6 +66,13 @@ class MixGenId():
         """生成开放市场应用sn"""
         prefix = '3'
         return ''.join([prefix, MixGenId.gen_digits(length)])
+
+    
+    @staticmethod
+    def gen_banner_sn(length=8):
+        """生成banner sn"""
+        prefix = 'Ad'
+        return ''.join([prefix, MixGenId.gen_digits(length)])
     
     
     @staticmethod
@@ -73,6 +80,15 @@ class MixGenId():
         """生成品牌sn"""
         prefix = '6'
         return ''.join([prefix, MixGenId.gen_digits(length)])
+    
+    
+    @staticmethod
+    def gen_order_sn(length=10):
+        """生成订单sn"""
+        prefix = 'D'
+        now = datetime.datetime.now()
+        date_str = now.strftime("%Y%m%d")
+        return ''.join([prefix, date_str, MixGenId.gen_digits(length)])
     
     
     @staticmethod
@@ -88,16 +104,19 @@ class MixGenId():
         prefix = '9'
         return ''.join([prefix, MixGenId.gen_digits(length)])
     
+    
     @staticmethod
     def gen_address_sn(length=10):
         prefix = '5'
         return ''.join([prefix, MixGenId.gen_digits(length)])
+    
     
     @staticmethod
     def gen_customer_sn(length=7):
         """生成分销商编号"""
         prefix = 'F'
         return ''.join([prefix, MixGenId.gen_digits(length)])
+    
     
     @staticmethod
     def gen_user_xid(length=10):

@@ -1,0 +1,129 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	var submit_filter_form = function () {
+		var data = $('#filter-form').serialize();
+
+		$.post("{{ url_for('main.show_banners') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+		return false;
+	};
+
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Banner List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<a href="{{ url_for('main.create_banner') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+				<i class="fa fa-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="banners-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="fa fa-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<form class="form-inline" id="filter-form" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control searcher" size="60" name="qk" autocomplete="off" placeholder="{{ _('Search name...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="p" value="{{ p }}">
+				<button class="btn btn-default dropdown-toggle" type="button" id="filter-spot" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Spot') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="p" aria-labelledby="filter-spot">
+					<li class="dropdown-header">{{ _('Filter Spot')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					{% for p in spot_list %}
+					<li>
+						<a href="javascript:void(0);" data-id="{{ p.id }}" class="option">{{ p.name }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div id="table-refresh-box" class="m-t-20">
+		<div class="table-responsive">
+			<form id="banners-form" action="{{ url_for('main.delete_banner') }}" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Image') }}</th>
+                        <th class="text-center">{{ _('Banner Title') }}</th>
+						<th class="text-center">{{ _('Spot') }}</th>
+                        <th class="text-right">{{ _('Sort By') }}</th>
+						<th class="text-right">{{ _('Status') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+					</thead>
+					<tbody>
+					{% for banner in paginated_banners.items %}
+						{% include 'banners/table_banner.html' %}
+					{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+
+		{% import "block/_macros.html" as macros %}
+		{{ macros.pagination_widget(paginated_banners, '.show_banners') }}
+	</div>
+
+</div>
+{% endblock %}

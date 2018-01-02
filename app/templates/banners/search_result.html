@@ -1,0 +1,29 @@
+<div class="table-responsive">
+    <form id="banners-form" action="{{ url_for('main.delete_banner') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">
+                    <input name="check_all" type="checkbox" class="check-all">
+                </th>
+                <th class="text-center">{{ _('Image') }}</th>
+                <th class="text-center">{{ _('Banner Title') }}</th>
+                <th class="text-center">{{ _('Spot') }}</th>
+                <th class="text-right">{{ _('Sort By') }}</th>
+                <th class="text-right">{{ _('Status') }}</th>
+                <th class="text-right">{{ _('Action') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for banner in paginated_banners.items %}
+                {% include 'banners/table_banner.html' %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+{% import "block/_macros.html" as macros %}
+{{ macros.pagination_widget(paginated_banners, '.show_banners', p=p, qk=qk, sk=sk) }}

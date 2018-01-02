@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask import abort, g
 from sqlalchemy import text, event
 from flask_babelex import lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
@@ -6,7 +7,8 @@ import flask_whooshalchemyplus
 from app import db
 from .product import ProductSku
 from .logistics import Express
-from ..utils import timestamp, gen_serial_no
+from ..utils import timestamp
+from app.helpers import MixGenId
 
 __all__ = [
     'Order',
@@ -74,11 +76,13 @@ class Order(db.Model):
     __analyzer__ = ChineseAnalyzer()
 
     id = db.Column(db.Integer, primary_key=True)
-
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
 
     # 用户ID
     master_uid = db.Column(db.Integer, index=True, default=0)
+    # 消费者ID
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
     # 第三方平台订单编号
     outside_target_id = db.Column(db.String(32), index=True, nullable=True)
     # 店铺ID
@@ -105,6 +109,7 @@ class Order(db.Model):
     invoice_type = db.Column(db.SmallInteger, default=1)
 
     # 顾客信息
+    address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
     buyer_name = db.Column(db.String(50), index=True, nullable=False)
     buyer_tel = db.Column(db.String(20), index=True, nullable=True)
     buyer_phone = db.Column(db.String(20), index=True, nullable=True)
@@ -113,6 +118,7 @@ class Order(db.Model):
     buyer_country = db.Column(db.String(50), nullable=True)
     buyer_province = db.Column(db.String(50), nullable=True)
     buyer_city = db.Column(db.String(50), nullable=True)
+    buyer_town = db.Column(db.String(50), nullable=True)
     buyer_area = db.Column(db.String(50), nullable=True)
     # 买家备注
     buyer_remark = db.Column(db.String(250), nullable=True)
@@ -123,19 +129,27 @@ class Order(db.Model):
     # 过期时间
     expired_time = db.Column(db.Integer, nullable=True)
     
+    # 分销商ID
+    customer_id = db.Column(db.String(20), nullable=True)
+    # 所属销售人员
+    saler_uid = db.Column(db.Integer, default=0)
     # 来源终端
     from_client = db.Column(db.SmallInteger, default=0)
     # 推广码
     affiliate_code = db.Column(db.String(16), nullable=True)
-
+    
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+    # 审单人
+    verified_uid = db.Column(db.Integer, default=0)
     # 审核时间
     verified_at = db.Column(db.Integer, default=0)
     # 支付时间
     payed_at = db.Column(db.Integer, default=0)
     # 发货时间
     express_at = db.Column(db.Integer, default=0)
+    # 发货人
+    deliver_uid = db.Column(db.Integer, default=0)
     # 收货时间
     received_at = db.Column(db.Integer, default=0)
     # 完成时间
@@ -146,7 +160,8 @@ class Order(db.Model):
     type = db.Column(db.SmallInteger, default=1)
     # 相关订单
     related_rid = db.Column(db.String(20), nullable=True)
-    
+    # 售后客服
+    service_uid = db.Column(db.Integer, default=0)
     
     # order and items => 1 to N
     items = db.relationship(
@@ -227,23 +242,50 @@ class Order(db.Model):
         """标记为关闭或取消状态"""
         self.status = OrderStatus.CANCELED
         self.closed_at = timestamp()
-
+    
 
     @staticmethod
-    def make_unique_serial_no(serial_no):
+    def make_unique_serial_no():
+        serial_no = MixGenId.gen_order_sn()
         if Order.query.filter_by(serial_no=serial_no).first() == None:
             return serial_no
         while True:
-            new_serial_no = gen_serial_no('C')
+            new_serial_no = MixGenId.gen_order_sn()
             if Order.query.filter_by(serial_no=new_serial_no).first() == None:
                 break
         return new_serial_no
 
+    
     @staticmethod
     def on_sync_change(mapper, connection, target):
         """同步事件"""
         pass
-
+    
+    
+    @staticmethod
+    def create(data, user=None):
+        """创建新订单"""
+        order = Order(user=user or g.current_user)
+        order.from_json(data, partial_update=False)
+        
+        return order
+    
+    
+    def from_json(self, data, partial_update=True):
+        """从请求json里导入数据"""
+        fields = ['master_uid', 'serial_no', 'store_id', 'warehouse_id', 'outside_target_id',
+                  'pay_amount', 'total_amount', 'freight', 'discount_amount', 'invoice_type', 'total_quantity',
+                  'buyer_name', 'buyer_tel', 'buyer_phone', 'buyer_zipcode', 'buyer_country', 'buyer_province',
+                  'buyer_city', 'buyer_town', 'buyer_area', 'buyer_address', 'buyer_remark',
+                  'from_client', 'affiliate_code']
+        
+        for field in fields:
+            try:
+                setattr(self, field, data[field])
+            except KeyError:
+                if not partial_update:
+                    abort(400)
+    
     
     def to_json(self):
         """资源和JSON的序列化转换"""

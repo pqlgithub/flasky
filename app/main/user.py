@@ -5,7 +5,7 @@ from flask_login import login_required, current_user, logout_user
 from flask_babelex import gettext
 from . import main
 from .. import db
-from app.models import User, Role, Ability, Site
+from app.models import User, Role, UserIdType, Site
 from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm, PreferenceForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
@@ -65,15 +65,19 @@ def add_child_user():
     master_uid = Master.master_uid()
     form = UserForm()
     if form.validate_on_submit():
-        user = User(
-            master_uid = master_uid,
-            email = form.email.data,
-            username=form.username.data,
-            password=form.password.data,
-            confirmed=True,
-            is_setting=True,
-            time_zone='zh'
-        )
+        user = User()
+        
+        user.master_uid = master_uid
+        
+        user.email = form.email.data
+        user.username = form.username.data
+        user.password = form.password.data
+        # 默认为供应商身份
+        user.id_type = UserIdType.SUPPLIER
+        user.confirmed = True
+        user.is_setting = True
+        user.time_zone = 'zh'
+        
         db.session.add(user)
         db.session.commit()
 

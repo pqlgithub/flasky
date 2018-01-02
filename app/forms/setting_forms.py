@@ -8,12 +8,13 @@ from app.models import Store
 from ..constant import SUPPORT_PLATFORM
 
 class StoreForm(Form):
-    name = StringField(lazy_gettext('Store Name'), validators=[DataRequired(message="Store name can't empty!"), Length(2, 32)])
+    name = StringField(lazy_gettext('Channel Name'), validators=[DataRequired(message="Channel name can't empty!"), Length(2, 32)])
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
-    operator_id = SelectField(lazy_gettext('Operator'), choices=[], coerce=int)
-    status = SelectField(lazy_gettext('Status'),
+    operator_id = SelectField(lazy_gettext('Manager'), choices=[], coerce=int)
+    type = SelectField(lazy_gettext('Type'), choices=[], coerce=int)
+    status = RadioField(lazy_gettext('Status'),
                          choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))],
-                         coerce=int)
+                         coerce=int, default=1)
     description = TextAreaField(lazy_gettext('Description'))
 
 

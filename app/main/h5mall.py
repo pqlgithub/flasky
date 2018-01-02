@@ -11,7 +11,7 @@ from ..utils import Master
 from ..decorators import user_has, user_is
 
 
-@main.route('/mall/setting', methods=['GET', 'POST'])
+@main.route('/h5mall/setting', methods=['GET', 'POST'])
 def setting_mall():
     """设置微商城基本信息"""
     form = H5mallForm()

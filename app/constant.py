@@ -204,6 +204,7 @@ SUPPORT_DOMAINS = (
     (2, lazy_gettext('Services'))
 )
 
+
 # 默认权限列表
 DEFAULT_ACLIST = (
     ('admin_store', gettext('Admin Store')),
@@ -213,6 +214,9 @@ DEFAULT_ACLIST = (
     ('admin_logistics', gettext('Admin Logistics')),
     ('admin_product', gettext('Admin Product')),
     ('admin_order', gettext('Admin Order')),
+    ('admin_channel', gettext('Admin Channel')),
+    ('admin_customer', gettext('Admin Customer')),
+    ('admin_appstore', gettext('Admin Appstore')),
     ('admin_service', gettext('Admin Service')),
     ('admin_finance', gettext('Admin Finance')),
     ('admin_reports', gettext('Admin Reports')),
