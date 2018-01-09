@@ -2,7 +2,7 @@
 	<form id="orders-form" action="{{ url_for('main.delete_order') }}" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-		<table class="table table-bordered">
+		<table class="table table-bordered pull-right">
 			<thead>
 			<tr>
 				<th>
@@ -65,7 +65,7 @@
 						{{ order.buyer_name }}
 					</td>
 					<td {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
-						{{ order.buyer_tel }} {{ order.buyer_phone }}
+						{% if order.buyer_phone %}{{ order.buyer_phone }} <br />{% endif %}{{ order.buyer_tel }}
 					</td>
 					<td {% if order.items_count > 1 %}rowspan="{{ order.items_count }}"{% endif %}>
 						{{ order.buyer_remark|supress_none }}

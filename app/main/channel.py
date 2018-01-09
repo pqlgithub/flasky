@@ -44,9 +44,10 @@ def show_stores():
 def create_store():
     form = StoreForm()
     form.type.choices = STORE_TYPE
-    
+    # 设置关联负责人
     user_list = User.query.filter_by(master_uid=Master.master_uid(), id_type=UserIdType.SUPPLIER).all()
     form.operator_id.choices = [(user.id, user.username) for user in user_list]
+    
     if form.validate_on_submit():
         if Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data):
             flash('Store name already exist!', 'danger')
@@ -55,6 +56,7 @@ def create_store():
         store = Store(
             master_uid=Master.master_uid(),
             name=form.name.data,
+            serial_no=MixGenId.gen_store_sn(),
             platform=form.platform.data,
             operator_id=form.operator_id.data,
             type=form.type.data,

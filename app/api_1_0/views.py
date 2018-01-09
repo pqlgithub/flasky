@@ -7,7 +7,7 @@
 	:copyright: (c) 2017 by mic.
 """
 from flask import request, abort, g, url_for
-from app.models import User, Product, Country
+from app.models import User, Product, Country, Banner
 
 from .. import db
 from . import api
@@ -23,10 +23,26 @@ def get_countries():
     return full_response(R204_NOCONTENT, [country.to_json() for country in countries])
 
 
-@api.route('/common/slide')
+@api.route('/common/slides')
 def get_slide():
     """大图轮换列表"""
-    pass
+    spot = request.values.get('spot')
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 3, type=int)
+    
+    if not spot:
+        abort(404)
+    
+    banner_spot = Banner.query.filter_by(master_uid=g.master_uid, serial_no=spot, status=1).first()
+    
+    if banner_spot is None:
+        abort(404)
+        
+    banners = banner_spot.images.order_by('updated_at desc').limit(per_page).all()
+    
+    return full_response(R200_OK, {
+        'slides': [banner.to_json() for banner in banners],
+    })
 
 
 @api.route('/demo')

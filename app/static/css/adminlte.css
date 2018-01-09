@@ -1690,6 +1690,11 @@ table.text-center,table.text-center td,table.text-center th {
     display: inline-block;
     margin-right: 20px;
 }
+.panel-heading {
+    font-weight: 600;
+}
+
+
 
 
 #topcontrol {

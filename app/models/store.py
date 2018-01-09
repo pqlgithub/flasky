@@ -19,11 +19,15 @@ STORE_STATUS = [
 
 # 渠道的类型
 STORE_TYPE = [
+    # 第三方电商
     (1, lazy_gettext('Authorized Store')),
+    # 自营电商
     (2, lazy_gettext('B2C E-commerce')),
     # 社交电商，如：小程序
     (3, lazy_gettext('Social E-commerce')),
+    # 线下店铺
     (5, lazy_gettext('Offline Store')),
+    # 分销商
     (6, lazy_gettext('Distribution'))
 ]
 
@@ -98,7 +102,7 @@ class Store(db.Model):
     def validate_unique_name(name, master_uid, platform):
         """验证店铺名称是否唯一"""
         return Store.query.filter_by(master_uid=master_uid, platform=platform, name=name).first()
-
+    
 
     def __repr__(self):
         return '<Store %r>' % self.name

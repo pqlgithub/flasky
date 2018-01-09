@@ -14,9 +14,13 @@ def get_categories():
     """
     
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 100, type=int)
+    pid = request.values.get('pid', 0, type=int)
     
-    pagination = Category.query.filter_by(master_uid=g.master_uid).paginate(page, per_page=per_page, error_out=False)
+    # 默认获取一级分类
+    builder = Category.query.filter_by(master_uid=g.master_uid, pid=pid)
+    
+    pagination = builder.paginate(page, per_page=per_page, error_out=False)
     categories = pagination.items
     prev = None
     if pagination.has_prev:

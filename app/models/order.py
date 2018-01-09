@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import abort, g
+from flask import abort, g, current_app
 from sqlalchemy import text, event
 from flask_babelex import lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
@@ -87,8 +87,7 @@ class Order(db.Model):
     outside_target_id = db.Column(db.String(32), index=True, nullable=True)
     # 店铺ID
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
-    # 仓库ID
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
+    
     # 支付金额
     pay_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 总金额
@@ -133,7 +132,7 @@ class Order(db.Model):
     customer_id = db.Column(db.String(20), nullable=True)
     # 所属销售人员
     saler_uid = db.Column(db.Integer, default=0)
-    # 来源终端
+    # 来源终端, 1、PC 2、H5 3、App 4、TV 5、POS 6、PAD
     from_client = db.Column(db.SmallInteger, default=0)
     # 推广码
     affiliate_code = db.Column(db.String(16), nullable=True)
@@ -266,14 +265,14 @@ class Order(db.Model):
     def create(data, user=None):
         """创建新订单"""
         order = Order(user=user or g.current_user)
-        order.from_json(data, partial_update=False)
+        order.from_json(data, partial_update=True)
         
         return order
     
     
     def from_json(self, data, partial_update=True):
         """从请求json里导入数据"""
-        fields = ['master_uid', 'serial_no', 'store_id', 'warehouse_id', 'outside_target_id',
+        fields = ['master_uid', 'user_id', 'serial_no', 'store_id', 'outside_target_id',
                   'pay_amount', 'total_amount', 'freight', 'discount_amount', 'invoice_type', 'total_quantity',
                   'buyer_name', 'buyer_tel', 'buyer_phone', 'buyer_zipcode', 'buyer_country', 'buyer_province',
                   'buyer_city', 'buyer_town', 'buyer_area', 'buyer_address', 'buyer_remark',
@@ -282,26 +281,30 @@ class Order(db.Model):
         for field in fields:
             try:
                 setattr(self, field, data[field])
-            except KeyError:
+            except KeyError as err:
+                current_app.logger.warn(str(err))
                 if not partial_update:
                     abort(400)
     
     
     def to_json(self):
         """资源和JSON的序列化转换"""
-        opened_columns = ['serial_no', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
+        opened_columns = ['rid', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
                           'discount_amount', 'express_no', 'remark', 'buyer_name', 'buyer_tel', 'buyer_phone',
                           'buyer_zipcode','buyer_address', 'buyer_country', 'buyer_province', 'buyer_city', 'buyer_remark',
                           'created_at', 'express_at', 'received_at', 'status']
         
         json_order = { c: getattr(self, c, None) for c in opened_columns }
-
+        
         # 订单编号
         json_order['outside_target_id'] = self.outside_target_id if self.outside_target_id else self.serial_no
         # 添加快递公司
         json_order['express_name'] = self.express.name if self.express else ''
         # 添加店铺名称
         json_order['store_name'] = '{}({})'.format(self.store.name, self.store.platform_name)
+        
+        # 添加订单明细
+        json_order['items'] = [item.to_json() for item in self.items]
         
         return json_order
 
@@ -315,6 +318,10 @@ class OrderItem(db.Model):
 
     __tablename__ = 'order_items'
     id = db.Column(db.Integer, primary_key=True)
+    # 用户ID
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    # 仓库ID
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order_serial_no = db.Column(db.String(20), index=True, nullable=False)
     sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
@@ -332,11 +339,20 @@ class OrderItem(db.Model):
     __table_args__ = (
         db.UniqueConstraint('order_id', 'sku_id', name='uix_order_id_sku_id'),
     )
-
+    
     @property
     def sku(self):
         return ProductSku.query.get(self.sku_id)
-
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_item = {
+            'rid': self.sku_serial_no,
+            'quantity': self.quantity,
+            'deal_price': self.deal_price,
+            'discount_amount': self.discount_amount
+        }
+        return json_item
 
     def __repr__(self):
         return '<OrderItem %r>' % self.id

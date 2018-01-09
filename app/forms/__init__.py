@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .user_forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm, PreferenceForm
-from .setting_forms import StoreForm, CurrencyForm, ClientForm
+from .setting_forms import StoreForm, CurrencyForm, ClientForm, EditClientForm
 from .warehouse_forms import WarehouseForm
 from .product_forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, BrandForm, ProductGroupForm
 from .purchase_forms import PurchaseForm, PurchaseExpressForm

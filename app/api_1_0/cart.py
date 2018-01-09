@@ -15,8 +15,17 @@ def get_cart():
     cart_items = Cart.query.filter_by(master_uid=g.master_uid).all()
     if cart_items is None:
         abort(404)
-        
-    return full_response(R200_OK, [item.to_json() for item in cart_items])
+    
+    total_quantity = 0
+    items = []
+    for item in cart_items:
+        total_quantity += item.quantity
+        items.append(item.to_json())
+    
+    return full_response(R200_OK, {
+        'total_quantity': total_quantity,
+        'items': items
+    })
 
 
 @api.route('/cart', methods=['POST'])

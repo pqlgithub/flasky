@@ -269,27 +269,27 @@
 			</div>
 			{% if status == 1 or status == 5 %}
 			<button class="btn btn-warning verify-all" data-form-id="orders-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
-				<i class="glyphicon glyphicon-ok"></i>
+				<i class="fa fa-check"></i>
 			</button>
 			{% endif %}
 			{% if status == 10 %}
 			<button class="btn btn-primary ajax-shipment" data-form-id="orders-form" data-href="{{ url_for('main.shipment_order') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Set Logistics Info') }}">
-				<i class="glyphicon glyphicon-send"></i>
+				<i class="fa fa-send"></i>
 			</button>
 			{% endif %}
 			{% if status == 13 or status == 16 %}
 			<button class="btn btn-primary ajax-print-eorder" data-form-id="orders-form" data-href="{{ url_for('main.print_eorder') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Eorder') }}">
-				<i class="glyphicon glyphicon-print"></i>
+				<i class="fa fa-print"></i>
 			</button>
 			<button class="btn btn-success ajax-print" data-form-id="orders-form" data-href="{{ url_for('main.print_order_pdf') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print Shipment Bill') }}">
-				<i class="glyphicon glyphicon-print"></i>
+				<i class="fa fa-print"></i>
 			</button>
 			{% endif %}
 			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
-				<i class="glyphicon glyphicon-plus"></i>
+				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="orders-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+				<i class="fa fa-trash"></i>
 			</button>
 		</div>
 	</div>

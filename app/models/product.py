@@ -795,6 +795,7 @@ class Category(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
     name = db.Column(db.String(32), index=True)
     pid = db.Column(db.Integer, default=0)
+    cover_id = db.Column(db.Integer, default=0)
     sort_order = db.Column(db.SmallInteger, default=0)
     description = db.Column(db.Text, nullable=True)
     status = db.Column(db.SmallInteger, default=1)
@@ -814,6 +815,11 @@ class Category(db.Model):
     category_paths = db.relationship(
         'CategoryPath', backref='category', cascade='delete'
     )
+
+    @property
+    def cover(self):
+        """cover asset info"""
+        return Asset.query.get(self.cover_id) if self.cover_id else Asset.default_logo()
     
     @classmethod
     def always_category(cls, path=0, page=1, per_page=20, uid=0):
@@ -866,6 +872,7 @@ class Category(db.Model):
             'id': self.id,
             'name': self.name,
             'pid': self.pid,
+            'cover': self.cover.view_url,
             'sort_order': self.sort_order,
             'description': self.description,
             'status': self.status

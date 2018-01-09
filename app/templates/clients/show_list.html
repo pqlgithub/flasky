@@ -51,6 +51,7 @@
 					</th>
 					<th>{{ _('App KEY') }}</th>
 					<th>{{ _('App Name') }}</th>
+					<th>{{ _('Relation Store') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -65,6 +66,11 @@
 						{{ client.app_key }}
 					</td>
 					<td>{{ client.name }}</td>
+					<td>
+						{% if client.store %}
+							{{ client.store.name }} ({{ client.store.platform_name }})
+						{% endif %}
+					</td>
 					<td class="text-right">
                         <span class="indicator {{ client.status_label[2] }}">
 							{{ client.status_label[1] }}

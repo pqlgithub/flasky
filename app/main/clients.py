@@ -5,8 +5,8 @@ from flask_login import login_required, current_user
 from flask_babelex import gettext
 from . import main
 from .. import db
-from app.models import Client, ClientStatus
-from app.forms import ClientForm
+from app.models import Client, ClientStatus, Store
+from app.forms import ClientForm, EditClientForm
 from ..utils import Master, custom_response, make_unique_key, make_pw_hash
 from ..decorators import user_has
 
@@ -38,15 +38,27 @@ def show_clients(page=1):
                            **load_common_data())
 
 
-@main.route('/clients/<string:app_key>')
+@main.route('/clients/<string:app_key>/manage', methods=['GET', 'POST'])
 def manage_client(app_key):
     """管理应用"""
     client = Client.query.filter_by(master_uid=Master.master_uid(), app_key=app_key).first()
     if client is None:
         abort(404)
-    form = ClientForm()
+
+    form = EditClientForm(client)
+    # 设置关联渠道
+    stores = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    form.store_id.choices = [(store.id, '%s (%s)' % (store.name, store.platform_name)) for store in stores]
+    if form.validate_on_submit():
+        form.populate_obj(client)
+        
+        db.session.commit()
+        
+        flash('Update client is ok!', 'success')
+        return redirect(url_for('.show_clients'))
     
     form.name.data = client.name
+    form.store_id.data = client.store_id
     form.limit_times.data = client.limit_times
     form.receive_url.data = client.receive_url
     form.remark.data = client.remark
@@ -61,6 +73,9 @@ def manage_client(app_key):
 def create_client():
     """新增应用"""
     form = ClientForm()
+    # 设置关联渠道
+    stores = Store.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    form.store_id.choices = [(store.id, '%s (%s)' % (store.name, store.platform_name)) for store in stores]
     if form.validate_on_submit():
         app_key = make_unique_key(20)
         app_secret = make_pw_hash(app_key)
@@ -69,6 +84,7 @@ def create_client():
             app_key=app_key,
             app_secret=app_secret,
             name=form.name.data,
+            store_id=form.store_id.data,
             limit_times=form.limit_times.data,
             receive_url=form.receive_url.data,
             remark=form.remark.data,

@@ -32,10 +32,10 @@
 
 		<span class="pull-right">
 			<button type="submit" form="client-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_clients') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
@@ -86,10 +86,10 @@
 							</div>
 						</div>
 
-						<div class="form-group">
-							{{ form.limit_times.label(class="col-md-3 control-label") }}
+						<div class="form-group required">
+							{{ form.store_id.label(class="col-md-3 control-label") }}
 							<div class="col-md-9">
-								{{ form.limit_times(class='form-control') }}
+								{{ form.store_id(class='form-control select2') }}
 							</div>
 						</div>
 
@@ -97,6 +97,13 @@
 							{{ form.receive_url.label(class="col-md-3 control-label") }}
 							<div class="col-md-9">
 								{{ form.receive_url(class='form-control') }}
+							</div>
+						</div>
+
+						<div class="form-group">
+							{{ form.limit_times.label(class="col-md-3 control-label") }}
+							<div class="col-md-9">
+								{{ form.limit_times(class='form-control') }}
 							</div>
 						</div>
 

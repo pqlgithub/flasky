@@ -54,15 +54,14 @@ class Address(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
-    @property
-    def ship_country(self):
-        return Country.query.get(self.country_id)
-    
+
     @property
     def full_name(self):
         return ''.join([self.first_name, self.last_name])
+    
+    @property
+    def country(self):
+        return Country.query.get(self.country_id)
 
     @staticmethod
     def make_unique_serial_no():

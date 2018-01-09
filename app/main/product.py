@@ -829,6 +829,7 @@ def create_category():
             master_uid=Master.master_uid(),
             name=form.name.data,
             pid=form.pid.data,
+            cover_id=form.cover_id.data,
             sort_order=form.sort_order.data,
             description=form.description.data,
             status=form.status.data,
@@ -877,6 +878,7 @@ def edit_category(id):
     mode = 'edit'
     form.name.data = category.name
     form.pid.data = category.pid
+    form.cover_id.data = category.cover_id
     form.sort_order.data = category.sort_order
     form.description.data = category.description
     form.status.data = category.status

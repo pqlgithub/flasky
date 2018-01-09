@@ -27,6 +27,8 @@ def api_sign_required(func):
         if client and Client.check_api_sign(sign_args, client.app_secret):
             # 获取当前客户标识ID
             g.master_uid = client.master_uid
+            # 获取关联的渠道ID
+            g.store_id = client.store_id
             return func(*args, **kwargs)
         else:
             return status_response({

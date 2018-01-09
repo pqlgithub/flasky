@@ -26,7 +26,7 @@ from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store,
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
-from app.helpers import kdniao
+from app.helpers import kdniao, MixGenId
 from app import tasks
 
 status_list = (
@@ -796,6 +796,8 @@ def create_order():
             
             # 添加订单明细
             item = {
+                'master_uid': Master.master_uid(),
+                'warehouse_id': form.warehouse_id.data,
                 'sku_id': sku_id,
                 'sku_serial_no': product_sku.serial_no,
                 'quantity': quantity,
@@ -811,13 +813,12 @@ def create_order():
         # 添加订单
         freight = form.freight.data
         pay_amount = Decimal(total_amount) + freight - Decimal(total_discount)
-        new_serial_no = Order.make_unique_serial_no(form.serial_no.data)
+        new_serial_no = form.serial_no.data
         order = Order(
             master_uid=Master.master_uid(),
             serial_no=new_serial_no,
             outside_target_id=form.outside_target_id.data,
             store_id=form.store_id.data,
-            warehouse_id=form.warehouse_id.data,
             pay_amount=Decimal(pay_amount),
             # 总金额
             total_amount=Decimal(total_amount),
@@ -857,7 +858,7 @@ def create_order():
     # 新增订单
     mode = 'create'
     # 添加默认订单号
-    form.serial_no.data = gen_serial_no('C')
+    form.serial_no.data = Order.make_unique_serial_no()
 
     return render_template('orders/create_and_edit.html',
                            form=form,
@@ -897,7 +898,6 @@ def edit_order(sn):
     form.outside_target_id.data = current_order.outside_target_id
     form.store_id.data = current_order.store_id
     form.express_id.data = current_order.express_id
-    form.warehouse_id.data = current_order.warehouse_id
     form.freight.data = current_order.freight
     form.remark.data = current_order.remark
 
@@ -1085,7 +1085,7 @@ def ajax_verify_order():
             # 完成审核，待发货状态
             elif order.status == OrderStatus.PENDING_CHECK:
                 # 订单审核时，验证库存
-                bad_skus = _validate_order_stock(order.items, order.warehouse_id)
+                bad_skus = _validate_order_stock(order.items)
                 # 未通过验证
                 if bad_skus:
                     bad_message.append(gettext("Order[%s] Item[%s] isn't exist or Inventory is not enough " % (sn, bad_skus)))
@@ -1098,8 +1098,9 @@ def ajax_verify_order():
             success_ids.append(sn)
         
         db.session.commit()
-    except:
+    except Exception as err:
         db.session.rollback()
+        current_app.logger.warn('Verify order fail: %s' % str(err))
         return custom_response(False, gettext("Verify order is fail!!!"))
 
     return full_response(True, R200_OK, dict({'selected_sns': success_ids,
@@ -1253,12 +1254,12 @@ def _recount():
     }
 
 
-def _validate_order_stock(order_items, warehouse_id):
+def _validate_order_stock(order_items):
     """验证订单明细库存"""
     bad_skus = []
     for item in order_items:
         product_stock = ProductStock.query.filter_by(sku_serial_no=item.sku_serial_no,
-                                                     warehouse_id=warehouse_id).first()
+                                                     warehouse_id=item.warehouse_id).first()
         # 产品库存不足
         if product_stock is None or product_stock.available_count < item.quantity:
             current_app.logger.warn("Current sku[%s] inventory is not enough!" % item.sku_serial_no)

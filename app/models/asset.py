@@ -74,7 +74,7 @@ class Asset(db.Model):
     def default_logo():
         """默认图-Logo"""
         return Dictate({
-            'view_url': '/static/img/no_img100x100.png'
+            'view_url': 'http://127.0.0.1:5000/static/img/no_img100x100.png'
         })
         
     @staticmethod

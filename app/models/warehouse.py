@@ -106,8 +106,13 @@ class Warehouse(db.Model):
     shipper = db.relationship(
         'Shipper', backref='warehouse', uselist=False
     )
+    
+    @staticmethod
+    def find_default_warehouse(master_uid):
+        """获取默认仓库"""
+        return Warehouse.query.filter_by(master_uid=master_uid, is_default=True).first()
 
-
+    
     @classmethod
     def wh_types(self):
         return WAREHOUSE_TYPES

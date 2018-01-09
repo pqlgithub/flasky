@@ -15,3 +15,5 @@ def get_shop():
         abort(404)
     
     return full_response(R200_OK, h5mall.to_json())
+
+

@@ -138,22 +138,22 @@
 								{% endif %}
 							</td>
 							<td class="text-center">
-								<strong id="sale_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</strong>
+								<span id="sale_price_{{ item.sku_id }}">{{ item.sku.sale_price }}</span>
 							</td>
 							<td class="text-center">
-								<strong id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</strong>
+								<span id="deal_price_{{ item.sku_id }}">{{ item.deal_price }}</span>
 							</td>
 							<td class="text-center">
-								<strong>{{ item.quantity }}</strong>
+								<span>{{ item.quantity }}</span>
 							</td>
 							<td class="text-center">
-								<strong>{{ item.discount_amount }}</strong>
+								<span>{{ item.discount_amount }}</span>
 							</td>
 							<td class="text-right">
-								<strong id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</strong>
+								<span id="subtotal_{{ item.sku_id }}">{{ item.deal_price *  item.quantity }}</span>
 							</td>
 							<td class="text-right">
-								<a href="" class="btn btn-link disabled">{{ _('Remove') }}</a>
+								<a href="" class="btn-link disabled">{{ _('Remove') }}</a>
 							</td>
 						</tr>
 						{% endfor %}

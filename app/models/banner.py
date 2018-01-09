@@ -49,7 +49,6 @@ class Banner(db.Model):
         # 自动生成用户编号
         target.serial_no = Banner.make_unique_sn()
     
-    
     def __repr__(self):
         return '<Banner {}>'.format(self.name)
 
@@ -79,6 +78,21 @@ class BannerImage(db.Model):
     def image(self):
         """banner asset info"""
         return Asset.query.get(self.image_id) if self.image_id else Asset.default_banner()
+
+    
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.id,
+            'title': self.title,
+            'link': self.link,
+            'image': self.image.view_url,
+            'type': self.type,
+            'sort_order': self.sort_order,
+            'description': self.description,
+            'status': self.status
+        }
+        return json_obj
     
     
     def __repr__(self):

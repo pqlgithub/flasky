@@ -2,6 +2,7 @@
 import hashlib
 from flask_babelex import gettext, lazy_gettext
 from app import db
+from app.models import Store
 from ..utils import timestamp
 
 __all__ = [
@@ -33,6 +34,8 @@ class Client(db.Model):
     master_uid = db.Column(db.Integer, default=0)
     
     name = db.Column(db.String(32), unique=True, nullable=False)
+    # 关联渠道ID
+    store_id = db.Column(db.Integer, default=0)
     
     app_key = db.Column(db.String(20), unique=True, nullable=False)
     app_secret = db.Column(db.String(40), nullable=False)
@@ -56,6 +59,10 @@ class Client(db.Model):
         for s in CLIENT_STATUS:
             if s[0] == self.status:
                 return s
+    @property
+    def store(self):
+        """获取关联渠道"""
+        return Store.query.get(self.store_id) if self.store_id else None
     
     @staticmethod
     def check_api_sign(args, app_secret):

@@ -114,7 +114,33 @@ def get_product(rid):
     if product is None:
         abort(404)
     
-    return full_response(R200_OK, product.to_json())
+    # 添加品牌信息
+    brand = product.brand
+    
+    # 商品详情
+    content = product.details.content if product.details else ''
+    
+    result = product.to_json()
+    result['content'] = content
+    result['brand'] = brand.to_json()
+    
+    return full_response(R200_OK, result)
+
+
+@api.route('/products/by_sku')
+def get_product_by_sku():
+    """通过Sku获取商品信息"""
+    sku_rid = request.values.get('rid')
+    if not sku_rid:
+        abort(404)
+    
+    sku_rids = sku_rid.split(',')
+    builder = ProductSku.query.filter_by(master_uid=g.master_uid)
+    product_skus = builder.filter(ProductSku.serial_no.in_(sku_rids)).all()
+    if product_skus is None:
+        abort(404)
+    
+    return full_response(R200_OK, [sku.to_json() for sku in product_skus])
 
 
 @api.route('/products/<string:rid>/detail')
@@ -126,14 +152,43 @@ def get_product_detail(rid):
     
     return full_response(R200_OK, product.details.to_json())
 
-@api.route('/products/<string:rid>/skus')
-def get_product_skus(rid):
+@api.route('/products/skus')
+def get_product_skus():
     """获取商品的Skus"""
+    rid = request.values.get('rid')
     product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
     if product is None:
         abort(404)
-    
-    product_skus = [sku.to_json() for sku in product.skus]
+        
+    modes = []
+    colors = []
+    items = []
+    for sku in product.skus:
+        if sku.s_model:
+            modes.append(sku.s_model)
+            
+        if sku.s_color:
+            colors.append(sku.s_color)
+        
+        items.append({
+            'rid': sku.serial_no,
+            's_model': sku.s_model,
+            's_color': sku.s_color,
+            'cover': sku.cover.view_url,
+            'cost_price': str(sku.cost_price),
+            'sale_price': str(sku.sale_price),
+            's_weight': str(sku.s_weight),
+            'stock_count': sku.stock_count
+        })
+        
+    # 去除重复元素
+    modes = [{'name': m, 'valid': True} for m in list(set(modes))]
+    colors = [{'name': c, 'valid': True} for c in list(set(colors))]
+    product_skus = {
+        'modes': modes,
+        'colors': colors,
+        'items': items
+    }
     
     return full_response(R200_OK, product_skus)
     

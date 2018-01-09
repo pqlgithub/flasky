@@ -64,6 +64,7 @@
 					</th>
 					<th>{{ _('App KEY') }}</th>
 					<th>{{ _('App Name') }}</th>
+					<th>{{ _('Relation Store') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Created at') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
@@ -79,6 +80,11 @@
 						{{ client.app_key }}
 					</td>
 					<td>{{ client.name }}</td>
+					<td>
+						{% if client.store %}
+							{{ client.store.name }} ({{ client.store.platform_name }})
+						{% endif %}
+					</td>
 					<td class="text-right">
                         <span class="indicator {{ client.status_label[2] }}">
 							{{ client.status_label[1] }}
@@ -88,7 +94,7 @@
 						{{ client.created_at|timestamp2string() }}
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('adminlte.approved_client') }}" data-id="{{ client.app_key }}" class="btn btn-link ajax-approved"  data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
+						<a href="{{ url_for('adminlte.approved_client') }}" data-id="{{ client.app_key }}" class="btn btn-link ajax-approved"  data-toggle="tooltip" data-original-title="{{ _('Approved') }}">
 							{{ _('Approved') }}
 						</a>
 					</td>

@@ -83,11 +83,11 @@ class MixGenId():
     
     
     @staticmethod
-    def gen_order_sn(length=10):
+    def gen_order_sn(length=8):
         """生成订单sn"""
         prefix = 'D'
         now = datetime.datetime.now()
-        date_str = now.strftime("%Y%m%d")
+        date_str = now.strftime("%y%m%d")
         return ''.join([prefix, date_str, MixGenId.gen_digits(length)])
     
     
@@ -103,7 +103,12 @@ class MixGenId():
         """生成商店sn"""
         prefix = '9'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
+
+    @staticmethod
+    def gen_store_sn(length=7):
+        """生成渠道sn"""
+        prefix = 'Q'
+        return ''.join([prefix, MixGenId.gen_digits(length)])
     
     @staticmethod
     def gen_address_sn(length=10):

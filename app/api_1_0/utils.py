@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import jsonify
+from flask import jsonify, g
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
 R201_CREATED = { 'code': 201, 'message': 'All created.' }
@@ -47,3 +47,17 @@ def custom_status(message, code=200):
 		'code': code,
 		'message': message
 	}
+
+def can_admin(uid):
+	"""是否具有管理的权限"""
+	# 1、自身为主账号
+	if g.current_user.is_master:
+		return g.current_user.id == uid
+	
+	# 2、自身为子账号
+	return g.current_user.master_uid == uid
+
+
+def is_owner(uid):
+	"""是否为属主"""
+	return g.current_user.id == uid

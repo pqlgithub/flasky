@@ -52,7 +52,7 @@
 						<td class="text-center">
 							{% if express.is_default %}
 							<label class="badge badge-mixpus">
-								<i class="glyphicon glyphicon-ok"></i>
+								<i class="fa fa-check"></i>
 							</label>
 							{% endif %}
 						</td>
@@ -63,7 +63,7 @@
 							{{ express.contact_name }} {{ express.contact_mobile }}
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_express', id=express.id) }}" class="pjax btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+							<a href="{{ url_for('main.edit_express', id=express.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 								{{ _('Edit') }}
 							</a>
 						</td>

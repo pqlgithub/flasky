@@ -24,10 +24,11 @@
 					<th class="text-center">
 						<input name="check_all" type="checkbox" class="check-all">
 					</th>
+					<th>{{ _('Channel NO.') }}</th>
 					<th>{{ _('Channel Name') }}</th>
 					<th>{{ _('Type') }}</th>
 					<th>{{ _('Platform') }}</th>
-					<th class="text-center">{{ _('Manager') }}</th>
+					<th>{{ _('Manager') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -39,6 +40,9 @@
 						<input name="selected[]" class="check-one" value="{{ store.id }}" type="checkbox">
 					</td>
 					<td>
+						<span class="text-success"> {{ store.serial_no }}</span>
+					</td>
+					<td>
 						{{ store.name }}
 					</td>
 					<td>
@@ -47,7 +51,7 @@
 					<td>
 						{{ store.platform_name }}
 					</td>
-					<td class="text-center">
+					<td>
 						{{ store.operator.username }}
 					</td>
 					<td class="text-right">
