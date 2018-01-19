@@ -7,7 +7,8 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import Order, OrderItem, Address, ProductSku, Warehouse
+from app.helpers import WxPay, WxPayError
+from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus
 
 
 @api.route('/orders')
@@ -51,13 +52,6 @@ def get_order(rid):
         abort(401)
     
     return full_response(R200_OK, order.to_json())
-
-
-@api.route('/orders/nowpay', methods=['POST'])
-@auth.login_required
-def nowpay():
-    """支付接口"""
-    pass
 
 
 @api.route('/orders/freight')
@@ -107,6 +101,38 @@ def print_order():
     """打印订单"""
     pass
 
+@api.route('/orders/wx_pay/jsapi', methods=['POST'])
+@auth.login_required
+def pay_order_jsapi():
+    """微信网页支付请求发起"""
+    rid = request.json.get('rid')
+    pay_type = request.json.get('pay_type', 1)  # 默认为微信支付
+    openid = request.json.get('openid')
+    data = {}
+    if pay_type == 1:
+        data = _js_wxpay_params(rid)
+    
+    return full_response(R200_OK, data)
+
+
+# TODO: 签名验证问题
+@api.route('/orders/wx_pay/notify', methods=['POST'])
+def wxpay_notify():
+    """微信异步通知"""
+    data = WxPay.to_dict(request.data)
+    # 微信支付初始化参数
+    wx_pay = WxPay(
+        wx_app_id=current_app.config['WECHAT_M_APP_ID'],
+        wx_mch_id=current_app.config['WECHAT_M_PARTNER_ID'],
+        wx_mch_key=current_app.config['WECHAT_M_KEY'],
+        wx_notify_url=current_app.config['WECHAT_M_NOTIFY_URL']
+    )
+    if not wx_pay.check(data):
+        return wx_pay.reply('签名验证失败', False)
+    # TODO:处理业务逻辑
+    
+    return wx_pay.reply('OK', True)
+
 
 @api.route('/orders/create', methods=['POST'])
 @auth.login_required
@@ -126,18 +152,9 @@ def create_order():
     address = Address.query.filter_by(user_id=g.current_user.id, serial_no=address_rid).first()
     if address is None:
         return custom_response("Address isn't exist!", 403, False)
-
-    # "{"address_rid":"5758463019",
-    # "freight":0,
-    # "invoice_type":1,
-    # "buyer_remark":"包装需要好一些",
-    # "from_client":2,
-    # "affiliate_code":"",
-    # "items":[
-    # {"rid":"117280969019","quantity":1,"discount_amount":0},
-    # {"rid":"118040911719","quantity":1,"discount_amount":0}
-    # ]
-    # }"
+    
+    # 是否同步支付
+    sync_pay = request.json.get('sync_pay')
     
     try:
         total_quantity = 0
@@ -223,6 +240,16 @@ def create_order():
             db.session.add(order_item)
         
         db.session.commit()
+        
+        # TODO: 订单提交成功后，需删除本次购物车商品
+        
+        if sync_pay: # 同步返回客户端js支付所需参数
+            pay_params = _js_wxpay_params(new_order.serial_no)
+            return full_response(R201_CREATED, {
+                'order': new_order.to_json(),
+                'pay_params': pay_params
+            })
+        
     except Exception as err:
         current_app.logger.warn('Create order failed: %s' % str(err))
         db.session.rollback()
@@ -236,7 +263,7 @@ def create_order():
 def cancel_order():
     """取消订单"""
     rid = request.json.get('rid')
-
+    
 
 
 @api.route('/orders/delete', methods=['DELETE'])
@@ -246,4 +273,30 @@ def delete_order():
     rid = request.json.get('rid')
 
 
-
+def _js_wxpay_params(rid):
+    """获取客户端js支付所需参数"""
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    # 验证订单状态
+    if current_order.status != OrderStatus.PENDING_PAYMENT:
+        return custom_response('Order status is error!', 403, False)
+    
+    # 微信支付初始化参数
+    wx_pay = WxPay(
+        wx_app_id=current_app.config['WECHAT_M_APP_ID'],
+        wx_mch_id=current_app.config['WECHAT_M_PARTNER_ID'],
+        wx_mch_key=current_app.config['WECHAT_M_KEY'],
+        wx_notify_url=current_app.config['WECHAT_M_NOTIFY_URL'],
+        ssl_key=current_app.config['WECHAT_M_SSL_KEY_PATH'],
+        ssl_cert=current_app.config['WECHAT_M_SSL_CERT_PATH']
+    )
+    
+    js_api_params = wx_pay.js_pay_api(
+        openid='x2454sfd24d34g3424534',  # 付款用户openid
+        body='D3IN 微商城',
+        out_trade_no=rid,
+        total_fee=str(current_order.pay_amount * 100),  # total_fee 单位是 分， 100 = 1元
+        trade_type='MWEB'
+        # scene_info='{"h5_info": {"type":"Wap","wap_url": "https://pay.qq.com","wap_name": "腾讯充值"}}'
+    )
+    
+    return js_api_params

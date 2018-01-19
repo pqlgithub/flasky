@@ -39,6 +39,8 @@ class OrderStatus:
     PENDING_PRINT = 13
     # 已发货
     SHIPPED = 16
+    # 待签收
+    PENDING_SIGNED = 17
     # 已签收
     SIGNED = 20
     # 订单完成
@@ -60,6 +62,7 @@ ORDER_STATUS = [
     (OrderStatus.DISTRIBUTION, lazy_gettext('Distribution'), 'primary'),
     (OrderStatus.PENDING_PRINT, lazy_gettext('UnPrinting'), 'primary'),
     (OrderStatus.SHIPPED, lazy_gettext('Shipped'), 'warning'),
+    (OrderStatus.PENDING_SIGNED, lazy_gettext('Pending Signed'), 'warning'),
     (OrderStatus.SIGNED, lazy_gettext('Signed'), 'success'),
     (OrderStatus.REFUND, lazy_gettext('Refund'), 'warning'),
     (OrderStatus.FINISHED, lazy_gettext('Pending Finished'), 'success'),
@@ -352,7 +355,7 @@ class OrderItem(db.Model):
             'deal_price': self.deal_price,
             'discount_amount': self.discount_amount
         }
-        return json_item
+        return dict(json_item, **self.sku.to_json())
 
     def __repr__(self):
         return '<OrderItem %r>' % self.id

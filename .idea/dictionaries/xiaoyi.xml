@@ -10,8 +10,10 @@
       <w>adminstractor</w>
       <w>alicloudapi</w>
       <w>aliexpress</w>
+      <w>alipay</w>
       <w>amazonaws</w>
       <w>appcode</w>
+      <w>appid</w>
       <w>applyable</w>
       <w>appstore</w>
       <w>asctime</w>
@@ -57,6 +59,7 @@
       <w>inwarehouses</w>
       <w>jinja</w>
       <w>jisuhuilv</w>
+      <w>jsapi</w>
       <w>jsmin</w>
       <w>keepfixed</w>
       <w>keydown</w>
@@ -77,6 +80,7 @@
       <w>mixsaas</w>
       <w>mixshopy</w>
       <w>momentjs</w>
+      <w>mweb</w>
       <w>navabr</w>
       <w>navbar</w>
       <w>nowpay</w>
@@ -110,6 +114,7 @@
       <w>simsun</w>
       <w>skus</w>
       <w>slideshow</w>
+      <w>spbill</w>
       <w>sqlalchemy</w>
       <w>sqlite</w>
       <w>startretries</w>
@@ -137,6 +142,7 @@
       <w>whooses</w>
       <w>whooshalchemyplus</w>
       <w>wsgi</w>
+      <w>wxpay</w>
       <w>xlsx</w>
       <w>xname</w>
       <w>yyyy</w>

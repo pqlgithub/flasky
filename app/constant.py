@@ -259,6 +259,15 @@ SERVICE_TYPES = (
     (4, lazy_gettext('Theme'))
 )
 
+
+# 支付方式
+PAY_TYPES = (
+    (1, lazy_gettext('Wechat Pay')),
+    (2, lazy_gettext('Alipay')),
+    (3, lazy_gettext('Quick Pay')),
+    (4, lazy_gettext('Apple Pay'))
+)
+
 # 导出采购单头格式 / 采购单对应的字段
 PURCHASE_EXCEL_FIELDS = {
     'serial_no': gettext('Purchase Serial'),
@@ -286,6 +295,7 @@ ORDER_EXPRESS_FIELDS = {
     'express_name': '物流服务商',
     'express_no': '快递单号'
 }
+
 # 导入/导出订单格式（Mixpus）
 MIXPUS_ORDER_FIELDS = {
     'serial_no': '订单号',

@@ -7,6 +7,7 @@ __all__ = [
     'MixGenId'
 ]
 
+
 class Dictate(object):
     """Object view of a dict, updating the passed in dict when values are set
         or deleted. "Dictate" the contents of a dict...: """
