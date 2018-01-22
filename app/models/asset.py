@@ -10,6 +10,7 @@ __all__ = [
     'Asset'
 ]
 
+
 class Directory(db.Model):
     """Directory of the assets"""
     __tablename__ = 'directories'
@@ -55,7 +56,6 @@ class Asset(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-
     @property
     def view_url(self):
         proto = 'http://'
@@ -63,10 +63,15 @@ class Asset(db.Model):
             proto = 'https://'
 
         if not current_app.config['DEBUG']:
-            url = '{}{}/{}'.format(proto, current_app.config['THUMB_CDN_DOMAIN'], self.filepath) if not self.is_default \
-                else '{}'.format(self.filepath)
+            url = '{}{}/{}'.format(
+                proto,
+                current_app.config['THUMB_CDN_DOMAIN'],
+                self.filepath) if not self.is_default else '{}'.format(
+                self.filepath)
         else:
-            url = uploader.url(self.filepath) if not self.is_default else '{}'.format(self.filepath)
+            url = uploader.url(
+                self.filepath) if not self.is_default else '{}'.format(
+                self.filepath)
 
         return url
 
@@ -76,17 +81,16 @@ class Asset(db.Model):
         return Dictate({
             'view_url': 'http://127.0.0.1:5000/static/img/no_img100x100.png'
         })
-        
+
     @staticmethod
     def default_banner():
         """默认图-Banner"""
         return Dictate({
             'view_url': '/static/img/no_img100x100.png'
         })
-    
+
     def __repr__(self):
         return '<Asset {}>'.format(self.filepath)
-
 
     def to_json(self):
         """资源和JSON的序列化转换"""

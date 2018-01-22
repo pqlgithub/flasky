@@ -33,6 +33,7 @@ app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
 
+
 def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role)
 
@@ -40,8 +41,13 @@ def make_shell_context():
 @manager.command
 def upload_files_s3():
     """静态文件同步至S3"""
-    create_all(app, user=app.config['AWS_ACCESS_KEY'], password=app.config['AWS_ACCESS_SECRET'],
-               bucket_name=app.config['FLASKS3_BUCKET_NAME'], location='ap-southeast-1', include_hidden=False)
+    create_all(
+        app,
+        user=app.config['AWS_ACCESS_KEY'],
+        password=app.config['AWS_ACCESS_SECRET'],
+        bucket_name=app.config['FLASKS3_BUCKET_NAME'],
+        location='ap-southeast-1',
+        include_hidden=False)
 
 
 @manager.option('-m', '--model', dest='model', default='all')
@@ -101,7 +107,6 @@ manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',
 manager.add_command('assets', ManageAssets(assets_env))
 # 修正数据
 manager.add_command('fix_data', FixData())
-
 
 
 # 项目的代理设置

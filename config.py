@@ -14,6 +14,7 @@ from celery.schedules import crontab
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     # change this in your production settings !!!
 
@@ -36,7 +37,7 @@ class Config:
 
     # slow database query threshold (in seconds)
     DATABASE_QUERY_TIMEOUT = 0.5
-    
+
     # 管理员
     ADMINS = ('purpen.w@gmail.com',)
 
@@ -127,19 +128,19 @@ class Config:
     CACHE_REDIS_PORT = '6379'
     CACHE_REDIS_PASSWORD = 'Fr%bird@201403$01'
     CACHE_REDIS_DB = '0'
-    
+
     # Currency API
     CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
     CURRENCY_API_HOST = 'http://jisuhuilv.market.alicloudapi.com'
     CURRENCY_API_SINGLE = '/exchange/single'
     CURRENCY_API_CONVERT = '/exchange/convert'
     CURRENCY_API_ALL = '/exchange/currency'
-    
+
     # 快递鸟
     KDN_APP_ID = '1302778'
     KDN_APP_KEY = '243d245a-4184-48f4-8072-9485de34a705'
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
-    
+
     # 微信支付
     WECHAT_M_TOKEN = ''
     # 微信APP ID：绑定支付的APP ID（必须配置，开户邮件中可查看）
@@ -161,7 +162,6 @@ class Config:
     WECHAT_M_PROXY_POST = 0
     # 接口调用上报等级，默认紧错误上报（注意：上报超时间为【1s】，上报无论成败【永不抛出异常】
     WECHAT_M_REPORT_LEVEL = 1
-    
 
     @staticmethod
     def init_app(app):
@@ -173,10 +173,10 @@ class DevelopmentConfig(Config):
 
     # 缓存类型
     CACHE_TYPE = 'simple'
-    
-    # Examples: mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Urk426#Db10@localhost/mixshopy'
-    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@mixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/MixSaaS?charset=utf8'
+
+    # Examples:
+    # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/mixshopy'
 
 
 class TestingConfig(Config):
@@ -196,7 +196,7 @@ class ProductionConfig(Config):
     CACHE_REDIS_PORT = '6379'
     CACHE_REDIS_PASSWORD = ''
     CACHE_REDIS_DB = '0'
-    
+
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
     FLASKS3_USE_HTTPS = False
@@ -221,10 +221,10 @@ class LllConfig(Config):
 
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/micku_test'
 
-     # Redis 配置
+    # Redis 配置
     REDIS_URL = 'redis://localhost:6379/0'
 
-     # Celery Options
+    # Celery Options
     CELERY_IMPORTS = (
         'app.tasks'
     )
@@ -238,5 +238,5 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig,
-    'llh': LllConfig,
+    'llh': LllConfig
 }

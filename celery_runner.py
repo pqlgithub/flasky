@@ -13,6 +13,7 @@ if os.path.exists('.env'):
         if len(var) == 2:
             os.environ[var[0]] = var[1]
 
+
 def make_celery(app):
     """Create the celery process."""
 
@@ -41,6 +42,7 @@ def make_celery(app):
     # Let other Flask extensions can be normal calls.
     celery.Task = ContextTask
     return celery
+
 
 flask_app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
 # 1. Each celery process needs to create an instance of the Flask application.
