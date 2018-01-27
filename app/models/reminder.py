@@ -7,6 +7,7 @@ __all__ = [
     'Reminder'
 ]
 
+
 class Reminder(db.Model):
     """Represents Protected reminders."""
 

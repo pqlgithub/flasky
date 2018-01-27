@@ -8,6 +8,7 @@ from ..constant import SUPPORT_PLATFORM
 from ..utils import Master
 from app.models import Client
 
+
 class StoreForm(Form):
     name = StringField(lazy_gettext('Channel Name'), validators=[DataRequired(message="Channel name can't empty!"), Length(2, 32)])
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
@@ -44,7 +45,8 @@ class ClientForm(Form):
     def validate_name(self, field):
         if Client.query.filter_by(name=field.data).first():
             raise ValidationError(lazy_gettext('App Name is already exist!'))
-        
+
+
 class EditClientForm(ClientForm):
 
     def __init__(self, client, *args, **kwargs):

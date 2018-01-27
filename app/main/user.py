@@ -10,6 +10,7 @@ from app.forms import RoleForm, AbilityForm, SiteForm, UserForm, PasswdForm, Pre
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, custom_response
 from ..decorators import user_has
 
+
 def load_common_data():
     """
     私有方法，装载共用数据
@@ -18,10 +19,12 @@ def load_common_data():
         'top_menu': 'settings'
     }
 
+
 @main.route('/users/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     return render_template('users/profile.html')
+
 
 @main.route('/users/preference', methods=['GET', 'POST'])
 @login_required

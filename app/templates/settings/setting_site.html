@@ -1,9 +1,5 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include "settings/_sub_menu.html" %}
-{% endblock %}
-
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
@@ -24,7 +20,7 @@
 
 		<div class="form-group required {% if form.errors.company_name %} has-error{% endif %}">
 			{{ form.company_name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-5">
 				{{ form.company_name(id="company_name", class="form-control") }}
 				{% for error in form.errors.company_name %}
 				<span class="help-block">{{ error }}</span>
@@ -34,28 +30,28 @@
 
 		<div class="form-group">
 			{{ form.company_abbr.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-4">
+			<div class="col-sm-5">
 				{{ form.company_abbr(id="company_abbr", class="form-control", placeholder="Eg: E") }}
 			</div>
 		</div>
 
 		<div class="form-group required">
 			{{ form.locale.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-4">
+			<div class="col-sm-5">
 				{{ form.locale(id="locale", class="form-control select2") }}
 			</div>
 		</div>
 
 		<div class="form-group required">
 			{{ form.country.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-4">
+			<div class="col-sm-5">
 				{{ form.country(id="country", class="form-control select2") }}
 			</div>
 		</div>
 
 		<div class="form-group required">
 			{{ form.currency_id.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-4">
+			<div class="col-sm-5">
 				{{ form.currency_id(id="currency", class="form-control select2") }}
 				<span class="help-block">
 					<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Choose currencies carefully, and later changes will affect numeric.') }}
@@ -65,7 +61,7 @@
 
 		<div class="form-group">
 			{{ form.domain.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-4">
+			<div class="col-sm-5">
 				{{ form.domain(id="domain", class="form-control select2", placeholder="optional") }}
 			</div>
 		</div>

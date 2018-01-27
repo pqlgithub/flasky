@@ -8,6 +8,14 @@ SUPPORT_COUNTRIES = (
     (2, 'en', gettext('USA')),
 )
 
+# 支持的语言 Language
+SUPPORT_LANGUAGES = (
+    (1, 'zh', '简体中文'),
+    (2, 'en', 'English'),
+    (3, 'th', 'Thailand'),
+    (9, 'zh_TW', '繁體中文')
+)
+
 # 支持的币种 currencies
 SUPPORT_CURRENCIES = (
     (1, 'CNY'),
@@ -20,23 +28,34 @@ SUPPORT_CURRENCIES = (
     (8, 'PHP')
 )
 
-# 支持的语言 Language
-SUPPORT_LANGUAGES = (
-    (1, 'zh', '简体中文'),
-    (2, 'en', 'English'),
-    (3, 'th', 'Thailand'),
-    (9, 'zh_TW', '繁體中文')
+# 默认币种配置
+DEFAULT_CURRENCIES = (
+    {
+        'title': 'fx_currency_rmb',
+        'code': 'CNY',
+        'symbol_left': '￥',
+        'symbol_right': '',
+        'decimal_place': '2',
+        'value': 1
+    },
+    {
+        'title': 'fx_currency_dollar',
+        'code': 'USD',
+        'symbol_left': '$',
+        'symbol_right': '',
+        'decimal_place': '2',
+        'value': 6.67
+    }
 )
-
 
 # 部门
 DEPARTMENT = (
     {
-        'id'  : 1,
+        'id': 1,
         'name': '财务部'
     },
     {
-        'id'  : 2,
+        'id': 2,
         'name': '电商部'
     },
 )
@@ -44,19 +63,19 @@ DEPARTMENT = (
 # 支持平台
 SUPPORT_PLATFORM = (
     {
-        'id'  : 1,
+        'id': 1,
         'name': lazy_gettext('Michose')
     },
     {
-        'id'  : 2,
+        'id': 2,
         'name': lazy_gettext('JD')
     },
     {
-        'id'  : 5,
+        'id': 5,
         'name': lazy_gettext('Amazon')
     },
     {
-        'id'  : 6,
+        'id': 6,
         'name': lazy_gettext('Aliexpress')
     },
     {
@@ -64,7 +83,7 @@ SUPPORT_PLATFORM = (
         'name': 'Lazada'
     },
     {
-        'id'  : 7,
+        'id': 7,
         'name': 'Wish'
     },
     {
@@ -72,11 +91,11 @@ SUPPORT_PLATFORM = (
         'name': 'eBay'
     },
     {
-        'id'  : 10,
+        'id': 10,
         'name': 'Shopee'
     },
     {
-        'id'  : 12,
+        'id': 12,
         'name': lazy_gettext('HuaZhu')
     },
 )
@@ -97,7 +116,7 @@ DEFAULT_REGIONS = (
 # 默认物流
 DEFAULT_EXPRESS = {
     'name': 'Default Express',
-    'contact_name': 'Michose',
+    'contact_name': 'eLing',
     'contact_mobile': '13866666666',
     'contact_phone': '13866666666',
     'description': 'This is default express!',
@@ -207,21 +226,21 @@ SUPPORT_DOMAINS = (
 
 # 默认权限列表
 DEFAULT_ACLIST = (
-    ('admin_store', gettext('Admin Store')),
-    ('admin_supplier', gettext('Admin Supplier')),
-    ('admin_purchase', gettext('Admin Purchase')),
-    ('admin_warehouse', gettext('Admin Warehouse')),
-    ('admin_logistics', gettext('Admin Logistics')),
-    ('admin_product', gettext('Admin Product')),
-    ('admin_order', gettext('Admin Order')),
-    ('admin_channel', gettext('Admin Channel')),
-    ('admin_customer', gettext('Admin Customer')),
-    ('admin_appstore', gettext('Admin Appstore')),
-    ('admin_service', gettext('Admin Service')),
-    ('admin_finance', gettext('Admin Finance')),
-    ('admin_reports', gettext('Admin Reports')),
-    ('admin_setting', gettext('Admin Setting')),
-    ('admin_dashboard', gettext('Admin Dashboard'))
+    ('admin_store', 'fx_admin_store'),
+    ('admin_supplier', 'fx_admin_supplier'),
+    ('admin_purchase', 'fx_admin_purchase'),
+    ('admin_warehouse', 'fx_admin_warehouse'),
+    ('admin_logistics', 'fx_admin_logistics'),
+    ('admin_product', 'fx_admin_product'),
+    ('admin_order', 'fx_admin_order'),
+    ('admin_channel', 'fx_admin_channel'),
+    ('admin_customer', 'fx_admin_customer'),
+    ('admin_appstore', 'fx_admin_appstore'),
+    ('admin_service', 'fx_admin_service'),
+    ('admin_finance', 'fx_admin_finance'),
+    ('admin_reports', 'fx_admin_reports'),
+    ('admin_setting', 'fx_admin_setting'),
+    ('admin_dashboard', 'fx_admin_dashboard')
 )
 
 # 默认图片
@@ -244,7 +263,7 @@ CUSTOMER_STATUS = [
 ]
 
 # 分销价格模板
-DISCOUNT_TEMPLET_TYPES= (
+DISCOUNT_TEMPLET_TYPES = (
     (1, lazy_gettext('By Category')),
     (2, lazy_gettext('By Brand'))
 )
@@ -278,7 +297,7 @@ PURCHASE_EXCEL_FIELDS = {
     'freight': gettext('Freight'),
     'extra_charge': gettext('Other Charge'),
     'total_amount': gettext('Total Amount'),
-    'warehouse':gettext('Warehouse'),
+    'warehouse': gettext('Warehouse'),
     'supplier': gettext('Supplier'),
     'contact_name': gettext('Contact Name'),
     'phone': gettext('Contact Phone'),
@@ -291,7 +310,8 @@ PURCHASE_EXCEL_FIELDS = {
 
 # 导入/导出订单物流信息
 ORDER_EXPRESS_FIELDS = {
-    'outside_target_id': '订单号', # 第三方订单号
+    # 第三方订单号
+    'outside_target_id': '订单号',
     'express_name': '物流服务商',
     'express_no': '快递单号'
 }
@@ -305,19 +325,19 @@ MIXPUS_ORDER_FIELDS = {
     'product_name': '商品名称',
     's_model': '商品规格',
     'deal_price': '商品销售单价',
-    'freight' : '运费',
-    'total_quantity' : '实际成交数量',
-    'total_amount' : '商品销售总额',
-    'discount_amount' : '优惠总金额',
-    'created_at' : '下单时间',
-    'express_at' : '发货时间',
-    'received_at' : '收货时间',
-    'buyer_name' : '收件人',
-    'buyer_phone' : '收件人手机',
-    'buyer_address' : '收件人地址',
-    'buyer_remark' : '买家留言',
-    'express_name' : '物流服务商',
-    'express_no' : '快递单号'
+    'freight': '运费',
+    'total_quantity': '实际成交数量',
+    'total_amount': '商品销售总额',
+    'discount_amount': '优惠总金额',
+    'created_at': '下单时间',
+    'express_at': '发货时间',
+    'received_at': '收货时间',
+    'buyer_name': '收件人',
+    'buyer_phone': '收件人手机',
+    'buyer_address': '收件人地址',
+    'buyer_remark': '买家留言',
+    'express_name': '物流服务商',
+    'express_no': '快递单号'
 }
 
 # 导入/导出订单格式对应（第三方）
@@ -336,38 +356,38 @@ ORDER_EXCEL_FIELDS = {
     'shop_goods_id': '商城商品ID',
     'cost_price': '成本单价',
     'sale_price': '商品销售单价',
-    'freight' : '运费',
-    'quantity' : '商品数量',
-    'deal_quantity' : '实际成交数量',
-    'total_amount' : '商品销售总额',
-    'use_discount' : '使用优惠券',
-    'platform_discount_amount' : '平台优惠金额',
-    'store_discount_amount' : '店铺优惠金额',
-    'discount_total_amount' : '优惠总金额',
-    'point' : '积分',
-    'voice_amount' : '开票金额',
-    'category_level1_id' : '一类ID',
-    'category_level2_id' : '二类ID',
-    'category_level3_id' : '三类ID',
-    'category_level1_name' : '一类',
-    'category_level2_name' : '二类',
-    'category_level3_name' : '三类',
-    'pay_away' : '支付类型',
-    'ordered_at' : '下单时间',
-    'payed_at' : '支付时间',
-    'express_at' : '发货时间',
-    'received_at' : '收货时间',
-    'finished_at' : '订单完成时间',
-    'buyer_phone' : '购买人手机',
-    'buyer_name' : '收件人',
-    'buyer_mobile' : '收件人手机',
-    'buyer_address' : '收件人地址',
-    'express_id' : '物流服务商',
-    'express_no' : '快递单号',
-    'buyer_remark' : '买家留言',
-    'store_goods_id' : '店铺商品ID',
-    'voice_info' : '发票信息',
-    'store_product_id' : '店铺产品ID'
+    'freight': '运费',
+    'quantity': '商品数量',
+    'deal_quantity': '实际成交数量',
+    'total_amount': '商品销售总额',
+    'use_discount': '使用优惠券',
+    'platform_discount_amount': '平台优惠金额',
+    'store_discount_amount': '店铺优惠金额',
+    'discount_total_amount': '优惠总金额',
+    'point': '积分',
+    'voice_amount': '开票金额',
+    'category_level1_id': '一类ID',
+    'category_level2_id': '二类ID',
+    'category_level3_id': '三类ID',
+    'category_level1_name': '一类',
+    'category_level2_name': '二类',
+    'category_level3_name': '三类',
+    'pay_away': '支付类型',
+    'ordered_at': '下单时间',
+    'payed_at': '支付时间',
+    'express_at': '发货时间',
+    'received_at': '收货时间',
+    'finished_at': '订单完成时间',
+    'buyer_phone': '购买人手机',
+    'buyer_name': '收件人',
+    'buyer_mobile': '收件人手机',
+    'buyer_address': '收件人地址',
+    'express_id': '物流服务商',
+    'express_no': '快递单号',
+    'buyer_remark': '买家留言',
+    'store_goods_id': '店铺商品ID',
+    'voice_info': '发票信息',
+    'store_product_id': '店铺产品ID'
 }
 
 # 华住订单状态

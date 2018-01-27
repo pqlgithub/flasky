@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-
 from celery import Celery
-
 from app import create_app
 
 # 加载环境变量

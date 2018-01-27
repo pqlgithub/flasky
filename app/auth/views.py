@@ -10,6 +10,7 @@ from .forms import LoginForm, SignupForm
 from ..email import send_email
 from ..utils import next_is_valid
 
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -17,11 +18,11 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            next = request.args.get('next')
-            if not next_is_valid(next):
+            next_url = request.args.get('next')
+            if not next_is_valid(next_url):
                 abort(400)
 
-            return redirect(next or url_for('main.index'))
+            return redirect(next_url or url_for('main.index'))
 
         flash(gettext('Account or Password is Error!'), 'danger')
 
@@ -31,7 +32,6 @@ def login():
 
     return render_template('auth/login.html',
                            form=form)
-
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
@@ -47,7 +47,7 @@ def signup():
 
         # Send confirm.txt email
         token = user.generate_confirmation_token()
-        #send_email(user.email, 'Confirm Your Account',
+        # send_email(user.email, 'Confirm Your Account',
         #           'auth/email/confirm', user=user, token=token)
 
         flash(gettext('确认邮件已发送到你注册的邮箱.'))
@@ -56,6 +56,7 @@ def signup():
 
     return render_template('auth/signup.html',
                            form=form)
+
 
 @auth.route('/logout')
 @login_required
@@ -86,7 +87,7 @@ def resend_confirmation():
     """重新发送账户确认邮件"""
     token = current_user.generate_confirmation_token()
     send_email(current_user.email, 'Confirm Your Account',
-			   'auth/email/confirm', user=current_user, token=token)
+               'auth/email/confirm', user=current_user, token=token)
 
     flash('A new confirmation email has been sent to you by email.', 'danger')
 
@@ -98,4 +99,5 @@ def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
 
-    return render_template('auth/unconfirmed.html', token=current_user.generate_confirmation_token())
+    return render_template('auth/unconfirmed.html',
+                           token=current_user.generate_confirmation_token())

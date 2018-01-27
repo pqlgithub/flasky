@@ -9,6 +9,7 @@ from ..constant import SUPPORT_LANGUAGES
 from ..utils import Master, full_response
 from app.models import Site, Currency
 
+
 @babel.localeselector
 def get_locale():
     """
@@ -18,7 +19,7 @@ def get_locale():
 
     # 优先，获取用户设置语言
     user = getattr(g, 'user', None)
-    if user is not None and type(user) :
+    if user is not None and type(user):
         return user.locale
 
     # 其次，当前选择语言
@@ -27,7 +28,9 @@ def get_locale():
         return current_site.locale
 
     # 最后，使用默认语言
-    return request.accept_languages.best_match([lang[1].lower() for lang in SUPPORT_LANGUAGES])
+    return request.accept_languages.best_match(
+        [lang[1].lower() for lang in SUPPORT_LANGUAGES])
+
 
 @babel.timezoneselector
 def get_timezone():
@@ -53,17 +56,19 @@ def before_request():
 
         # 验证是否设置初始信息
         if not current_user.is_setting:
-            if request.path[:8] != '/static/' and request.endpoint[5:] != 'logout' and request.endpoint[5:17] != 'setting_site':
+            if request.path[:8] != '/static/' and request.endpoint[5:] != 'logout' and \
+                    request.endpoint[5:17] != 'setting_site':
                 return redirect(url_for('main.setting_site'))
 
         # 注入站点信息
-        g.current_site = Site.query.filter_by(master_uid=Master.master_uid()).first()
-
+        g.current_site = Site.query.filter_by(
+            master_uid=Master.master_uid()).first()
     else:
         g.current_site = None
 
     # 设置本地化语言
     g.locale = get_locale()
+
 
 @main.context_processor
 def include_init_data():
@@ -74,12 +79,14 @@ def include_init_data():
         'current_site': g.current_site
     }
 
+
 @main.before_app_request
 def make_session_permanent():
     """请求前执行,为单独请求设立不操作超时机制,每次请求刷新失效时间"""
     session.permanent = True  # 关闭浏览器重新打开还保存session
     app.permanent_session_lifetime = timedelta(minutes=30)  # session失效时间
-    login_manager.remember_cookie_duration = timedelta(minutes=30)  # cookie失效时间
+    login_manager.remember_cookie_duration = timedelta(
+        minutes=30)  # cookie失效时间
 
 
 # 针对程序全局请求的钩子，
@@ -90,8 +97,9 @@ def after_request(response):
     """
     for query in get_debug_queries():
         if query.duration >= current_app.config['DATABASE_QUERY_TIMEOUT']:
-            current_app.logger.warn("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-                                       (query.statement, query.parameters, query.duration, query.context))
+            current_app.logger.warn(
+                "SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                (query.statement, query.parameters, query.duration, query.context))
     return response
 
 
@@ -104,7 +112,7 @@ def choose_locale(lang):
         lang = current_app.config['BABEL_DEFAULT_LOCALE']
 
     g.user.locale = lang
-    
+
     # remove the locale from the session if it's there
     # session.pop('locale', None)
 
@@ -120,7 +128,9 @@ def change_currency():
     from_currency = Currency.query.filter_by(code=fc).first()
     to_currency = Currency.query.filter_by(code=tc).first()
 
-    current_app.logger.debug('Default currency [%d], from [%d], to [%d]' % (g.current_site.currency_id, from_currency.id, to_currency.id))
+    current_app.logger.debug(
+        'Default currency [%d], from [%d], to [%d]' %
+        (g.current_site.currency_id, from_currency.id, to_currency.id))
 
     current_rate = 1.00
     if g.current_site.currency_id == from_currency.id:
@@ -130,6 +140,7 @@ def change_currency():
         current_rate = current_rate / float(from_currency.value)
 
     if g.current_site.currency_id != from_currency.id and g.current_site.currency_id != to_currency.id:
-        current_rate = (current_rate * float(to_currency.value))/float(from_currency.value)
+        current_rate = (current_rate * float(to_currency.value)
+                        ) / float(from_currency.value)
 
     return full_response(success=True, data={'rate': current_rate})

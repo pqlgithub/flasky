@@ -9,7 +9,6 @@
 """
 
 import os
-from datetime import timedelta
 from celery.schedules import crontab
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -44,7 +43,7 @@ class Config:
     # 邮件服务
     DEFAULT_MAIL_SENDER = 'support@qq.com'
 
-    MAIL_SERVER = 'stmp.googlemail.com'
+    MAIL_SERVER = 'stmp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'Admin'
@@ -91,7 +90,6 @@ class Config:
 
     # Whoose Index of Full Text Search
     WHOOSH_BASE = basedir + '/whooses'
-    MAX_SEARCH_RESULTS = 50
 
     # Pjax base template
     PJAX_BASE_TEMPLATE = 'pjax.html'
@@ -103,8 +101,8 @@ class Config:
     CELERY_IMPORTS = (
         'app.tasks'
     )
-    CELERY_BROKER_URL = 'redis://:Fr%bird@201403$01@localhost:6379/5'
-    CELERY_RESULT_BACKEND = 'redis://:Fr%bird@201403$01@localhost:6379/6'
+    CELERY_BROKER_URL = 'redis://localhost:6379/5'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/6'
 
     # schedules
     CELERYBEAT_SCHEDULE = {

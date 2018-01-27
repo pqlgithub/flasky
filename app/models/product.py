@@ -24,7 +24,9 @@ __all__ = [
     'SupplyStats',
     'Category',
     'CategoryPath',
-    'Wishlist'
+    'Wishlist',
+    'DANGEROUS_GOODS_TYPES',
+    'BUSINESS_MODE'
 ]
 
 

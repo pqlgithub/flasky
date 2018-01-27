@@ -400,6 +400,7 @@ def edit_role(id):
                            post_url=url_for('.edit_role', id=id)
                            )
 
+
 @main.route('/roles/delete', methods=['POST'])
 @login_required
 @user_has('admin_setting')

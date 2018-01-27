@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import random, string, datetime
+import random
+import string
+import datetime
 
 
 __all__ = [
@@ -25,7 +27,7 @@ class Dictate(object):
 
     def __setitem__(self, name, value):
         self.__dict[name] = value
-    
+
     def __delitem__(self, name):
         del self.__dict[name]
 
@@ -44,45 +46,41 @@ class Dictate(object):
 
     def __str__(self):
         return str(self.__dict)
-    
 
 
-class MixGenId():
-    """生成各种sn/sku"""
-    
+class MixGenId(object):
+    """
+    生成各种sn/sku
+    """
+
     @staticmethod
     def gen_digits(length=7):
         """生成数字串"""
         return ''.join(random.sample(string.digits, length))
-    
-    
+
     @staticmethod
     def gen_letters(length=20):
         """生成字符串"""
         return ''.join(random.sample(string.ascii_letters, length))
-    
-    
+
     @staticmethod
     def gen_app_sn(length=9):
         """生成开放市场应用sn"""
         prefix = '3'
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
-    
     @staticmethod
     def gen_banner_sn(length=8):
         """生成banner sn"""
         prefix = 'Ad'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
-    
+
     @staticmethod
     def gen_brand_sn(length=8):
         """生成品牌sn"""
         prefix = '6'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
-    
+
     @staticmethod
     def gen_order_sn(length=8):
         """生成订单sn"""
@@ -90,15 +88,13 @@ class MixGenId():
         now = datetime.datetime.now()
         date_str = now.strftime("%y%m%d")
         return ''.join([prefix, date_str, MixGenId.gen_digits(length)])
-    
-    
+
     @staticmethod
     def gen_product_sku(length=9):
         """生成商品sku"""
         prefix = '8'
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
-    
     @staticmethod
     def gen_shop_sn(length=7):
         """生成商店sn"""
@@ -110,22 +106,19 @@ class MixGenId():
         """生成渠道sn"""
         prefix = 'Q'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
+
     @staticmethod
     def gen_address_sn(length=10):
         prefix = '5'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
-    
+
     @staticmethod
     def gen_customer_sn(length=7):
         """生成分销商编号"""
         prefix = 'F'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    
-    
+
     @staticmethod
     def gen_user_xid(length=10):
         prefix = '1'
         return ''.join([prefix, MixGenId.gen_digits(length)])
-    

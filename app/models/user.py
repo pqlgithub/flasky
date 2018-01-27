@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from hashlib import md5
 from ..utils import timestamp
 from ..constant import SUPPORT_DOMAINS,SUPPORT_LANGUAGES, SUPPORT_COUNTRIES, SUPPORT_CURRENCIES
+from ..textex import LOCAL_TEXTS
 from app import db, login_manager
 from app.models.currency import Currency
 from app.helpers import MixGenId
@@ -88,7 +89,6 @@ class User(UserMixin, db.Model):
     # update time of last time
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-
     # 用户角色
     roles = db.relationship(
         'Role', secondary=user_role_table, backref='users'
@@ -123,7 +123,6 @@ class User(UserMixin, db.Model):
         """删除用户角色"""
         self.roles = [role for role in self.roles if role not in roles]
 
-
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -139,8 +138,7 @@ class User(UserMixin, db.Model):
         """生成一个令牌，有效期默认为一小时."""
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
-    
-    
+
     @property
     def is_master(self):
         """是否为主账号"""
@@ -149,12 +147,10 @@ class User(UserMixin, db.Model):
     def is_adminstractor(self):
         """判断用户是否具有管理员权限"""
         return self.is_admin == True
-    
-    
+
     def mark_as_setting(self):
         """设置已配置站点信息"""
         self.is_setting = True
-    
 
     def confirm(self, token):
         """检验令牌，如果检验通过，则把新添加的confirmed 属性设为True."""
@@ -174,7 +170,6 @@ class User(UserMixin, db.Model):
 
         return True
 
-    
     def ping(self):
         """每次收到用户的请求时都要调用ping()方法"""
         last_online = self.online
@@ -185,14 +180,12 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         
         return last_online != self.online
-    
 
     # API基于令牌的认证
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'],
                        expires_in=expiration)
         return s.dumps({'id': self.id})
-    
     
     @staticmethod
     def verify_auth_token(token):
@@ -203,21 +196,19 @@ class User(UserMixin, db.Model):
             return None
         
         return User.query.get(data['id'])
-    
-    
+
     def g_avatar(self, size):
         """user avatar"""
         return 'http://www.gravatar.com/avatar/' + md5(self.email.encode('utf8')).hexdigest() + '?d=mm&s=' + str(size)
 
-    
     @staticmethod
     def make_unique_username(username):
-        if User.query.filter_by(username=username).first() == None:
+        if User.query.filter_by(username=username).first() is None:
             return username
         version = 2
         while True:
             new_username = username + str(version)
-            if User.query.filter_by(username=new_username).first() == None:
+            if User.query.filter_by(username=new_username).first() is None:
                 break
             version += 1
         return new_username
@@ -226,12 +217,12 @@ class User(UserMixin, db.Model):
     def make_unique_sn():
         """生成用户编号"""
         sn = MixGenId.gen_user_xid(length=10)
-        if User.query.filter_by(sn=sn).first() == None:
+        if User.query.filter_by(sn=sn).first() is None:
             return sn
         
         while True:
             new_sn = MixGenId.gen_user_xid(length=10)
-            if User.query.filter_by(sn=new_sn).first() == None:
+            if User.query.filter_by(sn=new_sn).first() is None:
                 break
         return new_sn
 
@@ -253,8 +244,7 @@ class User(UserMixin, db.Model):
         db.session.commit()
     
         return users
-    
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_user = {
@@ -269,8 +259,7 @@ class User(UserMixin, db.Model):
             'description': self.description
         }
         return json_user
-    
-    
+
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -319,14 +308,12 @@ class Role(db.Model):
             existing_ability = Ability.query.filter_by(name=ability).first()
             if existing_ability and existing_ability in self.abilities:
                 self.abilities.remove(existing_ability)
-    
 
     def __init__(self, name, master_uid, title=None, description=None):
         self.name = name.lower()
         self.title = title
         self.description = description
         self.master_uid = master_uid
-
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
@@ -336,6 +323,7 @@ class Role(db.Model):
 
 
 class Ability(db.Model):
+    """系统默认权限"""
     __tablename__ = 'abilities'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -346,6 +334,13 @@ class Ability(db.Model):
         self.name = name.lower()
         self.title = title
 
+    @property
+    def fx_title(self):
+        """本地化转换"""
+        if self.title.startswith('fx_'):
+            return LOCAL_TEXTS.get(self.title) if self.title in LOCAL_TEXTS.keys() else self.title
+
+        return self.title
 
     def __repr__(self):
         return '<Ability {}>'.format(self.name)
@@ -353,6 +348,7 @@ class Ability(db.Model):
 
 class AnonymousUser(AnonymousUserMixin):
     locale = None
+
     def belong_roles(self):
         return []
 
@@ -367,6 +363,7 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 login_manager.anonymous_user = AnonymousUser
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -395,16 +392,13 @@ class Site(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-
     @property
     def currency(self):
         return self.default_currency.code if self.default_currency else ''
 
-
     @property
     def default_currency(self):
         return Currency.query.get(self.currency_id) if self.currency_id else None
-
 
     @property
     def locale_label(self):
@@ -412,13 +406,11 @@ class Site(db.Model):
             if l[1] == self.locale:
                 return l
 
-
     @property
     def country_label(self):
         for c in SUPPORT_COUNTRIES:
             if c[1] == self.country:
                 return c
-
 
     @property
     def domain_label(self):
@@ -428,7 +420,6 @@ class Site(db.Model):
 
     def __repr__(self):
         return '<Site %r>' % self.company_name
-
 
 
 # 监听事件

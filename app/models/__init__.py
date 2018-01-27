@@ -2,7 +2,7 @@
 
 from .user import User, Role, Ability, AnonymousUser, Site, UserIdType
 from .product import Product, ProductSku, ProductStock, ProductContent, CustomsDeclaration, Supplier, SupplyStats, Brand, Category, \
-    CategoryPath, DANGEROUS_GOODS_TYPES, BUSINESS_MODE, Wishlist
+    CategoryPath, Wishlist, DANGEROUS_GOODS_TYPES, BUSINESS_MODE
 from .asset import Asset, Directory
 from .store import Store, STORE_STATUS, STORE_TYPE
 from .warehouse import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, \
@@ -12,8 +12,6 @@ from .logistics import Express, Shipper
 from .order import Order, OrderItem, OrderStatus, Cart
 from .finance import PayAccount, TransactDetail, Invoice
 from .currency import Currency
-from .reminder import Reminder
-
 from .client import Client, ClientStatus
 from .market import AppService, SubscribeService, SubscribeRecord
 from .language import Language
@@ -23,3 +21,4 @@ from .shop import Shop, ShopSeo
 from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, DiscountTempletItem, CustomerDistributePacket
 from .counter import Counter
 from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, SalesLogStatistics, DaySkuStatistics
+from .reminder import Reminder
