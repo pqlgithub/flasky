@@ -62,7 +62,7 @@
 						<input name="selected[]" class="check-one" value="{{ currency.id }}" type="checkbox">
 					</td>
 					<td>
-						{{ currency.title }}
+						{{ currency.fx_title }}
 						{% if currency.id == current_site.currency_id %}
 							<span class="badge badge-mixpus m-l-5">{{ _('Default Currency') }}</span>
 						{% endif %}

@@ -32,4 +32,6 @@ LOCAL_TEXTS = {
     'fx_currency_rmb': lazy_gettext('China Yuan'),
     'fx_currency_dollar': lazy_gettext('Dollars'),
 
+    # 默认货架
+    'fx_default_shelve': lazy_gettext('Default Shelve'),
 }

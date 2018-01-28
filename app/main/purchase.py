@@ -20,6 +20,7 @@ from app.forms import PurchaseForm, PurchaseExpressForm
 from .filters import supress_none, timestamp2string, break_line
 from ..pdfs import create_pdf
 
+
 def load_common_data():
     """
     私有方法，装载共用数据
@@ -176,20 +177,21 @@ def create_purchase():
         total_quantity = 0
         total_amount = 0
         purchase_products = []
-        for sku_id in sku_list:
-            sku = {}
-            sku_id = int(sku_id)
-            sku_row = ProductSku.query.get_or_404(sku_id)
+        for sku_sn in sku_list:
+            sku_row = ProductSku.query.filter_by(master_uid=Master.master_uid(), serial_no=sku_sn).first()
+            if sku_row is None:
+                continue
 
-            sku['product_sku_id'] = sku_id
-            sku['sku_serial_no'] = sku_row.serial_no
-            sku['cost_price'] = float(sku_row.cost_price)
-            sku['quantity'] = int(request.form.get('sku[%d][quantity]' % sku_id))
+            _sku = {
+                'product_sku_id': sku_row.id,
+                'sku_serial_no': sku_sn,
+                'cost_price': float(sku_row.cost_price),
+                'quantity': int(request.form.get('sku[%s][quantity]' % sku_sn))
+            }
+            total_quantity += _sku['quantity']
+            total_amount += _sku['cost_price'] * _sku['quantity']
 
-            total_quantity += sku['quantity']
-            total_amount += sku['cost_price'] * sku['quantity']
-
-            purchase_products.append(sku)
+            purchase_products.append(_sku)
 
         purchase = Purchase(
             master_uid=Master.master_uid(),

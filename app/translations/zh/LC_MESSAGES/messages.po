@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-01-27 23:58+0800\n"
-"PO-Revision-Date: 2018-01-28 00:08+0800\n"
+"POT-Creation-Date: 2018-01-28 01:20+0800\n"
+"PO-Revision-Date: 2018-01-28 22:03+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -116,7 +116,7 @@ msgstr ""
 #: app/constant.py:193 app/models/warehouse.py:224
 #: app/templates/block/main-sidebar.html:179
 msgid "Purchase"
-msgstr ""
+msgstr "采购"
 
 #: app/constant.py:194 app/models/warehouse.py:268
 msgid "Order"
@@ -408,15 +408,15 @@ msgstr ""
 #: app/templates/warehouses/in_warehouse_modal.html:56
 #: app/templates/warehouses/stock_table.html:78
 msgid "Remark"
-msgstr ""
+msgstr "备注"
 
 #: app/textex.py:7
 msgid "Default Directory"
-msgstr ""
+msgstr "默认目录"
 
 #: app/textex.py:8
 msgid "Product"
-msgstr ""
+msgstr "产品"
 
 #: app/forms/product_forms.py:73
 #: app/templates/products/_modal_select_products.html:40
@@ -425,22 +425,22 @@ msgstr ""
 #: app/templates/products/show_set_groups.html:62
 #: app/templates/products/table_product.html:14 app/textex.py:9
 msgid "Brand"
-msgstr ""
+msgstr "品牌"
 
 #: app/forms/product_forms.py:74
 #: app/templates/products/_modal_select_products.html:19
 #: app/templates/products/_modal_select_products.html:67
 #: app/templates/products/show_set_groups.html:61 app/textex.py:10
 msgid "Category"
-msgstr ""
+msgstr "分类"
 
 #: app/textex.py:11
 msgid "User"
-msgstr ""
+msgstr "用户"
 
 #: app/textex.py:12
 msgid "Advertise"
-msgstr ""
+msgstr "广告"
 
 #: app/textex.py:15
 msgid "Admin Store"
@@ -502,6 +502,14 @@ msgstr "系统设置"
 msgid "Admin Dashboard"
 msgstr "控制台设置"
 
+#: app/textex.py:32
+msgid "China Yuan"
+msgstr "人民币"
+
+#: app/textex.py:33
+msgid "Dollars"
+msgstr "美元"
+
 #: app/adminlte/address.py:65
 msgid "Add Place is ok!"
 msgstr ""
@@ -559,25 +567,25 @@ msgstr ""
 msgid "Reset password is ok!"
 msgstr ""
 
-#: app/auth/forms.py:11 app/auth/forms.py:17 app/forms/customer_forms.py:23
+#: app/auth/forms.py:12 app/auth/forms.py:18 app/forms/customer_forms.py:23
 #: app/forms/customer_forms.py:49 app/forms/user_forms.py:22
 #: app/forms/warehouse_forms.py:20 app/templates/auth/login.html:53
 #: app/templates/auth/signup.html:53
 msgid "Email"
 msgstr ""
 
-#: app/auth/forms.py:12 app/auth/forms.py:19 app/forms/user_forms.py:24
+#: app/auth/forms.py:13 app/auth/forms.py:20 app/forms/user_forms.py:24
 #: app/forms/user_forms.py:55 app/templates/auth/login.html:60
 #: app/templates/auth/login.html:61 app/templates/auth/signup.html:62
 #: app/templates/auth/signup.html:63 app/templates/users/add_child_user.html:33
 msgid "Password"
 msgstr ""
 
-#: app/auth/forms.py:13
+#: app/auth/forms.py:14
 msgid "Remember me"
 msgstr ""
 
-#: app/auth/forms.py:18 app/forms/user_forms.py:23
+#: app/auth/forms.py:19 app/forms/user_forms.py:23
 #: app/templates/adminlte/system/password_modal.html:12
 #: app/templates/adminlte/system/show_list.html:38
 #: app/templates/users/add_child_user.html:26
@@ -585,7 +593,11 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: app/auth/forms.py:20 app/forms/user_forms.py:25 app/forms/user_forms.py:57
+#: app/auth/forms.py:21
+msgid "Password must match"
+msgstr ""
+
+#: app/auth/forms.py:22 app/forms/user_forms.py:25 app/forms/user_forms.py:57
 msgid "Confirm password"
 msgstr ""
 
@@ -597,11 +609,11 @@ msgstr ""
 msgid "Email is already exist!"
 msgstr ""
 
-#: app/auth/views.py:27
+#: app/auth/views.py:28
 msgid "Account or Password is Error!"
 msgstr ""
 
-#: app/auth/views.py:53
+#: app/auth/views.py:63
 msgid "确认邮件已发送到你注册的邮箱."
 msgstr ""
 
@@ -1356,15 +1368,15 @@ msgstr ""
 msgid "Set Discount is ok!"
 msgstr ""
 
-#: app/main/file_manager.py:35 app/main/settings.py:258
+#: app/main/file_manager.py:35 app/main/settings.py:259
 msgid "Directory name isn't empty!"
 msgstr ""
 
-#: app/main/file_manager.py:42 app/main/settings.py:265
+#: app/main/file_manager.py:42 app/main/settings.py:266
 msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr ""
 
-#: app/main/file_manager.py:45 app/main/settings.py:268
+#: app/main/file_manager.py:45 app/main/settings.py:269
 msgid "Directory name is already exist!"
 msgstr ""
 
@@ -1734,19 +1746,23 @@ msgstr ""
 msgid "Commodity codes is repeat: %s,"
 msgstr ""
 
-#: app/main/settings.py:161
+#: app/main/settings.py:78
+msgid "Company info is ok!"
+msgstr ""
+
+#: app/main/settings.py:162
 msgid "Synchronous exchange rate successful."
 msgstr ""
 
-#: app/main/settings.py:250
+#: app/main/settings.py:251
 msgid "Directory isn't exist!"
 msgstr ""
 
-#: app/main/settings.py:274
+#: app/main/settings.py:275
 msgid "Modify directory is ok!"
 msgstr ""
 
-#: app/main/settings.py:330
+#: app/main/settings.py:331
 msgid "Delete asset is ok!"
 msgstr ""
 
@@ -2920,7 +2936,7 @@ msgstr ""
 
 #: app/templates/block/main-sidebar.html:361
 msgid "App Store"
-msgstr ""
+msgstr "应用市场"
 
 #: app/templates/block/main-sidebar.html:366
 msgid "App Manage"

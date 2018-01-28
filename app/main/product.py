@@ -27,6 +27,7 @@ def load_common_data():
         'default_regions': DEFAULT_REGIONS
     }
 
+
 @main.route('/products')
 @main.route('/products/<int:page>')
 @login_required
@@ -191,13 +192,13 @@ def ajax_select_products():
         builder = builder.filter_by(sku_serial_no=qk)
 
     paginated_stocks = builder.order_by('created_at desc').paginate(page, per_page)
-    
-        
+
     return render_template('products/select_product_modal.html',
                            paginated_stocks=paginated_stocks,
                            wh_id=wh_id,
                            qk=qk,
                            t=t)
+
 
 @main.route('/products/ajax_submit_result', methods=['POST'])
 @login_required
@@ -226,15 +227,14 @@ def ajax_submit_result():
                            warehouse_shelves=warehouse_shelves)
 
 
-
 @main.route('/products/create', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_product')
 def create_product():
-    currency_list = Currency.query.filter_by(status=1).all()
+    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
 
     form = ProductForm()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in currency_list]
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in currency_list]
     if form.validate_on_submit():
         next_action = request.form.get('next_action', 'finish_save')
         # 设置默认值
@@ -331,9 +331,9 @@ def edit_product(rid):
     if product is None:
         abort(404)
 
-    currency_list = Currency.query.filter_by(status=1).all()
+    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
     form = ProductForm()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
         # 根据品牌获取供应商
@@ -621,6 +621,7 @@ def show_skus(rid):
     return render_template('products/show_skus.html',
                            product_skus=product.skus,
                            product=product)
+
 
 @main.route('/products/<string:rid>/add_sku', methods=['GET', 'POST'])
 @user_has('admin_product')

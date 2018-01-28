@@ -9,7 +9,6 @@ from ..utils import *
 def api_sign_required(func):
     """装饰器：验证API数字签名"""
     @wraps(func)
-    
     def validate_api_sign(*args, **kwargs):
         sign_args = request.args
         
@@ -44,7 +43,8 @@ def admin_required(func):
     @wraps(func)
     def decorator(*args, **kwargs):
         token_header = request.headers.get('authorization')
-        token = token_header[6:] # 去掉格式中的Basic
+        # 去掉格式中的Basic
+        token = token_header[6:]
         if token:
             g.current_user = User.verify_auth_token(token)
             if g.current_user.is_adminstractor():
@@ -53,4 +53,3 @@ def admin_required(func):
                 abort(403)
     
     return decorator
-            

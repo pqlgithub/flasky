@@ -1,15 +1,11 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'warehouses/_sub_menu.html' %}
-{% endblock %}
-
 {% block after_jquery %}
 <script type="text/javascript">
+    var warehouse_id = {{ warehouse_id|default(0) }};
 	$(function () {
 		mixpus.init_page_layout();
 
-		var warehouse_id = {{ warehouse_id|default(0) }};
 		var counter = 0;
 		$('.add-row').click(function (e) {
 			var new_row = '<tr id="tr_'+ counter +'">' +
@@ -92,10 +88,10 @@
 
 		<span class="pull-right">
 			<button type="submit" form="warehouse-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_warehouses') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
@@ -126,15 +122,11 @@
 					<div class="col-sm-4">
 						{{ form.type(id="type", class="list-inline radio-group") }}
 					</div>
-					{{ form.currency_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.currency_id(class="form-control select2") }}
-					</div>
 				</div>
 
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.name(id="name", class="form-control") }}
 						{% for error in form.errors.name %}
 						<span class="help-block">{{ error }}</span>
@@ -143,25 +135,14 @@
 				</div>
 
 				<div class="form-group">
-					{{ form.is_default.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						<div class="checkbox">
-							<label>
-								{{ form.is_default(id="is_default") }} {{ _('Yes') }}
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
 					{{ form.address.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.address(id="address", class="form-control") }}
 					</div>
 				</div>
 				<div class="form-group">
 					{{ form.en_address.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.en_address(id="en_address", class="form-control") }}
 					</div>
 				</div>
@@ -172,7 +153,7 @@
 					<div class="col-sm-4">
 						{{ form.username(id="username", class="form-control") }}
 					</div>
-					{{ form.phone.label(class="col-sm-2 control-label") }}
+					{{ form.phone.label(class="col-sm-1 control-label") }}
 					<div class="col-sm-4">
 						{{ form.phone(id="phone", class="form-control") }}
 					</div>
@@ -183,7 +164,7 @@
 					<div class="col-sm-4">
 						{{ form.email(id="email", class="form-control") }}
 					</div>
-					{{ form.qq.label(class="col-sm-2 control-label") }}
+					{{ form.qq.label(class="col-sm-1 control-label") }}
 					<div class="col-sm-4">
 						{{ form.qq(id="qq", class="form-control") }}
 					</div>
@@ -191,10 +172,28 @@
 
 				<div class="form-group">
 					{{ form.description.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-9">
 						{{ form.description(id="description", class="form-control") }}
 					</div>
 				</div>
+
+                <div class="form-group">
+					{{ form.is_default.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						<div class="checkbox">
+							<label>
+								{{ form.is_default(id="is_default") }} {{ _('Yes') }}
+							</label>
+						</div>
+					</div>
+				</div>
+
+                <div class="form-group">
+                    {{ form.currency_id.label(class="col-sm-2 control-label") }}
+                    <div class="col-sm-4">
+                        {{ form.currency_id(class="form-control select2") }}
+                    </div>
+                </div>
 
 				<div class="form-group">
 					{{ form.status.label(class="col-sm-2 control-label") }}
@@ -227,7 +226,7 @@
 					<tbody id="shelves-wrapper">
 						{% for shelve in warehouse.shelves %}
 						<tr id="tr_{{ shelve.id }}">
-							<td>{{ shelve.name }}</td>
+							<td>{{ shelve.fx_name }}</td>
 							<td>
 								{% if shelve.type == 1 %}
 									{{ _('Qualified') }}

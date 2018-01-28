@@ -5,10 +5,11 @@ from flask_login import login_user, logout_user, login_required, \
 from flask_babelex import gettext
 from . import auth
 from .. import db
-from app.models import User
+from app.models import User, UserIdType
 from .forms import LoginForm, SignupForm
 from ..email import send_email
 from ..utils import next_is_valid
+from ..tasks import build_default_setting
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -36,19 +37,28 @@ def login():
 
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
+    """用户注册"""
     form = SignupForm()
     if form.validate_on_submit():
-        user = User(email=form.email.data,
-                    username=form.username.data,
-                    password=form.password.data,
-                    time_zone='zh')
+        user = User()
+
+        user.email = form.email.data
+        user.username = form.username.data
+        user.password = form.password.data
+        user.id_type = UserIdType.SUPPLIER
+        user.time_zone = 'zh'
+
         db.session.add(user)
+
         db.session.commit()
 
         # Send confirm.txt email
-        token = user.generate_confirmation_token()
+        # token = user.generate_confirmation_token()
         # send_email(user.email, 'Confirm Your Account',
         #           'auth/email/confirm', user=user, token=token)
+
+        # 触发任务
+        build_default_setting.apply_async(args=[user.id])
 
         flash(gettext('确认邮件已发送到你注册的邮箱.'))
 

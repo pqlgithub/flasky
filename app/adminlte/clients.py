@@ -36,7 +36,7 @@ def approved_client():
     if app_key is None:
         abort(404)
     
-    client = Client.query.filter_by(master_uid=Master.master_uid(), app_key=app_key).first()
+    client = Client.query.filter_by(app_key=app_key).first()
     if client is None:
         abort(404)
 

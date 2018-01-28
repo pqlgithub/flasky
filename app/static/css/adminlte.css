@@ -191,6 +191,12 @@ select {
 	/* for mobile safari */
 	-webkit-appearance: none;
 }
+.alert-success,
+.alert-info,
+.alert-warning,
+.alert-danger {
+  text-shadow: none;
+}
 
 .indicator,
 .indicator-right {
@@ -1127,7 +1133,7 @@ body {
 }
 .content {
     min-height:250px;
-    padding:15px;
+    padding:20px;
     margin-right:auto;
     margin-left:auto;
 }

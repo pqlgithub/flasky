@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from flask import current_app
 from app import db, uploader
-from ..utils import timestamp
 from app.helpers import Dictate
+from ..utils import timestamp
+from ..textex import LOCAL_TEXTS
 
 
 __all__ = [
@@ -27,6 +28,14 @@ class Directory(db.Model):
     assets = db.relationship(
         'Asset', backref='directory', lazy='dynamic'
     )
+
+    @property
+    def fx_name(self):
+        """本地化转换"""
+        if self.name.startswith('fx_'):
+            return LOCAL_TEXTS.get(self.name) if self.name in LOCAL_TEXTS.keys() else self.name
+
+        return self.name
 
     def __repr__(self):
         return '<Directory {}>'.format(self.name)

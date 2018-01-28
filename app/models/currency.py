@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from app import db
 from ..utils import timestamp
+from ..textex import LOCAL_TEXTS
 
 __all__ = [
     'Currency'
@@ -25,11 +26,19 @@ class Currency(db.Model):
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
     last_updated = db.Column(db.Integer, default=timestamp)
 
+    @property
+    def fx_title(self):
+        """本地化转换"""
+        if self.title.startswith('fx_'):
+            return LOCAL_TEXTS.get(self.title) if self.title in LOCAL_TEXTS.keys() else self.title
+
+        return self.title
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_currency = {
             'id': self.id,
-            'title': self.title,
+            'title': self.fx_title,
             'code': self.code,
             'symbol_left': self.symbol_left,
             'value': self.value

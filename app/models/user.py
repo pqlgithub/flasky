@@ -32,7 +32,9 @@ role_ability_table = db.Table('roles_abilities',
     db.Column('ability_id', db.Integer, db.ForeignKey('abilities.id'))
 )
 
+
 class UserIdType:
+
     # 供应商, 默认erp使用者
     SUPPLIER = 1
     
@@ -44,7 +46,8 @@ class UserIdType:
 
 
 class User(UserMixin, db.Model):
-    """This User model"""
+    """User model"""
+
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)

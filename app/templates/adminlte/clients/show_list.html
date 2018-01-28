@@ -35,6 +35,7 @@
                     mixpus.show_error_message(result.status.message);
                 }
             });
+
         });
 	});
 </script>
@@ -94,7 +95,7 @@
 						{{ client.created_at|timestamp2string() }}
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('adminlte.approved_client') }}" data-id="{{ client.app_key }}" class="btn btn-link ajax-approved"  data-toggle="tooltip" data-original-title="{{ _('Approved') }}">
+						<a href="{{ url_for('adminlte.approved_client') }}" data-id="{{ client.app_key }}" class="btn-link ajax-approved"  data-toggle="tooltip" data-original-title="{{ _('Approved') }}">
 							{{ _('Approved') }}
 						</a>
 					</td>

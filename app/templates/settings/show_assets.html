@@ -1,9 +1,5 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'settings/_sub_menu.html' %}
-{% endblock %}
-
 {% block after_jquery %}
 <script type="text/javascript">
 	$(function () {
@@ -56,7 +52,7 @@
 				</div>
 				<label>
 					<input name="directories[]" class="check-one" value="{{ d.id }}" type="checkbox">
-					{{ d.name|safe }}
+					{{ d.fx_name|safe }}
 					<a href="{{ url_for('main.modify_directory', id=d.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit') }}</a>
 				</label>
 			</div>

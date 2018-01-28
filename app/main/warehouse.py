@@ -774,8 +774,8 @@ def show_warehouses(page=1):
 @user_has('admin_warehouse')
 def create_warehouse():
     form = WarehouseForm()
-    currency_list = Currency.query.filter_by(status=1).all()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
         try:
@@ -799,16 +799,20 @@ def create_warehouse():
             # 添加默认货架
             default_shelve = WarehouseShelve(
                 warehouse=warehouse,
-                name=gettext('Default Shelve'),
+                name='fx_default_shelve',
                 type=1,
                 description=gettext("default shelve, can't delete!"),
                 is_default=True
             )
             db.session.add(default_shelve)
 
+            # 更新其他仓库为非默认仓库
+            if form.is_default.data:
+                Warehouse.query.filter_by(master_uid=Master.master_uid(), is_default=True).update({'is_default': False})
+
             db.session.commit()
 
-            flash('Create warehouse is ok!', 'success')
+            flash(gettext('Create warehouse is ok!'), 'success')
         except Exception as ex:
             db.session.rollback()
             flash('Create warehouse is fail [%s]!' % ex, 'danger')
@@ -828,23 +832,32 @@ def create_warehouse():
                            sub_menu='warehouses', **load_common_data())
 
 
-@main.route('/warehouses/<int:id>/edit', methods=['GET', 'POST'])
+@main.route('/warehouses/<int:rid>/edit', methods=['GET', 'POST'])
 @login_required
 @user_has('admin_warehouse')
-def edit_warehouse(id):
-    warehouse = Warehouse.query.get_or_404(id)
+def edit_warehouse(rid):
+    warehouse = Warehouse.query.get_or_404(rid)
+
     form = WarehouseForm()
-    currency_list = Currency.query.filter_by(status=1).all()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.title, currency.code)) for currency in
+    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
         form.populate_obj(warehouse)
+
+        # 更新其他仓库为非默认仓库
+        if form.is_default.data:
+            Warehouse.query.filter_by(master_uid=Master.master_uid(), is_default=True)\
+                .filter(Warehouse.id != warehouse.id).update({'is_default': False})
+
         db.session.commit()
 
-        flash('Edit warehouse is ok!', 'success')
+        flash(gettext('Edit warehouse is ok!'), 'success')
+
         return redirect(url_for('.show_warehouses'))
 
     mode = 'edit'
+
     form.name.data = warehouse.name
     form.address.data = warehouse.address
     form.en_address.data = warehouse.en_address
@@ -861,7 +874,7 @@ def edit_warehouse(id):
     return render_template('warehouses/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           warehouse_id=id,
+                           warehouse_id=rid,
                            warehouse=warehouse,
                            sub_menu='warehouses', **load_common_data())
 

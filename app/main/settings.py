@@ -32,11 +32,10 @@ def show_settings():
 @login_required
 @user_has('admin_setting')
 def site():
-    master_uid = Master.master_uid()
-    site = Site.query.filter_by(master_uid=master_uid).first()
+    company = Site.query.filter_by(master_uid=Master.master_uid()).first()
 
     return render_template('settings/site.html',
-                           site=site,
+                           site=company,
                            sub_menu='sites')
 
 
@@ -44,20 +43,21 @@ def site():
 @login_required
 @user_has('admin_setting')
 def setting_site():
-    mode = 'create',
-    master_uid = Master.master_uid()
-    site = Site.query.filter_by(master_uid=master_uid).first()
-
-    currency_list = Currency.query.filter_by(status=1).all()
-
+    mode = 'create'
     form = SiteForm()
-    form.currency_id.choices = [(currency.id, '%s (%s)' % (currency.title, currency.code)) for currency in
+
+    company = Site.query.filter_by(master_uid=Master.master_uid()).first()
+    # 获取币种列表
+    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    form.currency_id.choices = [(currency.id, '%s (%s)' % (currency.fx_title, currency.code)) for currency in
                                 currency_list]
     if form.validate_on_submit():
-        if site: # 更新信息
-            form.populate_obj(site)
-        else: # 新增信息
-            site = Site(
+        # 更新信息
+        if company:
+            form.populate_obj(company)
+        # 新增信息
+        else:
+            company = Site(
                 master_uid=Master.master_uid(),
                 company_name=form.company_name.data,
                 company_abbr=form.company_abbr.data,
@@ -67,27 +67,28 @@ def setting_site():
                 domain=form.domain.data,
                 description=form.description.data
             )
-            db.session.add(site)
+            db.session.add(company)
 
         # 更新配置状态
-        master = User.query.get_or_404(master_uid)
+        master = User.query.get_or_404(Master.master_uid())
         master.mark_as_setting()
 
         db.session.commit()
 
-        flash('Site info is ok!', 'success')
+        flash(gettext('Company info is ok!'), 'success')
         return redirect(url_for('.site'))
 
-    if site:
+    if company:
         mode = 'edit'
+
         # 初始编辑信息
-        form.company_name.data = site.company_name
-        form.company_abbr.data = site.company_abbr
-        form.locale.data = site.locale
-        form.country.data = site.country
-        form.currency_id.data = site.currency_id
-        form.domain.data = site.domain
-        form.description.data = site.description
+        form.company_name.data = company.company_name
+        form.company_abbr.data = company.company_abbr
+        form.locale.data = company.locale
+        form.country.data = company.country
+        form.currency_id.data = company.currency_id
+        form.domain.data = company.domain
+        form.description.data = company.description
 
     return render_template('settings/setting_site.html',
                            mode=mode,
@@ -103,7 +104,7 @@ def setting_site():
 def show_currencies(page=1):
     per_page = request.args.get('per_page', 10, type=int)
 
-    paginated_currencies = Currency.query.order_by(Currency.id.asc()).paginate(page, per_page)
+    paginated_currencies = Currency.query.filter_by(master_uid=Master.master_uid()).order_by(Currency.id.asc()).paginate(page, per_page)
 
     if paginated_currencies:
         paginated_currencies.offset_start = 1 if page == 1 else (page - 1) * per_page

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import current_app
 from flask_babelex import gettext, lazy_gettext
 from app import db
-from ..utils import timestamp
-from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES, OUTWAREHOUSE_STATUS
 from .purchase import Purchase
 from .currency import Currency
+from ..utils import timestamp
+from ..textex import LOCAL_TEXTS
+from ..constant import INWAREHOUSE_STATUS, WAREHOUSE_OPERATION_TYPE, DEFAULT_IMAGES, OUTWAREHOUSE_STATUS
 
 __all__ = [
     'Warehouse',
@@ -28,8 +28,10 @@ SHELVE_TYPES = [
     (2, gettext('Defective'), lazy_gettext('Defective'))
 ]
 
+
 class Warehouse(db.Model):
     """仓库"""
+
     __tablename__ = 'warehouses'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -112,9 +114,8 @@ class Warehouse(db.Model):
         """获取默认仓库"""
         return Warehouse.query.filter_by(master_uid=master_uid, is_default=True).first()
 
-    
     @classmethod
-    def wh_types(self):
+    def wh_types(cls):
         return WAREHOUSE_TYPES
 
     @property
@@ -123,18 +124,19 @@ class Warehouse(db.Model):
             if t[0] == self.type:
                 return t
 
-    def __repr__(self):
-        return '<Warehouse %r>' % self.name
-
     def to_json(self):
         """资源和JSON的序列化转换"""
         return {
             c.name: getattr(self, c.name, None) for c in self.__table__.columns
         }
 
+    def __repr__(self):
+        return '<Warehouse %r>' % self.name
+
 
 class WarehouseShelve(db.Model):
     """仓库 / 货架"""
+
     __tablename__ = 'warehouse_shelves'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -158,11 +160,18 @@ class WarehouseShelve(db.Model):
     )
 
     @property
-    def type_label(self):
-        for type in SHELVE_TYPES:
-            if type[0] == self.type:
-                return [type[0], type[1]]
+    def fx_name(self):
+        """本地化转换"""
+        if self.name.startswith('fx_'):
+            return LOCAL_TEXTS.get(self.name) if self.name in LOCAL_TEXTS.keys() else self.name
 
+        return self.name
+
+    @property
+    def type_label(self):
+        for t in SHELVE_TYPES:
+            if t[0] == self.type:
+                return [t[0], t[1]]
 
     def to_json(self):
         """资源和JSON的序列化转换"""
@@ -182,6 +191,7 @@ class InWarehouse(db.Model):
     """入库单"""
 
     __tablename__ = 'warehouse_in_list'
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
@@ -224,7 +234,6 @@ class InWarehouse(db.Model):
             return lazy_gettext('Purchase')
         return None
 
-
     def __repr__(self):
         return '<InWarehouse %r>' % self.serial_no
 
@@ -233,6 +242,7 @@ class OutWarehouse(db.Model):
     """出库单"""
 
     __tablename__ = 'warehouse_out_list'
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
@@ -272,7 +282,6 @@ class OutWarehouse(db.Model):
         """更新出库状态为已完成"""
         self.out_status = 3
 
-
     def __repr__(self):
         return '<OutWarehouse %r>' % self.serial_no
 
@@ -281,6 +290,7 @@ class StockHistory(db.Model):
     """库存变化的历史记录明细"""
 
     __tablename__ = 'warehouse_stock_history'
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
 
@@ -333,7 +343,6 @@ class StockHistory(db.Model):
             if s[0] == self.operation_type:
                 return s
 
-
     def __repr__(self):
         return '<StockHistory %r>' % self.product_sku_id
 
@@ -342,6 +351,7 @@ class ExchangeWarehouse(db.Model):
     """调拨单"""
 
     __tablename__ = 'warehouse_exchange_list'
+
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     serial_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
@@ -373,6 +383,7 @@ class ExchangeWarehouseProduct(db.Model):
     """调拨单产品明细"""
 
     __tablename__ = 'warehouse_exchange_products'
+
     id = db.Column(db.Integer, primary_key=True)
     exchange_warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse_exchange_list.id'))
     product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))

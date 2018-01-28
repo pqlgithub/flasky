@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from flask import abort
 from functools import wraps
 from werkzeug.exceptions import Forbidden
+
 
 def import_user():
     try:
@@ -10,6 +12,7 @@ def import_user():
         raise ImportError('User argument not passed and Flask-Login current_user could not be imported.')
 
 
+# 装饰器：用户是否具有某权限
 def user_has(ability, get_user=import_user):
     def wrapper(func):
         @wraps(func)
@@ -31,6 +34,7 @@ def user_has(ability, get_user=import_user):
     return wrapper
 
 
+# 装饰器：用户是否为某角色
 def user_is(role, get_user=import_user):
     def wrapper(func):
         @wraps(func)
@@ -44,3 +48,16 @@ def user_is(role, get_user=import_user):
             raise Forbidden('You do not have access')
         return inner
     return wrapper
+
+
+def super_user_required(func, get_user=import_user):
+    """装饰器：用户是否为系统管理员"""
+
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        current_user = get_user()
+        if current_user.is_adminstractor():
+            return func(*args, **kwargs)
+        abort(403)
+
+    return decorator

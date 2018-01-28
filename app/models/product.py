@@ -134,7 +134,7 @@ class Product(db.Model):
     
     @property
     def brand_name(self):
-        return self.brand_name
+        return self.brand.name
 
     @property
     def all_sku(self):
@@ -176,17 +176,15 @@ class Product(db.Model):
         """删除所属分类"""
         self.categories = [category for category in self.categories if category not in categories]
 
-
     @staticmethod
     def make_unique_serial_no(serial_no):
-        if Product.query.filter_by(serial_no=serial_no).first() == None:
+        if Product.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
             new_serial_no = gen_serial_no()
-            if Product.query.filter_by(serial_no=new_serial_no).first() == None:
+            if Product.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
-    
         
     @classmethod
     def always_category(cls, path=0, page=1, per_page=20, uid=0):
@@ -207,7 +205,6 @@ class Product(db.Model):
         sql += ' LIMIT %d, %d' % (offset, per_page)
     
         return db.engine.execute(text(sql))
-    
 
     @staticmethod
     def from_json(json_product, master_uid):
@@ -240,7 +237,6 @@ class Product(db.Model):
         }
         return json_product
 
-    
     def __repr__(self):
         return '<Product %r>' % self.name
 
@@ -259,8 +255,7 @@ class ProductContent(db.Model):
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
@@ -268,11 +263,9 @@ class ProductContent(db.Model):
             'content': self.content
         }
         return json_obj
-    
-    
+
     def __repr__(self):
         return '<ProductContent {}>'.format(self.product_id)
-    
     
 
 class ProductSku(db.Model):
@@ -383,11 +376,11 @@ class ProductSku(db.Model):
 
     @staticmethod
     def make_unique_serial_no(serial_no):
-        if ProductSku.query.filter_by(serial_no=serial_no).first() == None:
+        if ProductSku.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
             new_serial_no = gen_serial_no()
-            if ProductSku.query.filter_by(serial_no=new_serial_no).first() == None:
+            if ProductSku.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
     
@@ -459,7 +452,6 @@ class ProductStock(db.Model):
             return DEFAULT_IMAGES['cover']
         return sku.cover
 
-
     @property
     def available_count(self):
         """当前某个仓库某个产品的有效库存数量"""
@@ -497,7 +489,6 @@ class ProductStock(db.Model):
 
         return total_quantity[0] if (total_quantity and total_quantity[0] is not None) else 0
 
-
     @staticmethod
     def stock_count_of_no_arrival(sku_id):
         """未到货库存数"""
@@ -508,16 +499,15 @@ class ProductStock(db.Model):
 
         return result[0] if result[0] is not None else 0
 
-
     def __repr__(self):
         return '<ProductStock %r>' % self.id
-
 
 
 class CustomsDeclaration(db.Model):
     """报关信息"""
 
     __tablename__ = 'customs_declarations'
+
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     dangerous_goods = db.Column(db.String(1), default='N')
@@ -605,7 +595,6 @@ class Supplier(db.Model):
     def __repr__(self):
         return '<Supplier %r>' % self.full_name
 
-
     def to_json(self):
         """资源和JSON的序列化转换"""
         return {
@@ -636,11 +625,9 @@ class SupplyStats(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-
     @property
     def supplier_name(self):
         return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
-
 
     @staticmethod
     def on_sync_change(mapper, connection, target):
@@ -686,16 +673,15 @@ class SupplyStats(db.Model):
 
         session.commit()
 
-
     def __repr__(self):
         return '<SupplyStats %r>' % self.supplier_id
-
 
 
 class Brand(db.Model):
     """品牌信息"""
 
     __tablename__ = 'brands'
+
     id = db.Column(db.Integer, primary_key=True)
     sn = db.Column(db.String(9), unique=True, index=True, nullable=True)
     
@@ -729,33 +715,29 @@ class Brand(db.Model):
         """logo asset info"""
         return Asset.query.get(self.logo_id) if self.logo_id else Asset.default_logo()
 
-    
     @property
     def banner(self):
         """brand asset info"""
         return Asset.query.get(self.banner_id) if self.banner_id else Asset.default_banner()
 
-    
     @staticmethod
     def make_unique_sn():
         """生成品牌编号"""
         sn = MixGenId.gen_brand_sn()
-        if Brand.query.filter_by(sn=sn).first() == None:
+        if Brand.query.filter_by(sn=sn).first() is None:
             return sn
         
         while True:
             new_sn = MixGenId.gen_brand_sn()
-            if Brand.query.filter_by(sn=new_sn).first() == None:
+            if Brand.query.filter_by(sn=new_sn).first() is None:
                 break
         return new_sn
-    
 
     @staticmethod
     def on_before_insert(mapper, connection, target):
         # 自动生成用户编号
         target.sn = Brand.make_unique_sn()
-        
-        
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_brand = {
@@ -843,7 +825,6 @@ class Category(db.Model):
 
         return db.engine.execute(text(sql))
 
-
     @classmethod
     def repair_categories(cls, master_uid, pid=0):
         """repair category path"""
@@ -907,7 +888,6 @@ class CategoryPath(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     path_id = db.Column(db.Integer, default=0)
     level = db.Column(db.Integer, default=0)
-
 
     def __repr__(self):
         return '<CategoryPath %r>' % self.category_id
