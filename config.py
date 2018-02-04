@@ -190,6 +190,10 @@ class ProductionConfig(Config):
 
     # 缓存类型 redis
     CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = 'localhost'
+    CACHE_REDIS_PORT = 6379
+    CACHE_REDIS_DB = '0'
+    CACHE_REDIS_PASSWORD = ''
 
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
@@ -197,8 +201,9 @@ class ProductionConfig(Config):
     FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
 
     SQLALCHEMY_ECHO = False
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://fxadmin:fxdb@1801?!@10.10.39.2/fxshopy?charset=utf8'
 
-    ERROR_LOG = '/var/log/mic-error.log'
+    ERROR_LOG = '/var/log/fxerp/mic-error.log'
 
     UPLOADED_PHOTOS_DEST = '/opt/project/mishoply/public/uploads'
 
