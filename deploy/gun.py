@@ -6,8 +6,8 @@ import multiprocessing
 
 gevent.monkey.patch_all()
 
-# 监听本机的8000端口
-bind = '127.0.0.1:8000'
+# 监听本机的9000端口
+bind = '127.0.0.1:9000'
 
 preload_app = True
 
@@ -31,14 +31,14 @@ daemon = True
 # 进程名称
 proc_name = 'gunicorn.pid'
 # 进程pid记录文件
-pidfile = '/var/run/gunicorn.pid'
+pidfile = '/var/run/fxerp/gunicorn.pid'
 
 
 loglevel = 'debug'
-logfile = '/var/log/mic.log'
-accesslog = '/var/log/mic-access.log'
+logfile = '/var/log/fxerp/mix.log'
+accesslog = '/var/log/fxerp/mix-access.log'
 access_log_format = '%(h)s %(t)s %(U)s %(q)s'
-errorlog = '/var/log/mic-error.log'
+errorlog = '/var/log/fxerp/mix-error.log'
 
 
 x_forwarded_for_header = 'X-FORWARDED-FOR'
