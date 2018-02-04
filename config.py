@@ -190,10 +190,6 @@ class ProductionConfig(Config):
 
     # 缓存类型 redis
     CACHE_TYPE = 'redis'
-    CACHE_REDIS_HOST = 'localhost'
-    CACHE_REDIS_PORT = '6379'
-    CACHE_REDIS_PASSWORD = ''
-    CACHE_REDIS_DB = '0'
 
     ASSETS_DEBUG = False
     FLASK_ASSETS_USE_S3 = True
@@ -201,7 +197,6 @@ class ProductionConfig(Config):
     FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
 
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://mixadmin:Mix2009SaaS?@prodbmixsaas.ca1liur05ige.ap-southeast-1.rds.amazonaws.com/ProdbMixSaaS?charset=utf8'
 
     ERROR_LOG = '/var/log/mic-error.log'
 
