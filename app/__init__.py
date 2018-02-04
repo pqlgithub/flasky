@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-	__init__.py
-	~~~~~~~~~~~~~~
-
-	:copyright: (c) 2017 by mix.
+    __init__.py
+    ~~~~~~~~~~~~~~
+    :copyright: (c) 2017 by mix.
 """
 from flask import Flask
 # 导入扩展
