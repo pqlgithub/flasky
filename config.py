@@ -196,16 +196,16 @@ class ProductionConfig(Config):
     CACHE_REDIS_PASSWORD = ''
 
     ASSETS_DEBUG = False
-    FLASK_ASSETS_USE_S3 = True
+    FLASK_ASSETS_USE_S3 = False
     FLASKS3_USE_HTTPS = False
-    FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
+    FLASKS3_CDN_DOMAIN = ''
 
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://fxadmin:fxdb@1801?!@10.10.39.2/fxshopy?charset=utf8'
 
     ERROR_LOG = '/var/log/fxerp/mic-error.log'
 
-    UPLOADED_PHOTOS_DEST = '/opt/project/mishoply/public/uploads'
+    UPLOADED_PHOTOS_DEST = '/opt/project/fxerp/uploads'
 
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'
