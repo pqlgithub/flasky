@@ -1,7 +1,19 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
-
 import os
+from werkzeug.contrib.fixers import ProxyFix
+from flask_script import Server, Manager, Shell
+from flask_script.commands import ShowUrls, Clean
+from flask_migrate import Migrate, MigrateCommand
+from flask_assets import ManageAssets
+from flask_s3 import create_all
+
+from app import create_app, db
+from app.models import User, Role, Order, Product, ProductSku, Purchase
+from app.assets import assets_env
+from commands.initial_data import InitialData
+from commands.fix_data import FixData
+from commands.init_summary import InitSummary
 
 # 加载环境变量
 if os.path.exists('.env'):
@@ -10,22 +22,6 @@ if os.path.exists('.env'):
         var = line.strip().split('=')
         if len(var) == 2:
             os.environ[var[0]] = var[1]
-
-from flask_script import Server, Manager, Shell
-from flask_script.commands import ShowUrls, Clean
-from flask_migrate import Migrate, MigrateCommand
-from flask_apidoc.commands import GenerateApiDoc
-from flask_assets import ManageAssets
-from flask_s3 import create_all
-from werkzeug.contrib.fixers import ProxyFix
-
-from app import create_app, db
-from app.models import User, Role, Order, Product, ProductSku, Purchase
-from app.assets import assets_env
-
-from commands.initial_data import InitialData
-from commands.fix_data import FixData
-from commands.init_summary import InitSummary
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -92,22 +88,18 @@ manager.add_command('db', MigrateCommand)
 manager.add_command('show-urls', ShowUrls())
 # 清除工作目录中Python编译的.pyc和.pyo文件
 manager.add_command('clean', Clean())
-
-# 启动测试服务器
-server = Server(host='0.0.0.0', port=5000)
-manager.add_command('server', server)
 # 初始化系统命令
 manager.add_command('initial', InitialData())
 # 统计数据初始化
 manager.add_command('init_summary', InitSummary)
-# 更新API doc文档
-manager.add_command('apidoc', GenerateApiDoc(input_path='app/api_1_0',
-                                             output_path='public/docs'))
 # css/js 静态文件压缩
 manager.add_command('assets', ManageAssets(assets_env))
 # 修正数据
 manager.add_command('fix_data', FixData())
 
+# 启动测试服务器
+server = Server(host='0.0.0.0', port=5000)
+manager.add_command('server', server)
 
 # 项目的代理设置
 app.wsgi_app = ProxyFix(app.wsgi_app)

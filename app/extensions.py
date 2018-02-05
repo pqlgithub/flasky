@@ -28,7 +28,7 @@ csrf = CSRFProtect()
 babel = Babel()
 cache = Cache()
 # Create the Flask-Celery-Helper's instance
-flask_celery = Celery()
+fsk_celery = Celery()
 moment = Moment()
 bootstrap = Bootstrap()
 # Flask-Login初始化

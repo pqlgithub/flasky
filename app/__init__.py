@@ -14,7 +14,7 @@ from .extensions import (
     pjax,
     babel,
     cache,
-    flask_celery,
+    fsk_celery,
     moment,
     bootstrap,
     login_manager
@@ -33,15 +33,8 @@ from .momentjs import Momentjs
 # 创建set
 uploader = UploadSet(
     'photos',
-    extensions=(
-        'xls',
-        'xlsx',
-        'jpg',
-        'jpe',
-        'jpeg',
-        'png',
-        'gif',
-        'csv'))
+    extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv')
+)
 # 属性可以设为None、'basic' 或'strong'
 login_manager.session_protection = 'strong'
 # 设置登录页面的端点
@@ -70,10 +63,11 @@ def create_app(config_name):
     s3.init_app(app)
     # 缓存
     cache.init_app(app)
+    pjax.init_app(app)
+
     # Init the Flask-Celery-Helper via app object
     # Register the celery object into app object
-    flask_celery.init_app(app)
-    pjax.init_app(app)
+    fsk_celery.init_app(app)
 
     # 初始化上传
     configure_uploads(app, uploader)
