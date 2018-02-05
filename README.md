@@ -17,10 +17,14 @@ Erp for mic
 ## 安装要求：
 
 #### 添加语言支持
+
     ./tr_compile.py
     ./tr_init.py en
     ./tr_update.py #有更新时
 
+#### 静态文件压缩
+
+    python3 manage.py assets build
 
 ## Gunicorn进程管理（生成环境）
 
