@@ -40,7 +40,7 @@ def get_timezone():
 
 
 # 必须使用before_app_request修饰器
-@main.before_request
+@main.before_app_request
 def before_request():
     """
     Such a function is executed before each request, even if outside of a blueprint.
@@ -54,12 +54,6 @@ def before_request():
         current_user.ping()
         if not current_user.confirmed and request.endpoint[:5] != 'auth.':
             return redirect(url_for('auth.unconfirmed'))
-
-        # 验证是否设置初始信息
-        if not current_user.is_setting:
-            if request.path[:8] != '/static/' and request.endpoint[5:] != 'logout' and \
-                    request.endpoint[5:17] != 'setting_site':
-                return redirect(url_for('main.setting_site'))
 
         # 注入站点信息
         g.current_site = Site.query.filter_by(

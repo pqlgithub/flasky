@@ -6,6 +6,7 @@
       <w>dest</w>
       <w>dismissable</w>
       <w>filepath</w>
+      <w>fineix</w>
       <w>fxadmin</w>
       <w>fxerp</w>
       <w>fxshopy</w>
@@ -13,6 +14,7 @@
       <w>gmail</w>
       <w>mixpus</w>
       <w>pjax</w>
+      <w>plupload</w>
       <w>pymydsql</w>
       <w>qehtxnq</w>
       <w>smtp</w>

@@ -1,6 +1,10 @@
 <header class="main-header">
     <a class="logo" href="{{ url_for('main.index') }}">
-        {{ current_site.company_abbr|default('eLingShop') }}
+        {% if current_site %}
+            {{ current_site.company_abbr|default('eLingShop') }}
+        {% else %}
+            eLingShop
+        {% endif %}
     </a>
     <nav class="navbar navbar-static-top">
         <a class="sidebar-toggle" href="#" data-toggle="push-menu" role="button">

@@ -29,6 +29,7 @@ bundles = {
         'css/bootstrap.min.css',
         'css/todc-bootstrap.min.css',
         'css/font-awesome.css',
+        'css/fineix.css',
         'css/nprogress.css',
         'css/sweetalert.css',
         'css/select2.css',
