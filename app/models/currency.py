@@ -15,7 +15,7 @@ class Currency(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-    title = db.Column(db.String(32), unique=True, nullable=False)
+    title = db.Column(db.String(32), index=True, nullable=False)
     code = db.Column(db.String(3), nullable=False)
     symbol_left = db.Column(db.String(12), nullable=True)
     symbol_right = db.Column(db.String(12), nullable=True)

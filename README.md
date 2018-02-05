@@ -88,6 +88,8 @@ Supervisor运行于 `Python2.7` 环境下：
 ** flower - 针对Celery的基于网页的实时管理工具, 启动命令：
 
     celery flower -A celery_runner --loglevel=info
+    
+    celery worker -A celery_runner -f /var/log/celery.log -D
 
 
 
