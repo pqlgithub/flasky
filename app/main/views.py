@@ -46,6 +46,7 @@ def before_request():
     Such a function is executed before each request, even if outside of a blueprint.
     """
     g.user = current_user
+    g.current_site = None
 
     # 验证用户
     if current_user.is_authenticated:
@@ -63,8 +64,6 @@ def before_request():
         # 注入站点信息
         g.current_site = Site.query.filter_by(
             master_uid=Master.master_uid()).first()
-    else:
-        g.current_site = None
 
     # 设置本地化语言
     g.locale = get_locale()
