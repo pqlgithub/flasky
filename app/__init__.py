@@ -14,7 +14,7 @@ from .extensions import (
     pjax,
     babel,
     cache,
-    celery,
+    flask_celery,
     moment,
     bootstrap,
     login_manager
@@ -72,7 +72,7 @@ def create_app(config_name):
     cache.init_app(app)
     # Init the Flask-Celery-Helper via app object
     # Register the celery object into app object
-    celery.init_app(app)
+    flask_celery.init_app(app)
     pjax.init_app(app)
 
     # 初始化上传

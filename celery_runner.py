@@ -12,18 +12,18 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 
-def make_celery(app):
+def make_celery(fx_app):
     """Create the celery process."""
 
     # Init the celery object via app's configuration
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL'])
+    _celery = Celery(
+        fx_app.import_name,
+        backend=fx_app.config['CELERY_RESULT_BACKEND'],
+        broker=fx_app.config['CELERY_BROKER_URL'])
 
     # Flask-Celery-Helper to auto-setup the config.
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
+    _celery.conf.update(fx_app.config)
+    TaskBase = _celery.Task
 
     class ContextTask(TaskBase):
         abstract = True
@@ -33,13 +33,13 @@ def make_celery(app):
 
             # Will context(Flask's Extends) of app object(Producer Sit)
             # be included in celery object(Consumer Site).
-            with app.app_context():
+            with fx_app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
 
     # Include the app_context into celery.Task.
     # Let other Flask extensions can be normal calls.
-    celery.Task = ContextTask
-    return celery
+    _celery.Task = ContextTask
+    return _celery
 
 
 flask_app = create_app(os.environ.get('FLASK_CONFIG') or 'default')

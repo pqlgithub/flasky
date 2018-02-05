@@ -15,8 +15,10 @@ from flask_s3 import FlaskS3
 from flask_pjax import PJAX
 # 管理用户认证系统中的认证状态
 from flask_login import LoginManager
-from flask_celery import Celery
+# 缓存
 from flask_cache import Cache
+# 后台定时任务
+from flask_celery import Celery
 
 s3 = FlaskS3()
 db = SQLAlchemy()
@@ -26,7 +28,7 @@ csrf = CSRFProtect()
 babel = Babel()
 cache = Cache()
 # Create the Flask-Celery-Helper's instance
-celery = Celery()
+flask_celery = Celery()
 moment = Moment()
 bootstrap = Bootstrap()
 # Flask-Login初始化
