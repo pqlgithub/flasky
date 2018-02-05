@@ -98,7 +98,7 @@ manager.add_command('assets', ManageAssets(assets_env))
 manager.add_command('fix_data', FixData())
 
 # 启动测试服务器
-server = Server(host='0.0.0.0', port=5000)
+server = Server(host='0.0.0.0', port=9000)
 manager.add_command('server', server)
 
 # 项目的代理设置
