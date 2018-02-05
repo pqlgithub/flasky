@@ -40,7 +40,7 @@ def get_timezone():
 
 
 # 必须使用before_app_request修饰器
-@main.before_app_request
+@main.before_request
 def before_request():
     """
     Such a function is executed before each request, even if outside of a blueprint.
@@ -80,7 +80,7 @@ def include_init_data():
     }
 
 
-@main.before_app_request
+@main.before_request
 def make_session_permanent():
     """请求前执行,为单独请求设立不操作超时机制,每次请求刷新失效时间"""
     session.permanent = True  # 关闭浏览器重新打开还保存session
@@ -90,7 +90,7 @@ def make_session_permanent():
 
 
 # 针对程序全局请求的钩子，
-@main.after_app_request
+@main.after_request
 def after_request(response):
     """
     Such a function is executed after each request, even if outside of the blueprint.
