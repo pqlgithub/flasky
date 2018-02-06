@@ -35,6 +35,7 @@ class WxPayError(Exception):
     def __init__(self, msg):
         super(WxPayError, self).__init__(msg)
 
+
 class Map(dict):
     """
     提供字典的dot访问模式

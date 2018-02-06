@@ -43,6 +43,11 @@ bundles = {
         filters='cssmin',
         output='css/app.min.css'
     ),
+    'web_css': Bundle(
+        'css/website.css',
+        filters='cssmin',
+        output='css/website.min.css'
+    ),
     'themes_css': Bundle(
         'css/adminlte.css',
         'css/all-skins.css',

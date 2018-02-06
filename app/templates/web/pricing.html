@@ -1,92 +1,90 @@
 {% extends "layout/web.html" %}
 
 {% block content %}
-<div class="headline-bg pricing-headline-bg">
-</div>
+    <div class="headline-bg pricing-headline-bg"></div>
 
-<section class="pricing section section-on-bg">
-	<div class="container">
-		<h2 class="title text-center">30 day <span class="highlight">FREE</span> trial with all plans!</h2>
-		<p class="intro text-center">Our pricing is simple and you can cancel or change your plan at any time.</p>
-		<div class="price-cols row">
-			<div class="items-wrapper col-md-10 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-xs-offset-0">
+    <section class="pricing section section-on-bg">
+        <div class="container">
+            <h2 class="title text-center">30天<span class="highlight">免费</span>试用</h2>
+            <p class="intro text-center">我们的定价很简单，您可以随时取消或更改您的计划。</p>
+            <div class="price-cols row">
+                <div class="items-wrapper col-md-10 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-xs-offset-0">
 
-				<div class="item price-1 col-md-4 col-sm-4 col-xs-12 text-center">
-					<div class="item-inner">
-						<div class="heading">
-							<h3 class="title">Free</h3>
-							<p class="price-figure">
+                    <div class="item price-1 col-md-4 col-sm-4 col-xs-12 text-center">
+                        <div class="item-inner">
+                            <div class="heading">
+                                <h3 class="title">免费版</h3>
+                                <p class="price-figure">
 								<span class="price-figure-inner">
-									<span class="currency">$</span><span class="number">0</span><br><span class="unit"> per month</span>
+									<span class="currency">￥</span><span class="number">0</span><br><span class="unit"> per month</span>
 								</span>
-							</p>
-						</div>
-						<div class="content">
-							<ul class="list-unstyled feature-list">
-								<li><i class="fa fa-check"></i>1 user</li>
-								<li><i class="fa fa-check"></i>10 GB storage</li>
-								<li class="disabled"><i class="fa fa-times"></i>Email priority support</li>
-								<li class="disabled"><i class="fa fa-times"></i>Free update</li>
-								<li class="disabled"><i class="fa fa-times"></i>24/7 support</li>
-							</ul>
-							<a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
-						</div><!--//content-->
-					</div><!--//item-inner-->
-				</div><!--//item-->
+                                </p>
+                            </div>
+                            <div class="content">
+                                <ul class="list-unstyled feature-list">
+                                    <li><i class="fa fa-check"></i>1 user</li>
+                                    <li><i class="fa fa-check"></i>10 GB storage</li>
+                                    <li class="disabled"><i class="fa fa-times"></i>Email priority support</li>
+                                    <li class="disabled"><i class="fa fa-times"></i>Free update</li>
+                                    <li class="disabled"><i class="fa fa-times"></i>24/7 support</li>
+                                </ul>
+                                <a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
+                            </div><!--//content-->
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
 
-				<div class="item price-2 col-md-4 col-sm-4 col-xs-12 text-center best-buy">
-					<div class="item-inner">
-						<div class="heading">
-							<h3 class="title">Professional</h3>
-							<p class="price-figure">
+                    <div class="item price-2 col-md-4 col-sm-4 col-xs-12 text-center best-buy">
+                        <div class="item-inner">
+                            <div class="heading">
+                                <h3 class="title">企业版</h3>
+                                <p class="price-figure">
 								<span class="price-figure-inner">
-									<span class="currency">$</span><span class="number">199</span><br><span class="unit">per year</span>
+									<span class="currency">￥</span><span class="number">2999</span><br><span class="unit">per year</span>
 								</span>
-							</p>
-						</div>
-						<div class="content">
-							<ul class="list-unstyled feature-list">
-								<li><i class="fa fa-check"></i>10 users</li>
-								<li><i class="fa fa-check"></i>30 GB storage</li>
-								<li><i class="fa fa-check"></i>Email priority support</li>
-								<li><i class="fa fa-check"></i>Free update</li>
-								<li class="disabled"><i class="fa fa-times"></i>24/7 support</li>
+                                </p>
+                            </div>
+                            <div class="content">
+                                <ul class="list-unstyled feature-list">
+                                    <li><i class="fa fa-check"></i>10 users</li>
+                                    <li><i class="fa fa-check"></i>30 GB storage</li>
+                                    <li><i class="fa fa-check"></i>Email priority support</li>
+                                    <li><i class="fa fa-check"></i>Free update</li>
+                                    <li class="disabled"><i class="fa fa-times"></i>24/7 support</li>
 
-							</ul>
-							<a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
-						</div><!--//content-->
-						<div class="ribbon">
-							<div class="text">Popular</div>
-						</div><!--//ribbon-->
-					</div><!--//item-inner-->
-				</div><!--//item-->
+                                </ul>
+                                <a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
+                            </div><!--//content-->
+                            <div class="ribbon">
+                                <div class="text">Popular</div>
+                            </div><!--//ribbon-->
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
 
-				<div class="item price-3 col-md-4 col-sm-4 col-xs-12 text-center">
-					<div class="item-inner">
-						<div class="heading">
-							<h3 class="title">Business</h3>
-							<p class="price-figure">
+                    <div class="item price-3 col-md-4 col-sm-4 col-xs-12 text-center">
+                        <div class="item-inner">
+                            <div class="heading">
+                                <h3 class="title">专业版</h3>
+                                <p class="price-figure">
 								<span class="price-figure-inner">
-									<span class="currency">$</span><span class="number">425</span><br><span class="unit">per year</span>
+									<span class="currency">￥</span><span class="number">4999</span><br><span class="unit">per year</span>
 								</span>
-							</p>
-						</div>
-						<div class="content">
-							<ul class="list-unstyled feature-list">
-								<li><i class="fa fa-check"></i>Unlimited user</li>
-								<li><i class="fa fa-check"></i>100 GB storage</li>
-								<li><i class="fa fa-check"></i>Email priority support</li>
-								<li><i class="fa fa-check"></i>Free update</li>
-								<li><i class="fa fa-check"></i>24/7 support</li>
-							</ul>
-							<a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
+                                </p>
+                            </div>
+                            <div class="content">
+                                <ul class="list-unstyled feature-list">
+                                    <li><i class="fa fa-check"></i>Unlimited user</li>
+                                    <li><i class="fa fa-check"></i>100 GB storage</li>
+                                    <li><i class="fa fa-check"></i>Email priority support</li>
+                                    <li><i class="fa fa-check"></i>Free update</li>
+                                    <li><i class="fa fa-check"></i>24/7 support</li>
+                                </ul>
+                                <a class="btn btn-cta btn-cta-primary" href="{{ url_for('auth.signup') }}">Start free trial</a>
 
-						</div><!--//content-->
-					</div><!--//item-inner-->
-				</div><!--//item-->
-			</div><!--//items-wrapper-->
-		</div><!--//row-->
-	</div><!--//container-->
-</section>
-
+                            </div><!--//content-->
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
+                </div><!--//items-wrapper-->
+            </div><!--//row-->
+        </div><!--//container-->
+    </section>
 {% endblock %}

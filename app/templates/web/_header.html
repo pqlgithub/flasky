@@ -1,0 +1,64 @@
+<header id="header" class="header navbar-fixed-top">
+    <div class="container">
+        <!--//logo-->
+        <h1 class="logo">
+            <a href="index.html">
+                <span class="text">ONEZAO</span>
+            </a>
+        </h1>
+        <nav class="main-nav navbar-right" role="navigation">
+            <div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div><!--//navbar-header-->
+
+            <div id="navbar-collapse" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="{% if active_menu == 'index'%}active{% endif %} nav-item">
+                        <a href="{{ url_for('main.web_index') }}">产品</a>
+                    </li>
+                    <li class="{% if active_menu == 'pricing'%}active{% endif %} nav-item">
+                        <a href="{{ url_for('main.pricing') }}">价格</a>
+                    </li>
+                    <li class="{% if active_menu == 'features'%}active{% endif %} nav-item">
+                        <a href="{{ url_for('main.features') }}">解决方案</a>
+                    </li>
+                    <li class="nav-item dropdown hidden">
+                        <a class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="0" data-close-others="false" href="#">
+                            更多 <i class="fa fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">{{ _('Download Apps') }}</a></li>
+                            <li><a href="">{{ _('Blog') }}</a></li>
+                            <li><a href="">{{ _('About Us') }}</a></li>
+                            <li><a href="">{{ _('Contact') }}</a></li>
+                        </ul>
+                    </li><!--//dropdown-->
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"  aria-haspopup="true" aria-expanded="true">
+                                <span class="glyphicon glyphicon-user"></span>
+                                {{ current_user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('main.index') }}">控制台</a></li>
+                                <li><a href="{{ url_for('auth.logout') }}">安全退出</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{{ url_for('auth.login') }}">登录</a>
+                        </li>
+                        <li class="nav-item nav-item-cta last">
+                            <a class="btn btn-cta btn-cta-secondary" href="{{ url_for('auth.signup') }}">免费注册</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div><!--//navabr-collapse-->
+        </nav>
+    </div>
+</header>

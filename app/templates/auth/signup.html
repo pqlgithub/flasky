@@ -1,5 +1,10 @@
 {% extends 'layout/auth.html' %}
 
+{% block jquery %}
+    var h = $(window).height();
+	$('.has-full-screen-bg .upper-wrapper').css({'height': h});
+{% endblock %}
+
 {% block header %}{% endblock %}
 
 {% block content %}
@@ -10,7 +15,7 @@
 				<h1 class="logo">
 					<a href="{{ url_for('main.web_index') }}">
 						<span class="logo-icon"></span>
-						<span class="text">eLingShop</span>
+						<span class="text">ONEZAO</span>
 					</a>
 				</h1>
 			</div>

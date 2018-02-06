@@ -6,6 +6,7 @@
       <w>dbname</w>
       <w>dest</w>
       <w>dismissable</w>
+      <w>dropdown</w>
       <w>filepath</w>
       <w>fineix</w>
       <w>fxadmin</w>
@@ -14,6 +15,7 @@
       <w>githup</w>
       <w>gmail</w>
       <w>mixpus</w>
+      <w>onezao</w>
       <w>pjax</w>
       <w>plupload</w>
       <w>pymydsql</w>
@@ -21,6 +23,7 @@
       <w>smtp</w>
       <w>stmp</w>
       <w>tablename</w>
+      <w>unstyled</w>
       <w>wechat</w>
       <w>wishlist</w>
     </words>
