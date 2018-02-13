@@ -13,8 +13,8 @@ def get_products():
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
     category_id = request.values.get('cid', type=int)
-    prev = None
-    next = None
+    prev_url = None
+    next_url = None
     
     if category_id:
         category = Category.query.get(category_id)
@@ -28,15 +28,15 @@ def get_products():
     
     products = pagination.items
     if pagination.has_prev:
-        prev = url_for('api.get_products', cid=category_id, page=page-1, _external=True)
+        prev_url = url_for('api.get_products', cid=category_id, page=page-1, _external=True)
         
     if pagination.has_next:
-        next = url_for('api.get_products', cid=category_id, page=page+1, _external=True)
+        next_url = url_for('api.get_products', cid=category_id, page=page+1, _external=True)
     
     return full_response(R200_OK, {
         'products': [product.to_json() for product in products],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
 

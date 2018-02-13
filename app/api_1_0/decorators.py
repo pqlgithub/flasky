@@ -10,7 +10,7 @@ def api_sign_required(func):
     """装饰器：验证API数字签名"""
     @wraps(func)
     def validate_api_sign(*args, **kwargs):
-        sign_args = request.args
+        sign_args = request.values
         
         app_key = sign_args.get('app_key')
         # 验证请求参数
