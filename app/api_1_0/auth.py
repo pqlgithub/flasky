@@ -2,7 +2,6 @@
 from flask import g, request, abort, current_app
 from flask_httpauth import HTTPBasicAuth
 from sqlalchemy.exc import IntegrityError
-from weixin import WXAPPAPI
 from app.models import User, AnonymousUser, Client, UserIdType
 from .errors import forbidden, unauthorized
 from .decorators import api_sign_required
