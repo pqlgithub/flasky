@@ -165,7 +165,6 @@ class WxPay(object):
                 raise WxPayError(data.err_code_des)
             return data
         return content
-    
 
     def reply(self, msg, ok=True):
         code = SUCCESS if ok else FAIL
@@ -295,7 +294,6 @@ class WxPay(object):
         data.setdefault('op_user_id', self.WX_MCH_ID)
         
         return self.fetch(url, data, True)
-    
 
     def refund_query(self, **data):
         """
@@ -315,11 +313,9 @@ class WxPay(object):
         if 'out_refund_no' not in data and 'out_trade_no' not in data \
                 and 'transaction_id' not in data and 'refund_id' not in data:
             raise WxPayError(u"退款查询接口中，out_refund_no、out_trade_no、transaction_id、refund_id四个参数必填一个")
-        
-    
+
         return self.fetch(url, data)
-        
-    
+
     def download_bill(self, bill_date, bill_type='ALL', **data):
         """
         下载对账单
@@ -337,7 +333,6 @@ class WxPay(object):
             raise WxPayError('对账单接口中，缺少必填参数bill_date')
     
         return self.fetch(url, data)
-    
 
     def send_red_pack(self, api_cert_path, api_key_path, **data):
         """
@@ -379,7 +374,6 @@ class WxPay(object):
         data.setdefault('scene_id', 'PRODUCT_4')
         
         return self.fetch(url, data, True)
-    
 
     def enterprise_payment(self, api_cert_path, api_key_path, **data):
         """
@@ -417,7 +411,6 @@ class WxPay(object):
         data['check_name'] = 'FORCE_CHECK' if data['check_name'] else 'NO_CHECK'
         
         return self.fetch(url, data, True)
-    
 
     def swiping_card_payment(self, **data):
         """
@@ -448,5 +441,4 @@ class WxPay(object):
         
         data.setdefault('spbill_create_ip', user_ip)
 
-    
         return self.fetch(url, data)

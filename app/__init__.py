@@ -94,6 +94,9 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
+    from .open import open as open_blueprint
+    app.register_blueprint(open_blueprint, url_prefix='/open')
+
     from .adminlte import adminlte as admin_blueprint
     app.register_blueprint(admin_blueprint, url_prefix='/adminlte')
 

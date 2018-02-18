@@ -10,10 +10,11 @@ def authorize():
     pass
 
 
-@open.route('/wx/authorize_notify')
+@open.route('/wx/authorize_notify', methods=['GET', 'POST'])
 def authorize_notify():
     """接收取消授权通知、授权成功通知、授权更新通知"""
-    pass
+    current_app.logger.warn(request.values)
+    return 'success'
 
 
 @open.route('/wx/<string:appid>/receive_message')

@@ -139,6 +139,10 @@ class Config:
     KDN_APP_KEY = '243d245a-4184-48f4-8072-9485de34a705'
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
 
+    # 小程序第三方开发
+    WX_MINI_APP_ID = 'wx80ea263688082055'
+    WX_MINI_APP_SECRET = 'c37328fc19aec73f471ab761508bba2d'
+
     # 微信支付
     WECHAT_M_TOKEN = ''
     # 微信APP ID：绑定支付的APP ID（必须配置，开户邮件中可查看）
@@ -214,27 +218,9 @@ class ProductionConfig(Config):
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
 
 
-class LllConfig(Config):
-    DEBUG = True
-
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/micku_test'
-
-    # Redis 配置
-    REDIS_URL = 'redis://localhost:6379/0'
-
-    # Celery Options
-    CELERY_IMPORTS = (
-        'app.tasks'
-    )
-    CELERYD_CONCURRENCY = 2
-    CELERY_BROKER_URL = 'redis://localhost:6379/5'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/6'
-
-
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-    'default': DevelopmentConfig,
-    'llh': LllConfig
+    'default': DevelopmentConfig
 }

@@ -312,12 +312,6 @@ class Role(db.Model):
             if existing_ability and existing_ability in self.abilities:
                 self.abilities.remove(existing_ability)
 
-    def __init__(self, name, master_uid, title=None, description=None):
-        self.name = name.lower()
-        self.title = title
-        self.description = description
-        self.master_uid = master_uid
-
     def __repr__(self):
         return '<Role {}>'.format(self.name)
 
