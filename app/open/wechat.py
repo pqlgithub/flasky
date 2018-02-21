@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import g, current_app, request, redirect, url_for
 
+from app.helpers import WXBizMsgCrypt
 from . import open
 
 
@@ -16,14 +17,27 @@ def authorize_notify():
     current_app.logger.warn(request.values)
 
     signature = request.values.get('signature')
+    encrypt_type = request.values.get('encrypt_type')
     timestamp = request.values.get('timestamp')
     nonce = request.values.get('nonce')
-    encrypt_type = request.values.get('encrypt_type')
     msg_signature = request.values.get('msg_signature')
 
     post_data = request.get_data()
 
     current_app.logger.warn(post_data)
+
+    # 解密接口
+    des_key = current_app.config['WX_APP_DES_KEY']
+    token = current_app.config['WX_APP_TOKEN']
+    app_id = current_app.config['WX_APP_ID']
+
+    decrypt = WXBizMsgCrypt(token, des_key, app_id)
+    ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, timestamp, nonce)
+    # 解密成功
+    if ret == 0:
+        # 更新ticket
+        pass
+    current_app.logger.warn("decrypt content: %s" % decrypt_content)
 
     return 'success'
 

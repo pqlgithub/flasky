@@ -140,8 +140,10 @@ class Config:
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
 
     # 小程序第三方开发
-    WX_MINI_APP_ID = 'wx80ea263688082055'
-    WX_MINI_APP_SECRET = 'c37328fc19aec73f471ab761508bba2d'
+    WX_APP_TOKEN = 'AKIAJMIYNJXL7QEHTXNQ'
+    WX_APP_DES_KEY = '16122e1e525b4cdb869d538b143fe231d69a6268fb9'
+    WX_APP_ID = 'wx80ea263688082055'
+    WX_APP_SECRET = 'c37328fc19aec73f471ab761508bba2d'
 
     # 微信支付
     WECHAT_M_TOKEN = ''
@@ -210,7 +212,7 @@ class ProductionConfig(Config):
     ERROR_LOG = '/var/log/fxerp/mix-error.log'
 
     UPLOADED_PHOTOS_DEST = '/opt/project/fxerp/uploads'
-    
+
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'
 
