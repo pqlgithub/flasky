@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import g, current_app, request, redirect, url_for
+import xml.etree.cElementTree as ET
 
 from app.helpers import WXBizMsgCrypt
 from . import open
@@ -14,17 +15,12 @@ def authorize():
 @open.route('/wx/authorize_notify', methods=['GET', 'POST'])
 def authorize_notify():
     """接收取消授权通知、授权成功通知、授权更新通知"""
-    current_app.logger.warn(request.values)
-
     signature = request.values.get('signature')
     encrypt_type = request.values.get('encrypt_type')
     timestamp = request.values.get('timestamp')
     nonce = request.values.get('nonce')
     msg_signature = request.values.get('msg_signature')
-
     post_data = request.get_data()
-
-    current_app.logger.warn(post_data)
 
     # 解密接口
     des_key = current_app.config['WX_APP_DES_KEY']
@@ -36,8 +32,17 @@ def authorize_notify():
     # 解密成功
     if ret == 0:
         # 更新ticket
-        pass
-    current_app.logger.warn("decrypt content: %s" % decrypt_content)
+        current_app.logger.warn("decrypt content: %s" % decrypt_content)
+
+        xml_tree = ET.fromstring(decrypt_content)
+        app_id = xml_tree.find('AppId').text
+        create_time = xml_tree.find('CreateTime').text
+        verify_ticket = xml_tree.find('ComponentVerifyTicket').text
+        info_type = xml_tree.find('InfoType').text
+
+        current_app.logger.warn('Component verify ticket: %s' % verify_ticket)
+    else:
+        current_app.logger.warn('error code: %d' % ret)
 
     return 'success'
 

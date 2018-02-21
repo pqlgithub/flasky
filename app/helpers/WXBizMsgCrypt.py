@@ -14,6 +14,7 @@ import struct
 from Crypto.Cipher import AES
 import xml.etree.cElementTree as ET
 import socket
+from flask import current_app
 
 
 # 定义错误码含义
@@ -60,9 +61,10 @@ class SHA1:
             sortlist = [token, timestamp, nonce, encrypt]
             sortlist.sort()
             sha = hashlib.sha1()
-            sha.update("".join(sortlist))
+            sha.update("".join(sortlist).encode('utf-8'))
             return WXBizMsgCrypt_OK, sha.hexdigest()
         except Exception as e:
+            current_app.logger.warn('sha1 sign error: %s' % e)
             return WXBizMsgCrypt_ComputeSignature_Error, None
 
 
@@ -85,7 +87,7 @@ class XMLParse:
         try:
             xml_tree = ET.fromstring(xmltext)
             encrypt = xml_tree.find("Encrypt")
-            touser_name = xml_tree.find("ToUserName")
+            touser_name = xml_tree.find("AppId")
             return WXBizMsgCrypt_OK, encrypt.text, touser_name.text
         except Exception as e:
             return WXBizMsgCrypt_ParseXml_Error, None, None
@@ -147,7 +149,6 @@ class Prpcrypt(object):
         # 设置加解密模式为AES的CBC模式
         self.mode = AES.MODE_CBC
 
-
     def encrypt(self, text, appid):
         """对明文进行加密
         @param text: 需要加密的明文
@@ -168,17 +169,19 @@ class Prpcrypt(object):
             #print e
             return WXBizMsgCrypt_EncryptAES_Error, None
 
-    def decrypt(self,text,appid):
+    def decrypt(self, text, appid):
         """对解密后的明文进行补位删除
         @param text: 密文
         @return: 删除填充补位后的明文
         """
         try:
-            cryptor = AES.new(self.key,self.mode,self.key[:16])
+            cryptor = AES.new(self.key, self.mode, self.key[:16])
             # 使用BASE64对密文进行解码，然后AES-CBC解密
-            plain_text  = cryptor.decrypt(base64.b64decode(text))
+            plain_text = cryptor.decrypt(base64.b64decode(text)).decode('utf-8')
         except Exception as e:
+            current_app.logger.warn('Decrypt error: %s' % e)
             return WXBizMsgCrypt_DecryptAES_Error, None
+
         try:
             pad = ord(plain_text[-1])
             # 去掉补位字符串
@@ -186,13 +189,15 @@ class Prpcrypt(object):
             #plain_text = pkcs7.encode(plain_text)
             # 去除16位随机字符串
             content = plain_text[16:-pad]
-            xml_len = socket.ntohl(struct.unpack("I",content[ : 4])[0])
-            xml_content = content[4 : xml_len+4]
+            xml_len = socket.ntohl(struct.unpack("I", content[:4].encode('utf-8'))[0])
+            xml_content = content[4: xml_len+4]
             from_appid = content[xml_len+4:]
         except Exception as e:
-            return WXBizMsgCrypt_IllegalBuffer,None
+            current_app.logger.warn('content error: %s' % e)
+            return WXBizMsgCrypt_IllegalBuffer, None
+
         if from_appid != appid:
-            return WXBizMsgCrypt_ValidateAppid_Error,None
+            return WXBizMsgCrypt_ValidateAppid_Error, None
         return 0, xml_content
 
     def get_random_str(self):
@@ -249,11 +254,13 @@ class WXBizMsgCrypt(object):
         # @return: 成功0，失败返回对应的错误码
         # 验证安全签名
         xml_parse = XMLParse()
+        current_app.logger.warn('parse xml start...')
         ret, encrypt, touser_name = xml_parse.extract(sPostData)
         if ret != 0:
             return ret, None
         sha1 = SHA1()
         ret, signature = sha1.getSHA1(self.token, sTimeStamp, sNonce, encrypt)
+        current_app.logger.warn('signature: %s' % signature)
         if ret != 0:
             return ret, None
         if not signature == sMsgSignature:
