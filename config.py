@@ -207,10 +207,10 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://fxadmin:fxdb@1801?!@10.10.39.2/fxshopy?charset=utf8'
 
-    ERROR_LOG = '/var/log/fxerp/mic-error.log'
+    ERROR_LOG = '/var/log/fxerp/mix-error.log'
 
     UPLOADED_PHOTOS_DEST = '/opt/project/fxerp/uploads'
-
+    
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'
 

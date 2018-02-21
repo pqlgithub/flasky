@@ -14,6 +14,17 @@ def authorize():
 def authorize_notify():
     """接收取消授权通知、授权成功通知、授权更新通知"""
     current_app.logger.warn(request.values)
+
+    signature = request.values.get('signature')
+    timestamp = request.values.get('timestamp')
+    nonce = request.values.get('nonce')
+    encrypt_type = request.values.get('encrypt_type')
+    msg_signature = request.values.get('msg_signature')
+
+    post_data = request.get_data()
+
+    current_app.logger.warn(post_data)
+
     return 'success'
 
 
