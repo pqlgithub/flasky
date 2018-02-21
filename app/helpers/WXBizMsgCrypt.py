@@ -90,6 +90,7 @@ class XMLParse:
             touser_name = xml_tree.find("AppId")
             return WXBizMsgCrypt_OK, encrypt.text, touser_name.text
         except Exception as e:
+            current_app.logger.warn('xml extract error: %s' % e)
             return WXBizMsgCrypt_ParseXml_Error, None, None
 
     def generate(self, encrypt, signature, timestamp, nonce):
