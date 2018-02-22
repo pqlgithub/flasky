@@ -92,7 +92,7 @@ Supervisor运行于 `Python2.7` 环境下：
     # 启动work
     celery worker -A celery_runner -f /var/log/celery.log -D
     # 启动beat
-    celery beat -A celery_runner -f /var/log/celery.log -D
+    celery beat -A celery_runner -f /var/log/celery.log --detach
 
 
 

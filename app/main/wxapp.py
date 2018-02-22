@@ -23,7 +23,7 @@ def wxapp_authorize():
     """跳转授权页"""
     app_id = current_app.config['WX_APP_ID']
     back_url = '{}/open/wx/authorize_callback'.format(current_app.config['DOMAIN_URL'])
-    auth_type = 3
+    auth_type = 2
 
     # 1、获取预授权码
     pre_auth_code = _get_pre_auth_code()
