@@ -77,7 +77,7 @@ def upgrade():
     op.create_table('wx_tokens',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('app_id', sa.String(length=20), nullable=True),
-    sa.Column('access_token', sa.String(length=100), nullable=False),
+    sa.Column('access_token', sa.String(length=200), nullable=False),
     sa.Column('expires_in', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id'),

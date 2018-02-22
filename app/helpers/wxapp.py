@@ -46,15 +46,8 @@ class WxApp(object):
         url = '%s/api_component_token' % self.component_host_url
         result = requests.post(url, data=json.dumps(payload))
 
-        current_app.logger.debug('Response: {}'.format(result.json()))
-
-        r = Map(result.json())
-        if r.errcode != 0:
-            current_app.logger.warn('Response code: {}'.format(r.errcode))
-            raise WxAppError(r.errmsg)
-
-        return r
-
+        return self._intercept_result(result)
+    
     def get_pre_auth_code(self):
         """
         该API用于获取预授权码。预授权码用于公众号或小程序授权时的第三方平台方安全验证
@@ -66,9 +59,9 @@ class WxApp(object):
         }
         url = '%s/api_create_preauthcode?component_access_token=%s' % (self.component_host_url,
                                                                        self.component_access_token)
-        result = requests.post(url, data=payload)
+        result = requests.post(url, data=json.dumps(payload))
 
-        return result.json()
+        return self._intercept_result(result)
 
     def exchange_authorizer_info(self, auth_code_value):
         """
@@ -145,6 +138,15 @@ class WxApp(object):
 
     def _unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
+
+    def _intercept_result(self, result):
+        """返回请求结果"""
+        result = Map(result.json())
+        if result.get('errcode') and result.get('errcode') != 0:
+            current_app.logger.warn('Response code: %d' % result.get('errcode'))
+            raise WxAppError(result.get('errmsg'))
+
+        return result
 
 
 def gen_3rd_session_key():

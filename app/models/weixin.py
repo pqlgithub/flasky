@@ -37,7 +37,7 @@ class WxToken(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     app_id = db.Column(db.String(20), index=True)
-    access_token = db.Column(db.String(100), unique=True, nullable=False)
+    access_token = db.Column(db.String(200), unique=True, nullable=False)
     expires_in = db.Column(db.Integer, default=0)
     created_at = db.Column(db.Integer, default=timestamp)
 

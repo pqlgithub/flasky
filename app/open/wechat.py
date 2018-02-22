@@ -71,3 +71,9 @@ def authorize_notify():
 def receive_message(appid):
     """接收公众号或小程序消息和事件推送"""
     pass
+
+
+@open.route('/wx/authorize_callback', methods=['POST'])
+def authorize_callback():
+    """授权成功后回调url"""
+    current_app.logger.warn('request content {}'.format(request.values))

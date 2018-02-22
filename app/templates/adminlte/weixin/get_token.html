@@ -14,7 +14,7 @@
 
 {% block mainbar %}
 	<h2 class="page-header">
-		{{ _('WeiXin Settings') }}
+		{{ _('WeiXin Setting') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
@@ -24,10 +24,16 @@
 	</h2>
 
 	<div class="table-responsive">
-		<form id="roles-form" action="{{ url_for('main.delete_role') }}" method="post">
+		<form action="" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
+            <a href="{{ url_for('adminlte.get_weixin_token') }}" class="btn btn-mixpus">
+                刷新Access Token
+            </a>
 
+            <a href="{{ url_for('adminlte.get_weixin_pre_code') }}" class="btn btn-warning">
+                获取预授权码
+            </a>
 		</form>
 
 
