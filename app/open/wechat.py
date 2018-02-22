@@ -4,8 +4,9 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db
-from app.models import WxTicket, WxToken
+from app.models import WxTicket, WxAuthCode
 from app.helpers import WXBizMsgCrypt
+from app.utils import Master, custom_response, timestamp
 
 
 @open.route('/wx/authorize')
@@ -77,3 +78,32 @@ def receive_message(appid):
 def authorize_callback():
     """授权成功后回调url"""
     current_app.logger.warn('request content {}'.format(request.values))
+
+    auth_code = request.values.get('auth_code')
+    expires_in = request.values.get('expires_in')
+
+    if auth_code is None:
+        return custom_response(False, '授权失败，Auth Code 为空！')
+
+    wx_auth_code = WxAuthCode.query.filter_by(master_uid=Master.master_uid()).first()
+    if wx_auth_code is None:
+        # 新增
+        new_auth_code = WxAuthCode(
+            master_uid=Master.master_uid(),
+            auth_code=auth_code,
+            expires_in=expires_in
+        )
+        db.session.add(new_auth_code)
+    else:
+        # 更新
+        wx_auth_code.auth_code = auth_code
+        wx_auth_code.expires_in = expires_in
+        wx_auth_code.created_at = int(timestamp())
+
+    db.session.commit()
+
+
+
+
+
+

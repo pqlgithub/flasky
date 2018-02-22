@@ -61,6 +61,7 @@ def create_app(config_name):
     assets_env.init_app(app)
     assets_env.register(bundles)
     s3.init_app(app)
+
     # 缓存
     cache.init_app(app)
     pjax.init_app(app)

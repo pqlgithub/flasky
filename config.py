@@ -127,11 +127,15 @@ class Config:
     }
 
     # 缓存类型
+    # CACHE_REDIS_URL 连接到Redis服务器的URL。
+    # 例如：redis://user:password@localhost:6379/2。 仅用于RedisCache。
     CACHE_TYPE = 'redis'
+    CACHE_KEY_PREFIX = 'fx_'
     CACHE_REDIS_HOST = 'localhost'
     CACHE_REDIS_PORT = '6379'
-    CACHE_REDIS_PASSWORD = 'Fr%bird@201403$01'
-    CACHE_REDIS_DB = '0'
+    CACHE_REDIS_PASSWORD = ''
+    CACHE_REDIS_DB = '2'
+    CACHE_REDIS_URL = 'redis://:@localhost:6379/2'
 
     # Currency API
     CURRENCY_API_CODE = '16122e1e525b4cdb869d538b143fe231'
@@ -180,9 +184,6 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-
-    # 缓存类型
-    CACHE_TYPE = 'simple'
 
     # Examples:
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]

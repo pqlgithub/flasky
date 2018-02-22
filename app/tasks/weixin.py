@@ -12,40 +12,10 @@ from app.helpers import WxApp
 from app.utils import timestamp
 
 
-@fsk_celery.task(name='wx.get_component_token')
-def get_component_token():
-    """初次获取component access token"""
-    wx_ticket = WxTicket.query.order_by(WxTicket.created_at.desc()).first()
-    if wx_ticket is None:
-        current_app.logger.warn("Component verify ticket isn't exist!!!")
-        return False
-
-    current_app.logger.warn('app_id: %s , app_secret: %s' % (current_app.config['WX_APP_ID'],
-                                                             current_app.config['WX_APP_SECRET']))
-    # 发起请求
-    wx_app_api = WxApp(component_app_id=current_app.config['WX_APP_ID'],
-                       component_app_secret=current_app.config['WX_APP_SECRET'])
-
-    result = wx_app_api.get_component_token(wx_ticket.ticket)
-
-    current_app.logger.debug('Response: %s' % result)
-
-    # 更新数据
-    wx_token = WxToken(
-        app_id=current_app.config['WX_APP_ID'],
-        access_token=result.get('component_access_token'),
-        expires_in=result.get('expires_in')
-    )
-    db.session.add(wx_token)
-
-    db.session.commit()
-
-    return True
-
-
 @fsk_celery.task(name='wx.refresh_component_token')
 def refresh_component_token():
     """定时刷新component access token, 在令牌快过期时（比如1小时50分）再进行刷新"""
+    current_app.logger.warn('start check refresh wx token...')
     component_app_id = current_app.config['WX_APP_ID']
     wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
     if wx_token is None:
@@ -69,8 +39,8 @@ def refresh_component_token():
     result = wx_app_api.get_component_token(wx_ticket.ticket)
 
     # 更新数据
-    wx_token.access_token = result.get('component_access_token')
-    wx_token.expires_in = result.get('expires_in')
+    wx_token.access_token = result.component_access_token
+    wx_token.expires_in = result.expires_in
     wx_token.created_at = int(timestamp())
 
     db.session.commit()

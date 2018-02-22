@@ -1,6 +1,14 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 import os
+# 加载环境变量
+if os.path.exists('.env'):
+    print('Importing environment from .env...')
+    for line in open('.env'):
+        var = line.strip().split('=')
+        if len(var) == 2:
+            os.environ[var[0]] = var[1]
+
 from werkzeug.contrib.fixers import ProxyFix
 from flask_script import Server, Manager, Shell
 from flask_script.commands import ShowUrls, Clean
@@ -14,14 +22,6 @@ from app.assets import assets_env
 from commands.initial_data import InitialData
 from commands.fix_data import FixData
 from commands.init_summary import InitSummary
-
-# 加载环境变量
-if os.path.exists('.env'):
-    print('Importing environment from .env...')
-    for line in open('.env'):
-        var = line.strip().split('=')
-        if len(var) == 2:
-            os.environ[var[0]] = var[1]
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -98,7 +98,7 @@ manager.add_command('assets', ManageAssets(assets_env))
 manager.add_command('fix_data', FixData())
 
 # 启动测试服务器
-server = Server(host='0.0.0.0', port=9000)
+server = Server(host='0.0.0.0', port=9000, use_debugger=True)
 manager.add_command('server', server)
 
 # 项目的代理设置
