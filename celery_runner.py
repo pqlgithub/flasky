@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
+# 加载环境变量
+if os.path.exists('.env'):
+    print('Importing environment from .env...')
+    for line in open('.env'):
+        var = line.strip().split('=')
+        if len(var) == 2:
+            os.environ[var[0]] = var[1]
+
 from celery import Celery
 from app import create_app
 
@@ -33,14 +41,6 @@ def make_celery(fx_app):
     _celery.Task = ContextTask
     return _celery
 
-
-# 加载环境变量
-if os.path.exists('.env'):
-    print('Importing environment from .env...')
-    for line in open('.env'):
-        var = line.strip().split('=')
-        if len(var) == 2:
-            os.environ[var[0]] = var[1]
 
 flask_app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
 # 1. Each celery process needs to create an instance of the Flask application.

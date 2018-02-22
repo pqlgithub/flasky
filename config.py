@@ -122,7 +122,8 @@ class Config:
         },
         'every-minute-demo': {
             'task': 'demo.add_together',
-            'schedule': timedelta(seconds=60)
+            'schedule': timedelta(seconds=60),
+            'args': (1, 1)
         }
     }
 

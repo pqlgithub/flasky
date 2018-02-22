@@ -89,8 +89,10 @@ Supervisor运行于 `Python2.7` 环境下：
 
     celery flower -A celery_runner --loglevel=info
     
+    # 启动work
     celery worker -A celery_runner -f /var/log/celery.log -D
-
+    # 启动beat
+    celery beat -A celery_runner -f /var/log/celery.log -D
 
 
 
