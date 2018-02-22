@@ -67,7 +67,7 @@ def upgrade():
     op.create_table('wx_tickets',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('app_id', sa.String(length=20), nullable=True),
-    sa.Column('info_type', sa.String(length=8), nullable=True),
+    sa.Column('info_type', sa.String(length=32), nullable=True),
     sa.Column('ticket', sa.String(length=128), nullable=False),
     sa.Column('created_at', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id'),

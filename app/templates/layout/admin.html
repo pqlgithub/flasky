@@ -71,6 +71,9 @@
 					<li {% if top_menu == 'address' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.show_places') }}">{{ _('Address') }}</a>
 					</li>
+                    <li {% if top_menu == 'weixin' %}class="active"{% endif %}>
+						<a href="{{ url_for('adminlte.setting_index') }}">{{ _('Settings') }}</a>
+					</li>
 				</ul>
 				<div class="navbar-custom-menu">
 					<ul class="nav navbar-nav">

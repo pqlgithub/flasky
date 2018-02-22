@@ -44,14 +44,21 @@ def authorize_notify():
 
         current_app.logger.debug('Component verify ticket: %s' % verify_ticket)
 
-        # 新增数据
-        wx_ticket = WxTicket(
-            app_id=app_id,
-            info_type=info_type,
-            ticket=verify_ticket,
-            created_at=create_time
-        )
-        db.session.add(wx_ticket)
+        wx_ticket = WxTicket.query.filter_by(app_id=app_id).first()
+        if wx_ticket is not None:
+            # 更新ticket
+            wx_ticket.info_type = info_type
+            wx_ticket.ticket = verify_ticket
+            wx_ticket.created_at = create_time
+        else:
+            # 新增数据
+            new_wx_ticket = WxTicket(
+                app_id=app_id,
+                info_type=info_type,
+                ticket=verify_ticket,
+                created_at=create_time
+            )
+            db.session.add(new_wx_ticket)
 
         db.session.commit()
     else:

@@ -1,0 +1,36 @@
+{% extends pjax("layout/admin.html") %}
+
+{% block sidebar %}
+	{% include 'adminlte/settings/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+	<h2 class="page-header">
+		{{ _('WeiXin Settings') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<button class="btn btn-danger delete-all hidden" data-form-id="roles-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+
+	<div class="table-responsive">
+		<form id="roles-form" action="{{ url_for('main.delete_role') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+
+		</form>
+
+
+	</div>
+
+{% endblock %}
