@@ -3,7 +3,8 @@ from flask import redirect, url_for, current_app, render_template
 from . import adminlte
 from .. import db
 from app.models import WxTicket, WxToken
-from app.helpers import WxApp
+from app.helpers import WxApp, WxAppError
+from app.utils import custom_response
 
 
 @adminlte.route('/settings')
@@ -21,23 +22,27 @@ def get_weixin_token():
 
     current_app.logger.warn('app_id: %s , app_secret: %s' % (current_app.config['WX_APP_ID'],
                                                              current_app.config['WX_APP_SECRET']))
-    # 发起请求
-    wx_app_api = WxApp(component_app_id=current_app.config['WX_APP_ID'],
-                       component_app_secret=current_app.config['WX_APP_SECRET'])
+    try:
+        # 发起请求
+        wx_app_api = WxApp(component_app_id=current_app.config['WX_APP_ID'],
+                           component_app_secret=current_app.config['WX_APP_SECRET'])
 
-    result = wx_app_api.get_component_token(wx_ticket.ticket)
+        result = wx_app_api.get_component_token(wx_ticket.ticket)
 
-    current_app.logger.debug('Response: %s' % result)
+        current_app.logger.debug('Response: %s' % result)
 
-    # 更新数据
-    wx_token = WxToken(
-        app_id=current_app.config['WX_APP_ID'],
-        access_token=result.get('component_access_token'),
-        expires_in=result.get('expires_in')
-    )
-    db.session.add(wx_token)
+        # 更新数据
+        wx_token = WxToken(
+            app_id=current_app.config['WX_APP_ID'],
+            access_token=result.get('component_access_token'),
+            expires_in=result.get('expires_in')
+        )
+        db.session.add(wx_token)
 
-    db.session.commit()
+        db.session.commit()
+    except WxAppError as err:
+        current_app.logger.warn('Request weixin access token error: %s' % err)
+        return custom_response(False, 'Request access token error: {}'.format(err))
 
     return render_template('adminlte/weixin/get_token.html',
                            access_token=result.get('component_access_token'))

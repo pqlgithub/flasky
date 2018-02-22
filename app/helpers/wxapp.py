@@ -6,6 +6,12 @@ import json
 import requests
 from Crypto.Cipher import AES
 from flask import current_app
+from app.utils import Map
+
+
+class WxAppError(Exception):
+    def __init__(self, msg):
+        super(WxAppError, self).__init__(msg)
 
 
 class WxApp(object):
@@ -13,6 +19,9 @@ class WxApp(object):
     微信小程序API
     """
     component_host_url = 'https://api.weixin.qq.com/cgi-bin/component'
+    headers = {
+        'content-type': 'application/json'
+    }
 
     def __init__(self, component_app_id=None, component_app_secret=None, component_access_token=None):
         self.component_app_id = component_app_id
@@ -35,9 +44,13 @@ class WxApp(object):
         current_app.logger.debug('Request params: %s' % payload)
 
         url = '%s/api_component_token' % self.component_host_url
-        result = requests.post(url, data=payload)
+        result = requests.post(url, data=json.dumps(payload))
+        r = Map(result.json())
+        if r.errcode != 0:
+            current_app.logger.warn('Response code: %d' % r.errcode)
+            raise WxAppError(r.errmsg)
 
-        return result.json()
+        return r
 
     def get_pre_auth_code(self):
         """

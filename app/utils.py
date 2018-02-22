@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-import enum, time, random, xlrd
+import enum
+import time
+import xlrd
+import random
+import hashlib
 from datetime import datetime
+from string import digits, ascii_letters
 from flask import jsonify, current_app, request
 from flask_login import current_user
-import hashlib
-from string import digits, ascii_letters
+
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
 R201_CREATED = { 'code': 201, 'message': 'All created.' }
@@ -13,7 +17,6 @@ R400_BADREQUEST = { 'code': 400, 'message': 'Bad request.' }
 R403_FORBIDDEN = { 'code': 403, 'message': 'You can not do this.' }
 R404_NOTFOUND = { 'code': 404, 'message': 'No result matched.' }
 R500_BADREQUEST = { 'code': 500, 'message': 'Request failed.' }
-
 
 
 class Master:
@@ -37,6 +40,7 @@ class DBEnum(enum.Enum):
     @classmethod
     def get_enum_labels(cls):
         return [i.value for i in cls]
+
 
 def create_db_session():
     # create a new session
@@ -85,6 +89,7 @@ def gen_serial_no(prefix='1'):
             z += '0'
 
     return ''.join([serial_no, z, rd])
+
 
 def is_sequence(arg):
     return (not hasattr(arg, "strip") and
@@ -257,7 +262,6 @@ def import_product_from_excel(file_path):
         return products
 
 
-
 def split_huazhu_address(address_str):
     """地址字符串转换为省、市、区、地址"""
     
@@ -284,4 +288,48 @@ def make_cache_key(*args, **kwargs):
     #lang = get_locale()
     lang = 'zh_cn'
     return (path + args + lang).encode('utf-8')
-    
+
+
+class Map(dict):
+    """
+    提供字典的dot访问模式
+    Example:
+    m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+    """
+    def __init__(self, *args, **kwargs):
+        super(Map, self).__init__(*args, **kwargs)
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.items():
+                    if isinstance(v, dict):
+                        v = Map(v)
+                    self[k] = v
+
+        if kwargs:
+            for k, v in kwargs.items():
+                if isinstance(v, dict):
+                    v = Map(v)
+                self[k] = v
+
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def __setattr__(self, key, value):
+        self.__setitem__(key, value)
+
+    def __getitem__(self, key):
+        if key not in self.__dict__:
+            super(Map, self).__setitem__(key, {})
+            self.__dict__.update({key: Map()})
+        return self.__dict__[key]
+
+    def __setitem__(self, key, value):
+        super(Map, self).__setitem__(key, value)
+        self.__dict__.update({key: value})
+
+    def __delattr__(self, item):
+        self.__delitem__(item)
+
+    def __delitem__(self, key):
+        super(Map, self).__delitem__(key)
+        del self.__dict__[key]
