@@ -45,9 +45,12 @@ class WxApp(object):
 
         url = '%s/api_component_token' % self.component_host_url
         result = requests.post(url, data=json.dumps(payload))
+
+        current_app.logger.debug('Response: {}'.format(result.json()))
+
         r = Map(result.json())
         if r.errcode != 0:
-            current_app.logger.warn('Response code: %d' % r.errcode)
+            current_app.logger.warn('Response code: {}'.format(r.errcode))
             raise WxAppError(r.errmsg)
 
         return r
