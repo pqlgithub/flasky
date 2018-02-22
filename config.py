@@ -19,6 +19,7 @@ class Config:
     # change this in your production settings !!!
 
     MODE = 'dev'
+    DOMAIN_URL = 'http://127.0.0.1:9000'
 
     CSRF_ENABLED = False
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'Mic#2018%0110!'
@@ -195,6 +196,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     MODE = 'prod'
+    DOMAIN_URL = 'https://fx.taihuoniao.com'
 
     DEBUG_LOG = False
     DEBUG = False

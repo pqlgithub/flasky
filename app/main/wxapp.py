@@ -21,9 +21,9 @@ def wxapp_setting():
 def wxapp_authorize():
     """跳转授权页"""
     app_id = current_app.config['WX_APP_ID']
-    back_url = 'http://127.0.0.1:9000/open/wx/authorize_callback'
+    back_url = '{}/open/wx/authorize_callback'.format(current_app.config['DOMAIN_URL'])
     auth_type = 3
-
+    
     wx_code = WxPreAuthCode.query.first()
 
     authorize_url = ('https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={}&pre_auth_code={}&'
