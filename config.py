@@ -5,10 +5,11 @@
 
     Default configuration
 
-    :copyright: (c) 2017 by Mic.
+    :copyright: (c) 2017 by purpen.
 """
 
 import os
+from datetime import timedelta
 from celery.schedules import crontab
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -106,17 +107,21 @@ class Config:
 
     # schedules
     CELERYBEAT_SCHEDULE = {
-        #'add-every-30-seconds': {
-        #    'task': 'app.tasks.xxx',
-        #    # 每 30 秒执行一次
-        #    'schedule': timedelta(seconds=30),
-        #    'args': (5, 8)
-        #},
+        # 每5分钟检测刷新微信token
+        'refresh-wx-token': {
+            'task': 'wx.refresh_component_token',
+            'schedule': timedelta(seconds=300),
+            'args': ()
+        },
+        # 每天上午 11 点 59 分执行一次
         'update-today-currency': {
             'task': 'app.tasks.async_currency_rate',
-            # 每天上午 11 点 59 分执行一次
             'schedule': crontab(hour=11, minute=59),
             'args': ()
+        },
+        'every-minute-demo': {
+            'task': 'demo.add_together',
+            'schedule': timedelta(seconds=60)
         }
     }
 

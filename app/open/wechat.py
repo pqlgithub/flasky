@@ -2,8 +2,10 @@
 from flask import g, current_app, request, redirect, url_for
 import xml.etree.cElementTree as ET
 
-from app.helpers import WXBizMsgCrypt
 from . import open
+from .. import db
+from app.models import WxTicket, WxToken
+from app.helpers import WXBizMsgCrypt
 
 
 @open.route('/wx/authorize')
@@ -40,7 +42,18 @@ def authorize_notify():
         verify_ticket = xml_tree.find('ComponentVerifyTicket').text
         info_type = xml_tree.find('InfoType').text
 
-        current_app.logger.warn('Component verify ticket: %s' % verify_ticket)
+        current_app.logger.debug('Component verify ticket: %s' % verify_ticket)
+
+        # 新增数据
+        wx_ticket = WxTicket(
+            app_id=app_id,
+            info_type=info_type,
+            ticket=verify_ticket,
+            created_at=create_time
+        )
+        db.session.add(wx_ticket)
+
+        db.session.commit()
     else:
         current_app.logger.warn('error code: %d' % ret)
 

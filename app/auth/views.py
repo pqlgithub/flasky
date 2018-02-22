@@ -8,8 +8,8 @@ from .. import db
 from app.models import User, UserIdType
 from .forms import LoginForm, SignupForm
 from ..email import send_email
-from ..utils import next_is_valid
-from ..tasks import build_default_setting
+from app.utils import next_is_valid
+from app.tasks import build_default_setting
 
 
 @auth.route('/login', methods=['GET', 'POST'])
