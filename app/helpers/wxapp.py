@@ -4,6 +4,7 @@ import binascii
 import base64
 import json
 import requests
+import urllib.parse
 from Crypto.Cipher import AES
 from flask import current_app
 from app.utils import Map
@@ -16,9 +17,10 @@ class WxAppError(Exception):
 
 class WxApp(object):
     """
-    微信小程序API
+    微信小程序第三方平台API
     """
     component_host_url = 'https://api.weixin.qq.com/cgi-bin/component'
+
     headers = {
         'content-type': 'application/json'
     }
@@ -106,16 +108,15 @@ class WxApp(object):
 
         return self._intercept_result(result)
 
-    def jscode2session(self, app_id, app_secret, js_code):
+    def jscode2session(self, app_id, js_code):
         """
         通过code换取openid和session_key
         https://api.weixin.qq.com/sns/component/jscode2session?appid=APPID&js_code=JSCODE&grant_type=authorization_code&
         component_appid=COMPONENT_APPID&component_access_token=ACCESS_TOKEN
         """
-        url = ('https://api.weixin.qq.com/sns/component/jscode2session?'
-               'appid={}&secret={}&js_code={}&grant_type=authorization_code&'
-               'component_appid={}&component_access_token={}').format(app_id, app_secret, js_code,
-                                                                      self.component_app_id, self.component_app_secret)
+        url = ('https://api.weixin.qq.com/sns/component/jscode2session?appid={}&js_code={}'
+               '&grant_type=authorization_code&component_appid={}&component_access_token={}').format(
+            app_id, js_code, self.component_app_id, self.component_app_secret)
         result = requests.get(url)
 
         return result.json()
@@ -144,6 +145,244 @@ class WxApp(object):
         result = Map(result.json())
         if result.get('errcode') and result.get('errcode') != 0:
             current_app.logger.warn('Response code: %d' % result.get('errcode'))
+            raise WxAppError(result.get('errmsg'))
+
+        return result
+
+
+class WxaOpen3rd(object):
+    """
+    第三方平台更新授权小程序API
+    """
+    # 小程序API服务域名
+    wxa_host_url = 'https://api.weixin.qq.com/wxa'
+
+    def __init__(self, access_token=None):
+        self.access_token = access_token
+
+    def modify_domain(self, action='add', request_domain=[], wsrequest_domain=[], upload_domain=[], download_domain=[]):
+        """
+        设置小程序服务器域名
+        action: add添加, delete删除, set覆盖, get获取。当参数是get时不需要填四个域名字段
+        """
+        payload = {
+            'action': action
+        }
+
+        if action in ('add', 'delete', 'set'):
+            payload['requestdomain'] = request_domain
+            payload['wsrequestdomain'] = wsrequest_domain
+            payload['uploaddomain'] = upload_domain
+            payload['downloaddomain'] = download_domain
+
+        url = '%s/modify_domain?access_token=%s' % (self.wxa_host_url, self.access_token)
+        result = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(result)
+
+    def set_webview_domain(self, action='add', view_domain=[]):
+        """
+        设置小程序业务域名
+        action: add添加, delete删除, set覆盖, get获取。当参数是get时不需要填webviewdomain字段。
+        如果没有action字段参数，则默认见开放平台第三方登记的小程序业务域名全部添加到授权的小程序中
+        """
+        payload = {
+            'action': action
+        }
+        if action in ('add', 'delete', 'set'):
+            payload['webviewdomain'] = view_domain
+
+        url = '%s/setwebviewdomain?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def bind_tester(self, wechatid):
+        """
+        绑定微信用户为小程序体验者
+        """
+        payload = {
+            'wechatid': wechatid
+        }
+        url = '%s/bind_tester?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def unbind_tester(self, wechatid):
+        """
+        解除绑定小程序的体验者
+        """
+        payload = {
+            'wechatid': wechatid
+        }
+        url = '%s/unbind_tester?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def commit(self, template_id=0, ext_json={}, user_version='V1.0', user_desc=''):
+        """为授权的小程序帐号上传小程序代码"""
+        payload = {
+            'template_id': template_id,  # 代码库中的代码模版ID
+            'ext_json': json.dumps(ext_json),  # 第三方自定义的配置
+            'user_version': user_version,  # 代码版本号，开发者可自定义
+            'user_desc': user_desc  # 代码描述，开发者可自定义
+        }
+        url = '%s/commit?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def get_qrcode(self, path=None):
+        """获取体验小程序的体验二维码"""
+        url = '%s/get_qrcode?access_token=%s' % (self.wxa_host_url, self.access_token)
+        if path:
+            url += '&path=%s' % urllib.parse.urlencode(path)
+
+        res = requests.get(url)
+
+        return res
+
+    def get_category(self):
+        """获取授权小程序帐号的可选类目"""
+        url = '%s/get_category?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        return requests.get(url)
+
+    def get_pages(self):
+        """获取小程序的第三方提交代码的页面配置"""
+        url = '%s/get_page?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        return requests.get(url)
+
+    def submit_audit(self, item_list=[]):
+        """将第三方提交的代码包提交审核"""
+        payload = {
+            'item_list': item_list
+        }
+        url = '%s/submit_audit?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def get_audit_status(self, auditid):
+        """
+        查询某个指定版本的审核状态
+        status:	审核状态，其中0为审核成功，1为审核失败，2为审核中
+        """
+        payload = {
+            'auditid': auditid
+        }
+        url = '%s/get_auditstatus?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def get_latest_audit_status(self):
+        """查询最新一次提交的审核状态"""
+        url = '%s/get_latest_auditstatus?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def release(self):
+        """发布已通过审核的小程序"""
+        payload = {}
+        url = '%s/release?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def change_visit_status(self, action='open'):
+        """
+        修改小程序线上代码的可见状态
+        action:	设置可访问状态，发布后默认可访问，close为不可见，open为可见
+        """
+        payload = {
+            'action': action
+        }
+        url = '%s/change_visitstatus?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def revert_code_release(self):
+        """小程序版本回退"""
+        url = '%s/revertcoderelease?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def undo_code_audit(self):
+        """
+        小程序审核撤回
+        单个帐号每天审核撤回次数最多不超过1次，一个月不超过10次。
+        """
+        url = '%s/undocodeaudit?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def gray_release(self, percent=10):
+        """分阶段发布接口"""
+        payload = {
+            'gray_percentage': percent  # 灰度的百分比，1到100的整数
+        }
+        url = '%s/grayrelease?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def revert_gray_release(self):
+        """取消分阶段发布"""
+        url = '%s/revertgrayrelease?access_token=%s' % (self.wxa_host_url, self.access_token)
+
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def get_gray_release_plan(self):
+        """
+        查询当前分阶段发布详情
+        status: 0:初始状态 1:执行中 2:暂停中 3:执行完毕 4:被删除
+        """
+        url = '%s/getgrayreleaseplan?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def change_wxa_search_status(self, status=0):
+        """设置小程序隐私设置（是否可被搜索）"""
+        payload = {
+            'status': status
+        }
+        url = '%s/changewxasearchstatus?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def get_wxa_search_status(self):
+        """查询小程序当前隐私设置（是否可被搜索）"""
+        url = '%s/getwxasearchstatus?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def _intercept_result(self, result):
+        """返回请求结果"""
+        result = Map(result.json())
+        if result.get('errcode') and result.get('errcode') != 0:
+            current_app.logger.warn('WxaOpen3rd res code: %d' % result.get('errcode'))
             raise WxAppError(result.get('errmsg'))
 
         return result

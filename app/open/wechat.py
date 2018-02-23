@@ -99,6 +99,7 @@ def authorize_callback():
 def receive_message(appid):
     """接收公众号或小程序消息和事件推送"""
     current_app.logger.debug('Appid [%s]' % appid)
+
     pass
 
 
