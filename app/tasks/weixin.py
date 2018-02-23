@@ -54,7 +54,7 @@ def refresh_component_token():
 
 
 @fsk_celery.task(name='wx.exchange_authorizer_token')
-def exchange_authorizer_token(auth_app_id, auth_code, uid):
+def exchange_authorizer_token(auth_code, uid):
     """使用授权码换取小程序的接口调用凭据和授权信息"""
     component_app_id = current_app.config['WX_APP_ID']
     wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
@@ -68,12 +68,13 @@ def exchange_authorizer_token(auth_app_id, auth_code, uid):
         result = wx_app_api.exchange_authorizer_token(auth_code)
         authorization_info = result.authorization_info
 
+        authorizer_appid = authorization_info.authorizer_appid
         # 验证是否存在
-        wx_authorizer = WxAuthorizer.query.filter_by(app_id=auth_app_id).first()
+        wx_authorizer = WxAuthorizer.query.filter_by(app_id=authorizer_appid).first()
         if wx_authorizer is None:
             new_authorizer = WxAuthorizer(
                 master_uid=uid,
-                auth_app_id=auth_app_id,
+                auth_app_id=authorizer_appid,
                 access_token=authorization_info.authorizer_access_token,
                 refresh_token=authorization_info.authorizer_refresh_token,
                 expires_in=authorization_info.expires_in,

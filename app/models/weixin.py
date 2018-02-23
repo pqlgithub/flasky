@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from app import db
 from ..utils import timestamp
+from ..helpers import MixGenId
 
 
 __all__ = [
@@ -20,10 +21,8 @@ class WxMiniApp(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
     # 生成编号
     serial_no = db.Column(db.String(32), unique=True, index=True, nullable=False)
-    # 店铺ID
-    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
 
-    app_id = db.Column(db.String(20), index=True, nullable=False)
+    auth_app_id = db.Column(db.String(20), index=True, nullable=False)
     nick_name = db.Column(db.String(100), index=True, nullable=False)
     head_img = db.Column(db.String(100))
     # 模板ID
@@ -74,6 +73,31 @@ class WxMiniApp(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @staticmethod
+    def make_unique_serial_no():
+        serial_no = MixGenId.gen_shop_sn()
+        if WxMiniApp.query.filter_by(serial_no=serial_no).first() is None:
+            return serial_no
+        while True:
+            new_serial_no = MixGenId.gen_shop_sn()
+            if WxMiniApp.query.filter_by(serial_no=new_serial_no).first() is None:
+                break
+        return new_serial_no
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.serial_no,
+            'auth_app_id': self.auth_app_id,
+            'nick_name': self.nick_name,
+            'head_img': self.head_img,
+            'signature': self.signature,
+            'qrcode_url': self.qrcode_url,
+            'status': self.status,
+            'created_at': self.created_at
+        }
+        return json_obj
 
     def __repr__(self):
         return '<WxAuthorizerInfo {}>'.format(self.app_id)

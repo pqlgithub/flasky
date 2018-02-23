@@ -191,6 +191,9 @@ select {
 	/* for mobile safari */
 	-webkit-appearance: none;
 }
+.alert {
+    border-width: 0;
+}
 .alert-success,
 .alert-info,
 .alert-warning,

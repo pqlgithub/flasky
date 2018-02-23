@@ -57,25 +57,6 @@ def authorize_notify():
 
             current_app.logger.warn('Authorizer [%s][%s][%s]' % (authorizer_app_id, authorizer_code,
                                                                  authorizer_expired_time))
-
-            # 触发换取授权Access Token任务,app_id, auth_code, uid
-            exchange_authorizer_token.apply_async(args=[authorizer_app_id, authorizer_code, Master.master_uid()])
-
-            # 保存授权码
-            wx_auth_code = WxAuthCode.query.filter_by(auth_code=authorizer_code).first()
-            if wx_auth_code is None:
-                wx_auth_code = WxAuthCode(
-                    master_uid=Master.master_uid(),
-                    auth_app_id=authorizer_app_id,
-                    auth_code=authorizer_code,
-                    expires_in=7200
-                )
-                db.session.add(wx_auth_code)
-            else:
-                wx_auth_code.auth_app_id = authorizer_app_id
-                wx_auth_code.created_at = int(timestamp())
-
-            db.session.commit()
         else:
             pass
 
@@ -95,6 +76,9 @@ def authorize_callback():
 
     if auth_code is None:
         return custom_response(False, '授权失败，Auth Code 为空！')
+
+    # 触发换取授权Access Token任务, auth_code, uid
+    exchange_authorizer_token.apply_async(args=[auth_code, Master.master_uid()])
 
     wx_auth_code = WxAuthCode.query.filter_by(auth_code=auth_code).first()
     if wx_auth_code is None:
