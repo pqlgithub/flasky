@@ -24,7 +24,7 @@ class WxMiniApp(db.Model):
 
     auth_app_id = db.Column(db.String(20), index=True, nullable=False)
     nick_name = db.Column(db.String(100), index=True, nullable=False)
-    head_img = db.Column(db.String(100))
+    head_img = db.Column(db.String(200))
     # 模板ID
     template_id = db.Column(db.String(32))
     # 帐号介绍
@@ -51,7 +51,7 @@ class WxMiniApp(db.Model):
     # open_card:是否开通微信卡券功能
     # open_shake:是否开通微信摇一摇功能
     business_info = db.Column(db.String(100))
-    qrcode_url = db.Column(db.String(100))
+    qrcode_url = db.Column(db.String(200))
     # 可根据这个字段判断是否为小程序类型授权
     mini_program_info = db.Column(db.Text())
     # 小程序授权给开发者的权限集列表
@@ -91,6 +91,7 @@ class WxMiniApp(db.Model):
             'rid': self.serial_no,
             'auth_app_id': self.auth_app_id,
             'nick_name': self.nick_name,
+            'user_name': self.user_name,
             'head_img': self.head_img,
             'signature': self.signature,
             'qrcode_url': self.qrcode_url,

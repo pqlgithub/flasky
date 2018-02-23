@@ -101,6 +101,9 @@ Supervisor运行于 `Python2.7` 环境下：
     # wx_authorizer
     access_token = db.Column(db.String(200), unique=True, nullable=False)
     refresh_token = db.Column(db.String(200), nullable=False)
+    # wx_mini_apps
+    head_img = db.Column(db.String(200))
+    qrcode_url = db.Column(db.String(200))
 
 
 ### 文献资料参考：

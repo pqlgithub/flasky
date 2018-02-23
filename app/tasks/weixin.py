@@ -8,7 +8,7 @@ from flask import current_app
 from app.extensions import fsk_celery
 
 from app import db, cache
-from app.models import WxToken, WxAuthorizer
+from app.models import WxToken, WxAuthorizer, WxAuthCode
 from app.helpers import WxApp, WxAppError
 from app.utils import timestamp
 
@@ -56,6 +56,8 @@ def refresh_component_token():
 @fsk_celery.task(name='wx.exchange_authorizer_token')
 def exchange_authorizer_token(auth_code, uid):
     """使用授权码换取小程序的接口调用凭据和授权信息"""
+    current_app.logger.warn('start exchange authorizer token...')
+
     component_app_id = current_app.config['WX_APP_ID']
     wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
     if wx_token is None:
@@ -70,7 +72,7 @@ def exchange_authorizer_token(auth_code, uid):
 
         authorizer_appid = authorization_info.authorizer_appid
         # 验证是否存在
-        wx_authorizer = WxAuthorizer.query.filter_by(app_id=authorizer_appid).first()
+        wx_authorizer = WxAuthorizer.query.filter_by(auth_app_id=authorizer_appid).first()
         if wx_authorizer is None:
             new_authorizer = WxAuthorizer(
                 master_uid=uid,
@@ -88,6 +90,10 @@ def exchange_authorizer_token(auth_code, uid):
             wx_authorizer.func_info = json.dumps(authorization_info.func_info)
             wx_authorizer.created_at = int(timestamp())
 
+        # 同步更新auth_code关联auth_app_id
+        wx_auth_code = WxAuthCode.query.filter_by(auth_code=auth_code).first()
+        wx_auth_code.auth_app_id = authorizer_appid
+
         db.session.commit()
 
     except WxAppError as err:
@@ -100,6 +106,8 @@ def exchange_authorizer_token(auth_code, uid):
 @fsk_celery.task(name='wx.refresh_authorizer_token')
 def refresh_authorizer_token():
     """2小时刷新一次授权小程序的接口调用凭据（令牌）"""
+    current_app.logger.warn('start refresh authorizer token...')
+
     expired_time = int(timestamp()) - 6600  # 1小时50分时刷新
     authorizer_list = WxAuthorizer.query.filter(WxAuthorizer.created_at < expired_time).all()
     if authorizer_list is None:

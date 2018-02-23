@@ -31,10 +31,13 @@ def wxapp_setting():
     wx_mini_app = WxMiniApp.query.filter_by(auth_app_id=auth_app_id).first()
     if wx_mini_app is None:
         # 获取小程序信息
-        result, errmsg = _get_authorizer_info(auth_app_id)
-        if result is None:
-            flash('小程序获取信息失败：%s，请重试！' % errmsg, 'danger')
+        try:
+            result = _get_authorizer_info(auth_app_id)
+        except WxAppError as err:
+            flash('小程序获取信息失败：%s，请重试！' % err, 'danger')
             return render_template('wxapp/index.html', auth_status=is_auth)
+
+        current_app.logger.debug('Authorizer result %s' % result)
 
         authorizer_info = result.authorizer_info
         authorization_info = result.authorization_info
@@ -85,15 +88,11 @@ def _get_authorizer_info(auth_app_id):
     """获取授权小程序账号信息"""
     component_app_id = current_app.config['WX_APP_ID']
     wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
-    try:
-        # 发起请求
-        wx_app_api = WxApp(component_app_id=component_app_id,
-                           component_app_secret=current_app.config['WX_APP_SECRET'],
-                           component_access_token=wx_token.access_token)
-        result = wx_app_api.get_authorizer_info(auth_app_id)
-    except WxAppError as err:
-        current_app.logger.warn('Request authorizer info error: {}'.format(err))
-        return None, err
+    # 发起请求
+    wx_app_api = WxApp(component_app_id=component_app_id,
+                       component_app_secret=current_app.config['WX_APP_SECRET'],
+                       component_access_token=wx_token.access_token)
+    result = wx_app_api.get_authorizer_info(auth_app_id)
 
     return result
 
