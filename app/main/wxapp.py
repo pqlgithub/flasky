@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
-from flask import render_template, redirect, url_for, flash, request, current_app, abort
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
-from app.models import WxToken, WxAuthCode, WxMiniApp, WxAuthorizer, Store
+from app.models import WxToken, WxMiniApp, Store
 from app.helpers import WxApp, WxAppError
 from ..utils import Master, timestamp
-from ..decorators import user_has, user_is
 
 
 @main.route('/wxapps')

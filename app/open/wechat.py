@@ -5,10 +5,9 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxAuthCode, WxToken, WxAuthorizer
+from app.models import WxToken, WxAuthorizer
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp
 from app.utils import Master, custom_response, timestamp
-from app.tasks import exchange_authorizer_token
 
 
 @open.route('/wx/authorize_notify', methods=['GET', 'POST'])
@@ -40,8 +39,7 @@ def authorize_notify():
 
         current_app.logger.debug('Parse app_id:[%s], create_time[%s]' % (app_id, create_time))
 
-        # 推送component_verify_ticket
-        if info_type == 'component_verify_ticket':
+        if info_type == 'component_verify_ticket':  # 推送component_verify_ticket
             verify_ticket = xml_tree.find('ComponentVerifyTicket').text
 
             current_app.logger.debug('Component verify ticket: %s' % verify_ticket)
@@ -50,19 +48,22 @@ def authorize_notify():
             # timeout是缓存过期时间，默认为0，永不过期
             cache.set('wx_component_verify_ticket', verify_ticket, timeout=0)
 
-        # 推送授权成功消息
-        elif info_type == 'authorized':
+        elif info_type == 'authorized':  # 授权成功通知
             authorizer_app_id = xml_tree.find('AuthorizerAppid').text
             authorizer_code = xml_tree.find('AuthorizationCode').text
             authorizer_expired_time = xml_tree.find('AuthorizationCodeExpiredTime').text
 
             current_app.logger.warn('Authorizer [%s][%s][%s]' % (authorizer_app_id, authorizer_code,
                                                                  authorizer_expired_time))
-        else:
+
+        elif info_type == 'unauthorized':  # 取消授权通知
+            pass
+
+        elif info_type == 'updateauthorized':  # 授权更新通知
             pass
 
     else:
-        current_app.logger.warn('error code: %d' % ret)
+        current_app.logger.warn('Error code: %d' % ret)
 
     return 'success'
 
