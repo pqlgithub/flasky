@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import current_app, request, redirect, url_for
+import json
+from flask import current_app, request, redirect, url_for, render_template
 import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxAuthCode
+from app.models import WxAuthCode, WxToken, WxAuthorizer
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp
 from app.utils import Master, custom_response, timestamp
 from app.tasks import exchange_authorizer_token
@@ -73,32 +74,31 @@ def authorize_callback():
 
     auth_code = request.values.get('auth_code')
     expires_in = request.values.get('expires_in')
+    is_cached = request.values.get('is_cached')
 
     if auth_code is None:
         return custom_response(False, '授权失败，Auth Code 为空！')
 
-    # 触发换取授权Access Token任务, auth_code, uid
-    exchange_authorizer_token.apply_async(args=[auth_code, Master.master_uid()])
+    if not is_cached:
+        # 设置缓存
+        cache.set('user_%d_wx_authorizer_auth_code' % Master.master_uid(), auth_code, timeout=expires_in)
 
-    wx_auth_code = WxAuthCode.query.filter_by(auth_code=auth_code).first()
-    if wx_auth_code is None:
-        # 新增
-        wx_auth_code = WxAuthCode(
-            master_uid=Master.master_uid(),
-            auth_code=auth_code,
-            expires_in=expires_in
-        )
-        db.session.add(wx_auth_code)
-    else:
-        # 更新
-        wx_auth_code.auth_code = auth_code
-        wx_auth_code.expires_in = expires_in
-        wx_auth_code.created_at = int(timestamp())
-
-    db.session.commit()
+    try:
+        auth_app_id = _exchange_authorizer_token(auth_code)
+        if not auth_app_id:
+            return render_template('wxapp/authorize_result.html', errmsg='小程序获取授权信息失败，请重新授权！')
+    except WxAppError as err:
+        return render_template('wxapp/authorize_result.html', errmsg='小程序获取授权信息失败：%s，请刷新！' % err)
 
     # 授权完成，跳转至设置页
-    return redirect('%s?auth_code=%s' % (url_for('main.wxapp_setting'), auth_code))
+    return redirect('%s?auth_app_id=%s' % (url_for('main.wxapp_setting'), auth_app_id))
+
+
+@open.route('/wx/<string:appid>/receive_message')
+def receive_message(appid):
+    """接收公众号或小程序消息和事件推送"""
+    current_app.logger.debug('Appid [%s]' % appid)
+    pass
 
 
 @open.route('/wx/authorize')
@@ -107,8 +107,37 @@ def authorize():
     pass
 
 
-@open.route('/wx/<string:appid>/receive_message')
-def receive_message(appid):
-    """接收公众号或小程序消息和事件推送"""
-    current_app.logger.debug('Appid [%s]' % appid)
-    pass
+def _exchange_authorizer_token(auth_code):
+    """使用授权码换取小程序的接口调用凭据和授权信息"""
+    component_app_id = current_app.config['WX_APP_ID']
+    wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
+    # 发起请求
+    wx_app_api = WxApp(component_app_id=component_app_id,
+                       component_app_secret=current_app.config['WX_APP_SECRET'],
+                       component_access_token=wx_token.access_token)
+    result = wx_app_api.exchange_authorizer_token(auth_code)
+    authorization_info = result.authorization_info
+
+    authorizer_appid = authorization_info.authorizer_appid
+    # 验证是否存在
+    wx_authorizer = WxAuthorizer.query.filter_by(auth_app_id=authorizer_appid).first()
+    if wx_authorizer is None:
+        wx_authorizer = WxAuthorizer(
+            master_uid=Master.master_uid(),
+            auth_app_id=authorizer_appid,
+            access_token=authorization_info.authorizer_access_token,
+            refresh_token=authorization_info.authorizer_refresh_token,
+            expires_in=authorization_info.expires_in,
+            func_info=json.dumps(authorization_info.func_info)
+        )
+        db.session.add(wx_authorizer)
+    else:
+        wx_authorizer.access_token = authorization_info.authorizer_access_token
+        wx_authorizer.refresh_token = authorization_info.authorizer_refresh_token
+        wx_authorizer.expires_in = authorization_info.expires_in
+        wx_authorizer.func_info = json.dumps(authorization_info.func_info)
+        wx_authorizer.created_at = int(timestamp())
+
+    db.session.commit()
+
+    return authorizer_appid

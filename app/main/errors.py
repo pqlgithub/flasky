@@ -4,6 +4,7 @@ from flask_wtf.csrf import CSRFError
 
 from app.main import main
 
+
 # 为所有客户端生成适当响应的一种方法是，在错误处理程序中根据客户端请求的格式改写
 # 响应，这种技术称为内容协商
 @main.errorhandler(404)

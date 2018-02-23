@@ -1,0 +1,36 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Wx App') }}
+	</h2>
+
+    <form class="form-horizontal" action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+        <div class="tab-content m-t-30">
+            <div class="card no-border">
+                <h3 class="title">小程序授权</h3>
+                <p class="summary m-t-25 m-b-25">
+                    {{ errmsg }}
+                </p>
+                <a href="{{ url_for('main.wxapp_authorize') }}" class="btn btn-mixpus btn-lg" target="_blank">
+                    重新授权
+                </a>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

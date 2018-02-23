@@ -119,7 +119,7 @@ def refresh_authorizer_token():
         component_app_id = current_app.config['WX_APP_ID']
         wx_token = WxToken.query.filter_by(app_id=component_app_id).order_by(WxToken.created_at.desc()).first()
         if wx_token is None:
-            current_app.logger.warn("Refresh: component_access_token isn't exist!!!")
+            current_app.logger.warn("Refresh: authorizer access_token isn't exist!!!")
             return FAIL
 
         wx_app_api = WxApp(component_app_id, current_app.config['WX_APP_SECRET'], wx_token.access_token)

@@ -1,31 +1,32 @@
 # -*- coding: utf-8 -*-
 import json
-from flask import render_template, redirect, url_for, flash, request, current_app
+from flask import render_template, redirect, url_for, flash, request, current_app, abort
 from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
-from app.models import WxToken, WxAuthCode, WxMiniApp
+from app.models import WxToken, WxAuthCode, WxMiniApp, WxAuthorizer, Store
 from app.helpers import WxApp, WxAppError
-from ..utils import Master
+from ..utils import Master, timestamp
 from ..decorators import user_has, user_is
 
 
-@main.route('/wxapp/setting', methods=['GET', 'POST'])
+@main.route('/wxapps')
+def wxapps():
+    """小程序列表"""
+    mini_apps = WxMiniApp.query.filter_by(master_uid=Master.master_uid()).all()
+
+    return render_template('wxapp/index.html',
+                           mini_apps=mini_apps)
+
+
+@main.route('/wxapps/setting', methods=['GET', 'POST'])
 def wxapp_setting():
     """配置小程序参数"""
-    auth_code = request.values.get('auth_code')
     auth_app_id = request.values.get('auth_app_id')
     is_auth = False
-    if auth_code is None and auth_app_id is None:
-        return render_template('wxapp/index.html', auth_status=is_auth)
-
-    # 根据授权码获取auth_app_id
-    if auth_code and auth_app_id is None:
-        wx_auth = WxAuthCode.query.filter_by(auth_code=auth_code).first()
-        if wx_auth is None:
-            return render_template('wxapp/index.html', auth_status=is_auth)
-        auth_app_id = wx_auth.auth_app_id
+    if not auth_app_id:
+        return redirect(url_for('.wxapps'))
 
     # 根据auth_app_id获取auth access token
     wx_mini_app = WxMiniApp.query.filter_by(auth_app_id=auth_app_id).first()
@@ -42,9 +43,10 @@ def wxapp_setting():
         authorizer_info = result.authorizer_info
         authorization_info = result.authorization_info
         # 新增
+        new_serial_no = WxMiniApp.make_unique_serial_no()
         wx_mini_app = WxMiniApp(
             master_uid=Master.master_uid(),
-            serial_no=WxMiniApp.make_unique_serial_no(),
+            serial_no=new_serial_no,
             auth_app_id=auth_app_id,
             nick_name=authorizer_info.nick_name,
             head_img=authorizer_info.head_img,
@@ -60,22 +62,40 @@ def wxapp_setting():
         )
         db.session.add(wx_mini_app)
 
+        # 同步增加一个关联店铺
+        new_store = Store(
+            master_uid=Master.master_uid(),
+            operator_id=Master.master_uid(),
+            name=authorizer_info.nick_name,
+            serial_no=new_serial_no,
+            description=authorizer_info.signature,
+            platform=1,
+            type=3,
+            status=1
+        )
+        db.session.add(new_store)
+
         db.session.commit()
 
     is_auth = True
-    return render_template('wxapp/index.html',
+    return render_template('wxapp/setting.html',
                            auth_status=is_auth,
                            wx_mini_app=wx_mini_app.to_json())
 
 
-@main.route('/wxapp/authorize')
+@main.route('/wxapps/authorize')
 def wxapp_authorize():
     """跳转授权页"""
     app_id = current_app.config['WX_APP_ID']
     back_url = '{}/open/wx/authorize_callback'.format(current_app.config['DOMAIN_URL'])
     auth_type = 2
 
-    # 1、获取预授权码
+    # 从缓存获取auth_code
+    auth_code = cache.get('user_%d_wx_authorizer_auth_code' % Master.master_uid())
+    if auth_code:
+        return redirect('%s?auth_code=%s&is_cached=%d' % (back_url, auth_code, 1))
+
+    # 获取预授权码
     pre_auth_code = _get_pre_auth_code()
 
     authorize_url = ('https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={}&pre_auth_code={}&'

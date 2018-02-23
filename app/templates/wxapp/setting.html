@@ -1,0 +1,133 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Wx App') }}
+		<span class="pull-right">
+            <button type="submit" form="shop-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="glyphicon glyphicon-floppy-save"></i>
+			</button>
+		</span>
+	</h2>
+
+    <form id="shop-form" class="form-horizontal" action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active">
+                <a href="#general" id="general-tab" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
+                    微信小程序授权
+                </a>
+            </li>
+            <li>
+                <a href="#data" id="data-tab" role="tab" data-toggle="tab" aria-controls="data" aria-expanded="true">
+                    小程序支付设置
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content m-t-30">
+            <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
+                {% if auth_status %}
+                    <div class="row">
+		                <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">小程序原始ID</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static">{{ wx_mini_app.user_name }}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">小程序名称</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static">{{ wx_mini_app.nick_name }}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">小程序介绍</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static">{{ wx_mini_app.signature }}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">小程序审核状态</label>
+                                <div class="col-md-9">
+                                    <p class="form-control-static">{{ wx_mini_app.status }}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">预览</label>
+                                <div class="col-md-9">
+                                    <img src="{{ wx_mini_app.qrcode_url }}" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9">
+                                    <a href="" class="btn btn-default btn-lg">重新授权</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="alert">
+                                <i class="fa fa-info-circle"></i> 如使用中发现接口有异常，请点击 <a href="">重新授权</a> 试试。
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">商户号</label>
+                            <div class="col-md-9">
+                                <input class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">密钥</label>
+                            <div class="col-md-9">
+                                <input class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">API证书</label>
+                            <div class="col-md-9">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-9 col-md-offset-3">
+                                <button class="btn btn-mixpus btn-lg">确认提交</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-info">
+                            <p class="m-t-10"><i class="fa fa-info-circle"></i> 小程序必须使用自有的微信支付，配置完成后，每笔交易货款都将直接进入您的微信支付对应的财付通账号。</p>
+
+                            <p class="m-t-25"><i class="fa fa-warning"></i> 未申请微信支付的商户，如已有微信商户平台账户，可在授权的小程序微信后台，直接绑定已开通的微信支付，无需重新申请新的支付。</p>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}

@@ -64,7 +64,7 @@ DEPARTMENT = (
 SUPPORT_PLATFORM = (
     {
         'id': 1,
-        'name': lazy_gettext('Michose')
+        'name': lazy_gettext('Wx App')
     },
     {
         'id': 2,
