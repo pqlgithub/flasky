@@ -94,6 +94,13 @@ Supervisor运行于 `Python2.7` 环境下：
     # 启动beat
     celery beat -A celery_runner -f /var/log/celery.log --detach
 
+## 修正数据库字段
+
+    # wx_auth_codes
+    auth_code = db.Column(db.String(200), unique=True, nullable=False)
+    # wx_authorizer
+    access_token = db.Column(db.String(200), unique=True, nullable=False)
+    refresh_token = db.Column(db.String(200), nullable=False)
 
 
 ### 文献资料参考：

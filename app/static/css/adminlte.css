@@ -1548,6 +1548,8 @@ a:focus,
     left: 124px;
     top: 0;
     z-index: 90;
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
 }
 .treeview-menu.tree-2x {
     width: 320px;
@@ -1698,6 +1700,13 @@ table.text-center,table.text-center td,table.text-center th {
 }
 .panel-heading {
     font-weight: 600;
+}
+
+.card {
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 2px;
 }
 
 

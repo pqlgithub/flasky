@@ -63,7 +63,7 @@ class WxApp(object):
 
         return self._intercept_result(result)
 
-    def exchange_authorizer_info(self, auth_code_value):
+    def exchange_authorizer_token(self, auth_code_value):
         """
         该API用于使用授权码换取授权公众号或小程序的授权信息，并换取authorizer_access_token和authorizer_refresh_token
         """
@@ -73,9 +73,9 @@ class WxApp(object):
         }
         url = '%s/api_query_auth?component_access_token=%s' % (self.component_host_url,
                                                                self.component_access_token)
-        result = requests.post(url, data=payload)
+        result = requests.post(url, data=json.dumps(payload))
 
-        return result.json()
+        return self._intercept_result(result)
 
     def get_authorizer_token(self, authorizer_appid, authorizer_refresh_token):
         """
@@ -88,9 +88,9 @@ class WxApp(object):
         }
         url = '%s/api_authorizer_token?component_access_token=%s' % (self.component_host_url,
                                                                      self.component_access_token)
-        result = requests.post(url, data=payload)
+        result = requests.post(url, data=json.dumps(payload))
 
-        return result.json()
+        return self._intercept_result(result)
 
     def get_authorizer_info(self, authorizer_appid):
         """
@@ -102,9 +102,9 @@ class WxApp(object):
         }
         url = '%s/api_get_authorizer_info?component_access_token=%s' % (self.component_host_url,
                                                                         self.component_access_token)
-        result = requests.post(url, data=payload)
+        result = requests.post(url, data=json.dumps(payload))
 
-        return result.json()
+        return self._intercept_result(result)
 
     def jscode2session(self, app_id, app_secret, js_code):
         """

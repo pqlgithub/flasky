@@ -138,17 +138,22 @@
                                 {{ _('Channel List') }}
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ url_for('main.wxapp_setting') }}" class="pjax">
+                                {{ _('Wx App') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.setting_mall') }}" class="pjax">
+                                {{ _('H5 Mall') }}
+                            </a>
+                        </li>
                     </ul>
                     <ul class="subtree">
                         <li class="header">{{ _('Channel Setting') }}</li>
                         <li>
                             <a href="{{ url_for('main.show_banners') }}" class="pjax">
                                 {{ _('Banner List') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.setting_mall') }}" class="pjax">
-                                {{ _('H5 Mall') }}
                             </a>
                         </li>
                     </ul>

@@ -26,7 +26,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('pre_auth_code')
     )
-    op.add_column('wx_auth_codes', sa.Column('auth_code', sa.String(length=100), nullable=False))
+    op.add_column('wx_auth_codes', sa.Column('auth_code', sa.String(length=200), nullable=False))
     op.add_column('wx_auth_codes', sa.Column('master_uid', sa.Integer(), nullable=True))
     op.create_index(op.f('ix_wx_auth_codes_master_uid'), 'wx_auth_codes', ['master_uid'], unique=False)
     op.drop_index('ix_wx_auth_codes_app_id', table_name='wx_auth_codes')

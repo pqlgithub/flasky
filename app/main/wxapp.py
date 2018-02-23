@@ -5,8 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
-from app.models import WxToken, WxPreAuthCode, WxAuthCode
-from app.forms import H5mallForm
+from app.models import WxToken, WxAuthCode
 from app.helpers import WxApp, WxAppError
 from ..utils import Master
 from ..decorators import user_has, user_is
@@ -15,7 +14,7 @@ from ..decorators import user_has, user_is
 @main.route('/wxapp/setting', methods=['GET', 'POST'])
 def wxapp_setting():
     """配置小程序参数"""
-    pass
+    return render_template('wxapp/index.html')
 
 
 @main.route('/wxapp/authorize')

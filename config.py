@@ -109,8 +109,14 @@ class Config:
     # schedules
     CELERYBEAT_SCHEDULE = {
         # 每5分钟检测刷新微信token
-        'refresh-wx-token': {
+        'wx-refresh-token': {
             'task': 'wx.refresh_component_token',
+            'schedule': timedelta(seconds=300),
+            'args': ()
+        },
+        # 每5分钟检测刷新授权方token
+        'wx-refresh-authorizer-token': {
+            'task': 'wx.refresh_authorizer_token',
             'schedule': timedelta(seconds=300),
             'args': ()
         },

@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask import g, current_app, request, redirect, url_for
+from flask import current_app, request, redirect, url_for
 import xml.etree.cElementTree as ET
 
 from . import open
-from .. import db
-from app.models import WxTicket, WxAuthCode
-from app.helpers import WXBizMsgCrypt
+from .. import db, cache
+from app.models import WxAuthCode
+from app.helpers import WXBizMsgCrypt, WxAppError, WxApp
 from app.utils import Master, custom_response, timestamp
-
-
-@open.route('/wx/authorize')
-def authorize():
-    """跳转授权页"""
-    pass
+from app.tasks import exchange_authorizer_token
 
 
 @open.route('/wx/authorize_notify', methods=['GET', 'POST'])
@@ -38,43 +33,59 @@ def authorize_notify():
         current_app.logger.warn("decrypt content: %s" % decrypt_content)
 
         xml_tree = ET.fromstring(decrypt_content)
+        info_type = xml_tree.find('InfoType').text
         app_id = xml_tree.find('AppId').text
         create_time = xml_tree.find('CreateTime').text
-        verify_ticket = xml_tree.find('ComponentVerifyTicket').text
-        info_type = xml_tree.find('InfoType').text
 
-        current_app.logger.debug('Component verify ticket: %s' % verify_ticket)
+        current_app.logger.debug('Parse app_id:[%s], create_time[%s]' % (app_id, create_time))
 
-        wx_ticket = WxTicket.query.filter_by(app_id=app_id).first()
-        if wx_ticket is not None:
-            # 更新ticket
-            wx_ticket.info_type = info_type
-            wx_ticket.ticket = verify_ticket
-            wx_ticket.created_at = create_time
+        # 推送component_verify_ticket
+        if info_type == 'component_verify_ticket':
+            verify_ticket = xml_tree.find('ComponentVerifyTicket').text
+
+            current_app.logger.debug('Component verify ticket: %s' % verify_ticket)
+
+            # 设置缓存DB,每隔10分钟定时推送component_verify_ticket,
+            # timeout是缓存过期时间，默认为0，永不过期
+            cache.set('wx_component_verify_ticket', verify_ticket, timeout=0)
+
+        # 推送授权成功消息
+        elif info_type == 'authorized':
+            authorizer_app_id = xml_tree.find('AuthorizerAppid').text
+            authorizer_code = xml_tree.find('AuthorizationCode').text
+            authorizer_expired_time = xml_tree.find('AuthorizationCodeExpiredTime').text
+
+            current_app.logger.warn('Authorizer [%s][%s][%s]' % (authorizer_app_id, authorizer_code,
+                                                                 authorizer_expired_time))
+
+            # 触发换取授权Access Token任务,app_id, auth_code, uid
+            exchange_authorizer_token.apply_async(args=[authorizer_app_id, authorizer_code, Master.master_uid()])
+
+            # 保存授权码
+            wx_auth_code = WxAuthCode.query.filter_by(auth_code=authorizer_code).first()
+            if wx_auth_code is None:
+                wx_auth_code = WxAuthCode(
+                    master_uid=Master.master_uid(),
+                    auth_app_id=authorizer_app_id,
+                    auth_code=authorizer_code,
+                    expires_in=7200
+                )
+                db.session.add(wx_auth_code)
+            else:
+                wx_auth_code.auth_app_id = authorizer_app_id
+                wx_auth_code.created_at = int(timestamp())
+
+            db.session.commit()
         else:
-            # 新增数据
-            new_wx_ticket = WxTicket(
-                app_id=app_id,
-                info_type=info_type,
-                ticket=verify_ticket,
-                created_at=create_time
-            )
-            db.session.add(new_wx_ticket)
+            pass
 
-        db.session.commit()
     else:
         current_app.logger.warn('error code: %d' % ret)
 
     return 'success'
 
 
-@open.route('/wx/<string:appid>/receive_message')
-def receive_message(appid):
-    """接收公众号或小程序消息和事件推送"""
-    pass
-
-
-@open.route('/wx/authorize_callback', methods=['POST'])
+@open.route('/wx/authorize_callback', methods=['GET'])
 def authorize_callback():
     """授权成功后回调url"""
     current_app.logger.warn('request content {}'.format(request.values))
@@ -85,15 +96,15 @@ def authorize_callback():
     if auth_code is None:
         return custom_response(False, '授权失败，Auth Code 为空！')
 
-    wx_auth_code = WxAuthCode.query.filter_by(master_uid=Master.master_uid()).first()
+    wx_auth_code = WxAuthCode.query.filter_by(auth_code=auth_code).first()
     if wx_auth_code is None:
         # 新增
-        new_auth_code = WxAuthCode(
+        wx_auth_code = WxAuthCode(
             master_uid=Master.master_uid(),
             auth_code=auth_code,
             expires_in=expires_in
         )
-        db.session.add(new_auth_code)
+        db.session.add(wx_auth_code)
     else:
         # 更新
         wx_auth_code.auth_code = auth_code
@@ -102,8 +113,18 @@ def authorize_callback():
 
     db.session.commit()
 
+    # 授权完成，跳转至设置页
+    return redirect('%s?auth_code=%s' % (url_for('main.wxapp_setting'), auth_code))
 
 
+@open.route('/wx/authorize')
+def authorize():
+    """跳转授权页"""
+    pass
 
 
-
+@open.route('/wx/<string:appid>/receive_message')
+def receive_message(appid):
+    """接收公众号或小程序消息和事件推送"""
+    current_app.logger.debug('Appid [%s]' % appid)
+    pass

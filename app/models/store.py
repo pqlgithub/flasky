@@ -31,6 +31,7 @@ STORE_TYPE = [
     (6, lazy_gettext('Distribution'))
 ]
 
+
 class Store(db.Model):
     """渠道店铺列表"""
     __tablename__ = 'stores'
@@ -55,6 +56,7 @@ class Store(db.Model):
     type = db.Column(db.SmallInteger, default=1)
     # 状态 -1：禁用；1：正常
     status = db.Column(db.SmallInteger, default=1)
+
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
@@ -96,13 +98,11 @@ class Store(db.Model):
     def operator(self):
         """获取负责人信息"""
         return User.query.get(self.operator_id) if self.operator_id else None
-    
 
     @staticmethod
     def validate_unique_name(name, master_uid, platform):
         """验证店铺名称是否唯一"""
         return Store.query.filter_by(master_uid=master_uid, platform=platform, name=name).first()
-    
 
     def __repr__(self):
         return '<Store %r>' % self.name

@@ -287,6 +287,7 @@ PAY_TYPES = (
     (4, lazy_gettext('Apple Pay'))
 )
 
+
 # 导出采购单头格式 / 采购单对应的字段
 PURCHASE_EXCEL_FIELDS = {
     'serial_no': gettext('Purchase Serial'),
