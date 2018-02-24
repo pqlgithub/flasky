@@ -11,8 +11,7 @@ def api_sign_required(func):
     @wraps(func)
     def validate_api_sign(*args, **kwargs):
         sign_args = request.values if request.values else request.json
-        current_app.logger.warn(request.headers)
-        current_app.logger.warn(request.authorization)
+
         app_key = sign_args.get('app_key')
         # 验证请求参数
         for key in ['app_key', 'timestamp', 'nonce_str', 'sign']:
