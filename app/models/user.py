@@ -77,6 +77,16 @@ class User(UserMixin, db.Model):
     
     # 身份类型：1、供应商、2、分销客户、9、消费者
     id_type = db.Column(db.SmallInteger, default=UserIdType.SUPPLIER)
+
+    # 第三方账号
+    openid = db.Column(db.String(128), index=True, nullable=True)
+    unionid = db.Column(db.String(128), index=True, nullable=True)
+    gender = db.Column(db.SmallInteger, default=0)
+    country = db.Column(db.String(100))
+    province = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    # 来源, 默认 0 本地注册，1，微信小程序
+    referer = db.Column(db.SmallInteger, default=0)
     
     # 本地化
     locale = db.Column(db.String(4), default='zh')
@@ -247,6 +257,11 @@ class User(UserMixin, db.Model):
         db.session.commit()
     
         return users
+
+    @staticmethod
+    def find_by_openid(openid):
+        """通过openid查找用户"""
+        return User.query.filter_by(openid=openid).first()
 
     def to_json(self):
         """资源和JSON的序列化转换"""
