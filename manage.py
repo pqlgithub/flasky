@@ -14,7 +14,6 @@ from flask_script import Server, Manager, Shell
 from flask_script.commands import ShowUrls, Clean
 from flask_migrate import Migrate, MigrateCommand
 from flask_assets import ManageAssets
-from flask_s3 import create_all
 
 from app import create_app, db
 from app.models import User, Role, Order, Product, ProductSku, Purchase
@@ -37,13 +36,7 @@ def make_shell_context():
 @manager.command
 def upload_files_s3():
     """静态文件同步至S3"""
-    create_all(
-        app,
-        user=app.config['AWS_ACCESS_KEY'],
-        password=app.config['AWS_ACCESS_SECRET'],
-        bucket_name=app.config['FLASKS3_BUCKET_NAME'],
-        location='ap-southeast-1',
-        include_hidden=False)
+    pass
 
 
 @manager.option('-m', '--model', dest='model', default='all')

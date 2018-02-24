@@ -8,7 +8,6 @@ from flask import Flask
 # 导入扩展
 from .extensions import (
     db,
-    s3,
     mail,
     csrf,
     pjax,
@@ -23,7 +22,6 @@ from .extensions import (
 import flask_whooshalchemyplus as whooshalchemyplus
 # 导入上传
 from flask_uploads import UploadSet, configure_uploads, patch_request_class
-# import redis
 from .assets import assets_env, bundles
 # 导入配置参数
 from config import config
@@ -46,9 +44,6 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    # app.redis = redis.Redis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'],
-    #                        db=app.config['REDIS_DB'], password=app.config['REDIS_PASSWORD'])
-    # phone_number = current_app.redis.get('token:%s' % token)
     db.init_app(app)
     bootstrap.init_app(app)
     mail.init_app(app)
@@ -60,7 +55,6 @@ def create_app(config_name):
 
     assets_env.init_app(app)
     assets_env.register(bundles)
-    s3.init_app(app)
 
     # 缓存
     cache.init_app(app)

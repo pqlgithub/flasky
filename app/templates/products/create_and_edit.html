@@ -1,7 +1,9 @@
 {% extends pjax("layout/base.html") %}
 
 {% block private_js %}
-<script type="text/javascript" src="{{ url_for('static', filename='js/ckeditor/ckeditor.js') }}"></script>
+    {% assets "ckeditor_js" %}
+  		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 {% endblock %}
 
 {% block after_jquery %}

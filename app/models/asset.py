@@ -68,10 +68,10 @@ class Asset(db.Model):
     @property
     def view_url(self):
         proto = 'http://'
-        if current_app.config['FLASKS3_USE_HTTPS']:
+        if current_app.config['CDN_HTTPS']:
             proto = 'https://'
 
-        if not current_app.config['DEBUG']:
+        if not current_app.config['CDN_DEBUG']:
             url = '{}{}/{}'.format(
                 proto,
                 current_app.config['THUMB_CDN_DOMAIN'],

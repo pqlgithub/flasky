@@ -53,25 +53,21 @@ class Config:
     MAIL_SUBJECT_PREFIX = '[MIC]'
     MAIL_SENDER = os.environ.get('MAIL_SENDER') or DEFAULT_MAIL_SENDER
 
+    # AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
+    # AWS_ACCESS_SECRET = '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'
+
     # Can not compress the CSS/JS on Dev environment.
     IMAGE_SIZE = (480, 480)
-    ASSETS_DEBUG = True
-
-    # Use Amazon S3
-    FLASK_ASSETS_USE_S3 = False
-    FLASKS3_ACTIVE = True
-    FLASKS3_USE_HTTPS = False
-    FLASKS3_BUCKET_NAME = 's3.mixpus.com'
-    FLASKS3_CDN_DOMAIN = 's3.mixpus.com'
-    FLASKS3_FORCE_MIMETYPE = True
 
     # Asset Bucket
-    ASSET_BUCKET_NAME = 'g3.michose.com'
-    ASSET_CDN_DOMAIN = 'g3.michose.com'
-    THUMB_CDN_DOMAIN = 'g3.michose.com'
-
-    AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
-    AWS_ACCESS_SECRET = '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'
+    ASSETS_DEBUG = True
+    FLASK_ASSETS_USE_CDN = True
+    CDN_DEBUG = True
+    CDN_HTTPS = True
+    CDN_TIMESTAMP = True
+    CDN_ENDPOINTS = ['static']
+    CDN_DOMAIN = 'kg.erp.taihuoniao.com'
+    THUMB_CDN_DOMAIN = 'kg.erp.taihuoniao.com'
 
     # 七牛存储（生产环境使用云存储）
     QINIU_UPLOAD = 'https://up.qbox.me'
@@ -198,6 +194,10 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
 
+    ASSETS_DEBUG = True
+    CDN_DEBUG = True
+    CDN_HTTPS = False
+
     # Examples:
     # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@localhost/mixshopy'
@@ -222,10 +222,10 @@ class ProductionConfig(Config):
     CACHE_REDIS_DB = '0'
     CACHE_REDIS_PASSWORD = ''
 
+    # 静态文件
     ASSETS_DEBUG = False
-    FLASK_ASSETS_USE_S3 = False
-    FLASKS3_USE_HTTPS = False
-    FLASKS3_CDN_DOMAIN = ''
+    CDN_DEBUG = False
+    CDN_HTTPS = True
 
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://fxadmin:fxdb@1801?!@10.10.39.2/fxshopy?charset=utf8'

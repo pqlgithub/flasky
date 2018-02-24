@@ -20,7 +20,7 @@ from flask_caching import Cache
 # 后台定时任务
 from flask_celery import Celery
 
-s3 = FlaskS3()
+
 db = SQLAlchemy()
 mail = Mail()
 pjax = PJAX()
