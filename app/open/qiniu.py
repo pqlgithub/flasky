@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import current_app, request
+from flask import current_app, request, jsonify
 
 from . import open
 from .. import db
@@ -31,6 +31,8 @@ def upload_notify():
         current_directory = Directory.query.filter_by(master_uid=master_uid, name=directory).first()
         directory_id = current_directory.id
 
+    saved_asset_ids = []
+
     # 更新记录
     new_asset = Asset(
         directory_id=directory_id,
@@ -45,7 +47,12 @@ def upload_notify():
     db.session.add(new_asset)
     db.session.commit()
 
-    return status_response()
+    saved_asset_ids.append(new_asset.id)
+
+    return jsonify({
+        'status': 200,
+        'ids': saved_asset_ids
+    })
 
 
 def _pop_last_directory(directory_path=None):
