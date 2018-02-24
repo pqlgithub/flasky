@@ -37,7 +37,7 @@ def addto_cart():
     option = request.json.get('option')
     
     # 检测是否存在某商品
-    cart = Cart.query.filter_by(master_uid=g.master_uid,user_id=g.current_user.id,sku_rid=sku_rid).first()
+    cart = Cart.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id, sku_rid=sku_rid).first()
     if not cart:
         cart = Cart(
             master_uid=g.master_uid,
@@ -48,13 +48,13 @@ def addto_cart():
             quantity=quantity
         )
         db.session.add(cart)
-    else: # 已存在，则更新信息
+    else:  # 已存在，则更新信息
         cart.quantity = quantity
         cart.option = option
 
     try:
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Addto cart fail: {}'.format(str(err)))
         db.session.rollback()
         return status_response(custom_status('Addto failed!', 400), False)
