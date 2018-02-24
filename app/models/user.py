@@ -271,6 +271,7 @@ class User(UserMixin, db.Model):
             'email': self.email,
             'master_uid': self.master_uid,
             'last_seen': self.last_seen,
+            'avatar': self.avatar,
             'name': self.name,
             'mobile': self.mobile,
             'about_me': self.about_me,

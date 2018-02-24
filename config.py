@@ -73,6 +73,12 @@ class Config:
     AWS_ACCESS_KEY = 'AKIAJMIYNJXL7QEHTXNQ'
     AWS_ACCESS_SECRET = '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'
 
+    # 七牛存储（生产环境使用云存储）
+    QINIU_UPLOAD = 'https://up.qbox.me'
+    QINIU_ACCESS_KEY = 'AWTEpwVNmNcVjsIL-vS1hOabJ0NgIfNDzvTbDb4i'
+    QINIU_ACCESS_SECRET = 'F_g7diVuv1X4elNctf3o3bNjhEAe5MR3hoCk7bY6'
+    QINIU_BUCKET_NAME = 'frking'
+
     # 日志
     ERROR_LOG = 'logs/mic-error.log'
 

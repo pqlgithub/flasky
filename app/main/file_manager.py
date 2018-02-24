@@ -7,13 +7,15 @@ from flask import current_app, render_template, redirect, url_for, flash, reques
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from wtforms import ValidationError
+from qiniu import Auth, put_file, put_data
 
 from app import db, uploader
 from app.models import Asset, Directory
 from . import main
 
-from app.utils import full_response, status_response, Master, custom_response
-from app.helpers import aws
+from app.utils import timestamp, status_response, Master, custom_response
+from app.helpers import MixGenId
+
 
 @main.route('/file_manager/folder', methods=['POST'])
 @main.route('/file_manager/folder/<int:page>', methods=['POST'])
@@ -43,7 +45,6 @@ def folder(page=1):
 
         if Directory.query.filter_by(master_uid=Master.master_uid(), name=sub_folder).first():
             return custom_response(False, gettext("Directory name is already exist!"))
-
 
         if parent_directory != '':
             directories = parent_directory.split('/')
@@ -105,8 +106,33 @@ def show_asset(page=1):
                 # directories.pop()
                 parent_directory = '/'.join(directories)
 
+    q = Auth(current_app.config['QINIU_ACCESS_KEY'], current_app.config['QINIU_ACCESS_SECRET'])
+    bucket_name = current_app.config['QINIU_BUCKET_NAME']
+    # 上传策略示例
+    # https://developer.qiniu.com/kodo/manual/1206/put-policy
+    key_prefix = MixGenId.gen_letters(16)
+    save_key = '$(year)$(mon)$(day)/$(etag)$(ext)'
+    policy = {
+        'scope': bucket_name,
+        'deadline': int(timestamp()) + 3600,
+        'callbackUrl': '%s/open/qiniu/notify' % current_app.config['DOMAIN_URL'],
+        'callbackBody': 'filepath=$(key)&filename=$(fname)&filesize=$(fsize)&mime=$(mimeType)&user_id=$(x:user_id)'
+                        '&width=$(imageInfo.width)&height=$(imageInfo.height)&ext=$(ext)&directory=$(x:directory)',
+        'saveKey': save_key,
+        'fsizeLimit': 20 * 1024 * 1024 ,  # 限定上传文件大小最大值, 20M
+        'returnUrl': '',
+        'returnBody': ''
+    }
+
+    # 3600为token过期时间，秒为单位。3600等于一小时
+    up_token = q.upload_token(bucket_name, None, 3600, policy)
+
     return render_template('file_manager.html',
                            up_target=up_target,
+                           up_endpoint=current_app.config['QINIU_UPLOAD'],
+                           up_token=up_token,
+                           key_prefix=key_prefix,
+                           master_uid=Master.master_uid(),
                            current_directory=current_directory,
                            parent_directory=parent_directory,
                            all_directory=all_directory,
@@ -118,6 +144,7 @@ def show_asset(page=1):
 def get_asset(id):
     asset = Asset.query.get_or_404(id)
     return jsonify(asset.to_json())
+
 
 @main.route('/file_manager/view_asset/<int:id>')
 @login_required
@@ -139,24 +166,38 @@ def flupload():
         current_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=directory).first()
         directory_id = current_directory.id
 
-    s3 = aws.connect_s3()
     # for key, file in request.files.iteritems():
     for f in request.files.getlist('file'):
+        current_app.logger.warn(f.stream)
+
         upload_name = f.filename
         mime_type = f.mimetype
 
         # Gen new file name
         file_ext = splitext(f.filename)[1].lower()
-        name_prefix = 'mis' + str(time.time())
+        name_prefix = 'fx' + str(time.time())
         name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
         filename = '%s/%s/%s%s' % (root_folder, sub_folder, name_prefix, file_ext)
 
         current_app.logger.debug('File length: %s,%s' % (f.content_length, f.mimetype))
 
-        if not current_app.config['DEBUG']:
+        if current_app.config['DEBUG']:
             # Upload to s3
             f.filename = filename
-            out_result = aws.upload_file_to_s3(s3, f, current_app.config['ASSET_BUCKET_NAME'])
+
+            q = Auth(current_app.config['QINIU_ACCESS_KEY'], current_app.config['QINIU_ACCESS_SECRET'])
+            bucket_name = current_app.config['QINIU_BUCKET_NAME']
+
+            filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
+
+            current_app.logger.warn('path: %s' % uploader.path(filename) )
+            # 生成上传Token
+            token = q.upload_token(bucket_name, filename, 3600)
+
+            ret, info = put_file(token, filename, uploader.path(filename))
+            current_app.logger.warn('info: %s' % info)
+
+            # out_result = aws.upload_file_to_s3(s3, f, current_app.config['ASSET_BUCKET_NAME'])
             # response = s3.head_object(Bucket=current_app.config['FLASKS3_BUCKET_NAME'], Key=filename)
         else:
             # Upload to local
@@ -165,8 +206,8 @@ def flupload():
             # img = Image.open(f)
             # img.load()
 
-        width = 0 #img.size[0]
-        height = 0 #img.size[1]
+        width = 0  #img.size[0]
+        height = 0  #img.size[1]
 
         # Update to DB
         new_asset = Asset(
@@ -187,6 +228,7 @@ def flupload():
         'status': 200,
         'ids': saved_asset_ids
     })
+
 
 @main.route('/file_manager/pldelete', methods=['POST'])
 @login_required

@@ -71,6 +71,7 @@ def verify_wxa_login():
             user.confirmed = True
             user.time_zone = 'zh'
             user.username = User.make_unique_username(user_info['nickName'])
+            user.avatar = user_info['avatarUrl']
             user.gender = user_info['gender']
             user.country = user_info['country']
             user.province = user_info['province']
@@ -85,6 +86,7 @@ def verify_wxa_login():
         user_token = {
             'uid': user.sn,
             'username': user.username,
+            'avatar': user.avatar,
             'token': user.generate_auth_token(expiration=expired_time),
             'expiration': expired_time
         }

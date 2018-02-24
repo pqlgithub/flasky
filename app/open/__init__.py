@@ -3,4 +3,4 @@ from flask import Blueprint
 
 open = Blueprint('open', __name__)
 
-from . import views, wechat
+from . import views, wechat, qiniu

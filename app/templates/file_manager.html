@@ -173,22 +173,31 @@
 
 	var total_image_count = 0;
 	var files_to_remove = [];
+	var file_count = 1;
+	var ord = function(){
+		return file_count++;
+	};
 
 	$("#uploader").pluploadQueue({
         // General settings
-        url : '{{ url_for("main.flupload") }}',
+        // url : '{{ url_for("main.flupload") }}',
+        url: '{{ up_endpoint }}',
 
         chunk_size : '1mb',
         rename : false,
         dragdrop: true,
 		multiple_queues: true,
 		multipart_params: {
-        	'directory': '{{ current_directory }}',
-			'csrf_token': mixpus.csrf_token
+            'csrf_token': mixpus.csrf_token,
+            'token': '{{ up_token }}',
+        	'x:directory': '{{ current_directory }}',
+            'x:key': '{{ key_prefix }}',
+            'x:ord': 1,
+            'x:user_id': {{ master_uid }}
 		},
         filters : {
             // Maximum file size
-            max_file_size : '10mb',
+            max_file_size : '20mb',
             // Specify what files to browse for
             mime_types: [
                 {title : 'Image files', extensions : 'jpg,jpeg,gif,png'}
