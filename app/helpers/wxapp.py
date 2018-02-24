@@ -21,6 +21,9 @@ class WxApp(object):
     """
     component_host_url = 'https://api.weixin.qq.com/cgi-bin/component'
 
+    # 小程序API服务域名
+    wxa_host_url = 'https://api.weixin.qq.com/wxa'
+
     headers = {
         'content-type': 'application/json'
     }
@@ -108,6 +111,40 @@ class WxApp(object):
 
         return self._intercept_result(result)
 
+    def get_template_draft_list(self):
+        """获取草稿箱内的所有临时代码草稿"""
+        url = '%s/gettemplatedraftlist?access_token=%s' % (self.wxa_host_url, self.component_access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def get_template_list(self):
+        """获取代码模版库中的所有小程序代码模版"""
+        url = '%s/gettemplatelist?access_token=%s' % (self.wxa_host_url, self.component_access_token)
+        res = requests.get(url)
+
+        return self._intercept_result(res)
+
+    def add_to_template(self, draft_id=0):
+        """将草稿箱的草稿选为小程序代码模版"""
+        payload = {
+            'draft_id': draft_id
+        }
+        url = '%s/addtotemplate?access_token=%s' % (self.wxa_host_url, self.component_access_token)
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
+    def delete_template(self, template_id=0):
+        """删除指定小程序代码模版"""
+        payload = {
+            'template_id': template_id
+        }
+        url = '%s/deletetemplate?access_token=%s' % (self.wxa_host_url, self.component_access_token)
+        res = requests.post(url, data=json.dumps(payload))
+
+        return self._intercept_result(res)
+
     def jscode2session(self, app_id, js_code):
         """
         通过code换取openid和session_key
@@ -116,7 +153,7 @@ class WxApp(object):
         """
         url = ('https://api.weixin.qq.com/sns/component/jscode2session?appid={}&js_code={}'
                '&grant_type=authorization_code&component_appid={}&component_access_token={}').format(
-            app_id, js_code, self.component_app_id, self.component_app_secret)
+            app_id, js_code, self.component_app_id, self.component_access_token)
         result = requests.get(url)
 
         return result.json()
@@ -132,8 +169,8 @@ class WxApp(object):
         decrypt_data = self._unpad(cipher.decrypt(encrypted_data))
         decrypted = json.loads(decrypt_data.decode())
 
-        if decrypted['watermark']['appid'] != self.app_id:
-            raise Exception('Invalid Buffer')
+        # if decrypted['watermark']['appid'] != self.app_id:
+        #    raise Exception('Invalid Buffer')
 
         return decrypted
 

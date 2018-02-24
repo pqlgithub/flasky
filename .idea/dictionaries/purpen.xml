@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="purpen">
     <words>
+      <w>addtotemplate</w>
       <w>akiajmiynjxl</w>
       <w>appsecret</w>
       <w>auditid</w>
@@ -10,6 +11,7 @@
       <w>ciphertext</w>
       <w>cryptor</w>
       <w>dbname</w>
+      <w>deletetemplate</w>
       <w>dest</w>
       <w>dismissable</w>
       <w>downloaddomain</w>
@@ -20,6 +22,8 @@
       <w>fxerp</w>
       <w>fxshopy</w>
       <w>getgrayreleaseplan</w>
+      <w>gettemplatedraftlist</w>
+      <w>gettemplatelist</w>
       <w>getwxasearchstatus</w>
       <w>githup</w>
       <w>gmail</w>
