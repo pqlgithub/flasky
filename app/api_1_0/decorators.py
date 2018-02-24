@@ -3,14 +3,14 @@ from functools import wraps
 from flask import request, abort, g
 
 from app.models import Client, User
-from ..utils import *
+from .utils import *
 
 
 def api_sign_required(func):
     """装饰器：验证API数字签名"""
     @wraps(func)
     def validate_api_sign(*args, **kwargs):
-        sign_args = request.values
+        sign_args = request.values if request.values else request.json
         
         app_key = sign_args.get('app_key')
         # 验证请求参数
@@ -20,7 +20,7 @@ def api_sign_required(func):
                     'code': 601,
                     'message': 'Parameters missing'
                 }, False)
-        
+
         # 验证是否有app_key
         client = Client.query.filter_by(app_key=app_key).first()
         if client and Client.check_api_sign(sign_args, client.app_secret):
