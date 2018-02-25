@@ -77,6 +77,9 @@
     border-radius: 3px;
 	line-height: 30px;
 }
+.plupload_content.hide {
+    display: none;
+}
 
 .plupload_filelist {
 	margin: 0;
@@ -118,22 +121,24 @@
 	max-width: 60px;
 }
 .plupload_progress {
-	width: 240px;
+	width: 50%;
 	float: left;
 	margin-left: 10px;
 }
 .plupload_progress .progress {
 	margin-bottom: 0;
     margin-top: 10px;
+    height: 6px;
+    border-color: #CDCDCD;
 }
 .plupload_upload_status {
-	width: 130px;
-	float: left;
+	float: right;
+    margin-right: 10px;
 }
 .plupload_file_size,
 .plupload_file_status,
 .plupload_file_action {
-	margin: 0 5px;
+	margin: 0 10px;
     text-align: left;
 }
 

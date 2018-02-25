@@ -94,7 +94,7 @@ used as it is.
 			'<div class="plupload_wrapper plupload_scroll">' +
 				'<div id="' + id + '_container" class="plupload_container">' +
 					'<div class="plupload">' +
-						'<div class="plupload_content">' +
+						'<div class="plupload_content hide">' +
 							/*
 							'<div class="plupload_filelist_header">' +
 								'<div class="plupload_file_name">' + _('Filename') + '</div>' +
@@ -192,12 +192,15 @@ used as it is.
 				}
 
 				function updateTotalProgress() {
+				    if ($('.plupload_content').hasClass('hide')) {
+				        $('.plupload_content').removeClass('hide');
+                    }
 					$('span.plupload_total_status', target).html(uploader.total.percent + '%');
 					$('div.plupload_progress_bar', target)
 						.addClass('active')
 						.css('width', uploader.total.percent + '%');
 					$('div.plupload_upload_status', target).html(
-						plupload.sprintf(_('Uploaded %d/%d files'), uploader.total.uploaded, uploader.files.length)
+						plupload.sprintf(_('%d/%d 文件'), uploader.total.uploaded, uploader.files.length)
 					);
 				}
 
