@@ -59,9 +59,7 @@ def signup():
 
         # 触发任务
         build_default_setting.apply_async(args=[user.id])
-
-        flash(gettext('确认邮件已发送到你注册的邮箱.'))
-
+        
         return redirect(url_for('main.index'))
 
     return render_template('auth/signup.html',
