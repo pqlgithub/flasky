@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 # 本地化日期和时间
 from flask_moment import Moment
 from flask_wtf.csrf import CSRFProtect
-from flask_s3 import FlaskS3
+from flask_cdn import CDN
 # pjax
 from flask_pjax import PJAX
 # 管理用户认证系统中的认证状态
@@ -33,3 +33,5 @@ moment = Moment()
 bootstrap = Bootstrap()
 # Flask-Login初始化
 login_manager = LoginManager()
+# cdn
+cdn = CDN()

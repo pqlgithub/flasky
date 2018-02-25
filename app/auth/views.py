@@ -59,7 +59,7 @@ def signup():
 
         # 触发任务
         build_default_setting.apply_async(args=[user.id])
-        
+
         return redirect(url_for('main.index'))
 
     return render_template('auth/signup.html',
