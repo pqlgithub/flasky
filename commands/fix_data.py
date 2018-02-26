@@ -42,3 +42,4 @@ class FixData(Command):
                 print('update sku[%s]' % sku.serial_no)
 
         db.session.commit()
+

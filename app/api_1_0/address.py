@@ -17,6 +17,7 @@ def get_addresses():
     
     return full_response(R200_OK, [address.to_json() for address in addresses])
 
+
 @api.route('/address/<string:rid>')
 @auth.login_required
 def get_address(rid):
@@ -52,7 +53,7 @@ def create_address():
         
         db.session.add(address)
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Create address fail: {}'.format(str(err)))
     
         db.session.rollback()
@@ -101,7 +102,7 @@ def update_address(rid):
         address.is_default = is_default
         
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Update address fail: {}'.format(str(err)))
         db.session.rollback()
         return custom_response('Update failed!', 400, False)

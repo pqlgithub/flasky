@@ -3,7 +3,7 @@ from flask import current_app
 from app import db
 from app.constant import DEFAULT_ACLIST, DEFAULT_DIRECTORY, DEFAULT_ASSET, DEFAULT_SUPPLIER, DEFAULT_EXPRESS, \
     DEFAULT_CURRENCIES
-from app.models import User, Ability, Directory, Asset, Supplier, Express, Currency
+from app.models import User, Ability, Directory, Asset, Supplier, Express, Currency, Country
 
 __all__ = [
     'InitialSite',
@@ -172,3 +172,22 @@ class InitialSystem(object):
         db.session.commit()
 
         print('Default express is initial!')
+
+    @staticmethod
+    def init_open_country():
+        """初始化开通的国家"""
+        if Country.query.filter_by(name='中国').first():
+            print('Default country already initial, exit!')
+            return False
+
+        country = Country(
+            name='中国',
+            en_name='china',
+            code='CN',
+            status=True
+        )
+        db.session.add(country)
+
+        db.session.commit()
+
+        print('Default country is initial!')

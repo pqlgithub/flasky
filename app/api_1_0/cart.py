@@ -98,7 +98,7 @@ def remove_cart(rid):
     try:
         db.session.delete(cart)
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Remove cart fail: {}'.format(str(err)))
         db.session.rollback()
         return status_response(custom_status('Remove failed!', 400), False)
@@ -117,4 +117,3 @@ def clear_cart():
         db.session.commit()
     
     return status_response(R204_NOCONTENT)
-    

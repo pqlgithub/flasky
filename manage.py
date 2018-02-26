@@ -33,12 +33,6 @@ def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role)
 
 
-@manager.command
-def upload_files_s3():
-    """静态文件同步至S3"""
-    pass
-
-
 @manager.option('-m', '--model', dest='model', default='all')
 def whoose_index(model):
     """手动建立全文索引"""

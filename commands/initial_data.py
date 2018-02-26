@@ -29,3 +29,7 @@ class InitialData(Command):
 
         # 初始化默认物流
         InitialSystem.init_express()
+
+        # 初始化国际
+        InitialSystem.init_open_country()
+

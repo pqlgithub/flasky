@@ -24,6 +24,7 @@ INVOICE_TYPE = [
     (3, '纸质发票')
 ]
 
+
 class OrderStatus:
     # 已关闭或取消
     CANCELED = -1
@@ -69,6 +70,7 @@ ORDER_STATUS = [
     (OrderStatus.PENDING_RATING, lazy_gettext('Pending Rating'), 'success'),
     (OrderStatus.RATED, lazy_gettext('Rated'), 'success')
 ]
+
 
 class Order(db.Model):
     """订单表"""
@@ -212,12 +214,10 @@ class Order(db.Model):
         """全部订单明细"""
         sku_list = [item.sku_serial_no for item in self.items]
         return ' '.join(sku_list)
-    
 
     def mark_checked_status(self):
         """标记为待审核状态"""
         self.status = OrderStatus.PENDING_CHECK
-
 
     def mark_shipment_status(self):
         """标记为待发货状态"""
@@ -229,41 +229,35 @@ class Order(db.Model):
         self.status = OrderStatus.PENDING_PRINT
         self.express_at = timestamp()
 
-
     def mark_shipped_status(self):
         """标记为已发货状态"""
         self.status = OrderStatus.SHIPPED
-
 
     def mark_finished_status(self):
         """标记为已完成的状态"""
         self.status = OrderStatus.FINISHED
 
-
     def mark_canceled_status(self):
         """标记为关闭或取消状态"""
         self.status = OrderStatus.CANCELED
         self.closed_at = timestamp()
-    
 
     @staticmethod
     def make_unique_serial_no():
         serial_no = MixGenId.gen_order_sn()
-        if Order.query.filter_by(serial_no=serial_no).first() == None:
+        if Order.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
             new_serial_no = MixGenId.gen_order_sn()
-            if Order.query.filter_by(serial_no=new_serial_no).first() == None:
+            if Order.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
 
-    
     @staticmethod
     def on_sync_change(mapper, connection, target):
         """同步事件"""
         pass
-    
-    
+
     @staticmethod
     def create(data, user=None):
         """创建新订单"""
@@ -271,8 +265,7 @@ class Order(db.Model):
         order.from_json(data, partial_update=True)
         
         return order
-    
-    
+
     def from_json(self, data, partial_update=True):
         """从请求json里导入数据"""
         fields = ['master_uid', 'user_id', 'serial_no', 'store_id', 'outside_target_id',
@@ -288,8 +281,7 @@ class Order(db.Model):
                 current_app.logger.warn(str(err))
                 if not partial_update:
                     abort(400)
-    
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         opened_columns = ['rid', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
@@ -311,7 +303,6 @@ class Order(db.Model):
         
         return json_order
 
-    
     def __repr__(self):
         return '<Order %r>' % self.serial_no
 
@@ -381,11 +372,10 @@ class Cart(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     @property
     def product(self):
-        return ProductSku.query.filter_by(serial_no=self.sku_rid).one()
+        return ProductSku.query.filter_by(serial_no=self.sku_rid).first()
     
     def to_json(self):
         """资源和JSON的序列化转换"""
@@ -394,15 +384,14 @@ class Cart(db.Model):
             'user_id': self.user_id,
             'quantity': self.quantity,
             'option': self.option,
-            'product': self.product.to_json()
+            'product': self.product.to_json() if self.product else {}
         }
         return json_cart
-    
-    
+
     def __repr__(self):
         return '<Cart {}>'.format(self.id)
 
 
 # 添加监听事件, 实现触发器
-#sqlalchemy.exc.InvalidRequestError: Session is already flushing
+# sqlalchemy.exc.InvalidRequestError: Session is already flushing
 # event.listen(Order, 'after_insert', Order.on_sync_change)

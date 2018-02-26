@@ -18,6 +18,7 @@ PLACE_STATUS = [
     (False, lazy_gettext('Disabled'), 'danger')
 ]
 
+
 class Address(db.Model):
     """收货地址薄"""
     
@@ -90,8 +91,7 @@ class Address(db.Model):
         if target.area_id:
             area_row = Place.query.get(target.area_id)
             target.area = area_row.name if area_row else ''
-    
-    
+
     @staticmethod
     def validate_required_fields(json_address):
         """验证必须数据格式"""
@@ -105,8 +105,7 @@ class Address(db.Model):
             raise ValidationError("Province can't empty!")
         
         return True
-    
-    
+
     @staticmethod
     def from_json(json_address):
         """从json格式数据创建，对API支持"""
@@ -128,8 +127,7 @@ class Address(db.Model):
             zipcode=json_address.get('zipcode'),
             is_default=bool(json_address.get('is_default'))
         )
-    
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
@@ -149,8 +147,7 @@ class Address(db.Model):
             'is_default': self.is_default
         }
         return json_obj
-    
-    
+
     def __repr__(self):
         return '<Address {}>'.format(self.id)
 
@@ -170,8 +167,7 @@ class Country(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
@@ -182,8 +178,7 @@ class Country(db.Model):
             'code2': self.code2
         }
         return json_obj
-    
-    
+
     def __repr__(self):
         return '<Country %r>' % self.code
 
@@ -195,7 +190,8 @@ class Place(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     country_id = db.Column(db.Integer, db.ForeignKey('countries.id'))
-    
+
+    oid = db.Column(db.Integer, default=0)
     name = db.Column(db.String(100), nullable=False)
     # 所属父级
     pid = db.Column(db.Integer, default=0)
@@ -207,8 +203,7 @@ class Place(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     @property
     def status_label(self):
         for s in PLACE_STATUS:
@@ -277,7 +272,7 @@ class Place(db.Model):
         return json_obj
     
     def __repr__(self):
-        return '<Area {}>'.format(self.name)
+        return '<Place {}>'.format(self.name)
 
 
 # 添加监听事件, 实现触发器
