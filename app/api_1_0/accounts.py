@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from flask import g, request, current_app
 
 from .. import db
@@ -82,13 +83,15 @@ def verify_wxa_login():
             db.session.commit()
 
         # 4、返回token
-        expired_time = 7200
+        # 默认： 30天, 30*24*60*60 = 2592000 秒
+        expired_time = 180
         user_token = {
             'uid': user.sn,
             'username': user.username,
             'avatar': user.avatar,
             'token': user.generate_auth_token(expiration=expired_time),
-            'expiration': expired_time
+            'expiration': expired_time,
+            'created_at': int(time.time())
         }
     else:
         current_app.logger.warn('Params: code[%s],encrypted_data[%s],iv[%s]' % (js_code, encrypted_data, iv))
