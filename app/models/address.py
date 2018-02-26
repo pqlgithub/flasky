@@ -231,7 +231,7 @@ class Place(db.Model):
         if pid:
             builder = builder.filter_by(pid=pid)
         
-        return builder.order_by(Place.sort_by.asc()).all()
+        return builder.order_by(Place.oid.asc()).all()
     
     @staticmethod
     def cities(pid=0):
@@ -240,7 +240,7 @@ class Place(db.Model):
         if pid:
             builder = builder.filter_by(pid=pid)
 
-        return builder.order_by(Place.sort_by.asc()).all()
+        return builder.order_by(Place.oid.asc()).all()
     
     @staticmethod
     def towns(pid=0):
@@ -249,7 +249,7 @@ class Place(db.Model):
         if pid:
             builder = builder.filter_by(pid=pid)
 
-        return builder.order_by(Place.sort_by.asc()).all()
+        return builder.order_by(Place.oid.asc()).all()
     
     @staticmethod
     def areas(pid=0):
@@ -258,12 +258,12 @@ class Place(db.Model):
         if pid:
             builder = builder.filter_by(pid=pid)
         
-        return builder.order_by(Place.sort_by.asc()).all()
+        return builder.order_by(Place.oid.asc()).all()
     
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
-            'rid': self.id,
+            'oid': self.oid,
             'name': self.name,
             'pid': self.pid,
             'sort_by': self.sort_by,
