@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from flask import g, request, abort, current_app
 from flask_httpauth import HTTPBasicAuth
 from sqlalchemy.exc import IntegrityError
@@ -91,11 +92,13 @@ def login():
     if g.token_used:
         return custom_response('Email or Password is error!', 400, False)
 
-    expired_time = 7200
+    # 默认： 30天, 30*24*60*60 = 2592000 秒
+    expired_time = 180
 
     return full_response(R200_OK, {
         'token': g.current_user.generate_auth_token(expiration=expired_time),
-        'expiration': expired_time
+        'expiration': expired_time,
+        'created_at': int(time.time())
     })
 
 

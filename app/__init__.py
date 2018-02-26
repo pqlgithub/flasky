@@ -58,7 +58,7 @@ def create_app(config_name):
     assets_env.register(bundles)
     # cdn
     cdn.init_app(app)
-    
+
     # 缓存
     cache.init_app(app)
     pjax.init_app(app)
