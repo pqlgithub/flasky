@@ -58,7 +58,13 @@ class Address(db.Model):
 
     @property
     def full_name(self):
-        return ''.join([self.first_name, self.last_name])
+        name = ''
+        if self.first_name:
+            name = self.first_name
+        if self.last_name:
+            name += self.last_name
+
+        return name
     
     @property
     def country(self):
