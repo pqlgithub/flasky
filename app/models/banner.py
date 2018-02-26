@@ -35,12 +35,12 @@ class Banner(db.Model):
     def make_unique_sn():
         """生成品牌编号"""
         sn = MixGenId.gen_banner_sn()
-        if Banner.query.filter_by(serial_no=sn).first() == None:
+        if Banner.query.filter_by(serial_no=sn).first() is None:
             return sn
     
         while True:
             new_sn = MixGenId.gen_banner_sn()
-            if Banner.query.filter_by(serial_no=new_sn).first() == None:
+            if Banner.query.filter_by(serial_no=new_sn).first() is None:
                 break
         return new_sn
     
@@ -72,29 +72,26 @@ class BannerImage(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     @property
     def image(self):
         """banner asset info"""
         return Asset.query.get(self.image_id) if self.image_id else Asset.default_banner()
 
-    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
             'rid': self.id,
             'title': self.title,
             'link': self.link,
-            'image': self.image.view_url,
+            'image': self.image.view_url if self.image else '',
             'type': self.type,
             'sort_order': self.sort_order,
             'description': self.description,
             'status': self.status
         }
         return json_obj
-    
-    
+
     def __repr__(self):
         return '<BannerImage {}>'.format(self.title)
     
