@@ -5,6 +5,7 @@ from app import db
 from . import api
 from .utils import *
 
+
 @api.route('/categories')
 def get_categories():
     """

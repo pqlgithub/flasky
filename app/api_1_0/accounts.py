@@ -84,7 +84,7 @@ def verify_wxa_login():
 
         # 4、返回token
         # 默认： 30天, 30*24*60*60 = 2592000 秒
-        expired_time = 180
+        expired_time = 2592000
         user_token = {
             'uid': user.sn,
             'username': user.username,

@@ -93,7 +93,7 @@ def login():
         return custom_response('Email or Password is error!', 400, False)
 
     # 默认： 30天, 30*24*60*60 = 2592000 秒
-    expired_time = 180
+    expired_time = 2592000
 
     return full_response(R200_OK, {
         'token': g.current_user.generate_auth_token(expiration=expired_time),
