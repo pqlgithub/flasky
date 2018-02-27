@@ -142,7 +142,7 @@ class Address(db.Model):
             is_default=bool(json_address.get('is_default')),
             is_from_wx=bool(json_address.get('is_from_wx'))
         )
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {

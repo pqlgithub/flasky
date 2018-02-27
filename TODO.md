@@ -20,4 +20,6 @@
 - 开启微商城、小程序、APP等渠道应用时，同步自动创建对应渠道；
 - 注册修改为手机号注册，同步确认验证；
 
+- 收货地址API有改动，需更新文档；is_from_wx;
+
 /opt/project/fxerp/venv/lib/python3.6/site-packages/sqlalchemy/sql/compiler.py:624: SAWarning: Can't resolve label reference 'created_at desc'; converting to text() (this warning may be suppressed after 10 occurrences)

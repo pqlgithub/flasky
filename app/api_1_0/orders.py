@@ -101,6 +101,7 @@ def print_order():
     """打印订单"""
     pass
 
+
 @api.route('/orders/wx_pay/jsapi', methods=['POST'])
 @auth.login_required
 def pay_order_jsapi():
@@ -167,11 +168,11 @@ def create_order():
             product_sku = ProductSku.query.filter_by(serial_no=rid).first()
             if not product_sku:
                 return custom_response("Product sku[%s] is not exist!" % rid, 403, False)
+            quantity = product.get('quantity')
+
             # 验证库存
             warehouse_id = product.get('warehouse_id')
-            quantity = product.get('quantity')
-            
-            if not warehouse_id: # 未选择库房，则默认库房
+            if not warehouse_id:  # 未选择库房，则默认库房
                 default_warehouse = Warehouse.find_default_warehouse(g.master_uid)
                 if default_warehouse is None:
                     return custom_response("Default Warehouse isn't setting!", 403, False)
@@ -182,7 +183,7 @@ def create_order():
                 return custom_response("[%s] Inventory isn't enough!" % rid, 403, False)
             
             deal_price = float(product.get('deal_price'))
-            discount_amount = Decimal(product.get('discount_amount'))
+            discount_amount = Decimal(product.get('discount_amount', 0))
             
             order_items.append({
                 'master_uid': g.master_uid,
@@ -242,19 +243,19 @@ def create_order():
         db.session.commit()
         
         # TODO: 订单提交成功后，需删除本次购物车商品
-        
-        if sync_pay: # 同步返回客户端js支付所需参数
-            pay_params = _js_wxpay_params(new_order.serial_no)
-            return full_response(R201_CREATED, {
-                'order': new_order.to_json(),
-                'pay_params': pay_params
-            })
-        
+
     except Exception as err:
         current_app.logger.warn('Create order failed: %s' % str(err))
         db.session.rollback()
         return custom_response('Create order failed: %s' % str(err), 400, False)
-    
+
+    if sync_pay:  # 同步返回客户端js支付所需参数
+        pay_params = _js_wxpay_params(new_order.serial_no)
+        return full_response(R201_CREATED, {
+            'order': new_order.to_json(),
+            'pay_params': pay_params
+        })
+
     return full_response(R201_CREATED, new_order.to_json())
 
 
@@ -264,7 +265,6 @@ def cancel_order():
     """取消订单"""
     rid = request.json.get('rid')
     
-
 
 @api.route('/orders/delete', methods=['DELETE'])
 @auth.login_required

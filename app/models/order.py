@@ -137,7 +137,7 @@ class Order(db.Model):
     customer_id = db.Column(db.String(20), nullable=True)
     # 所属销售人员
     saler_uid = db.Column(db.Integer, default=0)
-    # 来源终端, 1、PC 2、H5 3、App 4、TV 5、POS 6、PAD
+    # 来源终端, 1、WX 2、H5 3、App 4、TV 5、POS 6、PAD
     from_client = db.Column(db.SmallInteger, default=0)
     # 推广码
     affiliate_code = db.Column(db.String(16), nullable=True)
