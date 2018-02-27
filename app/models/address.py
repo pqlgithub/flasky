@@ -53,6 +53,9 @@ class Address(db.Model):
     # 是否默认
     is_default = db.Column(db.Boolean, default=False)
 
+    # 来源微信的地址
+    is_from_wx = db.Column(db.Boolean, default=False)
+
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
@@ -84,19 +87,20 @@ class Address(db.Model):
     @staticmethod
     def on_sync_change(mapper, connection, target):
         """同步事件"""
-        if target.province_id:
-            province_row = Place.query.get(target.province_id)
-            target.province = province_row.name if province_row else ''
-            target.country_id = province_row.country_id
-        if target.city_id:
-            city_row = Place.query.get(target.city_id)
-            target.city = city_row.name if city_row else ''
-        if target.town_id:
-            town_row = Place.query.get(target.town_id)
-            target.town = town_row.name if town_row else ''
-        if target.area_id:
-            area_row = Place.query.get(target.area_id)
-            target.area = area_row.name if area_row else ''
+        if not target.is_from_wx:
+            if target.province_id:
+                province_row = Place.query.filter_by(oid=target.province_id).first()
+                target.province = province_row.name if province_row else ''
+                target.country_id = province_row.country_id
+            if target.city_id:
+                city_row = Place.query.filter_by(oid=target.city_id).first()
+                target.city = city_row.name if city_row else ''
+            if target.town_id:
+                town_row = Place.query.filter_by(oid=target.town_id).first()
+                target.town = town_row.name if town_row else ''
+            if target.area_id:
+                area_row = Place.query.filter_by(oid=target.area_id).first()
+                target.area = area_row.name if area_row else ''
 
     @staticmethod
     def validate_required_fields(json_address):
@@ -107,7 +111,7 @@ class Address(db.Model):
         if first_name is None and last_name is None:
             raise ValidationError("Name can't empty!")
         
-        if json_address.get('province_id') is None:
+        if json_address.get('province_id') is None and json_address.get('province') is None:
             raise ValidationError("Province can't empty!")
         
         return True
@@ -124,14 +128,16 @@ class Address(db.Model):
             last_name=json_address.get('last_name'),
             phone=json_address.get('phone'),
             mobile=json_address.get('mobile'),
-            province_id=json_address.get('province_id'),
-            city_id=json_address.get('city_id'),
-            town_id=json_address.get('town_id'),
-            area_id=json_address.get('area_id'),
+            country_id=json_address.get('country_id', 1),
+            province_id=json_address.get('province_id', 0),
+            city_id=json_address.get('city_id', 0),
+            town_id=json_address.get('town_id', 0),
+            area_id=json_address.get('area_id', 0),
             street_address=json_address.get('street_address'),
             street_address_two=json_address.get('street_address_two'),
             zipcode=json_address.get('zipcode'),
-            is_default=bool(json_address.get('is_default'))
+            is_default=bool(json_address.get('is_default')),
+            is_from_wx=bool(json_address.get('is_from_wx'))
         )
 
     def to_json(self):
