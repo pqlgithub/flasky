@@ -87,20 +87,19 @@ class Address(db.Model):
     @staticmethod
     def on_sync_change(mapper, connection, target):
         """同步事件"""
-        if not target.is_from_wx:
-            if target.province_id:
-                province_row = Place.query.filter_by(oid=target.province_id).first()
-                target.province = province_row.name if province_row else ''
-                target.country_id = province_row.country_id
-            if target.city_id:
-                city_row = Place.query.filter_by(oid=target.city_id).first()
-                target.city = city_row.name if city_row else ''
-            if target.town_id:
-                town_row = Place.query.filter_by(oid=target.town_id).first()
-                target.town = town_row.name if town_row else ''
-            if target.area_id:
-                area_row = Place.query.filter_by(oid=target.area_id).first()
-                target.area = area_row.name if area_row else ''
+        if target.province_id and target.province is None:
+            province_row = Place.query.filter_by(oid=target.province_id).first()
+            target.province = province_row.name if province_row else ''
+            target.country_id = province_row.country_id
+        if target.city_id and target.city is None:
+            city_row = Place.query.filter_by(oid=target.city_id).first()
+            target.city = city_row.name if city_row else ''
+        if target.town_id and target.town is None:
+            town_row = Place.query.filter_by(oid=target.town_id).first()
+            target.town = town_row.name if town_row else ''
+        if target.area_id and target.area is None:
+            area_row = Place.query.filter_by(oid=target.area_id).first()
+            target.area = area_row.name if area_row else ''
 
     @staticmethod
     def validate_required_fields(json_address):
@@ -130,16 +129,20 @@ class Address(db.Model):
             mobile=json_address.get('mobile'),
             country_id=json_address.get('country_id', 1),
             province_id=json_address.get('province_id', 0),
+            province=json_address.get('province'),
             city_id=json_address.get('city_id', 0),
+            city=json_address.get('city'),
             town_id=json_address.get('town_id', 0),
+            town=json_address.get('town'),
             area_id=json_address.get('area_id', 0),
+            area=json_address.get('area'),
             street_address=json_address.get('street_address'),
             street_address_two=json_address.get('street_address_two'),
             zipcode=json_address.get('zipcode'),
             is_default=bool(json_address.get('is_default')),
             is_from_wx=bool(json_address.get('is_from_wx'))
         )
-
+    
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
@@ -156,6 +159,7 @@ class Address(db.Model):
             'street_address': self.street_address,
             'street_address_two': self.street_address_two,
             'zipcode': self.zipcode,
+            'is_from_wx': self.is_from_wx,
             'is_default': self.is_default
         }
         return json_obj
