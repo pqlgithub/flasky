@@ -290,12 +290,12 @@ def wxapp_prepay_sign():
             'nonceStr': WxPay.nonce_str(32),
             'package': 'prepay_id=%s' % data['prepay_id'],
             'signType': 'MD5',
-            'timeStamp': int(timestamp)
+            'timeStamp': int(timestamp())
         }
         pay_sign = wxpay.sign(pay_params)
 
         data['pay_sign'] = pay_sign
-    
+
     return full_response(R200_OK, data)
 
 
