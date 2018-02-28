@@ -132,6 +132,7 @@ def wxapp_prepay_sign():
     wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
                   wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
 
+    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(current_order.pay_amount * 100)))
     prepay_result = wxpay.unified_order(
         body='D3IN未来店-小程序',
         openid=openid,  # 付款用户openid
