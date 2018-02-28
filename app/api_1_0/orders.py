@@ -116,23 +116,34 @@ def pay_order_jsapi():
     return full_response(R200_OK, data)
 
 
-# TODO: 签名验证问题
-@api.route('/orders/wx_pay/notify', methods=['POST'])
-def wxpay_notify():
-    """微信异步通知"""
-    data = WxPay.to_dict(request.data)
-    # 微信支付初始化参数
-    wx_pay = WxPay(
-        wx_app_id=current_app.config['WECHAT_M_APP_ID'],
-        wx_mch_id=current_app.config['WECHAT_M_PARTNER_ID'],
-        wx_mch_key=current_app.config['WECHAT_M_KEY'],
-        wx_notify_url=current_app.config['WECHAT_M_NOTIFY_URL']
-    )
-    if not wx_pay.check(data):
-        return wx_pay.reply('签名验证失败', False)
-    # TODO:处理业务逻辑
-    
-    return wx_pay.reply('OK', True)
+@api.route('/orders/wx_prepay_sign', methods=['POST'])
+@auth.login_required
+def wxapp_prepay_sign():
+    """微信小程序支付签名"""
+    rid = request.json.get('rid')
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    # 验证订单状态
+    if current_order.status != OrderStatus.PENDING_PAYMENT:
+        return custom_response('Order status is error!', 403, False)
+
+    data = {}
+    openid = g.current_user.openid
+    cfg = current_app.config
+    wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
+                  wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
+
+    prepay_result = wxpay.unified_order(
+        body='D3IN未来店-小程序',
+        openid=openid,  # 付款用户openid
+        out_trade_no=rid,
+        total_fee=str(current_order.pay_amount * 100),  # total_fee 单位是 分， 100 = 1元
+        trade_type='JSAPI')
+
+    current_app.logger.warn(prepay_result)
+    if prepay_result and prepay_result['prepay_id']:
+        data['prepay_id'] = prepay_result['prepay_id']
+
+    return full_response(R200_OK, data)
 
 
 @api.route('/orders/create', methods=['POST'])

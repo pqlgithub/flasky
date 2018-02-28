@@ -6,7 +6,7 @@ import xml.etree.cElementTree as ET
 from . import open
 from .. import db, cache
 from app.models import WxToken, WxAuthorizer
-from app.helpers import WXBizMsgCrypt, WxAppError, WxApp
+from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError
 from app.utils import Master, custom_response, timestamp
 
 
@@ -101,6 +101,25 @@ def receive_message(appid):
     current_app.logger.debug('Appid [%s]' % appid)
 
     pass
+
+
+@open.route('/wx/pay_notify', methods=['POST'])
+def wxpay_notify():
+    """微信支付异步通知"""
+    current_app.logger.warn(request.data)
+    data = WxPay.to_dict(request.data)
+    # 微信支付初始化参数
+    wx_pay = WxPay(
+        wx_app_id=current_app.config['WXPAY_APP_ID'],
+        wx_mch_id=current_app.config['WXPAY_MCH_ID'],
+        wx_mch_key=current_app.config['WXPAY_MCH_SECRET'],
+        wx_notify_url=current_app.config['WXPAY_NOTIFY_URL']
+    )
+    if not wx_pay.check(data):
+        return wx_pay.reply('签名验证失败', False)
+    # TODO:处理业务逻辑
+
+    return wx_pay.reply('OK', True)
 
 
 @open.route('/wx/authorize')

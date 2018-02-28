@@ -165,26 +165,23 @@ class Config:
     WX_APP_SECRET = 'c37328fc19aec73f471ab761508bba2d'
 
     # 微信支付
-    WECHAT_M_TOKEN = ''
-    # 微信APP ID：绑定支付的APP ID（必须配置，开户邮件中可查看）
-    WECHAT_M_APP_ID = 'wx08a55a284c50442e'
-    # 微信APP SECRET：公众帐号secret
-    WECHAT_M_APP_SECRET = '85e685889332e9d69a6268fdec18b92e'
-    # 微信MCH ID：商户号
-    WECHAT_M_PARTNER_ID = '1305635501'
-    # KEY：商户支付密钥
-    WECHAT_M_KEY = 'ArioxptbBJu25ANvabeBqavpE7diWUfTtDu1FCkt66Ojdzb1N3ajKoGAX3xdT3GIsj7C8g1pglSBVqaUNrqsoz5vfiASYrinEL4bAvuhTBgs1ZrdX7gJNgx8qgHBG0V4'
+    WXPAY_APP_ID = 'wx11363b7f6fe26ac8'  # 小程序ID
+    # 商户号
+    WXPAY_MCH_ID = '1490941762'
+    # 商户支付密钥
+    WXPAY_MCH_SECRET = 'a4a3cae89a6e71338df9ca65c7841c96'
     # 异步通知url
-    WECHAT_M_NOTIFY_URL = '/wxpay/notify'
+    WXPAY_NOTIFY_URL = '/open/wx/pay_notify'
+
     # 设置商户证书路径
-    WECHAT_M_SSL_CERT_PATH = '/Users/xiaoyi/Project/micku/wechat_m_cert/apiclient_cert.pem'
-    WECHAT_M_SSL_KEY_PATH = '/Users/xiaoyi/Project/micku/wechat_m_cert/apiclient_key.pem'
-    WECHAT_M_ROOT_CA = '/Users/xiaoyi/Project/micku/wechat_m_cert/rootca.pem'
+    WXPAY_SSL_CERT_PATH = '/Users/xiaoyi/Project/micku/wxpay_m_cert/apiclient_cert.pem'
+    WXPAY_SSL_KEY_PATH = '/Users/xiaoyi/Project/micku/wxpay_m_cert/apiclient_key.pem'
+    WXPAY_ROOT_CA = '/Users/xiaoyi/Project/micku/wxpay_m_cert/rootca.pem'
     # 设置代理机器，只有需要代理的时候才设置，不需要代理，请设置为0.0.0.0和0
-    WECHAT_M_PROXY_HOST = '0.0.0.0'
-    WECHAT_M_PROXY_POST = 0
+    WXPAY_PROXY_HOST = '0.0.0.0'
+    WXPAY_PROXY_POST = 0
     # 接口调用上报等级，默认紧错误上报（注意：上报超时间为【1s】，上报无论成败【永不抛出异常】
-    WECHAT_M_REPORT_LEVEL = 1
+    WXPAY_REPORT_LEVEL = 1
 
     @staticmethod
     def init_app(app):
@@ -239,6 +236,11 @@ class ProductionConfig(Config):
 
     # 快递鸟
     KDN_APP_ROOT_URL = 'http://api.kdniao.cc/api'
+
+    # 设置商户证书路径
+    WXPAY_SSL_CERT_PATH = '/opt/project/fxerp/wxpay_m_cert/apiclient_cert.pem'
+    WXPAY_SSL_KEY_PATH = '/opt/project/fxerp/wxpay_m_cert/apiclient_key.pem'
+    WXPAY_ROOT_CA = '/opt/project/fxerp/wxpay_m_cert/rootca.pem'
 
 
 config = {
