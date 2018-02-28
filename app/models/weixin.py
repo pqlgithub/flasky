@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from app import db
+from .asset import Asset
 from ..utils import timestamp
 from ..helpers import MixGenId
 
@@ -8,7 +9,9 @@ __all__ = [
     'WxToken',
     'WxAuthCode',
     'WxAuthorizer',
-    'WxMiniApp'
+    'WxMiniApp',
+    'WxPayment',
+    'WxTemplate'
 ]
 
 
@@ -104,6 +107,76 @@ class WxMiniApp(db.Model):
         return '<WxAuthorizerInfo {}>'.format(self.app_id)
 
 
+class WxAuthorizer(db.Model):
+    """微信小程序授权方"""
+
+    __tablename__ = 'wx_authorizer'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
+    access_token = db.Column(db.String(200), unique=True, nullable=False)
+    refresh_token = db.Column(db.String(200), nullable=False)
+    expires_in = db.Column(db.Integer, default=0)
+    func_info = db.Column(db.Text(), nullable=False)
+    created_at = db.Column(db.Integer, default=timestamp)
+
+    def __repr__(self):
+        return '<WxAuthorizer {}>'.format(self.auth_app_id)
+
+
+class WxPayment(db.Model):
+    """小程序支付key与secret"""
+
+    __tablename__ = 'wx_payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
+    # 商户号
+    mch_id = db.Column(db.String(16), nullable=False)
+    # 商户支付密钥
+    mch_key = db.Column(db.String(64), nullable=False)
+    # 商户证书路径
+    ssl_key = db.Column(db.String(100))
+    ssl_cert = db.Column(db.String(100))
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    def __repr__(self):
+        return '<WxPayment {}>'.format(self.auth_app_id)
+
+
+class WxTemplate(db.Model):
+    """微信小程序模板"""
+
+    __tablename__ = 'wx_templates'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # 模板ID
+    template_id = db.Column(db.String(32))
+    name = db.Column(db.String(30), index=True, nullable=False)
+    description = db.Column(db.String(200))
+    # 封面图
+    cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
+    # 更多附件Ids: 123, 253
+    attachment = db.Column(db.String(200))
+    # 被使用的次数
+    used_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.Integer, default=timestamp)
+    update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @property
+    def cover(self):
+        """cover asset info"""
+        return Asset.query.get(self.cover_id) if self.cover_id else None
+
+    def __repr__(self):
+        return '<WxTemplate {}>'.format(self.template_id)
+
+
 class WxToken(db.Model):
     """
     微信第三方平台的下文中接口的调用凭据，也叫做令牌（component_access_token）。
@@ -136,24 +209,6 @@ class WxAuthCode(db.Model):
 
     def __repr__(self):
         return '<WxAuthCode {}>'.format(self.auth_code)
-
-
-class WxAuthorizer(db.Model):
-    """微信小程序授权方"""
-
-    __tablename__ = 'wx_authorizer'
-
-    id = db.Column(db.Integer, primary_key=True)
-    master_uid = db.Column(db.Integer, index=True, default=0)
-    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
-    access_token = db.Column(db.String(200), unique=True, nullable=False)
-    refresh_token = db.Column(db.String(200), nullable=False)
-    expires_in = db.Column(db.Integer, default=0)
-    func_info = db.Column(db.Text(), nullable=False)
-    created_at = db.Column(db.Integer, default=timestamp)
-
-    def __repr__(self):
-        return '<WxAuthorizer {}>'.format(self.auth_app_id)
 
 
 class WxTicket(db.Model):
