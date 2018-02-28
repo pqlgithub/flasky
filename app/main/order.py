@@ -39,6 +39,7 @@ status_list = (
     (OrderStatus.REFUND, lazy_gettext('Refund'))
 )
 
+
 @main.route('/orders')
 @main.route('/orders/<int:page>')
 @login_required
@@ -132,6 +133,7 @@ def search_orders(page=1):
                            date=date,
                            paginated_orders=paginated_orders,
                            pagination=pagination)
+
 
 @main.route('/orders/<string:rid>/ajax_add_express', methods=['GET', 'POST'])
 @login_required
@@ -335,7 +337,6 @@ def shipment_order():
         # 自动转换到待打印状态
         order.mark_print_status()
 
-    
     db.session.commit()
 
     success = False if len(messages) else True
@@ -940,8 +941,7 @@ def service_order(rid):
     form.store_id.choices = [(store.id, store.name) for store in store_list]
     form.warehouse_id.choices = [(warehouse.id, warehouse.name) for warehouse in warehouse_list]
     form.express_id.choices = [(express.id, express.name) for express in express_list]
-    
-    
+
     return render_template('orders/create_and_edit.html',
                            form=form,
                            mode='create',
@@ -1056,7 +1056,6 @@ def split_order(sn):
     return render_template('orders/_modal_split.html',
                            current_order=current_order,
                            **load_common_data())
-
 
 
 @main.route('/orders/ajax_verify', methods=['POST'])

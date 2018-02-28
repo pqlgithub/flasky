@@ -116,37 +116,6 @@ def pay_order_jsapi():
     return full_response(R200_OK, data)
 
 
-@api.route('/orders/wx_prepay_sign', methods=['POST'])
-@auth.login_required
-def wxapp_prepay_sign():
-    """微信小程序支付签名"""
-    rid = request.json.get('rid')
-    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
-    # 验证订单状态
-    if current_order.status != OrderStatus.PENDING_PAYMENT:
-        return custom_response('Order status is error!', 403, False)
-
-    data = {}
-    openid = g.current_user.openid
-    cfg = current_app.config
-    wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
-                  wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
-
-    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(current_order.pay_amount * 100)))
-    prepay_result = wxpay.unified_order(
-        body='D3IN未来店-小程序',
-        openid=openid,  # 付款用户openid
-        out_trade_no=rid,
-        total_fee=str(current_order.pay_amount * 100),  # total_fee 单位是 分， 100 = 1元
-        trade_type='JSAPI')
-
-    current_app.logger.warn(prepay_result)
-    if prepay_result and prepay_result['prepay_id']:
-        data['prepay_id'] = prepay_result['prepay_id']
-
-    return full_response(R200_OK, data)
-
-
 @api.route('/orders/create', methods=['POST'])
 @auth.login_required
 def create_order():
@@ -283,6 +252,38 @@ def cancel_order():
 def delete_order():
     """删除订单"""
     rid = request.json.get('rid')
+
+
+@api.route('/orders/wx_prepay_sign', methods=['POST'])
+@auth.login_required
+def wxapp_prepay_sign():
+    """微信小程序支付签名"""
+    rid = request.json.get('rid')
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    # 验证订单状态
+    if current_order.status != OrderStatus.PENDING_PAYMENT:
+        return custom_response('Order status is error!', 403, False)
+
+    data = {}
+    openid = g.current_user.openid
+    cfg = current_app.config
+    wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
+                  wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
+
+    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(current_order.pay_amount * 100))))
+    prepay_result = wxpay.unified_order(
+        body='D3IN未来店-小程序',
+        openid=openid,  # 付款用户openid
+        out_trade_no=rid,
+        total_fee=str(int(current_order.pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
+        trade_type='JSAPI')
+
+    current_app.logger.warn('Unified order result: %s' % prepay_result)
+
+    if prepay_result and prepay_result['prepay_id']:
+        data['prepay_id'] = prepay_result['prepay_id']
+    
+    return full_response(R200_OK, data)
 
 
 def _js_wxpay_params(rid):
