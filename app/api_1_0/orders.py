@@ -9,6 +9,7 @@ from .auth import auth
 from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus
+from app.utils import timestamp
 
 
 @api.route('/orders')
@@ -282,6 +283,18 @@ def wxapp_prepay_sign():
 
     if prepay_result and prepay_result['prepay_id']:
         data['prepay_id'] = prepay_result['prepay_id']
+
+        # 生成签名
+        pay_params = {
+            'appId': cfg['WXPAY_APP_ID'],
+            'nonceStr': WxPay.nonce_str(32),
+            'package': 'prepay_id=%s' % data['prepay_id'],
+            'signType': 'MD5',
+            'timeStamp': int(timestamp)
+        }
+        pay_sign = wxpay.sign(pay_params)
+
+        data['pay_sign'] = pay_sign
     
     return full_response(R200_OK, data)
 
