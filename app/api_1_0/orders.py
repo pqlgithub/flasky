@@ -282,21 +282,22 @@ def wxapp_prepay_sign():
     current_app.logger.warn('Unified order result: %s' % prepay_result)
 
     if prepay_result and prepay_result['prepay_id']:
-        data['prepay_id'] = prepay_result['prepay_id']
+        prepay_id = prepay_result['prepay_id']
 
         # 生成签名
         pay_params = {
             'appId': cfg['WXPAY_APP_ID'],
             'nonceStr': WxPay.nonce_str(32),
-            'package': 'prepay_id=%s' % data['prepay_id'],
+            'package': 'prepay_id=%s' % prepay_id,
             'signType': 'MD5',
             'timeStamp': int(timestamp())
         }
         pay_sign = wxpay.sign(pay_params)
 
-        data['pay_sign'] = pay_sign
+        pay_params['pay_sign'] = pay_sign
+        pay_params['prepay_id'] = prepay_id
 
-    return full_response(R200_OK, data)
+    return full_response(R200_OK, pay_params)
 
 
 def _js_wxpay_params(rid):
