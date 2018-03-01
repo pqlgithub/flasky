@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import abort, g, current_app
 from sqlalchemy import text, event
-from flask_babelex import lazy_gettext
+from flask_babelex import lazy_gettext, gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 import flask_whooshalchemyplus
 from app import db
@@ -57,7 +57,7 @@ class OrderStatus:
 # 订单状态
 ORDER_STATUS = [
     (OrderStatus.CANCELED, lazy_gettext('Canceled'), 'info'),
-    (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment'), 'danger'),
+    (OrderStatus.PENDING_PAYMENT, gettext('Pending Payment'), 'danger'),
     (OrderStatus.PENDING_CHECK, lazy_gettext('UnApprove'), 'danger'),
     (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Effective'), 'primary'),
     (OrderStatus.DISTRIBUTION, lazy_gettext('Distribution'), 'primary'),
@@ -286,8 +286,8 @@ class Order(db.Model):
         """资源和JSON的序列化转换"""
         opened_columns = ['rid', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
                           'discount_amount', 'express_no', 'remark', 'buyer_name', 'buyer_tel', 'buyer_phone',
-                          'buyer_zipcode','buyer_address', 'buyer_country', 'buyer_province', 'buyer_city', 'buyer_remark',
-                          'created_at', 'express_at', 'received_at', 'status']
+                          'buyer_zipcode', 'buyer_address', 'buyer_country', 'buyer_province', 'buyer_city',
+                          'buyer_remark', 'created_at', 'express_at', 'received_at', 'status']
         
         json_order = { c: getattr(self, c, None) for c in opened_columns }
         

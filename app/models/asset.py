@@ -85,17 +85,24 @@ class Asset(db.Model):
         return url
 
     @staticmethod
+    def host_url():
+        proto = 'http://'
+        if current_app.config['CDN_HTTPS']:
+            proto = 'https://'
+        return '{}{}'.format(proto, current_app.config['THUMB_CDN_DOMAIN'])
+
+    @staticmethod
     def default_logo():
         """默认图-Logo"""
         return Dictate({
-            'view_url': 'http://127.0.0.1:5000/static/img/no_img100x100.png'
+            'view_url': '%s/static/img/no_img100x100.png' % Asset.host_url()
         })
 
     @staticmethod
     def default_banner():
         """默认图-Banner"""
         return Dictate({
-            'view_url': '/static/img/no_img100x100.png'
+            'view_url': '%s/static/img/no_img100x100.png' % Asset.host_url()
         })
 
     def __repr__(self):

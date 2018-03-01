@@ -19,8 +19,8 @@ def get_orders():
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
     status = request.values.get('status', type=int)
-    prev = None
-    next = None
+    prev_url = None
+    next_url = None
 
     builder = Order.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id)
     
@@ -31,15 +31,15 @@ def get_orders():
 
     orders = pagination.items
     if pagination.has_prev:
-        prev = url_for('api.get_orders', status=status, page=page - 1, _external=True)
+        prev_url = url_for('api.get_orders', status=status, page=page - 1, _external=True)
 
     if pagination.has_next:
-        next = url_for('api.get_orders', status=status, page=page + 1, _external=True)
+        next_url = url_for('api.get_orders', status=status, page=page + 1, _external=True)
     
     return full_response(R200_OK, {
         'orders': [order.to_json() for order in orders],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
 

@@ -4,7 +4,7 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import User, Product, Category, Customer, ProductPacket, ProductSku
+from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku
 
 
 @api.route('/products')
@@ -24,7 +24,7 @@ def get_products():
     else:
         builder = Product.query.filter_by(master_uid=g.master_uid)
     
-    pagination = builder.order_by('updated_at desc').paginate(page, per_page, error_out=False)
+    pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
     
     products = pagination.items
     if pagination.has_prev:
@@ -46,23 +46,28 @@ def get_products_by_brand(rid):
     """获取某品牌下商品列表"""
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
-    prev = None
-    next = None
+    prev_url = None
+    next_url = None
+
+    # 品牌是否存在
+    brand = Brand.query.filter_by(sn=rid).first()
+    if brand is None:
+        return custom_response('品牌不存在', 401, False)
     
-    builder = Product.query.filter_by(master_uid=g.master_uid, brand_rid=rid)
-    pagination = builder.order_by('updated_at desc').paginate(page, per_page, error_out=False)
+    builder = Product.query.filter_by(master_uid=g.master_uid, brand_id=brand.id)
+    pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
     products = pagination.items
     
     if pagination.has_prev:
-        prev = url_for('api.get_products_by_brand', rid=rid, page=page - 1, _external=True)
+        prev_url = url_for('api.get_products_by_brand', rid=rid, page=page - 1, _external=True)
 
     if pagination.has_next:
-        next = url_for('api.get_products_by_brand', rid=rid, page=page + 1, _external=True)
+        next_url = url_for('api.get_products_by_brand', rid=rid, page=page + 1, _external=True)
         
     return full_response(R200_OK, {
         'products': [product.to_json() for product in products],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
 

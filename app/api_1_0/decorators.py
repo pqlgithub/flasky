@@ -10,6 +10,12 @@ def api_sign_required(func):
     """装饰器：验证API数字签名"""
     @wraps(func)
     def validate_api_sign(*args, **kwargs):
+        # 测试环境跳过验证
+        if current_app.config['MODE'] == 'dev':
+            g.master_uid = 2
+            g.store_id = 1
+            return func(*args, **kwargs)
+
         sign_args = request.values if request.values else request.json
 
         app_key = sign_args.get('app_key')
