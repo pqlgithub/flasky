@@ -20,6 +20,7 @@ def load_common_data():
         'sub_menu': 'clients'
     }
 
+
 @main.route('/clients')
 @main.route('/clients/<int:page>')
 def show_clients(page=1):

@@ -13,7 +13,7 @@ def api_sign_required(func):
         # 测试环境跳过验证
         if current_app.config['MODE'] == 'dev':
             g.master_uid = 2
-            g.store_id = 1
+            g.store_id = 2
             return func(*args, **kwargs)
 
         sign_args = request.values if request.values else request.json
