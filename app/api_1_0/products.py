@@ -41,6 +41,46 @@ def get_products():
     })
 
 
+@api.route('/products/latest')
+def get_latest_products():
+    """获取最新商品列表"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+
+    builder = Product.query.filter_by(master_uid=g.master_uid)
+    pagination = builder.order_by(Product.created_at.desc()).paginate(page, per_page, error_out=False)
+    products = pagination.items
+
+    return full_response(R200_OK, {
+        'products': [product.to_json() for product in products]
+    })
+
+
+@api.route('/products/sticked')
+def get_sticked_products():
+    """获取推荐商品列表"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+    prev_url = None
+    next_url = None
+
+    builder = Product.query.filter_by(master_uid=g.master_uid, sticked=True)
+    pagination = builder.order_by(Product.created_at.desc()).paginate(page, per_page, error_out=False)
+    products = pagination.items
+    if pagination.has_prev:
+        prev_url = url_for('api.get_sticked_products', page=page - 1, _external=True)
+
+    if pagination.has_next:
+        next_url = url_for('api.get_sticked_products', page=page + 1, _external=True)
+
+    return full_response(R200_OK, {
+        'products': [product.to_json() for product in products],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
 @api.route('/products/by_brand/<string:rid>')
 def get_products_by_brand(rid):
     """获取某品牌下商品列表"""
@@ -77,8 +117,8 @@ def get_products_by_customer(rid):
     """获取某分销商下商品列表"""
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
-    prev = None
-    next = None
+    prev_url = None
+    next_url = None
     
     current_customer = Customer.query.filter_by(master_uid=g.master_uid, sn=rid).first()
     if current_customer is None:
@@ -93,21 +133,21 @@ def get_products_by_customer(rid):
     
     # 多对多关联查询
     builder = db.session.query(Product).join(ProductPacket, Product.product_packets)\
-        .filter(Product.master_uid==g.master_uid).filter(ProductPacket.id.in_(distribute_packet_ids))
+        .filter(Product.master_uid == g.master_uid).filter(ProductPacket.id.in_(distribute_packet_ids))
 
     pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
     products = pagination.items
     
     if pagination.has_prev:
-        prev = url_for('api.get_products_by_customer', rid=rid, page=page - 1, _external=True)
+        prev_url = url_for('api.get_products_by_customer', rid=rid, page=page - 1, _external=True)
 
     if pagination.has_next:
-        next = url_for('api.get_products_by_customer', rid=rid, page=page + 1, _external=True)
+        next_url = url_for('api.get_products_by_customer', rid=rid, page=page + 1, _external=True)
 
     return full_response(R200_OK, {
         'products': [product.to_json() for product in products],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
     
@@ -157,6 +197,7 @@ def get_product_detail(rid):
     
     return full_response(R200_OK, product.details.to_json())
 
+
 @api.route('/products/skus')
 def get_product_skus():
     """获取商品的Skus"""
@@ -203,6 +244,7 @@ def create_product():
     """添加新的商品信息"""
     pass
 
+
 @api.route('/products/<string:rid>', methods=['PUT'])
 def update_product(rid):
     """更新商品信息"""
@@ -213,5 +255,4 @@ def update_product(rid):
 def delete_product(rid):
     """删除商品"""
     pass
-
 

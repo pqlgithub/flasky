@@ -68,10 +68,10 @@
 				</ul>
 			</div>
 			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
-				<i class="glyphicon glyphicon-plus"></i>
+				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="products-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+				<i class="fa fa-trash"></i>
 			</button>
 		</div>
 	</div>
@@ -85,22 +85,22 @@
 
 		<div class="form-group m-l-5">
 			<div class="dropdown">
-				<input type="hidden" name="reg_id">
-				<button class="btn btn-default dropdown-toggle" id="filter-region" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Region') }}: <b>{{ _('All') }}</b>
+				<input type="hidden" name="cate_id">
+				<button class="btn btn-default dropdown-toggle" id="filter-category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Category') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu dropdown-select-menu" data-target="reg_id" aria-labelledby="filter-region">
-					<li class="dropdown-header">{{ _('Search Region')}}</li>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="cate_id" aria-labelledby="filter-category">
+					<li class="dropdown-header">{{ _('Search Category')}}</li>
 					<li class="divider" role="separator"></li>
 					<li>
 						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
 					</li>
-					{% for r in default_regions %}
-					<li>
-						<a href="javascript:void(0);" data-id="{{ r['id'] }}" class="option">{{ r['name'] }}</a>
+                    {% for cate in paginated_categories %}
+                    <li>
+                        <a href="javascript:void(0);" data-id="{{ cate.id }}" class="option">{{ cate.name|safe }}</a>
 					</li>
-					{% endfor %}
+                    {% endfor %}
 				</ul>
 			</div>
 		</div>

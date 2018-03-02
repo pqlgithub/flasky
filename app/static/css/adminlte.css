@@ -169,10 +169,10 @@
 	color: #8D99A6 !important;
 }
 .text-mixpus {
-    color: #2aaeb0;
+    color: #00a65a;
 }
 .badge-mixpus {
-	background-color: #2aaeb0;
+	background-color: #00a65a;
 }
 .btn-link:hover {
 	cursor: pointer;
@@ -1711,7 +1711,14 @@ table.text-center,table.text-center td,table.text-center th {
     padding: 20px;
     border-radius: 2px;
 }
-
+#products-form .sale-price,
+#products-form .price {
+    display: block;
+}
+#products-form .price {
+    text-decoration: line-through;
+    color: #999;
+}
 
 #topcontrol {
 	background: #5d80a1;

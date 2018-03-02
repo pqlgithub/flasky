@@ -88,6 +88,7 @@ class ProductForm(Form):
     status = RadioField(lazy_gettext('Status'), choices=[
         (True, lazy_gettext('In Sale')), (False, lazy_gettext('Off Sale'))
     ], coerce=bool, default=True)
+    sticked = BooleanField(lazy_gettext('Yes'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
     
     # 详情信息

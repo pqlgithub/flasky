@@ -4,7 +4,7 @@
 <div class="pages-box ajax">
 	<div class="pull-left">
 		<nav aria-label="Page navigation">
-			{{ macros.pagination_widget(pagination, '.search_products', qk=qk, sk=sk, reg_id=reg_id, bra_id=bra_id) }}
+			{{ macros.pagination_widget(pagination, '.search_products', qk=qk, sk=sk, cate_id=cate_id, bra_id=bra_id) }}
 		</nav>
 	</div>
 </div>
@@ -15,6 +15,8 @@
 	mixpus.hook_tooltip_toggle();
 
 	mixpus.hook_popover_toggle();
+
+	mixpus.hook_select2();
 
 	$('.pages-box.ajax')
 		.find('a')

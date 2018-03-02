@@ -41,12 +41,13 @@ def show_products(page=1):
     # 品牌列表
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by(Brand.created_at.asc()).paginate(
         1, 1000)
-    
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     return render_template('products/show_list.html',
                            sub_menu='products',
                            paginated_products=paginated_result.items,
                            pagination=paginated_result,
                            paginated_brands=paginated_brands,
+                           paginated_categories=paginated_categories,
                            **load_common_data())
 
 
@@ -58,15 +59,18 @@ def search_products():
     per_page = request.values.get('per_page', 10, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
-    reg_id = request.values.get('reg_id', type=int)
+    cate_id = request.values.get('cate_id', type=int)
     bra_id = request.values.get('bra_id', type=int)
     sk = request.values.get('sk', type=str, default='ad')
 
     current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
 
-    builder = Product.query.filter_by(master_uid=Master.master_uid())
-    if reg_id:
-        builder = builder.filter_by(region_id=reg_id)
+    if cate_id:
+        category = Category.query.get(cate_id)
+        builder = category.products.filter_by(master_uid=Master.master_uid())
+    else:
+        builder = Product.query.filter_by(master_uid=Master.master_uid())
+
     if bra_id:
         builder = builder.filter_by(brand_id=bra_id)
     
@@ -93,7 +97,7 @@ def search_products():
     return render_template('products/search_result.html',
                            qk=qk,
                            sk=sk,
-                           reg_id=reg_id,
+                           cate_id=cate_id,
                            bra_id=bra_id,
                            paginated_products=paginated_products,
                            pagination=pagination)
@@ -268,6 +272,7 @@ def create_product():
             s_height=form.s_height.data,
             from_url=form.from_url.data,
             status=form.status.data,
+            sticked=form.sticked.data,
             description=form.description.data
         )
 
@@ -396,6 +401,7 @@ def edit_product(rid):
     form.s_height.data = product.s_height
     form.from_url.data = product.from_url
     form.status.data = product.status
+    form.sticked.data = product.sticked
     form.description.data = product.description
     # 内容详情
     if product.details:

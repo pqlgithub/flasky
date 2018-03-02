@@ -13,7 +13,7 @@
 					<th>{{ _('Mode/Color') }}</th>
 					<th class="text-center">{{ _('Brand') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
-					<th class="text-right">{{ _('Sale Price') }}</th>
+					<th class="text-right">{{ _('Sale Price') }} / {{ _('Price') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -28,11 +28,12 @@
 						<img src="{{ product.cover.view_url }}" width="60px">
 					</td>
 					<td>
-						{% if product.region_id == 1 %}
-							<span class="text-success">{{ product.serial_no }}</span>
-						{% else %}
-							<span class="text-warning">{{ product.serial_no }}</span>
-						{% endif %}
+                        <span class="text-success">{{ product.serial_no }}</span>
+						{% if product.sticked %}
+                            <span class="badge badge-mixpus" data-toggle="tooltip" data-original-title="{{ _('Recommended') }}">
+                                <i class="fa fa-flag"></i>
+                            </span>
+                        {% endif %}
 						<br>
 						{{ product.name|safe }}
 					</td>
@@ -45,14 +46,14 @@
 						{{ product.brand.name }}
 					</td>
 					<td class="text-right">
-						{{ product.cost_price|round(precision=2) }} {{ product.currency_unit }}
+						{{ product.cost_price|round(precision=2) }}
 					</td>
 					<td class="text-right">
                         {% if product.sale_price > 0 %}
-                            {{ product.sale_price|round(precision=2) }}
+                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
                             <span class="price">{{ product.price|round(precision=2) }}</span>
                         {% else %}
-                            {{ product.price|round(precision=2) }}
+                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
                         {% endif %}
 					</td>
 					<td class="text-right">

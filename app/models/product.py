@@ -47,8 +47,8 @@ BUSINESS_MODE = [
 
 # 产品的状态
 PRODUCT_STATUS = [
-    (1, lazy_gettext('Enabled'), 'success'),
-    (0, lazy_gettext('Disabled'), 'danger')
+    (True, lazy_gettext('In Sale'), 'success'),
+    (False, lazy_gettext('Off Sale'), 'danger')
 ]
 
 # product and category => N to N
@@ -239,7 +239,9 @@ class Product(db.Model):
             'cover': self.cover.view_url,
             'id_code': self.id_code,
             'sale_price': self.sale_price,
+            'price': self.price,
             'description': self.description,
+            'sticked': self.sticked,
             's_weight': self.s_weight,
             's_length': self.s_length,
             's_width': self.s_width,
@@ -407,6 +409,7 @@ class ProductSku(db.Model):
             's_color': self.s_color,
             'cover': self.cover.view_url,
             'cost_price': str(self.cost_price),
+            'price': str(self.price),
             'sale_price': str(self.sale_price),
             's_weight': str(self.s_weight),
             'stock_count': self.stock_count

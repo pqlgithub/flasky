@@ -81,7 +81,7 @@ def update_cart():
     
     try:
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Update cart fail: {}'.format(str(err)))
         db.session.rollback()
         return status_response(custom_status('Update failed!', 400), False)
