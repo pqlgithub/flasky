@@ -4,6 +4,7 @@ from app.models import Category
 from app import db
 from . import api
 from .utils import *
+from app.utils import Master
 
 
 @api.route('/categories')
@@ -38,6 +39,36 @@ def get_categories():
     })
 
 
+@api.route('/categories/siblings')
+def get_siblings_categories():
+    """获取同级分类"""
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 100, type=int)
+    cid = request.values.get('cid', 0, type=int)
+
+    current_category = Category.query.get_or_404(cid)
+    if current_category.master_uid != g.master_uid:
+        abort(403)
+
+    builder = Category.query.filter_by(master_uid=g.master_uid, pid=current_category.pid)
+
+    pagination = builder.paginate(page, per_page=per_page, error_out=False)
+    categories = pagination.items
+    prev_url = None
+    if pagination.has_prev:
+        prev_url = url_for('api.get_siblings_categories', page=page - 1, _external=True)
+    next_url = None
+    if pagination.has_next:
+        next_url = url_for('api.get_siblings_categories', page=page + 1, _external=True)
+
+    return full_response(R200_OK, {
+        'categories': [category.to_json() for category in categories],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
 @api.route('/categories/<int:id>')
 def get_category(id):
     """
@@ -48,6 +79,7 @@ def get_category(id):
     """
     category = Category.query.get_or_404(id)
     return full_response(R200_OK, category.to_json())
+
 
 @api.route('/categories', methods=['POST'])
 def create_category():
