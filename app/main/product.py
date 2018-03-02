@@ -260,6 +260,7 @@ def create_product():
             currency_id=form.currency_id.data,
             region_id=form.region_id.data,
             cost_price=form.cost_price.data,
+            price=form.price.data,
             sale_price=form.sale_price.data,
             s_weight=form.s_weight.data,
             s_length=form.s_length.data,
@@ -276,8 +277,8 @@ def create_product():
         if form.tags.data or form.content.data:
             detail = ProductContent(
                 master_uid=Master.master_uid(),
-                tags = form.tags.data,
-                content = form.content.data
+                tags=form.tags.data,
+                content=form.content.data
             )
             detail.product = product
             db.session.add(detail)
@@ -387,6 +388,7 @@ def edit_product(rid):
     form.currency_id.data = product.currency_id if product.currency_id else g.current_site.currency_id
     form.region_id.data = product.region_id
     form.cost_price.data = product.cost_price
+    form.price.data = product.price
     form.sale_price.data = product.sale_price
     form.s_weight.data = product.s_weight
     form.s_length.data = product.s_length
@@ -468,7 +470,7 @@ def copy_product():
 
     currency_list = Currency.query.filter_by(status=1).all()
     new_serial_no = Product.make_unique_serial_no(gen_serial_no())
-    copy_product = Product(
+    some_product = Product(
         master_uid=Master.master_uid(),
         serial_no=new_serial_no,
         supplier_id=product.supplier_id,
@@ -477,6 +479,7 @@ def copy_product():
         currency_id=product.currency_id,
         region_id=new_region_id,
         cost_price=product.cost_price,
+        price=product.price,
         sale_price=product.sale_price,
         s_weight=product.s_weight,
         s_length=product.s_length,
@@ -486,18 +489,18 @@ def copy_product():
         status=product.status,
         description=product.description
     )
-    db.session.add(copy_product)
+    db.session.add(some_product)
 
     # 更新所属分类
     if product.categories:
         categories = product.categories
-        copy_product.update_categories(*categories)
+        some_product.update_categories(*categories)
 
     # 复制SKU
     for sku in product.skus:
         copy_sku = ProductSku(
-            product_id=copy_product.id,
-            supplier_id=copy_product.supplier_id,
+            product_id=some_product.id,
+            supplier_id=some_product.supplier_id,
             master_uid=Master.master_uid(),
             serial_no=ProductSku.make_unique_serial_no(gen_serial_no()),
             cover_id=sku.cover_id,
@@ -506,6 +509,7 @@ def copy_product():
             s_color=sku.s_color,
             s_weight=sku.s_weight,
             cost_price=sku.cost_price,
+            price=sku.price,
             sale_price=sku.sale_price,
             remark=sku.remark
         )
@@ -515,7 +519,7 @@ def copy_product():
 
     flash(gettext('Copy product is ok!'), 'success')
 
-    return redirect(url_for('main.edit_product', rid=copy_product.serial_no))
+    return redirect(url_for('main.edit_product', rid=some_product.serial_no))
 
 
 @main.route('/products/import', methods=['GET', 'POST'])
@@ -557,14 +561,14 @@ def import_product():
                 current_app.logger.debug('current product [%s]' % product_dict)
 
                 sku_dict = {
-                    'supplier_id' : supplier_id,
-                    'master_uid' : Master.master_uid(),
-                    'serial_no' : ProductSku.make_unique_serial_no(gen_serial_no()),
-                    'id_code' : id_code,
-                    'cover_id' : default_cover.id,
-                    's_model' : product_dict.get('mode'),
-                    's_color' : product_dict.get('color'),
-                    'cost_price' : product_dict.get('cost_price')
+                    'supplier_id': supplier_id,
+                    'master_uid': Master.master_uid(),
+                    'serial_no': ProductSku.make_unique_serial_no(gen_serial_no()),
+                    'id_code': id_code,
+                    'cover_id': default_cover.id,
+                    's_model': product_dict.get('mode'),
+                    's_color': product_dict.get('color'),
+                    'cost_price': product_dict.get('cost_price')
                 }
                 current_app.logger.debug('current product sku [%s]' % sku_dict)
 
@@ -658,6 +662,7 @@ def add_sku(rid):
             s_color=form.s_color.data,
             s_weight=form.s_weight.data,
             cost_price=form.cost_price.data,
+            price=form.price.data,
             sale_price=form.sale_price.data,
             region_id=product.region_id,
             remark=form.remark.data
@@ -675,6 +680,7 @@ def add_sku(rid):
     mode = 'create'
     form.serial_no.data = ProductSku.make_unique_serial_no(gen_serial_no())
     form.cost_price.data = product.cost_price
+    form.price.data = product.price
     form.sale_price.data = product.sale_price
     form.s_weight.data = product.s_weight
     return render_template('products/modal_sku.html',
@@ -707,6 +713,7 @@ def edit_sku(rid, s_id):
         sku.s_color = form.s_color.data
         sku.s_weight = form.s_weight.data
         sku.cost_price = form.cost_price.data
+        sku.price = form.price.data
         sku.sale_price = form.sale_price.data
         sku.region_id = product.region_id
         sku.remark = form.remark.data
@@ -721,6 +728,7 @@ def edit_sku(rid, s_id):
     form.sku_cover_id.data = sku.cover_id
     form.id_code.data = sku.id_code
     form.cost_price.data = sku.cost_price
+    form.price.data = sku.price
     form.sale_price.data = sku.sale_price
     form.s_model.data = sku.s_model
     form.s_color.data = sku.s_color
@@ -773,8 +781,7 @@ def sku_of_orders(rid):
     total_amount = 0
     if total_sales and total_sales[0]:
         total_amount = total_sales[0] - total_sales[1]
-        
-    
+
     return render_template('products/sku_of_orders.html',
                            paginated_orders=paginated_orders,
                            total_amount=total_amount,

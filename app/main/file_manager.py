@@ -7,14 +7,13 @@ from flask import current_app, render_template, redirect, url_for, flash, reques
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from wtforms import ValidationError
-from qiniu import Auth, put_file, put_data
+from pymysql.err import IntegrityError
 
 from app import db, uploader
-from app.models import Asset, Directory
 from . import main
-
+from app.models import Asset, Directory
 from app.utils import timestamp, status_response, Master, custom_response
-from app.helpers import MixGenId
+from app.helpers import MixGenId, QiniuStorage
 
 
 @main.route('/file_manager/folder', methods=['POST'])
@@ -106,32 +105,19 @@ def show_asset(page=1):
                 # directories.pop()
                 parent_directory = '/'.join(directories)
 
-    q = Auth(current_app.config['QINIU_ACCESS_KEY'], current_app.config['QINIU_ACCESS_SECRET'])
-    bucket_name = current_app.config['QINIU_BUCKET_NAME']
-    # 上传策略示例
-    # https://developer.qiniu.com/kodo/manual/1206/put-policy
-    key_prefix = MixGenId.gen_letters(16)
-    save_key = '$(year)$(mon)$(day)/$(etag)$(ext)'
-    policy = {
-        'scope': bucket_name,
-        'deadline': int(timestamp()) + 3600,
-        'callbackUrl': '%s/open/qiniu/notify' % current_app.config['DOMAIN_URL'],
-        'callbackBody': 'filepath=$(key)&filename=$(fname)&filesize=$(fsize)&mime=$(mimeType)&user_id=$(x:user_id)'
-                        '&width=$(imageInfo.width)&height=$(imageInfo.height)&ext=$(ext)&directory=$(x:directory)',
-        'saveKey': save_key,
-        'fsizeLimit': 20 * 1024 * 1024 ,  # 限定上传文件大小最大值, 20M
-        'returnUrl': '',
-        'returnBody': ''
-    }
-
-    # 3600为token过期时间，秒为单位。3600等于一小时
-    up_token = q.upload_token(bucket_name, None, 3600, policy)
+    # 生成上传token
+    cfg = current_app.config
+    up_token = QiniuStorage.up_token(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'], cfg['QINIU_BUCKET_NAME'],
+                                     cfg['DOMAIN_URL'])
+    if current_app.config['MODE'] == 'prod':
+        up_endpoint = cfg['QINIU_UPLOAD']
+    else:
+        up_endpoint = url_for('main.flupload')
 
     return render_template('file_manager.html',
                            up_target=up_target,
-                           up_endpoint=current_app.config['QINIU_UPLOAD'],
+                           up_endpoint=up_endpoint,
                            up_token=up_token,
-                           key_prefix=key_prefix,
                            master_uid=Master.master_uid(),
                            current_directory=current_directory,
                            parent_directory=parent_directory,
@@ -156,6 +142,7 @@ def view_asset(id):
 @main.route('/file_manager/flupload', methods=['POST'])
 @login_required
 def flupload():
+    """开发环境文件上传，生产环境使用七牛直传"""
     saved_asset_ids = []
     sub_folder = str(time.strftime('%y%m%d'))
     directory_id = 0
@@ -168,8 +155,6 @@ def flupload():
 
     # for key, file in request.files.iteritems():
     for f in request.files.getlist('file'):
-        current_app.logger.warn(f.stream)
-
         upload_name = f.filename
         mime_type = f.mimetype
 
@@ -179,35 +164,16 @@ def flupload():
         name_prefix = hashlib.md5(name_prefix.encode('utf-8')).hexdigest()[:15]
         filename = '%s/%s/%s%s' % (root_folder, sub_folder, name_prefix, file_ext)
 
-        current_app.logger.debug('File length: %s,%s' % (f.content_length, f.mimetype))
+        # Upload to local
+        filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
 
-        if current_app.config['DEBUG']:
-            # Upload to s3
-            f.filename = filename
+        current_app.logger.warn('path: %s' % uploader.path(filename))
 
-            q = Auth(current_app.config['QINIU_ACCESS_KEY'], current_app.config['QINIU_ACCESS_SECRET'])
-            bucket_name = current_app.config['QINIU_BUCKET_NAME']
-
-            filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
-
-            current_app.logger.warn('path: %s' % uploader.path(filename) )
-            # 生成上传Token
-            token = q.upload_token(bucket_name, filename, 3600)
-
-            ret, info = put_file(token, filename, uploader.path(filename))
-            current_app.logger.warn('info: %s' % info)
-
-            # out_result = aws.upload_file_to_s3(s3, f, current_app.config['ASSET_BUCKET_NAME'])
-            # response = s3.head_object(Bucket=current_app.config['FLASKS3_BUCKET_NAME'], Key=filename)
-        else:
-            # Upload to local
-            filename = uploader.save(f, folder=sub_folder, name=name_prefix + '.')
-            # Get info of upload image
-            # img = Image.open(f)
-            # img.load()
-
-        width = 0  #img.size[0]
-        height = 0  #img.size[1]
+        # Get info of upload image
+        img = Image.open(uploader.path(filename))
+        img.load()
+        width = img.size[0]
+        height = img.size[1]
 
         # Update to DB
         new_asset = Asset(
@@ -237,17 +203,24 @@ def pldelete():
 
     current_app.logger.debug('delete path list %s' % path_list)
 
-    for filepath in path_list:
-        if re.match(r'([a-zA-Z0-9]+\/)?[0-9]{6}\/\w{15}\.\w{3,4}$', filepath):
-            asset = Asset.query.filter_by(filepath=filepath).first()
-            db.session.delete(asset)
-        else:
-            last_directory = _pop_last_directory(filepath)
-            directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory).first()
-            if directory:
-                db.session.delete(directory)
+    try:
+        for filepath in path_list:
+            if re.match(r'([a-zA-Z0-9]+\/)?[0-9]{6}\/\w{15}\.\w{3,4}$', filepath):
+                asset = Asset.query.filter_by(filepath=filepath).first()
+                db.session.delete(asset)
+            else:
+                last_directory = _pop_last_directory(filepath)
+                directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory).first()
+                if directory:
+                    db.session.delete(directory)
 
-        db.session.commit()
+    except IntegrityError as err:
+        db.session.rollback()
+        current_app.logger.warn('Pldelete asset error: %s' % err)
+        return custom_response(False, '此图正在被使用中,不能被删！')
+    else:
+        db.session.rollback()
+        return custom_response(False, '此图正在被使用中,不能被删！')
 
     return status_response()
 

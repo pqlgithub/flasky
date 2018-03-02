@@ -46,7 +46,6 @@ class CategoryForm(Form):
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
     ], coerce=int)
 
-
     def validate_name(self, field):
         """验证分类名称是否唯一"""
         if Category.query.filter_by(master_uid=Master.master_uid(), name=field.data).first():
@@ -79,15 +78,16 @@ class ProductForm(Form):
     currency_id = SelectField(lazy_gettext('Currency'), choices=[], coerce=int)
     region_id = SelectField(lazy_gettext('Region'), choices=[(region['id'], region['name']) for region in DEFAULT_REGIONS], coerce=int)
     cost_price = FloatField(lazy_gettext('Cost Price'))
-    sale_price = FloatField(lazy_gettext('Sale Price'))
-    s_weight = FloatField(lazy_gettext('Weight'), default=0.0)
-    s_length = FloatField(lazy_gettext('Length'), default=0.0)
-    s_width = FloatField(lazy_gettext('Width'), default=0.0)
-    s_height = FloatField(lazy_gettext('Height'), default=0.0)
+    price = FloatField(lazy_gettext('Price'))
+    sale_price = StringField(lazy_gettext('Sale Price'))
+    s_weight = FloatField(lazy_gettext('Weight'), default=0)
+    s_length = FloatField(lazy_gettext('Length'), default=0)
+    s_width = FloatField(lazy_gettext('Width'), default=0)
+    s_height = FloatField(lazy_gettext('Height'), default=0)
     from_url = StringField(lazy_gettext('View Url'))
     status = RadioField(lazy_gettext('Status'), choices=[
-        (1, lazy_gettext('Enabled')), (0, lazy_gettext('Disabled'))
-    ], coerce=int, default=1)
+        (True, lazy_gettext('In Sale')), (False, lazy_gettext('Off Sale'))
+    ], coerce=bool, default=True)
     description = TextAreaField(lazy_gettext('Description'))
     
     # 详情信息
@@ -106,13 +106,15 @@ class ProductForm(Form):
 class ProductSkuForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     sku_cover_id = IntegerField(lazy_gettext('Cover'), default=0)
-    id_code = StringField(lazy_gettext('Commodity Codes'))
-    cost_price = FloatField(lazy_gettext('Cost Price'), default=0.00)
-    sale_price = FloatField(lazy_gettext('Sale Price'), default=0.00)
+    id_code = StringField(lazy_gettext('69 Codes'))
+    cost_price = FloatField(lazy_gettext('Cost Price'))
+    price = FloatField(lazy_gettext('Price'))
+    sale_price = StringField(lazy_gettext('Sale Price'))
     s_model = StringField(lazy_gettext('Mode'))
     s_color = StringField(lazy_gettext('Color'))
-    s_weight = FloatField(lazy_gettext('Weight'), default=0.00)
+    s_weight = FloatField(lazy_gettext('Weight'), default=0)
     remark = TextAreaField(lazy_gettext('Remark'))
-    
+
+
 class ProductGroupForm(Form):
     name = StringField(lazy_gettext('Group Name'), validators=[DataRequired("Group Name can't empty!")])

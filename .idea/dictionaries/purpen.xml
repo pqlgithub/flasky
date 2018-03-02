@@ -16,7 +16,9 @@
       <w>dest</w>
       <w>dismissable</w>
       <w>downloaddomain</w>
+      <w>dragdrop</w>
       <w>dropdown</w>
+      <w>etag</w>
       <w>filepath</w>
       <w>filesize</w>
       <w>fineix</w>
@@ -39,6 +41,7 @@
       <w>onezao</w>
       <w>pjax</w>
       <w>pkcs</w>
+      <w>pldelete</w>
       <w>plupload</w>
       <w>preauthcode</w>
       <w>prpcrypt</w>
@@ -56,6 +59,7 @@
       <w>signaturet</w>
       <w>smtp</w>
       <w>sortlist</w>
+      <w>sticked</w>
       <w>stmp</w>
       <w>tablename</w>
       <w>taihuoniao</w>

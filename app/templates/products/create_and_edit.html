@@ -108,28 +108,28 @@
 		<input type="hidden" name="current_currency_unit" value="{{ current_currency_unit }}">
 
 		<ul class="nav nav-tabs" role="tablist">
-			<li role="presentation" class="active">
+			<li class="active">
 				<a id="general-tab" href="#general" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
 					{{ _('General Info') }}
 				</a>
 			</li>
-			<li role="presentation">
-				<a href="#product-content" role="tab" id="content-tab" data-toggle="tab" aria-controls="product-content">
-					{{ _('Content') }}
-				</a>
-			</li>
-			<li role="presentation">
-				<a href="#customs-declaration" role="tab" id="customs-tab" data-toggle="tab" aria-controls="customs-declaration">
-					{{ _('Customs Declaration') }}
-				</a>
-			</li>
-			{% if mode == 'edit'%}
-			<li role="presentation">
+            {% if mode == 'edit'%}
+			<li>
 				<a href="#sku-group" role="tab" id="sku-tab" data-toggle="tab" aria-controls="sku-group">
 					{{ _('SKU') }}
 				</a>
 			</li>
 			{% endif %}
+			<li>
+				<a href="#product-content" role="tab" id="content-tab" data-toggle="tab" aria-controls="product-content">
+					{{ _('Content') }}
+				</a>
+			</li>
+			<li>
+				<a href="#customs-declaration" role="tab" id="customs-tab" data-toggle="tab" aria-controls="customs-declaration">
+					{{ _('Customs Declaration') }}
+				</a>
+			</li>
 		</ul>
 
 		<div class="tab-content m-t-30">
@@ -174,7 +174,7 @@
 
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						{{ form.name(id="name", class="form-control") }}
 						{% for error in form.errors.name %}
 						<span class="help-block">{{ error }}</span>
@@ -198,9 +198,11 @@
 					</div>
 				</div>
 
-				<div class="form-group required">
-					{{ form.cost_price.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
+				<div class="form-group">
+                    <div class="col-sm-2 text-right required">
+					    {{ form.cost_price.label(class="control-label") }}
+                    </div>
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.cost_price(id="cost_price", class="form-control") }}
 							<span class="input-group-addon current-currency">
@@ -209,9 +211,22 @@
 						</div>
 						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
 					</div>
+                    <div class="col-sm-1 text-right required">
+                        {{ form.price.label(class="control-label") }}
+                    </div>
+					<div class="col-sm-2">
+						<div class="input-group">
+							{{ form.price(id="price", class="form-control") }}
+							<span class="input-group-addon current-currency">
+								{{ current_currency_unit }}
+							</span>
+						</div>
+					</div>
 
-					{{ form.sale_price.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
+                    <div class="col-sm-1 text-right">
+					    {{ form.sale_price.label(class="control-label") }}
+                    </div>
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.sale_price(id="sale_price", class="form-control") }}
 							<span class="input-group-addon current-currency">
@@ -221,7 +236,26 @@
 					</div>
 				</div>
 
+
+
 				<div class="form-group">
+					{{ form.description.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-8">
+						{{ form.description(id="description", class="form-control", rows="5") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.status.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						{{ form.status(id="status", class="radio-inline-group") }}
+					</div>
+				</div>
+
+			</div>
+
+			<div id="product-content" class="tab-pane fade in" role="tabpanel" aria-labelledby="content-tab">
+                <div class="form-group">
 					{{ form.s_weight.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-3">
 						<div class="input-group">
@@ -235,7 +269,7 @@
 
 				<div class="form-group">
 					<label class="col-sm-2 control-label">{{ _('Product Size（LxWxH）')}}</label>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.s_length(id="s_length", class="form-control", placeholder="Length") }}
 							<span class="input-group-addon">
@@ -243,7 +277,7 @@
 							</span>
 						</div>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.s_width(id="s_width", class="form-control", placeholder="Width") }}
 							<span class="input-group-addon">
@@ -251,7 +285,7 @@
 							</span>
 						</div>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.s_height(id="s_height", class="form-control", placeholder="Height") }}
 							<span class="input-group-addon">
@@ -262,20 +296,20 @@
 				</div>
 
 				<div class="form-group">
-					{{ form.description.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
-						{{ form.description(id="description", class="form-control", rows="5") }}
-					</div>
-				</div>
-
-				<div class="form-group required">
-					{{ form.status.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.status(id="status", class="radio-inline-group") }}
+					{{ form.tags.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-8">
+						{{ form.tags(id="tags", class="form-control")}}
 					</div>
 				</div>
 
 				<div class="form-group">
+					{{ form.content.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-8">
+						{{ form.content(id="mix_editor", rows="20", class="form-control ckeditor")}}
+					</div>
+				</div>
+
+                <div class="form-group">
 					{{ form.currency_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-3">
 						{{ form.currency_id(class="form-control change-currency select2") }}
@@ -293,7 +327,7 @@
 
 				<div class="form-group">
 					{{ form.from_url.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						<div class="input-group">
 							{{ form.from_url(id="from_url", class="form-control", placeholder="http://") }}
 							<span class="input-group-addon">
@@ -302,43 +336,27 @@
 						</div>
 					</div>
 				</div>
-
-			</div>
-
-			<div id="product-content" class="tab-pane fade in" role="tabpanel" aria-labelledby="content-tab">
-				<div class="form-group">
-					{{ form.tags.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
-						{{ form.tags(id="tags", class="form-control")}}
-					</div>
-				</div>
-				<div class="form-group">
-					{{ form.content.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
-						{{ form.content(id="mix_editor", rows="20", class="form-control ckeditor")}}
-					</div>
-				</div>
 			</div>
 
 			<div id="customs-declaration" class="tab-pane fade in" role="tabpanel" aria-labelledby="customs-tab">
 				<!--报关信息-->
 				<div class="form-group">
 					{{ form.dangerous_goods.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						{{ form.dangerous_goods(id="dangerous_goods", class="list-inline radio-group")}}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.local_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						{{ form.local_name(id="local_name", class="form-control")}}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.en_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						{{ form.en_name(id="en_name", class="form-control")}}
 					</div>
 				</div>
@@ -370,7 +388,7 @@
 
 				<div class="form-group">
 					{{ form.customs_code.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-8">
 						{{ form.customs_code(id="customs_code", class="form-control")}}
 					</div>
 				</div>
@@ -380,7 +398,7 @@
 			{% if mode == 'edit'%}
 			<div id="sku-group" class="tab-pane fade in" role="tabpanel" aria-labelledby="sku-tab">
 				<a href="{{ url_for('main.add_sku', rid=product.serial_no) }}" class="btn btn-mixpus ajax-sku" role="button">
-					<i class="glyphicon glyphicon-plus"></i> {{ _('Add SKU') }}
+					<i class="fa fa-plus"></i> {{ _('Add SKU') }}
 				</a>
 				<div id="product-skus">
 					<table class="table table-bordered m-t-20">
@@ -388,7 +406,7 @@
 							<tr>
 								<th class="text-center">{{ _('Image') }}</th>
 								<th class="text-center">{{ _('Serial No.') }}</th>
-								<th class="text-center">{{ _('Commodity Codes') }}</th>
+								<th class="text-center">{{ _('69 Codes') }}</th>
 								<th class="text-center">{{ _('Mode/Color') }}</th>
 								<th class="text-center">{{ _('Cost Price') }}</th>
 								<th class="text-center">{{ _('Weight') }}</th>

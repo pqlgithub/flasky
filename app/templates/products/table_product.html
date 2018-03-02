@@ -12,7 +12,6 @@
 					<th>{{ _('Product Info') }}</th>
 					<th>{{ _('Mode/Color') }}</th>
 					<th class="text-center">{{ _('Brand') }}</th>
-					<th class="text-center">{{ _('Region') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
 					<th class="text-right">{{ _('Sale Price') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
@@ -45,20 +44,16 @@
 					<td class="text-center">
 						{{ product.brand.name }}
 					</td>
-					<td class="text-center">
-						{% if product.region_id == 1 %}
-						<span class="text-mixpus">{{ product.region_label.get('name') }}</span>
-						{% endif %}
-
-						{% if product.region_id == 2 %}
-						<span class="text-warning">{{ product.region_label.get('name') }}</span>
-						{% endif %}
-					</td>
 					<td class="text-right">
 						{{ product.cost_price|round(precision=2) }} {{ product.currency_unit }}
 					</td>
 					<td class="text-right">
-						{{ product.sale_price|round(precision=2) }} {{ product.currency_unit }}
+                        {% if product.sale_price > 0 %}
+                            {{ product.sale_price|round(precision=2) }}
+                            <span class="price">{{ product.price|round(precision=2) }}</span>
+                        {% else %}
+                            {{ product.price|round(precision=2) }}
+                        {% endif %}
 					</td>
 					<td class="text-right">
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>

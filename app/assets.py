@@ -9,7 +9,7 @@ bundles = {
         'js/jquery.min.js',
         'js/bootstrap.min.js',
         'js/jquery.cookie.js',
-        'js/sweetalert-dev.js',
+        'js/sweetalert2.all.js',
         'js/nprogress.js',
         'js/select2.js',
         'js/moxie.min.js',

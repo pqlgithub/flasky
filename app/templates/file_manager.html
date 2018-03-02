@@ -180,7 +180,6 @@
 
 	$("#uploader").pluploadQueue({
         // General settings
-        // url : '{{ url_for("main.flupload") }}',
         url: '{{ up_endpoint }}',
 
         chunk_size : '1mb',
@@ -188,11 +187,12 @@
         dragdrop: true,
 		multiple_queues: true,
 		multipart_params: {
+            // 开发环境使用
             'csrf_token': mixpus.csrf_token,
+            'directory': '{{ current_directory }}',
+            // 生产环境使用
             'token': '{{ up_token }}',
         	'x:directory': '{{ current_directory }}',
-            'x:key': '{{ key_prefix }}',
-            'x:ord': 1,
             'x:user_id': {{ master_uid }}
 		},
         filters : {
@@ -204,63 +204,57 @@
             ],
 			prevent_duplicates : true //不允许选取重复文件
         },
-		resize: {
-        	width: 480,
-		  	height: 480,
-		  	crop: true,
-		  	quality: 90
-		},
 
         flash_swf_url : "{{ url_for('static', filename='js/Moxie.swf', _external=True) }}",
 
 		silverlight_xap_url : "{{ url_for('static', filename='js/Moxie.xap', _external=True) }}"
     });
 
-	$('#modal-image #button-delete').on('click', function(e) {
+	$('#modal-image #button-delete').on('click', function() {
 		swal({
-			title: "Confirm to delete?",
-			text: "You will not be able to recover!",
+			title: "确定要删除?",
+			text: "删除后将不能恢复，请慎重！",
 			type: "warning",
 			showCancelButton: true,
-			confirmButtonClass: 'btn-warning',
-			confirmButtonText: "Yes, delete it!",
-			closeOnConfirm: true
-		}, function (is_confirm) {
-			if (is_confirm) {
-				var path = [];
-				$('input[name^=\'path\']:checked').each(function () {
-					path.push($(this).val());
-				});
-				var data = {
-					'path[]': path,
-					'csrf_token': mixpus.csrf_token
-				};
+            cancelButtonText: '取消',
+            confirmButtonColor: '#c6322a',
+			confirmButtonText: "确认删除"
+		}).then(function () {
+            var path = [];
+            $('input[name^=\'path\']:checked').each(function () {
+                path.push($(this).val());
+            });
+            var data = {
+                'path[]': path,
+                'csrf_token': mixpus.csrf_token
+            };
 
-				$.ajax({
-					url: '{{ url_for("main.pldelete") }}',
-					type: 'post',
-					dataType: 'json',
-					data: data,
-					beforeSend: function() {
-						$('#button-delete').prop('disabled', true);
-					},
-					complete: function() {
-						$('#button-delete').prop('disabled', false);
-					},
-					success: function(json) {
-						if (json['error']) {
-							swal('Error', json['error'], 'error');
-						}
-
-						if (json['success']) {
-							$('#button-refresh').trigger('click');
-						}
-					},
-					error: function(xhr, ajaxOptions, thrownError) {
-						alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-					}
-				});
-			}
+            $.ajax({
+                url: '{{ url_for("main.pldelete") }}',
+                type: 'post',
+                dataType: 'json',
+                data: data,
+                beforeSend: function() {
+                    $('#button-delete').prop('disabled', true);
+                },
+                complete: function() {
+                    $('#button-delete').prop('disabled', false);
+                },
+                success: function(result) {
+                    if (result.success) {
+                        $('#button-refresh').trigger('click');
+                    } else {
+                        swal(
+                            '出错了',
+                            result.status.message,
+                            'error'
+                        );
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
 		});
 	});
 

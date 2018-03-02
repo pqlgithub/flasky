@@ -72,7 +72,6 @@ class Product(db.Model):
 
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-    
     # 所属品牌
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'))
     
@@ -85,19 +84,23 @@ class Product(db.Model):
     # 币种
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     # 采购价
-    cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 零售价
-    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 促销价
+    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 用于出库称重和利润计算
-    s_weight = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
-    s_length = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
-    s_width = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
-    s_height = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    s_weight = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    s_length = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    s_width = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    s_height = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 来源URL
     from_url = db.Column(db.String(255), nullable=True)
     type = db.Column(db.SmallInteger, default=1)
     status = db.Column(db.Boolean, default=False)
     description = db.Column(db.Text())
+    # 是否推荐
+    sticked = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -185,6 +188,13 @@ class Product(db.Model):
             if Product.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
+
+    @staticmethod
+    def on_before_change(mapper, connection, target):
+        """插入或更新前事件"""
+        # 为空时，默认为0
+        if not target.sale_price:
+            target.sale_price = 0
         
     @classmethod
     def always_category(cls, path=0, page=1, per_page=20, uid=0):
@@ -297,9 +307,11 @@ class ProductSku(db.Model):
     # 区域
     region_id = db.Column(db.SmallInteger, default=1)
     # 采购价
-    cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 零售价
-    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 促销价
+    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 备注
     remark = db.Column(db.String(255), nullable=True)
     # 状态：-1、取消或缺省状态； 1、正常（默认）
@@ -911,6 +923,8 @@ class Wishlist(db.Model):
 
 
 # 添加监听事件, 实现触发器
+event.listen(Product, 'before_insert', Product.on_before_change)
+event.listen(Product, 'before_update', Product.on_before_change)
 event.listen(ProductSku, 'after_insert', SupplyStats.on_sync_change)
 event.listen(Purchase, 'after_insert', SupplyStats.on_sync_change)
 # 监听Brand事件
