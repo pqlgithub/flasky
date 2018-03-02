@@ -191,6 +191,13 @@ select {
 	/* for mobile safari */
 	-webkit-appearance: none;
 }
+.radio-inline-group > li {
+    clear: both;
+}
+.radio-inline-group > li > label {
+    float: right;
+    margin-left: 5px;
+}
 .alert {
     border-width: 0;
 }

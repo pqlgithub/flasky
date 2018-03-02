@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import text, event
+from flask_babelex import gettext, lazy_gettext
 from app import db
 from ..utils import timestamp
 from .asset import Asset
@@ -7,7 +8,19 @@ from app.helpers import MixGenId
 
 __all__ = [
     'Banner',
-    'BannerImage'
+    'BannerImage',
+    'LINK_TYPES'
+]
+
+# 链接类型
+LINK_TYPES = [
+    # 默认普通链接
+    (1, lazy_gettext('Link Url')),
+    (2, lazy_gettext('Product')),
+    (3, lazy_gettext('Category')),
+    (4, lazy_gettext('Brand')),
+    # 专题
+    (5, lazy_gettext('Topic'))
 ]
 
 

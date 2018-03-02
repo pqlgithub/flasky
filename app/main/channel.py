@@ -8,7 +8,7 @@ from flask_login import login_required
 from flask_babelex import gettext
 from . import main
 from .. import db
-from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, Language
+from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES
 from app.forms import StoreForm, BannerForm, BannerImageForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, status_response
 from ..helpers import MixGenId
@@ -184,11 +184,14 @@ def create_banner():
     form = BannerImageForm()
     spot_list = Banner.query.filter_by(master_uid=Master.master_uid()).all()
     form.spot_id.choices = [(spot.id, spot.name) for spot in spot_list]
+
+    form.type.choices = LINK_TYPES
     if form.validate_on_submit():
         banner_image = BannerImage(
             master_uid=Master.master_uid(),
             banner_id=form.spot_id.data,
             title=form.title.data,
+            type=form.type.data,
             link=form.link.data,
             image_id=form.image_id.data,
             sort_order=form.sort_order.data,
@@ -222,7 +225,7 @@ def edit_banner(id):
     form = BannerImageForm()
     spot_list = Banner.query.filter_by(master_uid=Master.master_uid()).all()
     form.spot_id.choices = [(spot.id, spot.name) for spot in spot_list]
-    
+    form.type.choices = LINK_TYPES
     if form.validate_on_submit():
         banner_image.banner_id = form.spot_id.data
         form.populate_obj(banner_image)
@@ -238,6 +241,7 @@ def edit_banner(id):
     form.spot_id.data = banner_image.banner_id
     form.title.data = banner_image.title
     form.link.data = banner_image.link
+    form.type.data = banner_image.type
     form.image_id.data = banner_image.image_id
     form.sort_order.data = banner_image.sort_order
     form.description.data = banner_image.description
