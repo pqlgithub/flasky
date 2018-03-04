@@ -22,6 +22,7 @@ STORE_STATUS = [
     (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
+
 class ApplicationStatus:
     # 通过审核
     ENABLED = 2
@@ -30,12 +31,14 @@ class ApplicationStatus:
     # 禁用
     DISABLED = -1
 
+
 # 应用的状态
 APPLICATION_STATUS = [
     (ApplicationStatus.ENABLED, lazy_gettext('Published'), 'success'),
     (ApplicationStatus.PENDING, lazy_gettext('Pending'), 'success'),
     (ApplicationStatus.DISABLED, lazy_gettext('Disabled'), 'danger')
 ]
+
 
 class AppService(db.Model):
     """应用市场"""
@@ -101,22 +104,20 @@ class AppService(db.Model):
     def make_unique_sn():
         """生成品牌编号"""
         sn = MixGenId.gen_app_sn()
-        if AppService.query.filter_by(serial_no=sn).first() == None:
+        if AppService.query.filter_by(serial_no=sn).first() is None:
             return sn
         
         while True:
             new_sn = MixGenId.gen_app_sn()
-            if AppService.query.filter_by(serial_no=new_sn).first() == None:
+            if AppService.query.filter_by(serial_no=new_sn).first() is None:
                 break
         return new_sn
-    
-    
+
     @staticmethod
     def on_before_insert(mapper, connection, target):
         # 自动生成用户编号
         target.serial_no = AppService.make_unique_sn()
 
-    
     def __repr__(self):
         return '<AppService %r>' % self.name
     
