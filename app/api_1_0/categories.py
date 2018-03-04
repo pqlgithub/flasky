@@ -4,7 +4,6 @@ from app.models import Category
 from app import db
 from . import api
 from .utils import *
-from app.utils import Master
 
 
 @api.route('/categories')
@@ -24,17 +23,17 @@ def get_categories():
     
     pagination = builder.paginate(page, per_page=per_page, error_out=False)
     categories = pagination.items
-    prev = None
+    prev_url = None
     if pagination.has_prev:
-        prev = url_for('api.get_categories', page=page - 1, _external=True)
-    next = None
+        prev_url = url_for('api.get_categories', page=page - 1, _external=True)
+    next_url = None
     if pagination.has_next:
-        next = url_for('api.get_categories', page=page + 1, _external=True)
+        next_url = url_for('api.get_categories', page=page + 1, _external=True)
         
     return full_response(R200_OK, {
         'categories': [category.to_json() for category in categories],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
 

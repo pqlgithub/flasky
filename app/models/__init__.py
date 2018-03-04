@@ -22,4 +22,5 @@ from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, D
 from .counter import Counter
 from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, SalesLogStatistics, DaySkuStatistics
 from .reminder import Reminder
+from .search import SearchHistory
 from .weixin import WxToken, WxAuthCode, WxAuthorizer, WxMiniApp

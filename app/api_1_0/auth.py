@@ -37,7 +37,7 @@ def verify_password(email_or_token, password):
         user = User.query.filter_by(email=email_or_token).first()
         if not user or not user.verify_password(password):
             return False
-        g.token_used = False # False, 未使用token认证
+        g.token_used = False  # False, 未使用token认证
 
     g.current_user = user
 
