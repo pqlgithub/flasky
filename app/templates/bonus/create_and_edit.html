@@ -1,0 +1,106 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{% if mode == 'create' %}
+			{{ _('Add Bonus') }}
+		{% else %}
+			{{ _('Edit Brand') }}
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="bonus-form" class="btn btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_bonus') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</h2>
+
+	<form id="bonus-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group required {% if form.errors.amount %} has-error{% endif %}">
+			{{ form.amount.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+                <div class="input-group">
+                    {{ form.amount(id="amount", class="form-control") }}
+                    <span class="input-group-addon current-currency">
+                        元
+                    </span>
+                </div>
+
+				{% for error in form.errors.amount %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
+			</div>
+		</div>
+
+        <div class="form-group required m-b-25">
+			{{ form.quantity.label(class="col-sm-2 control-label") }}
+            <div class="col-sm-5">
+                <div class="input-group">
+                    {{ form.quantity(id="quantity", class="form-control") }}
+                    <span class="input-group-addon">
+                        个
+                    </span>
+                </div>
+            </div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.expired_at.label(class="col-sm-2 control-label") }}
+            <div class="col-sm-5">
+                <div class="input-group form-date">
+					{{ form.expired_at(class="form-control form-datetime") }}
+					<span class="input-group-addon">
+						<i class="fa fa-calendar"></i>
+					</span>
+				</div>
+                <span class="help-block">若不设置过期日期，则为永不过期</span>
+            </div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.min_amount.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.min_amount(id="min_amount", class="form-control") }}
+                <span class="help-block">若不设置最低金额，则不限制使用</span>
+			</div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.xname.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.xname(id="xname", class="form-control") }}
+			</div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.product_rid.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.product_rid(id="product_rid", class="form-control") }}
+                <span class="help-block">红包可限制仅使用在某个商品上（可选）</span>
+			</div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.status.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.status(id="status", class="radio-inline-group") }}
+			</div>
+		</div>
+
+	</form>
+</div>
+{% endblock %}

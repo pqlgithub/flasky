@@ -119,6 +119,12 @@ class MixGenId(object):
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
     @staticmethod
+    def gen_bonus_code(length=10):
+        """生成红包代码"""
+        prefix = 'B'
+        return ''.join([prefix, ''.join(random.sample(string.ascii_uppercase, length))])
+
+    @staticmethod
     def gen_user_xid(length=10):
         prefix = '1'
         return ''.join([prefix, MixGenId.gen_digits(length)])

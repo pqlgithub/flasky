@@ -219,11 +219,54 @@ class Bonus(db.Model):
     used_at = db.Column(db.Integer, default=0)
     is_used = db.Column(db.Boolean, default=False)
     # 使用在某个订单上
-    order_rid = db.Column(db.String(12), nullable=True)
-    
+    order_rid = db.Column(db.String(12), nullable=True, default='')
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @staticmethod
+    def make_unique_code():
+        """生成红包代码"""
+        code = MixGenId.gen_bonus_code(10)
+        if Bonus.query.filter_by(code=code).first() is None:
+            return code
+
+        while True:
+            new_code = MixGenId.gen_bonus_code(10)
+            if Bonus.query.filter_by(code=new_code).first() is None:
+                break
+        return new_code
+
+    @staticmethod
+    def on_before_insert(mapper, connection, target):
+        # 自动生成红包代码
+        target.code = Bonus.make_unique_code()
+        # 为空时，默认为0
+        if not target.min_amount:
+            target.min_amount = 0
+
+    def mark_set_disabled(self):
+        """禁用红包"""
+        self.status = False
+
+    def to_json(self):
+        json_obj = {
+            'code': self.code,
+            'amount': self.amount,
+            'expired_at': self.expired_at,
+            'min_amount': self.min_amount,
+            'limit_products': self.product_rid,
+            'xname': self.xname,
+            'status': self.status,
+            'is_used': self.is_used,
+            'created_at': self.created_at
+        }
+        return json_obj
+
     def __repr__(self):
         return '<Bonus {}>'.format(self.code)
 
 
-# 监听Brand事件
+# 监听AppService事件
 event.listen(AppService, 'before_insert', AppService.on_before_insert)
+event.listen(Bonus, 'before_insert', Bonus.on_before_insert)

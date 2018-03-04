@@ -1,0 +1,96 @@
+# -*- coding: utf-8 -*-
+from flask import request, abort, url_for, g, current_app
+from sqlalchemy.exc import IntegrityError
+
+from .. import db
+from . import api
+from .auth import auth
+from .utils import *
+from app.models import Bonus
+from app.utils import datestr_to_timestamp
+
+
+@api.route('/market/bonus')
+def get_bonus_list():
+    """获取红包列表"""
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
+    pagination = Bonus.query.filter_by(master_uid=g.master_uid).paginate(page, per_page=per_page, error_out=False)
+    bonus_list = pagination.items
+    prev_url = None
+    if pagination.has_prev:
+        prev_url = url_for('api.get_bonus', page=page - 1, _external=True)
+    next_url = None
+    if pagination.has_next:
+        next_url = url_for('api.get_bonus', page=page + 1, _external=True)
+
+    return full_response(R200_OK, {
+        'bonus_list': [bonus.to_json() for bonus in bonus_list],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
+@api.route('/market/bonus/<string:rid>')
+def get_bonus(rid):
+    """获取红包信息"""
+    bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
+    if bonus is None:
+        return status_response(R404_NOTFOUND, False)
+
+    return full_response(R200_OK, bonus.to_json())
+
+
+@api.route('/market/bonus/create', methods=['POST'])
+@auth.login_required
+def create_bonus():
+    """添加新红包"""
+    if not request.json or 'amount' not in request.json:
+        abort(400)
+
+    # todo: 数据验证
+    quantity = request.json.get('quantity')
+    expired_at = request.json.get('expired_at')
+    if expired_at:
+        expired_at = datestr_to_timestamp(expired_at)
+
+    try:
+        for idx in range(quantity):
+            bonus = Bonus(
+                master_uid=g.master_uid,
+                amount=request.json.get('amount'),
+                expired_at=expired_at,
+                min_amount=request.json.get('min_amount'),
+                xname=request.json.get('xname'),
+                product_rid=request.json.get('product_rid'),
+                status=request.json.get('status')
+            )
+            db.session.add(bonus)
+
+        db.session.commit()
+    except IntegrityError as err:
+        current_app.logger.error('Create bonus fail: {}'.format(str(err)))
+
+        db.session.rollback()
+        return status_response(custom_status('Create failed!', 400), False)
+
+    return full_response(R201_CREATED, bonus.to_json())
+
+
+@api.route('/market/bonus/<string:rid>/disabled', methods=['POST'])
+@auth.login_required
+def disabled_brand(rid):
+    """禁用红包"""
+    bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
+
+    if bonus is None:
+        abort(404)
+
+    bonus.mark_set_disabled()
+
+    db.session.commit()
+
+    return status_response(R200_OK)
+

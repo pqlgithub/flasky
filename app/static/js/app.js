@@ -316,6 +316,7 @@ mixpus.hook_delete_all = function () {
 	// 删除 全部 or 单个
 	$('button.delete-all').click(function () {
 		var form_id = $(this).data('form-id');
+
 		swal({
 			title: "Confirm to delete?",
 			text: "You will not be able to recover!",
@@ -324,16 +325,18 @@ mixpus.hook_delete_all = function () {
 			confirmButtonText: "Yes, delete it!",
 			confirmButtonColor: '#008749',
 			closeOnConfirm: true
-		}, function (is_confirm) {
-			if (is_confirm) {
-				// 检测是否选中
-				if ($('#' + form_id).find(':checked').length){
-					$('#' + form_id).submit();
-				} else {
-					swal("Error", "First to selected the one!!!", "error");
-				}
-			}
-		});
+		}).then(function () {
+		    // 检测是否选中
+            if ($('#' + form_id).find(':checked').length){
+                $('#' + form_id).submit();
+            } else {
+                swal(
+                    '出错了',
+                    "First to selected the one!!!",
+                    'error'
+                );
+            }
+        });
 	});
 };
 

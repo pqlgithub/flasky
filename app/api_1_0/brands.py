@@ -8,6 +8,7 @@ from . import api
 from .auth import auth
 from .utils import *
 
+
 @api.route('/brands')
 def get_brands():
     """获取品牌列表"""

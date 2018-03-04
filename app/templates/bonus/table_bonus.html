@@ -1,0 +1,66 @@
+<div class="table-responsive">
+    <form id="bonus-form" action="{{ url_for('main.delete_bonus') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">
+                    <input name="check_all" type="checkbox" class="check-all">
+                </th>
+                <th>{{ _('Code') }}</th>
+                <th class="text-right">{{ _('Bonus Amount') }}</th>
+                <th class="text-right">{{ _('Min Amount') }}</th>
+                <th class="text-right">{{ _('Expired At') }}</th>
+                <th class="text-right">{{ _('Used') }}</th>
+                <th class="text-right">{{ _('Status') }}</th>
+                <th class="text-right">{{ _('Remark') }}</th>
+                <th class="text-right">{{ _('Action') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bonus in paginated_bonus %}
+                <tr>
+                    <td class="text-center">
+                        <input name="selected[]" class="check-one" value="{{ bonus.code }}" type="checkbox">
+                    </td>
+                    <td>
+                        {{ bonus.code }}
+                    </td>
+                    <td class="text-right">
+                        {{ bonus.amount }}
+                    </td>
+                    <td class="text-right">
+                        {{ bonus.min_amount }}
+                    </td>
+                    <td class="text-right">
+                        {{ bonus.expired_at|timestamp2string('%Y-%m-%d') }}
+                    </td>
+                    <td class="text-right">
+                        {% if bonus.used %}
+                            <span class="label label-default">已使用</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        {% if bonus.status == 1 %}
+                            <span class="indicator success">{{ _('Enabled') }}</span>
+                        {% else %}
+                            <span class="indicator warning">{{ _('Disabled') }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ bonus.xname }}
+                    </td>
+                    <td class="text-right">
+                        {% if bonus.status == 1 %}
+                        <a href="{{ url_for('main.disabled_bonus', rid=bonus.code) }}" class="btn-disabled btn-link" data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
+                            {{ _('Disabled') }}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
