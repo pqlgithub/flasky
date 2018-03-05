@@ -22,6 +22,12 @@ STORE_STATUS = [
     (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
+# 红包类型
+BONUS_TYPES = [
+    (1, lazy_gettext('Standard'), 'success'),
+    (2, lazy_gettext('Minimum'), 'warning'),
+    (3, lazy_gettext('Subtraction'), 'danger')
+]
 
 class ApplicationStatus:
     # 通过审核
@@ -198,10 +204,14 @@ class Bonus(db.Model):
     
     code = db.Column(db.String(16), nullable=False)
     amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 类型： 1、通用红包；2、最低消费；3、满减
+    type = db.Column(db.SmallInteger, default=1)
     # 过期时间
     expired_at = db.Column(db.Integer, default=0)
     # 限制最近消费金额
     min_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 满足金额
+    reach_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 限制使用某个商品
     product_rid = db.Column(db.String(12), nullable=True)
     # 活动编号
@@ -224,6 +234,12 @@ class Bonus(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    @property
+    def type_label(self):
+        for s in BONUS_TYPES:
+            if s[0] == self.type:
+                return s
+
     @staticmethod
     def make_unique_code():
         """生成红包代码"""
@@ -244,6 +260,8 @@ class Bonus(db.Model):
         # 为空时，默认为0
         if not target.min_amount:
             target.min_amount = 0
+        if not target.reach_amount:
+            target.reach_amount = 0
 
     def mark_set_disabled(self):
         """禁用红包"""
@@ -254,7 +272,9 @@ class Bonus(db.Model):
             'code': self.code,
             'amount': self.amount,
             'expired_at': self.expired_at,
+            'type': self.type,
             'min_amount': self.min_amount,
+            'reach_amount': self.reach_amount,
             'limit_products': self.product_rid,
             'xname': self.xname,
             'status': self.status,

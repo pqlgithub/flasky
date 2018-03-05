@@ -101,7 +101,7 @@ def show_bonus():
 
     builder = Bonus.query.filter_by(master_uid=Master.master_uid())
     # 排序
-    paginated_bonus = builder.order_by(Bonus.created_at.asc()).paginate(page, per_page)
+    paginated_bonus = builder.order_by(Bonus.created_at.desc()).paginate(page, per_page)
 
     return render_template('bonus/show_list.html',
                            paginated_bonus=paginated_bonus.items,
@@ -124,8 +124,10 @@ def create_bonus():
             bonus = Bonus(
                 master_uid=Master.master_uid(),
                 amount=form.amount.data,
+                type=form.type.data,
                 expired_at=expired_at,
                 min_amount=form.min_amount.data,
+                reach_amount=form.reach_amount.data,
                 xname=form.xname.data,
                 product_rid=form.product_rid.data,
                 status=form.status.data

@@ -20,10 +20,10 @@ def get_bonus_list():
     bonus_list = pagination.items
     prev_url = None
     if pagination.has_prev:
-        prev_url = url_for('api.get_bonus', page=page - 1, _external=True)
+        prev_url = url_for('api.get_bonus_list', page=page - 1, _external=True)
     next_url = None
     if pagination.has_next:
-        next_url = url_for('api.get_bonus', page=page + 1, _external=True)
+        next_url = url_for('api.get_bonus_list', page=page + 1, _external=True)
 
     return full_response(R200_OK, {
         'bonus_list': [bonus.to_json() for bonus in bonus_list],

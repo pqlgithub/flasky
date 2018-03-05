@@ -10,7 +10,9 @@
                 </th>
                 <th>{{ _('Code') }}</th>
                 <th class="text-right">{{ _('Bonus Amount') }}</th>
+                <th class="text-center">{{ _('Type') }}</th>
                 <th class="text-right">{{ _('Min Amount') }}</th>
+                <th class="text-right">{{ _('Reach Amount') }}</th>
                 <th class="text-right">{{ _('Expired At') }}</th>
                 <th class="text-right">{{ _('Used') }}</th>
                 <th class="text-right">{{ _('Status') }}</th>
@@ -30,8 +32,14 @@
                     <td class="text-right">
                         {{ bonus.amount }}
                     </td>
+                    <td class="text-center">
+                        <span class="label label-{{ bonus.type_label[2] }}">{{ bonus.type_label[1] }}</span>
+                    </td>
                     <td class="text-right">
                         {{ bonus.min_amount }}
+                    </td>
+                    <td class="text-right">
+                        {{ bonus.reach_amount|supress_none }}
                     </td>
                     <td class="text-right">
                         {{ bonus.expired_at|timestamp2string('%Y-%m-%d') }}
@@ -48,7 +56,7 @@
                             <span class="indicator warning">{{ _('Disabled') }}</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td class="text-right">
                         {{ bonus.xname }}
                     </td>
                     <td class="text-right">
