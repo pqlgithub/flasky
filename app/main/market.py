@@ -52,7 +52,7 @@ def subscribe_app(sn):
 @main.route('/market/bonus/search', methods=['GET', 'POST'])
 def search_bonus():
     """搜索红包"""
-    per_page = request.values.get('per_page', 10, type=int)
+    per_page = request.values.get('per_page', 25, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
     used_id = request.values.get('used_id', type=int)
@@ -97,7 +97,7 @@ def search_bonus():
 def show_bonus():
     """红包管理"""
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 25, type=int)
 
     builder = Bonus.query.filter_by(master_uid=Master.master_uid())
     # 排序
@@ -175,7 +175,3 @@ def delete_bonus():
     flash('Delete bonus is ok!', 'success')
 
     return redirect(url_for('.show_bonus'))
-
-
-
-

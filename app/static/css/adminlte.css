@@ -207,6 +207,9 @@ select {
 .alert-danger {
   text-shadow: none;
 }
+.label-warning {
+  border-radius: 2px;
+}
 
 .indicator,
 .indicator-right {

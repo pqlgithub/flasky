@@ -216,7 +216,7 @@ class Bonus(db.Model):
     product_rid = db.Column(db.String(12), nullable=True)
     # 活动编号
     xname = db.Column(db.String(8), nullable=True)
-    # 状态
+    # 状态, -1: 禁用；1：正常；2：已颁发
     status = db.Column(db.SmallInteger, default=0)
     
     # 所属人
@@ -277,6 +277,11 @@ class Bonus(db.Model):
     def mark_set_disabled(self):
         """禁用红包"""
         self.status = False
+
+    def grant_bonus(self, uid):
+        """颁发红包给某用户"""
+        self.user_id = uid
+        self.get_at = timestamp()
 
     def to_json(self):
         json_obj = {

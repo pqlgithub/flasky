@@ -16,16 +16,17 @@ def get_bonus_list():
     """获取红包列表"""
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
-    status = request.values.get('status', 'N01')
+    used = request.values.get('used', 'N01')
+    status = request.values.get('status', 1)
 
     # 验证用户身份
     if not can_admin(g.master_uid):
         abort(403)
 
-    builder = Bonus.query.filter_by(master_uid=g.master_uid)
-    if status == 'N01':  # 未使用
+    builder = Bonus.query.filter_by(master_uid=g.master_uid, status=status)
+    if used == 'N01':  # 未使用
         builder = builder.filter_by(is_used=False)
-    elif status == 'N03':  # 已过期
+    elif used == 'N03':  # 已过期
         builder = builder.filter(Bonus.expired_at < int(timestamp()))
     else:  # 已使用
         builder = builder.filter_by(is_used=True)
@@ -91,6 +92,22 @@ def get_bonus(rid):
     return full_response(R200_OK, bonus.to_json())
 
 
+@api.route('/market/bonus/grant', methods=['POST'])
+@auth.login_required
+def grant_bonus():
+    """授予红包信息"""
+    if not request.json or 'rid' not in request.json:
+        abort(400)
+    rid = request.json.get('rid')
+    bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
+    if bonus is None:
+        return status_response(R404_NOTFOUND, False)
+    bonus.grant_bonus(g.current_user.id)
+    db.session.commit()
+
+    return full_response(R200_OK, bonus.to_json())
+
+
 @api.route('/market/bonus/create', methods=['POST'])
 @auth.login_required
 def create_bonus():
@@ -134,7 +151,6 @@ def create_bonus():
 def disabled_brand(rid):
     """禁用红包"""
     bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
-
     if bonus is None:
         abort(404)
 

@@ -42,7 +42,9 @@
                         {{ bonus.reach_amount|supress_none }}
                     </td>
                     <td class="text-right">
+                        {% if bonus.expired_at %}
                         {{ bonus.expired_at|timestamp2string('%Y-%m-%d') }}
+                        {% endif %}
                     </td>
                     <td class="text-right">
                         {% if bonus.used %}
