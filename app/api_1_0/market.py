@@ -102,6 +102,8 @@ def grant_bonus():
     bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
     if bonus is None:
         return status_response(R404_NOTFOUND, False)
+    if bonus.status != 1:
+        return custom_response('该红包已被领取！', 401, False)
     bonus.grant_bonus(g.current_user.id)
     db.session.commit()
 

@@ -282,6 +282,7 @@ class Bonus(db.Model):
         """颁发红包给某用户"""
         self.user_id = uid
         self.get_at = timestamp()
+        self.status = 2  # 已颁发
 
     def to_json(self):
         json_obj = {
@@ -295,6 +296,7 @@ class Bonus(db.Model):
             'xname': self.xname,
             'status': self.status,
             'status_label': self.status_label,
+            'user_id': self.user_id,
             'is_used': self.is_used,
             'created_at': self.created_at
         }
