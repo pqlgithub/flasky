@@ -240,6 +240,17 @@ class Bonus(db.Model):
             if s[0] == self.type:
                 return s
 
+    @property
+    def status_label(self):
+        if self.type == 3:
+            s_label = '消费满{}元可减'.format(self.reach_amount)
+        elif self.type == 2:
+            s_label = '最低消费{}元可用'.format(self.min_amount)
+        else:
+            s_label = '通用红包'
+
+        return s_label
+
     @staticmethod
     def make_unique_code():
         """生成红包代码"""
@@ -278,6 +289,7 @@ class Bonus(db.Model):
             'limit_products': self.product_rid,
             'xname': self.xname,
             'status': self.status,
+            'status_label': self.status_label,
             'is_used': self.is_used,
             'created_at': self.created_at
         }

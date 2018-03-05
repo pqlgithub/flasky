@@ -7,16 +7,30 @@ from . import api
 from .auth import auth
 from .utils import *
 from app.models import Bonus
-from app.utils import datestr_to_timestamp
+from app.utils import datestr_to_timestamp, timestamp
 
 
 @api.route('/market/bonus')
+@auth.login_required
 def get_bonus_list():
     """获取红包列表"""
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+    status = request.values.get('status', 'N01')
 
-    pagination = Bonus.query.filter_by(master_uid=g.master_uid).paginate(page, per_page=per_page, error_out=False)
+    # 验证用户身份
+    if not can_admin(g.master_uid):
+        abort(403)
+
+    builder = Bonus.query.filter_by(master_uid=g.master_uid)
+    if status == 'N01':  # 未使用
+        builder = builder.filter_by(is_used=False)
+    elif status == 'N03':  # 已过期
+        builder = builder.filter(Bonus.expired_at < int(timestamp()))
+    else:  # 已使用
+        builder = builder.filter_by(is_used=True)
+
+    pagination = builder.paginate(page, per_page=per_page, error_out=False)
     bonus_list = pagination.items
     prev_url = None
     if pagination.has_prev:
@@ -33,7 +47,41 @@ def get_bonus_list():
     })
 
 
+@api.route('/market/user_bonus')
+@auth.login_required
+def get_user_bonus():
+    """获取用户红包列表"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+    status = request.values.get('status', 'N01')
+
+    builder = Bonus.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id)
+    if status == 'N01':  # 未使用
+        builder = builder.filter_by(is_used=False)
+    elif status == 'N03':  # 已过期
+        builder = builder.filter(Bonus.expired_at < int(timestamp()))
+    else:  # 已使用
+        builder = builder.filter_by(is_used=True)
+
+    pagination = builder.paginate(page, per_page=per_page, error_out=False)
+    bonus_list = pagination.items
+    prev_url = None
+    if pagination.has_prev:
+        prev_url = url_for('api.get_user_bonus', page=page - 1, _external=True)
+    next_url = None
+    if pagination.has_next:
+        next_url = url_for('api.get_user_bonus', page=page + 1, _external=True)
+
+    return full_response(R200_OK, {
+        'bonus_list': [bonus.to_json() for bonus in bonus_list],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
 @api.route('/market/bonus/<string:rid>')
+@auth.login_required
 def get_bonus(rid):
     """获取红包信息"""
     bonus = Bonus.query.filter_by(master_uid=g.master_uid, code=rid).first()
@@ -49,6 +97,8 @@ def create_bonus():
     """添加新红包"""
     if not request.json or 'amount' not in request.json:
         abort(400)
+
+    # todo: 验证用户身份，必须主账号权限用户
 
     # todo: 数据验证
     quantity = request.json.get('quantity')
