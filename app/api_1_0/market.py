@@ -11,7 +11,6 @@ from app.utils import datestr_to_timestamp, timestamp
 
 
 @api.route('/market/bonus')
-@auth.login_required
 def get_bonus_list():
     """获取红包列表"""
     page = request.values.get('page', 1, type=int)
