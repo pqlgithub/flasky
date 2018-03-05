@@ -17,11 +17,7 @@ def get_bonus_list():
     per_page = request.values.get('per_page', 10, type=int)
     used = request.values.get('used', 'N01')
     status = request.values.get('status', 1)
-
-    # 验证用户身份
-    if not can_admin(g.master_uid):
-        abort(403)
-
+    
     builder = Bonus.query.filter_by(master_uid=g.master_uid, status=status)
     if used == 'N01':  # 未使用
         builder = builder.filter_by(is_used=False)
