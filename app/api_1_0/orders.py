@@ -80,7 +80,39 @@ def add_seller_remark(rid):
     db.session.commit()
     
     return status_response(R200_OK)
-    
+
+
+@api.route('/orders/up_paid_status', methods=['POST'])
+@auth.login_required
+def update_order_paid():
+    """更新订单支付状态"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+    # 已支付，状态更新为待审核
+    status = OrderStatus.PENDING_CHECK
+
+    return _update_order_status(rid, status)
+
+
+def _update_order_status(rid, status):
+    """更新订单状态"""
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+
+    if status == OrderStatus.PENDING_CHECK:  # 待审核
+        # 验证订单状态, 仅未支付状态时，才可更新为待审核
+        if current_order.status != OrderStatus.PENDING_PAYMENT:
+            return custom_response('Order status is error!', 403, False)
+
+        current_order.mark_checked_status()
+
+    db.session.commit()
+
+    return full_response(R200_OK, {
+        'rid': rid
+    })
+
 
 @api.route('/orders/<string:rid>/mark_delivery', methods=['POST'])
 @auth.login_required
@@ -101,20 +133,6 @@ def track_logistic(rid):
 def print_order():
     """打印订单"""
     pass
-
-
-@api.route('/orders/wx_pay/jsapi', methods=['POST'])
-@auth.login_required
-def pay_order_jsapi():
-    """微信网页支付请求发起"""
-    rid = request.json.get('rid')
-    pay_type = request.json.get('pay_type', 1)  # 默认为微信支付
-    openid = request.json.get('openid')
-    data = {}
-    if pay_type == 1:
-        data = _js_wxpay_params(rid)
-    
-    return full_response(R200_OK, data)
 
 
 @api.route('/orders/create', methods=['POST'])
@@ -279,6 +297,20 @@ def wxapp_prepay_sign():
     pay_params = _wxapp_pay_params(rid, current_order.pay_amount)
 
     return full_response(R200_OK, pay_params)
+
+
+@api.route('/orders/wx_pay/jsapi', methods=['POST'])
+@auth.login_required
+def pay_order_jsapi():
+    """微信网页支付请求发起"""
+    rid = request.json.get('rid')
+    pay_type = request.json.get('pay_type', 1)  # 默认为微信支付
+    openid = request.json.get('openid')
+    data = {}
+    if pay_type == 1:
+        data = _js_wxpay_params(rid)
+
+    return full_response(R200_OK, data)
 
 
 def _wxapp_pay_params(rid, pay_amount):
