@@ -288,6 +288,7 @@ class Coupon(db.Model):
             'code': self.code,
             'amount': self.amount,
             'start_date': self.start_date,
+            'end_date': self.end_date,
             'type': self.type,
             'type_text': self.type_text,
             'min_amount': self.min_amount,
@@ -320,8 +321,6 @@ class UserCoupon(db.Model):
     # 使用在某个订单上
     order_rid = db.Column(db.String(12))
     created_at = db.Column(db.Integer, default=timestamp)
-
-
 
     def to_json(self):
         """返回json格式数据"""

@@ -121,9 +121,9 @@ def get_coupon(rid):
 @auth.login_required
 def get_user_coupons():
     """用户-获取红包列表"""
-    page = request.values.get('page', 1, type=int)
-    per_page = request.values.get('per_page', 10, type=int)
-    status = request.values.get('status', 'N01')
+    page = request.json.get('page')
+    per_page = request.json.get('per_page')
+    status = request.json.get('status')
 
     builder = UserCoupon.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id)
     if status == 'N01':  # 未使用
@@ -172,6 +172,9 @@ def grant_coupons():
             get_at=int(timestamp())
         )
         db.session.add(user_coupon)
+
+        # 同步更新优惠券领取总数
+        coupon.total_count += 1
 
         db.session.commit()
 
