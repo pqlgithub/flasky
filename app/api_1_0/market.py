@@ -150,6 +150,38 @@ def get_user_coupons():
     })
 
 
+@api.route('/market/coupons/available', methods=['POST'])
+@auth.login_required
+def get_available_coupons():
+    """用户-获取符合条件的红包列表"""
+    total_amount = request.json.get('pay_amount')
+
+    if not total_amount:
+        abort(400)
+
+    user_coupons = UserCoupon.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id, is_used=False).all()
+    available_coupons = []
+    if user_coupons:
+        # 过滤是否满足条件
+        for user_coupon in user_coupons:
+            coupon = user_coupon.coupon
+            if coupon.type == 3 and coupon.reach_amount < total_amount:
+                available_coupons.append(coupon.to_json())
+            elif coupon.type == 2 and coupon.min_amount < total_amount:
+                available_coupons.append(coupon.to_json())
+            else:
+                available_coupons.append(coupon.to_json())
+        # 自动匹配优惠最大金额
+        if len(available_coupons):
+            coupon_amount = [ac['amount'] for ac in available_coupons]
+            max_index = coupon_amount.index(max(coupon_amount))
+            available_coupons[max_index]['max'] = True
+
+    return full_response(R200_OK, {
+        'available_coupons': available_coupons
+    })
+
+
 @api.route('/market/coupons/grant', methods=['POST'])
 @auth.login_required
 def grant_coupons():
