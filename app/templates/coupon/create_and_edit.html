@@ -12,28 +12,35 @@
 <div class="form-page">
 	<h2 class="page-header">
 		{% if mode == 'create' %}
-			{{ _('Add Bonus') }}
+			{{ _('Add Coupon') }}
 		{% else %}
-			{{ _('Edit Brand') }}
+			{{ _('Edit Coupon') }}
 		{% endif %}
 
 		<span class="pull-right">
-			<button type="submit" form="bonus-form" class="btn btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+			<button type="submit" form="coupon-form" class="btn btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_bonus') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_coupons') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
 
-	<form id="bonus-form" class="form-horizontal" action="" method="post">
+	<form id="coupon-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
         <div class="form-group required m-b-25">
 			{{ form.type.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-5">
 				{{ form.type(id="type", class="radio-inline-group") }}
+			</div>
+		</div>
+
+        <div class="form-group m-b-25">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-5">
+				{{ form.name(id="name", class="form-control") }}
 			</div>
 		</div>
 
@@ -53,29 +60,26 @@
 			</div>
 		</div>
 
-        <div class="form-group required m-b-25">
-			{{ form.quantity.label(class="col-sm-2 control-label") }}
-            <div class="col-sm-5">
-                <div class="input-group">
-                    {{ form.quantity(id="quantity", class="form-control") }}
-                    <span class="input-group-addon">
-                        个
-                    </span>
-                </div>
-            </div>
-		</div>
-
         <div class="form-group m-b-25">
-			{{ form.expired_at.label(class="col-sm-2 control-label") }}
-            <div class="col-sm-5">
+			{{ form.start_date.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-3">
                 <div class="input-group form-date">
-					{{ form.expired_at(class="form-control form-datetime") }}
+					{{ form.start_date(id="start_date", class="form-control form-datetime") }}
 					<span class="input-group-addon">
 						<i class="fa fa-calendar"></i>
 					</span>
 				</div>
-                <span class="help-block">若不设置过期日期，则为永不过期</span>
-            </div>
+			</div>
+
+            {{ form.end_date.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-3">
+                <div class="input-group form-date">
+					{{ form.end_date(id="end_date", class="form-control form-datetime") }}
+					<span class="input-group-addon">
+						<i class="fa fa-calendar"></i>
+					</span>
+				</div>
+			</div>
 		</div>
 
         <div class="form-group m-b-25">
@@ -96,13 +100,6 @@
                     </span>
                 </div>
                 <span class="help-block">达到一定的金额，满减活动</span>
-			</div>
-		</div>
-
-        <div class="form-group m-b-25">
-			{{ form.xname.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.xname(id="xname", class="form-control") }}
 			</div>
 		</div>
 

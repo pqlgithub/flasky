@@ -3,7 +3,7 @@ from sqlalchemy import event
 from flask_babelex import lazy_gettext
 from app import db
 from .asset import Asset
-from ..utils import timestamp
+from ..utils import timestamp, datestr_to_timestamp
 from ..constant import SERVICE_TYPES
 from app.helpers import MixGenId
 
@@ -13,6 +13,8 @@ __all__ = [
     'SubscribeRecord',
     'ApplicationStatus',
     'Invitation',
+    'Coupon',
+    'UserCoupon',
     'Bonus'
 ]
 
@@ -22,12 +24,13 @@ STORE_STATUS = [
     (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
-# 红包类型
-BONUS_TYPES = [
+# 优惠券类型
+COUPON_TYPES = [
     (1, lazy_gettext('Standard'), 'success'),
     (2, lazy_gettext('Minimum'), 'warning'),
     (3, lazy_gettext('Subtraction'), 'danger')
 ]
+
 
 class ApplicationStatus:
     # 通过审核
@@ -194,6 +197,148 @@ class Invitation(db.Model):
         return '<Invitation {}>'.format(self.id)
 
 
+class Coupon(db.Model):
+    """优惠券"""
+
+    __tablename__ = 'coupons'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+    # 优惠券名称
+    name = db.Column(db.String(50), nullable=True)
+    code = db.Column(db.String(16), nullable=False)
+    # 面值
+    amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 类型： 1、通用型；2、最低消费；3、满减
+    type = db.Column(db.SmallInteger, default=1)
+    # 限制最近消费金额
+    min_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 满足金额
+    reach_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    #  有效期
+    start_date = db.Column(db.Integer, default=0)
+    end_date = db.Column(db.Integer, default=0)
+    # 限制使用某个商品
+    product_rid = db.Column(db.String(12), nullable=True)
+    # 领取数量
+    got_count = db.Column(db.Integer, default=0)
+    # 状态, -1: 禁用；1：正常；2：已结束
+    status = db.Column(db.SmallInteger, default=0)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    # N => N 转化为 1 => N
+    user_coupons = db.relationship(
+        'UserCoupon', backref='coupon', lazy='dynamic'
+    )
+
+    @property
+    def type_label(self):
+        for s in COUPON_TYPES:
+            if s[0] == self.type:
+                return s
+
+    @property
+    def type_text(self):
+        if self.type == 3:
+            s_label = '消费满{}元可减'.format(self.reach_amount)
+        elif self.type == 2:
+            s_label = '最低消费{}元可用'.format(self.min_amount)
+        else:
+            s_label = '全店通用'
+
+        return s_label
+
+    @staticmethod
+    def make_unique_code():
+        """生成红包代码"""
+        code = MixGenId.gen_coupon_code(10)
+        if Coupon.query.filter_by(code=code).first() is None:
+            return code
+
+        while True:
+            new_code = MixGenId.gen_coupon_code(10)
+            if Coupon.query.filter_by(code=new_code).first() is None:
+                break
+        return new_code
+
+    @staticmethod
+    def on_before_insert(mapper, connection, target):
+        # 自动生成红包代码
+        target.code = Coupon.make_unique_code()
+        # 为空时，默认为0
+        if not target.min_amount:
+            target.min_amount = 0
+        if not target.reach_amount:
+            target.reach_amount = 0
+
+        # 过期日期
+        if target.start_date:
+            target.start_date = datestr_to_timestamp(target.start_date)
+        if target.end_date:
+            target.end_date = datestr_to_timestamp(target.end_date)
+
+    def mark_set_disabled(self):
+        """禁用优惠券"""
+        self.status = -1
+
+    def to_json(self):
+        json_obj = {
+            'code': self.code,
+            'amount': self.amount,
+            'start_date': self.start_date,
+            'type': self.type,
+            'type_text': self.type_text,
+            'min_amount': self.min_amount,
+            'reach_amount': self.reach_amount,
+            'limit_products': self.product_rid,
+            'name': self.name,
+            'status': self.status,
+            'created_at': self.created_at
+        }
+        return json_obj
+
+    def __repr__(self):
+        return '<Coupon {}>'.format(self.code)
+
+
+class UserCoupon(db.Model):
+    """用户与优惠券关联表"""
+
+    __tablename__ = 'users_coupons'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    coupon_id = db.Column(db.Integer, db.ForeignKey('coupons.id'))
+    # 获得时间
+    get_at = db.Column(db.Integer, default=0)
+    used_at = db.Column(db.Integer, default=0)
+    is_used = db.Column(db.Boolean, default=False)
+    # 使用在某个订单上
+    order_rid = db.Column(db.String(12))
+    created_at = db.Column(db.Integer, default=timestamp)
+
+
+
+    def to_json(self):
+        """返回json格式数据"""
+        json_obj = {
+            'get_at': self.get_at,
+            'used_at': self.used_at,
+            'is_used': self.is_used,
+            'order_rid': self.order_rid,
+            'coupon': self.coupon.to_json()
+        }
+
+        return json_obj
+
+    def __repr__(self):
+        return '<UserCoupon {}{}>'.format(self.user_id, self.coupon_id)
+
+
 class Bonus(db.Model):
     """促销红包"""
 
@@ -234,56 +379,6 @@ class Bonus(db.Model):
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-    @property
-    def type_label(self):
-        for s in BONUS_TYPES:
-            if s[0] == self.type:
-                return s
-
-    @property
-    def status_label(self):
-        if self.type == 3:
-            s_label = '消费满{}元可减'.format(self.reach_amount)
-        elif self.type == 2:
-            s_label = '最低消费{}元可用'.format(self.min_amount)
-        else:
-            s_label = '通用红包'
-
-        return s_label
-
-    @staticmethod
-    def make_unique_code():
-        """生成红包代码"""
-        code = MixGenId.gen_bonus_code(10)
-        if Bonus.query.filter_by(code=code).first() is None:
-            return code
-
-        while True:
-            new_code = MixGenId.gen_bonus_code(10)
-            if Bonus.query.filter_by(code=new_code).first() is None:
-                break
-        return new_code
-
-    @staticmethod
-    def on_before_insert(mapper, connection, target):
-        # 自动生成红包代码
-        target.code = Bonus.make_unique_code()
-        # 为空时，默认为0
-        if not target.min_amount:
-            target.min_amount = 0
-        if not target.reach_amount:
-            target.reach_amount = 0
-
-    def mark_set_disabled(self):
-        """禁用红包"""
-        self.status = False
-
-    def grant_bonus(self, uid):
-        """颁发红包给某用户"""
-        self.user_id = uid
-        self.get_at = timestamp()
-        self.status = 2  # 已颁发
-
     def to_json(self):
         json_obj = {
             'code': self.code,
@@ -308,4 +403,4 @@ class Bonus(db.Model):
 
 # 监听AppService事件
 event.listen(AppService, 'before_insert', AppService.on_before_insert)
-event.listen(Bonus, 'before_insert', Bonus.on_before_insert)
+event.listen(Coupon, 'before_insert', Coupon.on_before_insert)

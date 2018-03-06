@@ -3,9 +3,9 @@
 {% block after_jquery %}
 <script type="text/javascript">
 	var submit_filter_form = function () {
-		var data = $('#filter-bonus-form').serialize();
+		var data = $('#filter-coupon-form').serialize();
 
-		$.post("{{ url_for('main.search_bonus') }}", data, function (result) {
+		$.post("{{ url_for('main.search_coupons') }}", data, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
 		return false;
@@ -37,10 +37,10 @@
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Bonus List') }}
+		{{ _('Coupon List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_bonus') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_coupon') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="bonus-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
@@ -49,34 +49,11 @@
 		</span>
 	</h2>
 
-	<form class="form-inline" id="filter-bonus-form" method="post">
+	<form class="form-inline" id="filter-coupon-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
 			<input type="text" class="form-control searcher" size="60" name="qk" autocomplete="off" placeholder="{{ _('Search code...') }}">
-		</div>
-
-        <div class="form-group m-l-5">
-			<div class="dropdown">
-				<input type="hidden" name="used_id">
-				<button class="btn btn-default dropdown-toggle" id="filter-used" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Use Status') }}: <b>{{ _('All') }}</b>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu dropdown-select-menu" data-target="used_id" aria-labelledby="filter-used">
-					<li class="dropdown-header">{{ _('Search Use Status')}}</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
-					</li>
-                    <li>
-						<a href="javascript:void(0);" data-id="1" class="option">{{ _('Used') }}</a>
-					</li>
-					<li>
-						<a href="javascript:void(0);" data-id="-1" class="option">{{ _('Not Used') }}</a>
-					</li>
-				</ul>
-			</div>
 		</div>
 
 		<div class="form-group pull-right">
@@ -105,10 +82,10 @@
 	</form>
 
 	<div id="table-refresh-box" class="m-t-20">
-		{% include 'bonus/table_bonus.html' %}
+		{% include 'coupon/table_coupon.html' %}
 
 		{% import "block/_macros.html" as macros %}
-		{{ macros.pagination_widget(pagination, '.show_bonus') }}
+		{{ macros.pagination_widget(pagination, '.show_coupons') }}
 	</div>
 
 </div>

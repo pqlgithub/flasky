@@ -1,10 +1,10 @@
-{% include 'bonus/table_bonus.html' %}
+{% include 'bonus/table_coupon.html' %}
 
 {% import "block/_macros.html" as macros %}
 <div class="pages-box ajax">
 	<div class="pull-left">
 		<nav aria-label="Page navigation">
-			{{ macros.pagination_widget(pagination, '.search_bonus', qk=qk, sk=sk, used_id=used_id) }}
+			{{ macros.pagination_widget(pagination, '.search_coupon', qk=qk, sk=sk) }}
 		</nav>
 	</div>
 </div>

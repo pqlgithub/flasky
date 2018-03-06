@@ -8,8 +8,8 @@ from .. import db
 from ..utils import Master, datestr_to_timestamp, status_response
 from ..decorators import user_has
 from ..constant import SERVICE_TYPES
-from app.models import AppService, SubscribeService, SubscribeRecord, Bonus
-from app.forms import BonusForm
+from app.models import AppService, SubscribeService, SubscribeRecord, Coupon
+from app.forms import CouponForm
 
 
 @main.route('/market/apps')
@@ -49,27 +49,21 @@ def subscribe_app(sn):
     return redirect(url_for('.show_apps'))
 
 
-@main.route('/market/bonus/search', methods=['GET', 'POST'])
-def search_bonus():
-    """搜索红包"""
+@main.route('/market/coupons/search', methods=['GET', 'POST'])
+def search_coupons():
+    """搜索优惠券"""
     per_page = request.values.get('per_page', 25, type=int)
     page = request.values.get('page', 1, type=int)
     qk = request.values.get('qk')
-    used_id = request.values.get('used_id', type=int)
     sk = request.values.get('sk', type=str, default='ad')
 
-    builder = Bonus.query.filter_by(master_uid=Master.master_uid())
-
-    if used_id == 1:
-        builder = builder.filter_by(is_used=True)
-    elif used_id == -1:
-        builder = builder.filter_by(is_used=False)
+    builder = Coupon.query.filter_by(master_uid=Master.master_uid())
 
     qk = qk.strip()
     if qk:
         builder = builder.filter_by(code=qk)
 
-    bonus = builder.order_by(Bonus.created_at.desc()).all()
+    coupons = builder.order_by(Coupon.created_at.desc()).all()
 
     # 构造分页
     total_count = builder.count()
@@ -81,97 +75,90 @@ def search_bonus():
 
     current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
 
-    paginated_bonus = bonus[start:end]
+    paginated_coupons = coupons[start:end]
 
     pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
 
     return render_template('bonus/search_result.html',
                            qk=qk,
                            sk=sk,
-                           used_id=used_id,
-                           paginated_bonus=paginated_bonus,
+                           paginated_coupons=paginated_coupons,
                            pagination=pagination)
 
 
-@main.route('/market/bonus')
-def show_bonus():
-    """红包管理"""
+@main.route('/market/coupons')
+def show_coupons():
+    """优惠券管理"""
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 25, type=int)
 
-    builder = Bonus.query.filter_by(master_uid=Master.master_uid())
+    builder = Coupon.query.filter_by(master_uid=Master.master_uid())
     # 排序
-    paginated_bonus = builder.order_by(Bonus.created_at.desc()).paginate(page, per_page)
+    paginated_coupons = builder.order_by(Coupon.created_at.desc()).paginate(page, per_page)
 
-    return render_template('bonus/show_list.html',
-                           paginated_bonus=paginated_bonus.items,
-                           pagination=paginated_bonus
+    return render_template('coupon/show_list.html',
+                           paginated_coupons=paginated_coupons.items,
+                           pagination=paginated_coupons
                            )
 
 
-@main.route('/market/bonus/create', methods=['GET', 'POST'])
-def create_bonus():
+@main.route('/market/coupons/create', methods=['GET', 'POST'])
+def create_coupon():
     """新增红包"""
-    form = BonusForm()
+    form = CouponForm()
     if form.validate_on_submit():
-        quantity = form.quantity.data
-
-        expired_at = 0
-        if form.expired_at.data:
-            expired_at = datestr_to_timestamp(form.expired_at.data)
-
-        for idx in range(quantity):
-            bonus = Bonus(
-                master_uid=Master.master_uid(),
-                amount=form.amount.data,
-                type=form.type.data,
-                expired_at=expired_at,
-                min_amount=form.min_amount.data,
-                reach_amount=form.reach_amount.data,
-                xname=form.xname.data,
-                product_rid=form.product_rid.data,
-                status=form.status.data
-            )
-            db.session.add(bonus)
+        coupon = Coupon(
+            master_uid=Master.master_uid(),
+            name=form.name.data,
+            amount=form.amount.data,
+            type=form.type.data,
+            start_date=form.start_date.data,
+            end_date=form.end_date.data,
+            min_amount=form.min_amount.data,
+            reach_amount=form.reach_amount.data,
+            product_rid=form.product_rid.data,
+            status=form.status.data
+        )
+        db.session.add(coupon)
 
         db.session.commit()
 
-        flash('新增红包成功！', 'success')
-        return redirect(url_for('main.show_bonus'))
+        flash('新增优惠券成功！', 'success')
+        return redirect(url_for('main.show_coupons'))
     else:
         current_app.logger.warn(form.errors)
 
     mode = 'create'
-    return render_template('bonus/create_and_edit.html',
+    return render_template('coupon/create_and_edit.html',
                            mode=mode,
                            form=form)
 
 
-@main.route('/market/bonus/<string:rid>/disabled', methods=['POST'])
-def disabled_bonus(rid):
-    """使红包作废"""
-    bonus = Bonus.query.filter_by(master_uid=Master.master_uid(), code=rid).first_or_404()
-    bonus.mark_set_disabled()
+@main.route('/market/coupons/<string:rid>/disabled', methods=['POST'])
+def disabled_coupon(rid):
+    """使优惠券作废"""
+    coupon = Coupon.query.filter_by(master_uid=Master.master_uid(), code=rid).first_or_404()
+    coupon.mark_set_disabled()
     db.session.commit()
 
     return status_response()
 
 
-@main.route('/market/bonus/delete', methods=['POST'])
-def delete_bonus():
-    """删除红包"""
+@main.route('/market/coupons/delete', methods=['POST'])
+def delete_coupon():
+    """删除优惠券"""
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
-        flash('Delete bonus is null!', 'danger')
+        flash('Delete coupon is null!', 'danger')
         abort(404)
 
     for rid in selected_ids:
-        bonus = Bonus.query.filter_by(master_uid=Master.master_uid(), code=rid).first()
+        bonus = Coupon.query.filter_by(master_uid=Master.master_uid(), code=rid).first()
         if bonus.master_uid != Master.master_uid():
             abort(401)
         db.session.delete(bonus)
     db.session.commit()
 
-    flash('Delete bonus is ok!', 'success')
+    flash('Delete coupon is ok!', 'success')
 
-    return redirect(url_for('.show_bonus'))
+    return redirect(url_for('.show_coupons'))
