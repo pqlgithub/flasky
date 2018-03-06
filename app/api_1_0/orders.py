@@ -183,6 +183,12 @@ def create_order():
 
         outside_target_id = request.json.get('outside_target_id')
         freight = request.json.get('freight')
+        affiliate_code = request.json.get('affiliate_code')
+        # 总优惠金额
+        discount_amount = request.json.get('discount_amount')
+        from_client = request.json.get('from_client')
+        if discount_amount:
+            total_discount += discount_amount
         pay_amount = Decimal(total_amount) + freight - Decimal(total_discount)
         order_serial_no = Order.make_unique_serial_no()
         append_dict = {
@@ -193,6 +199,7 @@ def create_order():
             'pay_amount': pay_amount,
             'total_amount': total_amount,
             'total_quantity': total_quantity,
+            'affiliate_code': affiliate_code,
             'discount_amount': total_discount,
             'outside_target_id': outside_target_id,
             
@@ -209,6 +216,7 @@ def create_order():
             'buyer_area': address.city
         }
         order_data = dict(request.get_json(), **append_dict)
+
         current_app.logger.warn(order_data)
         
         # 添加订单
@@ -232,13 +240,16 @@ def create_order():
         return custom_response('Create order failed: %s' % str(err), 400, False)
 
     if sync_pay:  # 同步返回客户端js支付所需参数
-        pay_params = _js_wxpay_params(new_order.serial_no)
-        return full_response(R201_CREATED, {
-            'order': new_order.to_json(),
-            'pay_params': pay_params
-        })
+        if from_client == 1:  # 小程序
+            pay_params = _wxapp_pay_params(order_serial_no, pay_amount)
+            return full_response(R201_CREATED, {
+                'order': new_order.to_json(),
+                'pay_params': pay_params
+            })
 
-    return full_response(R201_CREATED, new_order.to_json())
+    return full_response(R201_CREATED, {
+        'order': new_order.to_json()
+    })
 
 
 @api.route('/orders/cancel', methods=['POST'])
@@ -265,18 +276,24 @@ def wxapp_prepay_sign():
     if current_order.status != OrderStatus.PENDING_PAYMENT:
         return custom_response('Order status is error!', 403, False)
 
-    data = {}
+    pay_params = _wxapp_pay_params(rid, current_order.pay_amount)
+
+    return full_response(R200_OK, pay_params)
+
+
+def _wxapp_pay_params(rid, pay_amount):
+    """小程序支付签名"""
     openid = g.current_user.openid
     cfg = current_app.config
     wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
                   wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
 
-    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(current_order.pay_amount * 100))))
+    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
     prepay_result = wxpay.unified_order(
         body='D3IN未来店-小程序',
         openid=openid,  # 付款用户openid
         out_trade_no=rid,
-        total_fee=str(int(current_order.pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
+        total_fee=str(int(pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
         trade_type='JSAPI')
 
     current_app.logger.warn('Unified order result: %s' % prepay_result)
@@ -297,7 +314,7 @@ def wxapp_prepay_sign():
         pay_params['pay_sign'] = pay_sign
         pay_params['prepay_id'] = prepay_id
 
-    return full_response(R200_OK, pay_params)
+    return pay_params
 
 
 def _js_wxpay_params(rid):
