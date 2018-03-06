@@ -917,7 +917,7 @@ class Wishlist(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
     
     user_id = db.Column(db.Integer, default=0)
-    product_id = db.Column(db.Integer, default=0)
+    product_rid = db.Column(db.String(12), nullable=False)
     
     created_at = db.Column(db.Integer, default=timestamp)
     

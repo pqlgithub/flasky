@@ -10,7 +10,7 @@ SKIP = 'SKIP'
 SUCCESS = 'SUCCESS'
 
 
-@fsk_celery.task(name='update_search_history')
+@fsk_celery.task(name='product.update_search_history')
 def update_search_history(qk, uid, total_count=0):
     """新增或更新搜索历史记录"""
 

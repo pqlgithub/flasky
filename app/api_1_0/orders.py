@@ -10,6 +10,7 @@ from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus
 from app.utils import timestamp
+from app.tasks import remove_order_cart, update_coupon_status
 
 
 @api.route('/orders')
@@ -96,6 +97,17 @@ def update_order_paid():
     return _update_order_status(rid, status)
 
 
+@api.route('/orders/up_sign_status', methods=['POST'])
+@auth.login_required
+def update_order_sign():
+    """更新订单已签收状态"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+    return _update_order_status(rid, OrderStatus.SIGNED)
+
+
 def _update_order_status(rid, status):
     """更新订单状态"""
     current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
@@ -106,7 +118,9 @@ def _update_order_status(rid, status):
             return custom_response('Order status is error!', 403, False)
 
         current_order.mark_checked_status()
-
+    elif status == OrderStatus.SIGNED:  # 已签收
+        current_order.mark_finished_status()
+    
     db.session.commit()
 
     return full_response(R200_OK, {
@@ -249,13 +263,19 @@ def create_order():
             db.session.add(order_item)
         
         db.session.commit()
-        
-        # TODO: 订单提交成功后，需删除本次购物车商品
-
     except Exception as err:
         current_app.logger.warn('Create order failed: %s' % str(err))
         db.session.rollback()
         return custom_response('Create order failed: %s' % str(err), 400, False)
+
+    # 触发任务
+
+    # 订单提交成功后，需删除本次购物车商品
+    remove_order_cart.apply_async(args=[g.master_uid, order_serial_no])
+
+    # 如使用优惠券，则更新状态
+    if affiliate_code:
+        update_coupon_status.apply_async(args=[g.master_uid, order_serial_no])
 
     if sync_pay:  # 同步返回客户端js支付所需参数
         if from_client == 1:  # 小程序
