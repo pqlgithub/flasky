@@ -302,7 +302,9 @@ def signed_order():
 
     db.session.commit()
 
-    return status_response(R200_OK)
+    return full_response(R200_OK, {
+        'order': current_order.to_json()
+    })
 
 
 @api.route('/orders/cancel', methods=['POST'])
@@ -326,7 +328,9 @@ def cancel_order():
 
     db.session.commit()
 
-    return status_response(R200_OK)
+    return full_response(R200_OK, {
+        'order': current_order.to_json()
+    })
     
 
 @api.route('/orders/delete', methods=['DELETE'])
