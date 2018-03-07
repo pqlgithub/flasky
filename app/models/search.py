@@ -16,6 +16,7 @@ class SearchHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
 
+    user_id = db.Column(db.Integer, index=True, default=0)
     query_word = db.Column(db.String(50), index=True)
     total_count = db.Column(db.Integer, default=0)
     # 搜索次数

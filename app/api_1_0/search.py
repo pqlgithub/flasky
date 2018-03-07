@@ -4,8 +4,9 @@ from flask_sqlalchemy import Pagination
 
 from .. import db
 from . import api
+from .auth import auth
 from .utils import *
-from app.models import SearchHistory, Product
+from app.models import SearchHistory, Product, User
 from app.tasks import update_search_history
 
 
@@ -14,7 +15,8 @@ def search_products():
     """搜索商品列表"""
     page = request.json.get('page', 1)
     per_page = request.json.get('per_page', 10)
-    qk = request.json.get('qk')
+    qk = str(request.json.get('qk'))
+    uid = request.json.get('uid')
 
     if not qk:
         abort(404)
@@ -40,7 +42,12 @@ def search_products():
     pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
 
     # 任务：自动加入搜索历史
-    update_search_history.apply_async(args=[qk, g.master_uid, total_count])
+    user_id = 0
+    if uid:
+        user = User.query.filter_by(sn=uid).first()
+        user_id = user.id
+
+    update_search_history.apply_async(args=[qk, g.master_uid, total_count, user_id])
 
     return full_response(R200_OK, {
         'qk': qk,
@@ -52,6 +59,7 @@ def search_products():
 
 
 @api.route('/search/history')
+@auth.login_required
 def search_history():
     """搜索历史"""
     page = request.values.get('page', 1, type=int)
@@ -59,7 +67,7 @@ def search_history():
     prev_url = None
     next_url = None
 
-    builder = SearchHistory.query.filter_by(master_uid=g.master_uid)
+    builder = SearchHistory.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id)
 
     pagination = builder.order_by(SearchHistory.search_at.desc()).paginate(page, per_page, error_out=False)
 

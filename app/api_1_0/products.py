@@ -218,9 +218,12 @@ def get_product_skus():
         
         items.append({
             'rid': sku.serial_no,
+            'mode': sku.mode,
+            'product_name': product.name,
             's_model': sku.s_model,
             's_color': sku.s_color,
             'cover': sku.cover.view_url,
+            'price': str(sku.price),
             'cost_price': str(sku.cost_price),
             'sale_price': str(sku.sale_price),
             's_weight': str(sku.s_weight),

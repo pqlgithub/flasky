@@ -171,6 +171,7 @@ def get_available_coupons():
                 available_coupons.append(coupon.to_json())
             else:
                 available_coupons.append(coupon.to_json())
+
         # 自动匹配优惠最大金额
         if len(available_coupons):
             coupon_amount = [ac['amount'] for ac in available_coupons]

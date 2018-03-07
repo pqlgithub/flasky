@@ -12,7 +12,7 @@ from app.models import Cart
 @auth.login_required
 def get_cart():
     """获取当前购物车"""
-    cart_items = Cart.query.filter_by(master_uid=g.master_uid).all()
+    cart_items = Cart.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id).all()
     if cart_items is None:
         abort(404)
     
@@ -24,7 +24,19 @@ def get_cart():
     
     return full_response(R200_OK, {
         'total_quantity': total_quantity,
+        'item_count': len(items),
         'items': items
+    })
+
+
+@api.route('/cart/item_count')
+@auth.login_required
+def get_item_count():
+    """获取购物车商品数"""
+    item_count = _cart_item_count()
+
+    return full_response(R200_OK, {
+        'item_count': item_count
     })
 
 
@@ -59,7 +71,10 @@ def addto_cart():
         db.session.rollback()
         return status_response(custom_status('Addto failed!', 400), False)
 
-    return full_response(R201_CREATED, cart.to_json())
+    return full_response(R201_CREATED, {
+        'cart': cart.to_json(),
+        'item_count': _cart_item_count()
+    })
 
 
 @api.route('/cart', methods=['PUT'])
@@ -103,7 +118,9 @@ def remove_cart(rid):
         db.session.rollback()
         return status_response(custom_status('Remove failed!', 400), False)
     
-    return status_response(R204_NOCONTENT)
+    return full_response(R204_NOCONTENT, {
+        'item_count': _cart_item_count()
+    })
     
 
 @api.route('/cart', methods=['DELETE'])
@@ -116,4 +133,11 @@ def clear_cart():
             db.session.delete(item)
         db.session.commit()
     
-    return status_response(R204_NOCONTENT)
+    return full_response(R204_NOCONTENT, {
+        'item_count': 0
+    })
+
+
+def _cart_item_count():
+    """购物车商品数"""
+    return Cart.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id).count()

@@ -11,7 +11,7 @@ SUCCESS = 'SUCCESS'
 
 
 @fsk_celery.task(name='product.update_search_history')
-def update_search_history(qk, uid, total_count=0):
+def update_search_history(qk, uid, total_count=0, user_id=0):
     """新增或更新搜索历史记录"""
 
     current_app.logger.warn('Task: update search[%s] history' % qk)
@@ -21,6 +21,7 @@ def update_search_history(qk, uid, total_count=0):
         # 新增
         history = SearchHistory(
             master_uid=uid,
+            user_id=user_id,
             query_word=qk,
             total_count=total_count
         )
