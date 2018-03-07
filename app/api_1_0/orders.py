@@ -203,7 +203,7 @@ def create_order():
         pay_amount = Decimal(total_amount) + freight - Decimal(total_discount)
         # 支付金额不能为负数
         if pay_amount < 0:
-            pay_amount = 0
+            pay_amount = 0.01
 
         order_serial_no = Order.make_unique_serial_no()
         append_dict = {
