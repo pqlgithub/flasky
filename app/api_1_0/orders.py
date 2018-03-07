@@ -120,33 +120,12 @@ def _update_order_status(rid, status):
         current_order.mark_checked_status()
     elif status == OrderStatus.SIGNED:  # 已签收
         current_order.mark_finished_status()
-    
+
     db.session.commit()
 
     return full_response(R200_OK, {
         'rid': rid
     })
-
-
-@api.route('/orders/<string:rid>/mark_delivery', methods=['POST'])
-@auth.login_required
-def mark_delivery(rid):
-    """确认收货"""
-    pass
-
-
-@api.route('/orders/<string:rid>/track_logistic')
-@auth.login_required
-def track_logistic(rid):
-    """物流跟踪查询接口"""
-    pass
-
-
-@api.route('/orders/print', methods=['POST'])
-@auth.login_required
-def print_order():
-    """打印订单"""
-    pass
 
 
 @api.route('/orders/create', methods=['POST'])
@@ -290,11 +269,64 @@ def create_order():
     })
 
 
+@api.route('/orders/logistic', methods=['POST'])
+@auth.login_required
+def track_logistic():
+    """物流跟踪查询接口"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+
+@api.route('/orders/print', methods=['POST'])
+@auth.login_required
+def print_order():
+    """打印订单"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+
+@api.route('/orders/signed', methods=['POST'])
+@auth.login_required
+def signed_order():
+    """确认收货"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+
+    # 标记签收
+    current_order.mark_signed_status()
+
+    db.session.commit()
+
+    return status_response(R200_OK)
+
+
 @api.route('/orders/cancel', methods=['POST'])
 @auth.login_required
 def cancel_order():
     """取消订单"""
     rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    # 仅待支付、待审核、待发货订单，可取消
+    if current_order.status not in [OrderStatus.PENDING_PAYMENT, OrderStatus.PENDING_CHECK,
+                                    OrderStatus.PENDING_SHIPMENT]:
+        abort(403)
+
+    # 标记为取消
+    current_order.mark_canceled_status()
+
+    # todo: 取消订单，释放库存
+
+    db.session.commit()
+
+    return status_response(R200_OK)
     
 
 @api.route('/orders/delete', methods=['DELETE'])
@@ -302,6 +334,8 @@ def cancel_order():
 def delete_order():
     """删除订单"""
     rid = request.json.get('rid')
+    if not rid:
+        abort(400)
 
 
 @api.route('/orders/wx_prepay_sign', methods=['POST'])

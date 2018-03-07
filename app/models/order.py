@@ -233,6 +233,11 @@ class Order(db.Model):
         """标记为已发货状态"""
         self.status = OrderStatus.SHIPPED
 
+    def mark_signed_status(self):
+        """标记为已签收状态"""
+        self.status = OrderStatus.SIGNED
+        self.received_at = timestamp()
+
     def mark_finished_status(self):
         """标记为已完成的状态"""
         self.status = OrderStatus.FINISHED

@@ -11,6 +11,12 @@ SKIP = 'SKIP'
 SUCCESS = 'SUCCESS'
 
 
+@fsk_celery.task(name='eorder.auto_cancel_order')
+def auto_cancel_order():
+    """下单30分钟内未支付，自动取消订单"""
+    pass
+
+
 @fsk_celery.task(name='eorder.remove_order_cart')
 def remove_order_cart(uid, rid):
     """下单成功，清除购物车记录"""
