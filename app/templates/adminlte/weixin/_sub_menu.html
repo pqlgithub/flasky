@@ -1,0 +1,11 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('WeiXin') }}
+	</div>
+	<a href="{{ url_for('adminlte.show_templates') }}" class="pjax list-group-item {% if sub_menu == 'templates' %} active{% endif %}">
+		{{ _('Wxapp Templates') }}
+	</a>
+    <a href="{{ url_for('adminlte.setting_weixin') }}" class="pjax list-group-item {% if sub_menu == 'settings' %} active{% endif %}">
+		{{ _('Wxapp Setting') }}
+	</a>
+</div>

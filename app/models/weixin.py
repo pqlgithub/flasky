@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from flask_babelex import lazy_gettext
+
 from app import db
 from .asset import Asset
 from ..utils import timestamp
@@ -11,7 +13,23 @@ __all__ = [
     'WxAuthorizer',
     'WxMiniApp',
     'WxPayment',
-    'WxTemplate'
+    'WxTemplate',
+    'WxVersion'
+]
+
+
+# 模板的状态
+TEMPLATE_STATUS = [
+    (2, lazy_gettext('Approved'), 'success'),
+    (1, lazy_gettext('Pending'), 'warning'),
+    (-1, lazy_gettext('Disabled'), 'danger')
+]
+
+# 小程序的状态
+WXAPP_STATUS = [
+    (1, lazy_gettext('Enabled'), 'success'),
+    (0, lazy_gettext('Pending'), 'warning'),
+    (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
 
@@ -66,6 +84,9 @@ class WxMiniApp(db.Model):
     # 多客服开关选项
     customer_service = db.Column(db.SmallInteger, default=0)
 
+    # 添加体验者, 多个微信号用,隔开
+    testers = db.Column(db.String(200))
+
     # 状态: -1 禁用；0 默认；1 正常；
     status = db.Column(db.SmallInteger, default=0)
 
@@ -76,6 +97,17 @@ class WxMiniApp(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @property
+    def status_label(self):
+        for s in WXAPP_STATUS:
+            if s[0] == self.status:
+                return s
+
+    @property
+    def test_list(self):
+        """字符串转换为列表"""
+        return self.testers.split(',') if self.testers else []
 
     @staticmethod
     def make_unique_serial_no():
@@ -99,6 +131,7 @@ class WxMiniApp(db.Model):
             'signature': self.signature,
             'qrcode_url': self.qrcode_url,
             'status': self.status,
+            'test_list': self.test_list,
             'created_at': self.created_at
         }
         return json_obj
@@ -165,16 +198,64 @@ class WxTemplate(db.Model):
     attachment = db.Column(db.String(200))
     # 被使用的次数
     used_count = db.Column(db.Integer, default=0)
+
+    # 状态: -1 禁用；1 默认；2 正常；
+    status = db.Column(db.SmallInteger, default=1)
+
     created_at = db.Column(db.Integer, default=timestamp)
     update_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @property
+    def status_label(self):
+        for s in TEMPLATE_STATUS:
+            if s[0] == self.status:
+                return s
 
     @property
     def cover(self):
         """cover asset info"""
         return Asset.query.get(self.cover_id) if self.cover_id else None
 
+    def mark_set_published(self):
+        """发布上架状态"""
+        self.status = 2
+
+    def mark_set_disabled(self):
+        """设置禁用状态"""
+        self.status = -1
+
     def __repr__(self):
         return '<WxTemplate {}>'.format(self.template_id)
+
+
+class WxVersion(db.Model):
+    """小程序发布版本管理"""
+
+    __tablename__ = 'wx_versions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
+    # 模板ID
+    template_id = db.Column(db.String(32))
+    # 审核 id
+    audit_id = db.Column(db.String(16))
+    # 审核状态
+    audit_status = db.Column(db.String(32))
+    # 审核时间
+    audit_at = db.Column(db.Integer, default=0)
+    # 说明
+    description = db.Column(db.String(200))
+    # 代码版本号，开发者可自定义
+    user_version = db.Column(db.String(30))
+    # 代码描述，开发者可自定义
+    user_desc = db.Column(db.String(200))
+
+    created_at = db.Column(db.Integer, default=timestamp)
+
+    def __repr__(self):
+        return '<WxVersion {}>'.format(self.audit_id)
 
 
 class WxToken(db.Model):

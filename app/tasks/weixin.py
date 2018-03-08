@@ -9,7 +9,7 @@ from app.extensions import fsk_celery
 
 from app import db, cache
 from app.models import WxToken, WxAuthorizer, WxAuthCode
-from app.helpers import WxApp, WxAppError
+from app.helpers import WxApp, WxAppError, WxaOpen3rd
 from app.utils import timestamp
 
 FAIL = 'FAIL'
@@ -88,3 +88,42 @@ def refresh_authorizer_token():
         return FAIL
 
     return SUCCESS
+
+
+@fsk_celery.task(name='wx.bind_wxa_tester')
+def bind_wxa_tester(uid, auth_app_id, wx_account):
+    """绑定体验者"""
+    authorizer = WxAuthorizer.query.filter_by(master_uid=uid, auth_app_id=auth_app_id).first()
+    if authorizer is None:
+        current_app.logger.warn("Authorizer is't exist!")
+        return FAIL
+    access_token = authorizer.access_token
+
+    try:
+        open3rd = WxaOpen3rd(access_token=access_token)
+        result = open3rd.bind_tester(wx_account)
+    except WxAppError as err:
+        current_app.logger.warn('Bind tester error: %s' % err)
+        return FAIL
+
+    return SUCCESS
+
+
+@fsk_celery.task(name='wx.unbind_wxa_tester')
+def unbind_wxa_tester(uid, auth_app_id, wx_account):
+    """解绑体验者"""
+    authorizer = WxAuthorizer.query.filter_by(master_uid=uid, auth_app_id=auth_app_id).first()
+    if authorizer is None:
+        current_app.logger.warn("Authorizer is't exist!")
+        return FAIL
+    access_token = authorizer.access_token
+
+    try:
+        open3rd = WxaOpen3rd(access_token=access_token)
+        result = open3rd.unbind_tester(wx_account)
+    except WxAppError as err:
+        current_app.logger.warn('Unbind tester error: %s' % err)
+        return FAIL
+
+    return SUCCESS
+

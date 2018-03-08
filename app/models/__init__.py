@@ -24,4 +24,4 @@ from .counter import Counter
 from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, SalesLogStatistics, DaySkuStatistics
 from .reminder import Reminder
 from .search import SearchHistory
-from .weixin import WxToken, WxAuthCode, WxAuthorizer, WxMiniApp
+from .weixin import WxToken, WxAuthCode, WxAuthorizer, WxMiniApp, WxPayment, WxTemplate, WxVersion

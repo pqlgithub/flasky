@@ -55,7 +55,7 @@
 		{% block header %}
 		<header class="main-header navbar-fixed-top">
 			<a class="logo" href="{{ url_for('adminlte.admin_index') }}">
-				eLingShop
+				{{ _('MoeBeast') }}
 			</a>
 			<nav class="navbar navbar-static-top">
 				<ul class="nav navbar-nav navbar-menu">
@@ -72,6 +72,9 @@
 						<a href="{{ url_for('adminlte.show_places') }}">{{ _('Address') }}</a>
 					</li>
                     <li {% if top_menu == 'weixin' %}class="active"{% endif %}>
+						<a href="{{ url_for('adminlte.setting_weixin') }}">{{ _('WeiXin') }}</a>
+					</li>
+                    <li {% if top_menu == 'Settings' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.setting_index') }}">{{ _('Settings') }}</a>
 					</li>
 				</ul>

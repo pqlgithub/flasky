@@ -1,0 +1,61 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+    var auth_wxapp_id = '{{ auth_app_id }}';
+	$(function () {
+		mixpus.init_page_layout();
+
+		$(".btn.btn-choosed").click(function () {
+            var tid = $(this).data('tid');
+            alert(tid);
+            var params = {
+                auth_app_id: auth_wxapp_id,
+                template_id: tid,
+                csrf_token: mixpus.csrf_token
+            }
+            $.post("{{ url_for('main.wxapp_template_choosed') }}", params, function (res) {
+                if (res.success) {
+                    mixpus.show_ok_message('设定成功！');
+                } else {
+                    return mixpus.show_error_message(result.status.message);
+                }
+            })
+        });
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Wxapp Templates') }}
+		<span class="pull-right">
+            <button class="btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Help?') }}">
+				<i class="fa fa-info"></i>
+			</button>
+            <a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</h2>
+
+    <div class="tab-content m-t-30">
+        <div class="row">
+            {% for tpl in paginated_templates.items %}
+            <div class="col-md-3">
+                <div class="wx-template">
+                    <img src="{{ tpl.cover.view_url }}" class="cover" />
+                    <h4>{{ tpl.name }}</h4>
+                    <p>{{ tpl.description }}</p>
+                    <button class="btn btn-preview btn-default">预览</button>
+                    <button class="btn btn-choosed btn-mixpus" data-tid="{{ tpl.template_id }}">设定</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

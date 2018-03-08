@@ -8,7 +8,7 @@ from .product_forms import ProductForm, SupplierForm, CategoryForm, EditCategory
 from .purchase_forms import PurchaseForm, PurchaseExpressForm
 from .order_forms import OrderForm, OrderExpressForm, OrderRemark
 from .logistics_forms import ExpressForm, EditExpressForm, ShipperForm
-from .application_forms import ApplicationForm
+from .application_forms import ApplicationForm, WxTemplateForm
 from .customer_forms import CustomerForm, CustomerGradeForm, CustomerEditForm, DiscountTempletForm, \
     DiscountTempletEditForm
 from .h5mall_forms import H5mallForm

@@ -7,6 +7,7 @@ from app.models import Place, Country
 from app.forms import PlaceForm, CountryForm, EditCountryForm
 from ..utils import full_response, custom_status, R200_OK, R201_CREATED, R400_BADREQUEST, Master, custom_response
 
+
 def load_common_data():
     """
     私有方法，装载共用数据
@@ -14,6 +15,7 @@ def load_common_data():
     return {
         'top_menu': 'address'
     }
+
 
 @adminlte.route('/places')
 @adminlte.route('/places/<int:page>')
@@ -82,6 +84,7 @@ def create_place():
                            sub_menu='places',
                            parent_nodes=parent_nodes,
                            **load_common_data())
+
 
 @adminlte.route('/places/<int:id>/edit', methods=['GET', 'POST'])
 def edit_place(id):

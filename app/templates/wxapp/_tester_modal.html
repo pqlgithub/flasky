@@ -1,0 +1,58 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">{{ _('Add Tester') }}</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" action="" method="post" id="tester-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
+				
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">{{ _('Wechat Account') }}</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="wx_account" />
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+            <button type="button" id="tester-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+    var data = {};
+
+    $('#tester-submit-btn').click(function (e) {
+        data = $('#tester-form').serialize();
+
+        $.ajax({
+            url: "{{ url_for('main.wxapp_add_tester') }}",
+            type: 'post',
+            data: data,
+            dataType: 'html',
+            beforeSend: function () {
+                $('#tester-submit-btn').prop('disabled', true);
+            },
+            complete: function() {
+                $('#tester-submit-btn').prop('disabled', false);
+            },
+            success: function (html) {
+				$('#tester-modal').modal('hide');
+				
+				$('#wxapp-tester-table').html(html);
+				
+				unbind_tester();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+    //-->
+</script>

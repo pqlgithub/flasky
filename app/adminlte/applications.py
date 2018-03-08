@@ -8,6 +8,7 @@ from app.forms import ApplicationForm
 from ..utils import custom_response
 from ..constant import SERVICE_TYPES
 
+
 def load_common_data():
     """
     私有方法，装载共用数据
@@ -16,6 +17,7 @@ def load_common_data():
         'top_menu': 'markets',
         'service_types': SERVICE_TYPES
     }
+
 
 @adminlte.route('/applications')
 def show_applications(page=1):
@@ -41,7 +43,7 @@ def create_application():
     """创建官方应用服务"""
     form = ApplicationForm()
     if form.validate_on_submit():
-        app_service =  AppService(
+        app_service = AppService(
             name=form.name.data,
             icon_id=form.icon_id.data,
             summary=form.summary.data,
@@ -65,6 +67,7 @@ def create_application():
                            form=form,
                            mode=mode,
                            **load_common_data())
+
 
 @adminlte.route('/applications/<string:sn>/edit', methods=['GET', 'POST'])
 def edit_application(sn):

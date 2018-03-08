@@ -349,7 +349,10 @@ mixpus.hook_ajax_modal = function() {
 
 			$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
 
-			$('#'+ modal_name).modal('show');
+			$('#'+ modal_name).modal({
+				backdrop: false,
+				show: true
+			});
 		});
 		return false;
 	});

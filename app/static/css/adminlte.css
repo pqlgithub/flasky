@@ -1721,6 +1721,7 @@ table.text-center,table.text-center td,table.text-center th {
     padding: 20px;
     border-radius: 2px;
 }
+
 #products-form .sale-price,
 #products-form .price {
     display: block;
@@ -1728,6 +1729,11 @@ table.text-center,table.text-center td,table.text-center th {
 #products-form .price {
     text-decoration: line-through;
     color: #999;
+}
+
+.wx-template .cover {
+    width: 100%;
+    border: 1px solid #d5d5d5;
 }
 
 #topcontrol {

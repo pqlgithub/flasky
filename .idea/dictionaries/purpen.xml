@@ -9,6 +9,7 @@
       <w>auditstatus</w>
       <w>celeryd</w>
       <w>changewxasearchstatus</w>
+      <w>choosed</w>
       <w>ciphertext</w>
       <w>cryptor</w>
       <w>dbname</w>
@@ -38,6 +39,7 @@
       <w>grayrelease</w>
       <w>jscode</w>
       <w>mixpus</w>
+      <w>moebeast</w>
       <w>onezao</w>
       <w>pjax</w>
       <w>pkcs</w>
@@ -82,6 +84,8 @@
       <w>wxapi</w>
       <w>wxapp</w>
       <w>wxapps</w>
+      <w>wxtemplate</w>
+      <w>wxtemplates</w>
       <w>xmltext</w>
     </words>
   </dictionary>

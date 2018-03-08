@@ -4,8 +4,6 @@
 <script type="text/javascript">
 	$(function () {
 		mixpus.init_page_layout();
-
-
 	});
 </script>
 {% endblock %}
@@ -21,9 +19,7 @@
 			</button>
 		</span>
 	</h2>
-
-
-
+	
     <div class="tab-content m-t-30">
         {% if mini_apps %}
             <div class="row">
@@ -32,13 +28,21 @@
                     <div class="card">
                         <h3 class="title">{{ mini_app.nick_name }}</h3>
                         <p>
-                            <span class="indicator">{{ mini_app.status }}</span>
+                            <span class="indicator {{ mini_app.status_label[2] }}">{{ mini_app.status_label[1] }}</span>
                         </p>
                         <p>
-                            开通时间：{{ mini_app.created_at|timestamp2string() }}
+                            开通时间：{{ mini_app.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
                         </p>
                         <p>
-                            <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ mini_app.auth_app_id }}" class="btn btn-mixpus">设置</a>
+                            <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ mini_app.auth_app_id }}" class="btn btn-default">
+                                <i class="fa fa-gear"></i> 设置
+                            </a>
+                            <a href="{{ url_for('main.wxapp_templates') }}?auth_app_id={{ mini_app.auth_app_id }}" class="btn btn-warning">
+								<i class="fa fa-cubes"></i> 选择模板
+							</a>
+                            <a href="{{ url_for('main.wxapp_versions') }}?auth_app_id={{ mini_app.auth_app_id }}" class="btn btn-mixpus">
+								<i class="fa fa-upload"></i> 版本管理
+							</a>
                         </p>
                     </div>
                 </div>

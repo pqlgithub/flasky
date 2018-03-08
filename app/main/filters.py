@@ -9,6 +9,7 @@ __all__ = [
     'break_line'
 ]
 
+
 def timestamp2string(text, format='%Y-%m-%d %H:%M:%S'):
     """Convert int to string."""
 

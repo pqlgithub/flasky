@@ -1,0 +1,88 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+    var auth_wxapp_id = '{{ auth_app_id }}';
+	$(function () {
+		mixpus.init_page_layout();
+
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Wxapp Version') }}
+		<small>发布小程序前，需要先提交微信审核</small>
+		<span class="pull-right">
+            <button class="btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Help?') }}">
+				<i class="fa fa-info"></i>
+			</button>
+            <a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</h2>
+	
+	<a class="btn btn-commit-review btn-mixpus" href="javascript:;">
+		<i class="fa fa-cloud-upload"></i> 提交审核
+	</a>
+    <div id="table-refresh-box" class="m-t-20">
+		<div class="table-responsive">
+			<form id="orders-form" action="{{ url_for('main.delete_order') }}" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>
+								最新审核
+							</th>
+							<th class="text-center">
+								审核 ID
+							</th>
+							<th class="text-center">
+								审核状态
+							</th>
+							<th>
+								审核模板
+							</th>
+							<th>
+								说明
+							</th>
+							<th class="text-right">
+								{{ _('Action') }}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="active">
+							<td>
+								
+							</td>
+							<td>
+								
+							</td>
+							<td>
+								
+							</td>
+							<td>
+								
+							</td>
+							<td>
+								
+							</td>
+							<td>
+								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
+
+</div>
+{% endblock %}

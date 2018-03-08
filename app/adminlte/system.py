@@ -19,6 +19,7 @@ def load_common_data():
         'top_menu': 'system'
     }
 
+
 @adminlte.route('/users')
 @adminlte.route('/users/<int:page>')
 def show_users(page=1):

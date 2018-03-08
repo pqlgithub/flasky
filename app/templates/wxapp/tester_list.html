@@ -1,0 +1,10 @@
+{% for tester in wx_mini_app.test_list %}
+    <tr>
+        <td>{{ tester }}</td>
+        <td class="text-right">
+            <a href="javascript:void(0);" class="btn btn-unbind btn-danger" data-account="{{ tester }}">
+                <i class="fa fa-close"></i> 解绑
+            </a>
+        </td>
+    </tr>
+{% endfor %}

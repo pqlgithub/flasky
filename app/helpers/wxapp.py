@@ -287,14 +287,16 @@ class WxaOpen3rd(object):
     def get_category(self):
         """获取授权小程序帐号的可选类目"""
         url = '%s/get_category?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
 
-        return requests.get(url)
+        return self._intercept_result(res)
 
     def get_pages(self):
         """获取小程序的第三方提交代码的页面配置"""
         url = '%s/get_page?access_token=%s' % (self.wxa_host_url, self.access_token)
+        res = requests.get(url)
 
-        return requests.get(url)
+        return self._intercept_result(res)
 
     def submit_audit(self, item_list=[]):
         """将第三方提交的代码包提交审核"""
