@@ -10,9 +10,9 @@
 		$('.add-row').click(function (e) {
 			var new_row = '<tr id="tr_'+ counter +'">' +
 				'<td><input type="text" name="name_'+ counter +'" class="form-control"></td>' +
-				'<td><label class="radio-inline"><input type="radio" name="type_'+ counter +'" checked="checked" value="1"> {{ _("Qualified") }} </label>' +
-				'<label class="radio-inline"> <input type="radio" name="type_'+ counter +'" value="2"> {{ _("Defective") }} </label>' +
-				'</td>' +
+				'<td><ul class="radio-inline-group"><li><input type="radio" id="type_'+ counter +'_q" name="type_'+ counter +'" checked="checked" value="1"><label for="type_'+ counter +'_q"> {{ _("Qualified") }} </label></li>' +
+				'<li> <input type="radio" id="type_'+ counter +'_d" name="type_'+ counter +'" value="2"> <label for="type_'+ counter +'_d">{{ _("Defective") }} </label></li>' +
+				'</ul></td>' +
 				'<td class="text-center"> <button type="button" data-number="'+ counter +'" class="btn btn-mixpus save-row">{{ _("Save") }}</button> <button type="button" class="btn btn-danger delete-row"><i class="glyphicon glyphicon-trash"></i></button> </td>' +
 				'</tr>';
 
@@ -119,14 +119,14 @@
 			<div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
 				<div class="form-group required {% if form.errors.type %} has-error{% endif %}">
 					{{ form.type.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.type(id="type", class="list-inline radio-group") }}
+					<div class="col-sm-6">
+						{{ form.type(id="type", class="radio-inline-group") }}
 					</div>
 				</div>
 
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-6">
 						{{ form.name(id="name", class="form-control") }}
 						{% for error in form.errors.name %}
 						<span class="help-block">{{ error }}</span>
@@ -136,13 +136,13 @@
 
 				<div class="form-group">
 					{{ form.address.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-6">
 						{{ form.address(id="address", class="form-control") }}
 					</div>
 				</div>
 				<div class="form-group">
 					{{ form.en_address.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-6">
 						{{ form.en_address(id="en_address", class="form-control") }}
 					</div>
 				</div>
@@ -150,36 +150,36 @@
 
 				<div class="form-group">
 					{{ form.username.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.username(id="username", class="form-control") }}
 					</div>
-					{{ form.phone.label(class="col-sm-1 control-label") }}
-					<div class="col-sm-4">
+					{{ form.phone.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
 						{{ form.phone(id="phone", class="form-control") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.email.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.email(id="email", class="form-control") }}
 					</div>
-					{{ form.qq.label(class="col-sm-1 control-label") }}
-					<div class="col-sm-4">
+					{{ form.qq.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
 						{{ form.qq(id="qq", class="form-control") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.description.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-9">
-						{{ form.description(id="description", class="form-control") }}
+					<div class="col-sm-6">
+						{{ form.description(id="description", class="form-control", rows="5") }}
 					</div>
 				</div>
 
                 <div class="form-group">
 					{{ form.is_default.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-6">
 						<div class="checkbox">
 							<label>
 								{{ form.is_default(id="is_default") }} {{ _('Yes') }}
@@ -197,8 +197,8 @@
 
 				<div class="form-group">
 					{{ form.status.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						{{ form.status(id="status", class="form-control select2") }}
+					<div class="col-sm-6">
+						{{ form.status(id="status", class="radio-inline-group") }}
 					</div>
 				</div>
 			</div>

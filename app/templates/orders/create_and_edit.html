@@ -103,28 +103,28 @@
 			<div class="panel-body">
 				<div class="form-group">
 					{{ form.serial_no.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.serial_no(class="form-control", placeholder="Serial No.", readonly="readonly") }}
 					</div>
 					{{ form.outside_target_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.outside_target_id(class="form-control") }}
 					</div>
 				</div>
 				<div class="form-group required">
 					{{ form.store_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.store_id(class="form-control select2") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.express_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.express_id(class="form-control select2") }}
 					</div>
 					{{ form.freight.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.freight(id="freight", class="form-control") }}
 							<span class="input-group-addon">
@@ -142,31 +142,31 @@
 			<div class="panel-body">
 				<div class="form-group">
 					{{ form.buyer_country.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<select class="form-control select2" name="store_id">
 							<option value="1">{{ _('China') }}</option>
 						</select>
 					</div>
 					<label class="col-sm-2 control-label">{{ _('币种') }}</label>
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<input type="text" class="form-control" readonly="readonly" placeholder="{{ current_site.currency }}">
 					</div>
 				</div>
 
 				<div class="form-group required">
 					{{ form.buyer_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.buyer_name(class="form-control", placeholder="") }}
 					</div>
 					{{ form.buyer_phone.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.buyer_phone(class="form-control", placeholder="") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.buyer_tel.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						{{ form.buyer_tel(class="form-control", placeholder="") }}
 					</div>
 				</div>
@@ -180,27 +180,30 @@
 					<div class="col-sm-2">
 						{{ form.buyer_city(class="form-control", placeholder="") }}
 					</div>
+				</div>
+				
+				<div class="form-group">
 					{{ form.buyer_area.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-2">
 						{{ form.buyer_area(class="form-control") }}
 					</div>
+					
 				</div>
 
 				<div class="form-group required">
 					{{ form.buyer_address.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-6">
+					<div class="col-sm-4">
 						{{ form.buyer_address(class="form-control", placeholder="") }}
 					</div>
-					{{ form.buyer_zipcode.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-2">
-						{{ form.buyer_zipcode(class="form-control") }}
+						{{ form.buyer_zipcode(class="form-control", placeholder="邮政编码") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.buyer_remark.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
-						{{ form.buyer_remark(class="form-control", placeholder="") }}
+					<div class="col-sm-6">
+						{{ form.buyer_remark(class="form-control") }}
 					</div>
 				</div>
 			</div>
@@ -209,12 +212,13 @@
 		<div class="panel">
 			<div class="panel-heading">{{ _('Product Info') }}</div>
 			<div class="panel-body">
+				
 				<div class="form-group required">
 					{{ form.warehouse_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">
 						{{ form.warehouse_id(class="form-control select2") }}
 					</div>
-					<div class="col-sm-6">
+					<div class="col-sm-2">
 						<a class="btn btn-warning" href="{{ url_for('main.ajax_select_products') }}" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
 							<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Select Products') }}
 						</a>
@@ -302,7 +306,7 @@
 			<div class="panel-heading">{{ _('Order Remark') }}</div>
 			<div class="panel-body">
 				<div class="form-group">
-					<div class="col-sm-12">
+					<div class="col-sm-8">
 						{{ form.remark(class="form-control input-lg") }}
 					</div>
 				</div>

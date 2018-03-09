@@ -78,13 +78,13 @@
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<a class="pjax btn btn-default"  href="{{ url_for('main.scan_out_warehouse') }}" data-toggle="tooltip" data-original-title="{{ _('Scanning') }}">
-				<i class="glyphicon glyphicon-barcode"></i>
+				<i class="fa fa-barcode"></i>
 			</a>
 			<button class="btn btn-default ajax-print" data-form-id="warehouse-form" data-href="{{ url_for('main.print_out_warehouses') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
-				<i class="glyphicon glyphicon-print"></i>
+				<i class="fa fa-print"></i>
 			</button>
 			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>
-				<i class="glyphicon glyphicon-trash"></i>
+				<i class="fa fa-trash"></i>
 			</button>
 		</span>
 	</h2>
@@ -144,7 +144,7 @@
 			<div class="dropdown">
 				<input type="hidden" name="sk" value="{{ sort_type }}">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('All') }}</b>
+					<i class="fa fa-sort-amount-desc"></i> {{ _('Sort') }}: <b>{{ _('All') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-type">

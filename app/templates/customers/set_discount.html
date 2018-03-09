@@ -19,99 +19,91 @@
 
 		<div class="pull-right">
 			<button type="submit" form="discount-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_discount_templets') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-md-9">
-			<form id="discount-form" class="form-horizontal" action="" method="post">
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<form id="discount-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<div class="form-group">
-                    <label class="col-md-3 control-label">{{ _('Discount Name') }}:</label>
-					<div class="col-md-5">
-						<p class="form-control-static">{{ discount_templet.name }}</p>
-					</div>
-				</div>
-
-                <div class="form-group">
-                    <label class="col-md-3 control-label">{{ _('Default Discount') }}:</label>
-					<div class="col-md-5">
-						<p class="form-control-static">{{ discount_templet.default_discount }}%</p>
-					</div>
-				</div>
-
-                <div class="form-group">
-                    <label class="col-md-3 control-label">{{ _('By Type') }}:</label>
-					<div class="col-md-5">
-						<p class="form-control-static">{{ discount_templet.type_label[1] }}</p>
-					</div>
-				</div>
-
-                <div class="form-group">
-                    <div class="col-md-1"></div>
-					<div class="col-md-8">
-                        {% if discount_templet.type == 1 %}
-						<table class="table">
-                            <thead>
-                            <tr>
-                                <th>{{ _('Category Name') }}</th>
-                                <th>{{ _('Discount Value') }} (%)</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for c in categories %}
-                            <tr>
-                                <td>
-                                    {{ c.name|safe }}
-                                    <input type="hidden" name="categories[]" value="{{ c.id }}" />
-                                </td>
-                                <td>
-                                    <input type="text" name="discount_{{ c.id }}" class="form-control" value="{{ selected_items.get(c.id, '') }}" />
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        {% endif %}
-
-                        {% if discount_templet.type == 2 %}
-						<table class="table">
-                            <thead>
-                            <tr>
-                                <th>{{ _('Brand Name') }}</th>
-                                <th>{{ _('Discount Value') }} (%)</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for b in brands %}
-                            <tr>
-                                <td>
-                                    {{ b.name|safe }}
-                                    <input type="hidden" name="brands[]" value="{{ b.id }}" />
-                                </td>
-                                <td>
-                                    <input type="text" name="discount_{{ b.id }}" class="form-control" value="{{ selected_items.get(b.id, '') }}" />
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        {% endif %}
-
-					</div>
-				</div>
-
-
-
-			</form>
+		<div class="form-group">
+            <label class="col-sm-2 control-label">{{ _('Discount Name') }}:</label>
+			<div class="col-sm-6">
+				<p class="form-control-static"><strong>{{ discount_templet.name }}</strong></p>
+			</div>
 		</div>
-	</div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{ _('Default Discount') }}:</label>
+			<div class="col-sm-6">
+				<p class="form-control-static text-mixpus"><strong>{{ discount_templet.default_discount }}%</strong></p>
+			</div>
+		</div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{ _('By Type') }}:</label>
+			<div class="col-sm-6">
+				<p class="form-control-static"><strong>{{ discount_templet.type_label[1] }}</strong></p>
+			</div>
+		</div>
+
+        <div class="form-group">
+			<div class="col-sm-8">
+                {% if discount_templet.type == 1 %}
+				<table class="table table-bordered table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-6">{{ _('Category Name') }}</th>
+                        <th class="text-right">{{ _('Discount Value') }} (%)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in categories %}
+                    <tr>
+                        <td>
+                            {{ c.name|safe }}
+                            <input type="hidden" name="categories[]" value="{{ c.id }}" />
+                        </td>
+                        <td>
+                            <input type="text" name="discount_{{ c.id }}" class="form-control" value="{{ selected_items.get(c.id, '') }}" />
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+                {% if discount_templet.type == 2 %}
+				<table class="table">
+                    <thead>
+                    <tr>
+                        <th class="col-sm-6">{{ _('Brand Name') }}</th>
+                        <th>{{ _('Discount Value') }} (%)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for b in brands %}
+                    <tr>
+                        <td>
+                            {{ b.name|safe }}
+                            <input type="hidden" name="brands[]" value="{{ b.id }}" />
+                        </td>
+                        <td>
+                            <input type="text" name="discount_{{ b.id }}" class="form-control" value="{{ selected_items.get(b.id, '') }}" />
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+
+			</div>
+		</div>
+	</form>
 
 </div>
 {% endblock %}

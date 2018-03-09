@@ -19,6 +19,7 @@ from ..decorators import user_has
 from .filters import supress_none, timestamp2string, break_line
 from ..pdfs import create_pdf
 
+
 def load_common_data():
     """
     私有方法，装载共用数据
@@ -527,7 +528,6 @@ def create_in_warehouse():
                            in_types=in_types)
 
 
-
 @main.route('/inwarehouses/ajax_select_purchase', methods=['POST'])
 @login_required
 @user_has('admin_warehouse')
@@ -546,6 +546,7 @@ def ajax_select_purchase():
     return render_template('warehouses/select_purchase_modal.html',
                            paginated_purchases=paginated_purchases,
                            wh_id=wh_id)
+
 
 @main.route('/inwarehouse/ajax_submit_purchase', methods=['POST'])
 @login_required

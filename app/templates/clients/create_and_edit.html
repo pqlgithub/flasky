@@ -15,61 +15,57 @@
 
 		<span class="pull-right">
 			<button type="submit" form="client-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_clients') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
 
-	<div class="row">
-		<div class="col-md-9">
-			<form id="client-form" class="form-horizontal" action="" method="post">
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<form id="client-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-					{{ form.name.label(class="col-md-3 control-label") }}
-					<div class="col-md-9">
-						{{ form.name(maxlength=32, class='form-control') }}
+		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.name(maxlength=32, class='form-control') }}
 
-						{% for error in form.errors.name %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-
-				<div class="form-group required">
-					{{ form.store_id.label(class="col-md-3 control-label") }}
-					<div class="col-md-9">
-						{{ form.store_id(class='form-control select2') }}
-					</div>
-				</div>
-
-				<div class="form-group required">
-					{{ form.receive_url.label(class="col-md-3 control-label") }}
-					<div class="col-md-9">
-						{{ form.receive_url(class='form-control') }}
-					</div>
-				</div>
-
-				<div class="form-group">
-					{{ form.limit_times.label(class="col-md-3 control-label") }}
-					<div class="col-md-9">
-						{{ form.limit_times(class='form-control') }}
-					</div>
-				</div>
-
-				<div class="form-group">
-					{{ form.remark.label(class="col-md-3 control-label") }}
-					<div class="col-md-9">
-						{{ form.remark(class='form-control') }}
-					</div>
-				</div>
-
-			</form>
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
 		</div>
-	</div>
+
+		<div class="form-group required">
+			{{ form.store_id.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.store_id(class='form-control select2') }}
+			</div>
+		</div>
+
+		<div class="form-group required">
+			{{ form.receive_url.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.receive_url(class='form-control') }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.limit_times.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.limit_times(class='form-control') }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.remark.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.remark(class='form-control') }}
+			</div>
+		</div>
+
+	</form>
 
 </div>
 {% endblock %}

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms.fields import StringField, FloatField, TextAreaField, PasswordField, SelectField
+from wtforms.fields import StringField, FloatField, TextAreaField, PasswordField, SelectField, RadioField
 from wtforms.validators import DataRequired,ValidationError
 
 from app.models import Customer
+
 
 class CustomerForm(Form):
     name = StringField(lazy_gettext('Customer Name'), validators=[DataRequired("Customer Name can't empty!")])
@@ -58,7 +59,7 @@ class DiscountTempletForm(Form):
     name = StringField(lazy_gettext('Discount Name'), validators=[DataRequired("Discount Name can't empty!")])
     default_discount = FloatField(lazy_gettext('Default Discount'))
     # 计算方式
-    type = SelectField(lazy_gettext('By Type'), choices=[], coerce=int)
+    type = RadioField(lazy_gettext('By Type'), choices=[], coerce=int)
     description = TextAreaField(lazy_gettext('Description'))
     
     
@@ -66,4 +67,3 @@ class DiscountTempletEditForm(Form):
     name = StringField(lazy_gettext('Discount Name'), validators=[DataRequired("Discount Name can't empty!")])
     default_discount = FloatField(lazy_gettext('Default Discount'))
     description = TextAreaField(lazy_gettext('Description'))
-    

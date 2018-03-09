@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, InputRequired, Length, ValidationEr
 
 from app.models import Warehouse, WarehouseShelve
 
+
 class WarehouseForm(Form):
     name = StringField(lazy_gettext('Warehouse Name'), validators=[DataRequired()])
     address = TextAreaField(lazy_gettext('Address'))
@@ -20,10 +21,10 @@ class WarehouseForm(Form):
     email = StringField(lazy_gettext('Email'))
     qq = StringField(lazy_gettext('QQ'))
 
-    type = RadioField(lazy_gettext('Warehouse Type'), choices=Warehouse.wh_types(), coerce=int)
+    type = RadioField(lazy_gettext('Warehouse Type'), choices=Warehouse.wh_types(), coerce=int, default=1)
     is_default = BooleanField(lazy_gettext('Default Warehouse'), default=False)
-    status = SelectField(lazy_gettext('Status'), choices=[
+    status = RadioField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
-    ], coerce=int)
+    ], coerce=int, default=1)
 
 

@@ -67,17 +67,17 @@
 
 
 				<div class="tab-content m-t-30">
-					<div id="general" class="active tab-pane col-md-9 fade in" role="tabpanel" aria-labelledby="general-tab">
+					<div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
 						<div class="form-group required">
-							<label class="col-md-3 control-label">{{ _('App Key') }}</label>
-							<div class="col-md-9 form-control-static">
+							<label class="col-sm-2 control-label">{{ _('App Key') }}</label>
+							<div class="col-sm-6 form-control-static">
 								<b class="text-mixpus">{{ client.app_key }}</b>
 							</div>
 						</div>
 
 						<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-							{{ form.name.label(class="col-md-3 control-label") }}
-							<div class="col-md-9">
+							{{ form.name.label(class="col-sm-2 control-label") }}
+							<div class="col-sm-6">
 								{{ form.name(maxlength=32, class='form-control') }}
 
 								{% for error in form.errors.name %}
@@ -87,29 +87,29 @@
 						</div>
 
 						<div class="form-group required">
-							{{ form.store_id.label(class="col-md-3 control-label") }}
-							<div class="col-md-9">
+							{{ form.store_id.label(class="col-sm-2 control-label") }}
+							<div class="col-sm-6">
 								{{ form.store_id(class='form-control select2') }}
 							</div>
 						</div>
 
 						<div class="form-group required">
-							{{ form.receive_url.label(class="col-md-3 control-label") }}
-							<div class="col-md-9">
+							{{ form.receive_url.label(class="col-sm-2 control-label") }}
+							<div class="col-sm-6">
 								{{ form.receive_url(class='form-control') }}
 							</div>
 						</div>
 
 						<div class="form-group">
-							{{ form.limit_times.label(class="col-md-3 control-label") }}
-							<div class="col-md-9">
+							{{ form.limit_times.label(class="col-sm-2 control-label") }}
+							<div class="col-sm-6">
 								{{ form.limit_times(class='form-control') }}
 							</div>
 						</div>
 
 						<div class="form-group">
-							{{ form.remark.label(class="col-md-3 control-label") }}
-							<div class="col-md-9">
+							{{ form.remark.label(class="col-sm-2 control-label") }}
+							<div class="col-sm-6">
 								{{ form.remark(class='form-control') }}
 							</div>
 						</div>
@@ -117,14 +117,14 @@
 
 					<div id="certificate" class="tab-pane fade in" role="tabpanel" aria-labelledby="certificate-tab">
 						<div class="form-group">
-							<label class="col-md-3 control-label">{{ _('App Key') }}</label>
-							<div class="col-md-9 form-control-static">
+							<label class="col-sm-2 control-label">{{ _('App Key') }}</label>
+							<div class="col-sm-6 form-control-static">
 								<b class="text-mixpus">{{ client.app_key }}</b>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label">{{ _('App Secret') }}</label>
-							<div class="col-md-9">
+							<label class="col-sm-2 control-label">{{ _('App Secret') }}</label>
+							<div class="col-sm-6">
 								<b class="text-danger app-secret hide">{{ client.app_secret }}</b>
 								<button class="btn btn-default" id="toggle-app-secret" type="button">{{ _('Show') }}</button>
 								<button class="btn btn-mixpus disabled" type="button">{{ _('Copy') }}</button>
@@ -132,8 +132,8 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label">{{ _('Certificate Flow') }}</label>
-							<div class="col-md-9 form-control-static">
+							<label class="col-sm-2 control-label">{{ _('Certificate Flow') }}</label>
+							<div class="col-sm-6 form-control-static">
 								{{ client.limit_times }} {{ _('Times') }} / {{ _('Day') }}
 							</div>
 						</div>

@@ -63,13 +63,13 @@
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.create_customer') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
-				<i class="glyphicon glyphicon-plus"></i>
+				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-warning verify-all" data-form-id="customers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Checked') }}">
-				<i class="glyphicon glyphicon-ok"></i>
+				<i class="fa fa-check"></i>
 			</button>
 			<button class="btn btn-danger delete-all hidden" data-form-id="customers-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+				<i class="fa fa-trash"></i>
 			</button>
 		</span>
 	</h2>
@@ -176,7 +176,7 @@
 			<div class="dropdown">
 				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
 				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<i class="fa fa-sort-amount-desc"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">

@@ -10,7 +10,8 @@ from ..constant import DEFAULT_REGIONS
 
 
 class SupplierForm(Form):
-    type = SelectField(lazy_gettext('Business Mode'), choices=[(mode[0], mode[2]) for mode in BUSINESS_MODE], coerce=str)
+    type = RadioField(lazy_gettext('Business Mode'), choices=[(mode[0], mode[2]) for mode in BUSINESS_MODE],
+                      coerce=str, default='C')
     short_name = StringField(lazy_gettext('Short Name'), validators=[DataRequired()])
     full_name = StringField(lazy_gettext('Full Name'), validators=[DataRequired()])
     start_date = StringField(lazy_gettext('Start date'))
@@ -42,9 +43,9 @@ class CategoryForm(Form):
     pid = IntegerField(lazy_gettext('Parent'), default=0)
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)
     description = TextAreaField(lazy_gettext('Description'))
-    status = SelectField(lazy_gettext('Status'), choices=[
+    status = RadioField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
-    ], coerce=int)
+    ], coerce=int, default=1)
 
     def validate_name(self, field):
         """验证分类名称是否唯一"""

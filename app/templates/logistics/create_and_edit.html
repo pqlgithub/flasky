@@ -15,10 +15,10 @@
 
 		<span class="pull-right">
 			<button type="submit" form="express-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_expresses') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
@@ -27,7 +27,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="row">
-			<div class="col-sm-9">
+			<div class="col-sm-8">
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-3 control-label") }}
 					<div class="col-sm-9">
@@ -50,21 +50,18 @@
 
 				<div class="form-group">
 					{{ form.contact_name.label(class="col-sm-3 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-4">
 						{{ form.contact_name(id="contact_name", class="form-control") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.contact_mobile.label(class="col-sm-3 control-label") }}
-					<div class="col-sm-9">
+					<div class="col-sm-4">
 						{{ form.contact_mobile(id="contact_mobile", class="form-control") }}
 					</div>
-				</div>
-
-				<div class="form-group">
-					{{ form.contact_phone.label(class="col-sm-3 control-label") }}
-					<div class="col-sm-9">
+					{{ form.contact_phone.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-3">
 						{{ form.contact_phone(id="contact_phone", class="form-control") }}
 					</div>
 				</div>
@@ -87,7 +84,10 @@
 					</div>
 				</div>
 
-				<label class="m-t-10 m-b-10 text-danger">{{ _('Logistics account settings') }}</label>
+				<h4 class="m-t-30 m-b-30 text-danger">
+					{{ _('Logistics account settings') }}
+				</h4>
+				
 				<div class="form-group">
 					{{ form.customer_name.label(class="col-sm-3 control-label") }}
 					<div class="col-sm-4">
@@ -110,7 +110,7 @@
 				</div>
 
 			</div>
-			<div class="col-sm-3">
+			<div class="col-sm-4">
 				<p><strong>目前接口支持了：</strong></p>
 				<ul class="list-group">
 					<li class="list-group-item">顺丰（SF）</li>

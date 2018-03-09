@@ -18,141 +18,137 @@
 		{% endif %}
 
 		<div class="pull-right">
-			<button type="submit" form="customer-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+			<button type="submit" form="customer-form" class="btn btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_customers') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+			<a href="{{ url_for('main.show_customers') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="fa fa-reply"></i>
 			</a>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-md-9">
-			<form id="customer-form" class="form-horizontal" action="" method="post">
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+	<form id="customer-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-					{{ form.name.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.name(maxlength=32, class='form-control') }}
+		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.name(maxlength=32, class='form-control') }}
 
-						{% for error in form.errors.name %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-
-				{% if mode == 'create' %}
-                <div class="form-group required">
-					{{ form.sn.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.sn(maxlength=32, class='form-control') }}
-						<span class="help-block">{{ _('Required, Must be Unique!') }}</span>
-					</div>
-				</div>
-				{% endif %}
-
-				<div class="form-group required">
-					{{ form.grade_id.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.grade_id(class='form-control select2') }}
-					</div>
-				</div>
-
-                <div class="form-group">
-                    <label class="col-md-3 control-label">{{ _('Address') }}</label>
-                    <div class="col-md-3">
-						{{ form.province(class='form-control') }}
-					</div>
-					<div class="col-md-3">
-						{{ form.city(class='form-control') }}
-					</div>
-                    <div class="col-md-3">
-						{{ form.area(class='form-control') }}
-					</div>
-				</div>
-
-				<div class="form-group">
-					{{ form.street_address.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.street_address(class='form-control') }}
-					</div>
-				</div>
-
-				<div class="form-group">
-					{{ form.zipcode.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.zipcode(class='form-control') }}
-					</div>
-				</div>
-
-				<div class="form-group required {% if form.errors.mobile %} has-error{% endif %}">
-					{{ form.mobile.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.mobile(class='form-control') }}
-
-						{% for error in form.errors.mobile %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-                <div class="form-group">
-					{{ form.email.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.email(class='form-control') }}
-					</div>
-				</div>
-
-                <div class="form-group">
-					{{ form.phone.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.phone(class='form-control') }}
-					</div>
-				</div>
-
-				{% if mode == 'create' %}
-                <div class="form-group">
-                    <div class="col-md-3 text-right">
-                        <label class="control-label font-14 text-green">{{ _('Login account of customer') }}</label>
-                    </div>
-                </div>
-
-                <div class="form-group required {% if form.errors.customer_account %} has-error{% endif %}">
-					{{ form.customer_account.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.customer_account(class='form-control') }}
-
-						{% for error in form.errors.customer_account %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-                <div class="form-group required {% if form.errors.customer_pwd %} has-error{% endif %}">
-					{{ form.customer_pwd.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.customer_pwd(class='form-control') }}
-
-						{% for error in form.errors.customer_pwd %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-				<div class="form-group required {% if form.errors.repeat_pwd %} has-error{% endif %}">
-					{{ form.repeat_pwd.label(class="col-md-3 control-label") }}
-					<div class="col-md-5">
-						{{ form.repeat_pwd(class='form-control') }}
-
-						{% for error in form.errors.repeat_pwd %}
-						<span class="help-block">{{ error }}</span><br>
-						{% endfor %}
-					</div>
-				</div>
-				{% endif %}
-
-			</form>
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
 		</div>
-	</div>
+
+		{% if mode == 'create' %}
+        <div class="form-group required">
+			{{ form.sn.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.sn(maxlength=32, class='form-control') }}
+				<span class="help-block">{{ _('Required, Must be Unique!') }}</span>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="form-group required">
+			{{ form.grade_id.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.grade_id(class='form-control select2') }}
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<div class="col-sm-2 text-right required {% if form.errors.mobile %} has-error{% endif %}">
+				{{ form.mobile.label(class="control-label") }}
+			</div>
+			<div class="col-sm-2">
+				{{ form.mobile(class='form-control') }}
+
+				{% for error in form.errors.mobile %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+			{{ form.phone.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-2">
+				{{ form.phone(class='form-control') }}
+			</div>
+		</div>
+		
+        <div class="form-group">
+			{{ form.email.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.email(class='form-control') }}
+			</div>
+		</div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{ _('Address') }}</label>
+            <div class="col-md-2">
+				{{ form.province(class='form-control', placeholder="province") }}
+			</div>
+			<div class="col-md-2">
+				{{ form.city(class='form-control', placeholder="city") }}
+			</div>
+            <div class="col-md-2">
+				{{ form.area(class='form-control', placeholder="area") }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.street_address.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.street_address(class='form-control') }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.zipcode.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-2">
+				{{ form.zipcode(class='form-control') }}
+			</div>
+		</div>
+		
+		{% if mode == 'create' %}
+        <div class="form-group m-t-30">
+            <div class="col-sm-2 text-right">
+                <label class="control-label font-14 text-green">{{ _('Login account of customer') }}</label>
+            </div>
+        </div>
+
+        <div class="form-group required {% if form.errors.customer_account %} has-error{% endif %}">
+			{{ form.customer_account.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.customer_account(class='form-control') }}
+
+				{% for error in form.errors.customer_account %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+		</div>
+        <div class="form-group required {% if form.errors.customer_pwd %} has-error{% endif %}">
+			{{ form.customer_pwd.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.customer_pwd(class='form-control') }}
+
+				{% for error in form.errors.customer_pwd %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="form-group required {% if form.errors.repeat_pwd %} has-error{% endif %}">
+			{{ form.repeat_pwd.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.repeat_pwd(class='form-control') }}
+
+				{% for error in form.errors.repeat_pwd %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+		</div>
+		{% endif %}
+
+	</form>
 
 </div>
 {% endblock %}

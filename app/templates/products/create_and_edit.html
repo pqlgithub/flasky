@@ -91,13 +91,13 @@
 
 		<span class="pull-right">
 			<button type="submit" form="product-form" class="btn btn-icon btn-warning" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<button type="button" class="btn btn-icon btn-save-continue btn-success" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
-				<i class="glyphicon glyphicon-floppy-saved"></i>
+				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_products') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
@@ -174,7 +174,7 @@
 
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.name(id="name", class="form-control") }}
 						{% for error in form.errors.name %}
 						<span class="help-block">{{ error }}</span>
@@ -184,7 +184,7 @@
 
 				<div class="form-group required">
 					{{ form.cover_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-10">
+					<div class="col-sm-6">
 						{% if mode == 'create' %}
 						<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
 							<img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
@@ -197,7 +197,7 @@
 						<input id="cover_id" name="cover_id" value="{{ product.cover_id|default(0) }}" type="hidden">
 					</div>
 				</div>
-
+				
 				<div class="form-group">
                     <div class="col-sm-2 text-right required">
 					    {{ form.cost_price.label(class="control-label") }}
@@ -211,7 +211,10 @@
 						</div>
 						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
 					</div>
-                    <div class="col-sm-1 text-right required">
+				</div>
+
+				<div class="form-group">
+                    <div class="col-sm-2 text-right required">
                         {{ form.price.label(class="control-label") }}
                     </div>
 					<div class="col-sm-2">
@@ -223,7 +226,7 @@
 						</div>
 					</div>
 
-                    <div class="col-sm-1 text-right">
+                    <div class="col-sm-2 text-right">
 					    {{ form.sale_price.label(class="control-label") }}
                     </div>
 					<div class="col-sm-2">
@@ -238,7 +241,7 @@
 
 				<div class="form-group">
 					{{ form.description.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.description(id="description", class="form-control", rows="5") }}
 					</div>
 				</div>
@@ -262,7 +265,7 @@
 			<div id="product-content" class="tab-pane fade in" role="tabpanel" aria-labelledby="content-tab">
                 <div class="form-group">
 					{{ form.s_weight.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.s_weight(id="s_weight", class="form-control") }}
 							<span class="input-group-addon">
@@ -302,21 +305,21 @@
 
 				<div class="form-group">
 					{{ form.tags.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.tags(id="tags", class="form-control")}}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.content.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.content(id="mix_editor", rows="20", class="form-control ckeditor")}}
 					</div>
 				</div>
 
                 <div class="form-group">
 					{{ form.currency_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						{{ form.currency_id(class="form-control change-currency select2") }}
 						<span class="help-block">
 							<a href="{{ url_for('main.show_currencies') }}" target="_blank">
@@ -325,14 +328,14 @@
 						</span>
 					</div>
 					{{ form.region_id.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						{{ form.region_id(class="form-control select2") }}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.from_url.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						<div class="input-group">
 							{{ form.from_url(id="from_url", class="form-control", placeholder="http://") }}
 							<span class="input-group-addon">
@@ -347,28 +350,38 @@
 				<!--报关信息-->
 				<div class="form-group">
 					{{ form.dangerous_goods.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
-						{{ form.dangerous_goods(id="dangerous_goods", class="list-inline radio-group")}}
+					<div class="col-sm-6">
+						{{ form.dangerous_goods(id="dangerous_goods", class="radio-inline-group")}}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.local_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.local_name(id="local_name", class="form-control")}}
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.en_name.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.en_name(id="en_name", class="form-control")}}
 					</div>
 				</div>
 
 				<div class="form-group">
+					{{ form.amount.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-2">
+						<div class="input-group">
+							{{ form.amount(id="amount", class="form-control")}}
+							<span class="input-group-addon current-currency">
+								{{ current_currency_unit }}
+							</span>
+						</div>
+						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
+					</div>
 					{{ form.d_weight.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
+					<div class="col-sm-2">
 						<div class="input-group">
 							{{ form.d_weight(id="d_weight", class="form-control") }}
 							<span class="input-group-addon">
@@ -379,21 +392,8 @@
 				</div>
 
 				<div class="form-group">
-					{{ form.amount.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-4">
-						<div class="input-group">
-							{{ form.amount(id="amount", class="form-control")}}
-							<span class="input-group-addon current-currency">
-								{{ current_currency_unit }}
-							</span>
-						</div>
-						<span class="help-block"> {{ _('Please note the currency unit.') }} </span>
-					</div>
-				</div>
-
-				<div class="form-group">
 					{{ form.customs_code.label(class="col-sm-2 control-label") }}
-					<div class="col-sm-8">
+					<div class="col-sm-6">
 						{{ form.customs_code(id="customs_code", class="form-control")}}
 					</div>
 				</div>
