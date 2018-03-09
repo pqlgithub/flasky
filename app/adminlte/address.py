@@ -21,7 +21,7 @@ def load_common_data():
 @adminlte.route('/places/<int:page>')
 def show_places(page=1):
     """省市区镇列表"""
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 30, type=int)
     status = request.args.get('s', 0, type=int)
     layer = request.args.get('layer', type=int)
     

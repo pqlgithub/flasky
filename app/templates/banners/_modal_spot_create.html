@@ -15,7 +15,14 @@
 		<div class="modal-body">
 			<form class="form-horizontal" action="" method="post" id="create-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-
+				
+                <div class="form-group required">
+					{{ form.serial_no.label(class="col-md-3 control-label") }}
+					<div class="col-md-8">
+						{{ form.serial_no(maxlength=64, class='form-control') }}
+					</div>
+				</div>
+				
                 <div class="form-group required">
 					{{ form.name.label(class="col-md-3 control-label") }}
 					<div class="col-md-8">
@@ -26,14 +33,24 @@
 				<div class="form-group">
 					{{ form.width.label(class="col-md-3 control-label") }}
 					<div class="col-md-8">
-						{{ form.width(class='form-control', placeholder='px') }}
+						<div class="input-group">
+							{{ form.width(class='form-control') }}
+							<span class="input-group-addon">
+								px
+							</span>
+						</div>
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.height.label(class="col-md-3 control-label") }}
 					<div class="col-md-8">
-						{{ form.height(class='form-control', placeholder='px') }}
+						<div class="input-group">
+							{{ form.height(class='form-control') }}
+							<span class="input-group-addon">
+								px
+							</span>
+						</div>
 					</div>
 				</div>
 			</form>

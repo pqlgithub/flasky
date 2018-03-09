@@ -55,7 +55,7 @@
 		{% block header %}
 		<header class="main-header navbar-fixed-top">
 			<a class="logo" href="{{ url_for('adminlte.admin_index') }}">
-				{{ _('MoeBeast') }}
+				{{ _('moebeast') }}
 			</a>
 			<nav class="navbar navbar-static-top">
 				<ul class="nav navbar-nav navbar-menu">
@@ -100,12 +100,25 @@
 								<li>
 									<a href="{{ url_for('main.passwd') }}">{{ _('Update Password') }}</a>
 								</li>
+								{% if current_user.is_admin %}
+								<li role="separator" class="divider"></li>
+		                        <li>
+		                            <a href="{{ url_for('adminlte.admin_index') }}">
+		                                {{ _('System Manage') }}
+		                            </a>
+		                        </li>
+								{% endif %}
 								<li role="separator" class="divider"></li>
 								<li>
 									<a href="{{ url_for('auth.logout') }}">{{ _('Logout') }}</a>
 								</li>
 							</ul>
 						</li>
+		                <li>
+		                    <a href="#" data-toggle="control-sidebar">
+		                        <i class="fa fa-question-circle-o"></i>
+		                    </a>
+		                </li>
 					</ul>
 				</div>
 			</nav>

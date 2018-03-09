@@ -35,7 +35,7 @@
 
         <div class="form-group">
 			{{ form.country_id.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				{{ form.country_id(id="country_id", class="form-control select2") }}
 			</div>
 		</div>
@@ -43,7 +43,7 @@
 		{% if form.pid.data %}
         <div class="form-group">
 			{{ form.pid.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				<input type="hidden" name="pid" value="{{ form.pid.data }}" >
 				<p class="form-control-static">
 					{% for p in parent_nodes %}
@@ -56,7 +56,7 @@
 
 		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 			{{ form.name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				{{ form.name(id="name", class="form-control") }}
 				{% for error in form.errors.name %}
 				<span class="help-block">{{ error }}</span><br>
@@ -66,14 +66,14 @@
 
 		<div class="form-group">
 			{{ form.sort_by.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				{{ form.sort_by(id="sort_by", class="form-control") }}
 			</div>
 		</div>
 
         <div class="form-group">
 			{{ form.status.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-8">
+			<div class="col-sm-6">
 				{{ form.status(id="status", class="radio-inline-group") }}
 			</div>
 		</div>

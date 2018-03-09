@@ -18,6 +18,7 @@ def load_common_data():
         'top_menu': 'service'
     }
 
+
 @main.route('/blacklist')
 @login_required
 @user_has('admin_service')

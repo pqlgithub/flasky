@@ -286,7 +286,7 @@ def create_spot():
     if form.validate_on_submit():
         spot = Banner(
             master_uid=Master.master_uid(),
-            serial_no=MixGenId.gen_letters(12),
+            serial_no=form.serial_no.data,
             name=form.name.data,
             width=form.width.data,
             height=form.height.data,
@@ -302,4 +302,5 @@ def create_spot():
     mode = 'create'
     return render_template('banners/_modal_spot_create.html',
                            post_url=url_for('.create_spot'),
+                           mode=mode,
                            form=form)

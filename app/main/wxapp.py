@@ -7,7 +7,7 @@ from . import main
 from .. import db, cache
 from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client
 from app.helpers import WxApp, WxAppError, WxaOpen3rd
-from app.tasks import bind_wxa_tester, unbind_wxa_tester
+from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey
 from ..utils import Master, timestamp, status_response, full_response, R200_OK
 
 
@@ -76,6 +76,11 @@ def wxapp_setting():
         db.session.add(new_store)
 
         db.session.commit()
+
+        # 任务：增加小程序默认配置及API所需key
+        create_wxapi_appkey.apply_async(args=[Master.master_uid(), wx_mini_app.nick_name, new_store.id])
+
+        create_banner_spot.apply_async(args=[Master.master_uid(), 'wx_index_slide', '小程序-首页-大图轮换'])
 
     is_auth = True
     return render_template('wxapp/setting.html',

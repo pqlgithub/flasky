@@ -16,11 +16,11 @@ class ApplicationForm(Form):
     sale_price = FloatField(lazy_gettext('Sale Price'))
     description = TextAreaField(lazy_gettext('Description'))
     remark = TextAreaField(lazy_gettext('Remark'))
-    status = SelectField(lazy_gettext('Status'), choices=[
+    status = RadioField(lazy_gettext('Status'), choices=[
         (2, lazy_gettext('Enabled')),
         (1, lazy_gettext('Pending')),
         (-1, lazy_gettext('Disabled'))
-    ], coerce=int)
+    ], coerce=int, default=2)
 
 
 class WxTemplateForm(Form):

@@ -29,8 +29,10 @@ class Banner(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
+
+    # 位置编号
     serial_no = db.Column(db.String(12), index=True, nullable=False)
-    
+    # 位置名称
     name = db.Column(db.String(64), nullable=False)
     status = db.Column(db.SmallInteger, default=0)
     width = db.Column(db.Integer, default=0)
@@ -45,22 +47,27 @@ class Banner(db.Model):
     )
     
     @staticmethod
-    def make_unique_sn():
+    def make_unique_sn(uid, sn=None):
         """生成品牌编号"""
-        sn = MixGenId.gen_banner_sn()
-        if Banner.query.filter_by(serial_no=sn).first() is None:
+        if sn is None:
+            sn = MixGenId.gen_banner_sn()
+
+        if Banner.query.filter_by(master_uid=uid, serial_no=sn).first() is None:
             return sn
-    
+
         while True:
             new_sn = MixGenId.gen_banner_sn()
-            if Banner.query.filter_by(serial_no=new_sn).first() is None:
+            if Banner.query.filter_by(master_uid=uid, serial_no=new_sn).first() is None:
                 break
         return new_sn
     
     @staticmethod
     def on_before_insert(mapper, connection, target):
         # 自动生成用户编号
-        target.serial_no = Banner.make_unique_sn()
+        if target.serial_no:  # 存在，验证是否唯一
+            target.serial_no = Banner.make_unique_sn(target.master_uid, target.serial_no)
+        else:
+            target.serial_no = Banner.make_unique_sn(target.master_uid)
     
     def __repr__(self):
         return '<Banner {}>'.format(self.name)

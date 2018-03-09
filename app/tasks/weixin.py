@@ -8,9 +8,9 @@ from flask import current_app
 from app.extensions import fsk_celery
 
 from app import db, cache
-from app.models import WxToken, WxAuthorizer, WxAuthCode
+from app.models import WxToken, WxAuthorizer, Client, ClientStatus, Banner
 from app.helpers import WxApp, WxAppError, WxaOpen3rd
-from app.utils import timestamp
+from app.utils import timestamp, make_unique_key, make_pw_hash
 
 FAIL = 'FAIL'
 SKIP = 'SKIP'
@@ -127,3 +127,45 @@ def unbind_wxa_tester(uid, auth_app_id, wx_account):
 
     return SUCCESS
 
+
+@fsk_celery.task(name='wx.create_wxapi_appkey')
+def create_wxapi_appkey(uid, name, store_id):
+    """同步为小程序生成Api所需的key/secret"""
+    if not uid or not store_id:
+        return FAIL
+
+    app_key = make_unique_key(20)
+    client = Client(
+        master_uid=uid,
+        store_id=store_id,
+        name=name,
+        app_key=app_key,
+        app_secret=make_pw_hash(app_key),
+        status=ClientStatus.ENABLED
+    )
+    db.session.add(client)
+
+    db.session.commit()
+
+    return SUCCESS
+
+
+@fsk_celery.task(name='wx.create_banner_spot')
+def create_banner_spot(uid, serial_no, name, w=0, h=0):
+    """同步为小程序创建banner位置"""
+    if not uid or not serial_no or not name:
+        return FAIL
+
+    spot = Banner(
+        master_uid=uid,
+        serial_no=serial_no,
+        name=name,
+        width=w,
+        height=h,
+        status=1
+    )
+    db.session.add(spot)
+
+    db.session.commit()
+
+    return SUCCESS

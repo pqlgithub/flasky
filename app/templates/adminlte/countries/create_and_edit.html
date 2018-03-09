@@ -24,60 +24,54 @@
 		</div>
 	</div>
 
-	<div class="card-box">
-		<div class="row">
-			<div class="col-md-9">
-				<form class="form-horizontal" role="form" method="post" id="form-country" action="">
-					{{ form.hidden_tag() }}
+	<form class="form-horizontal" role="form" method="post" id="form-country" action="">
+		{{ form.hidden_tag() }}
 
-					<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-						{{ form.name.label(class="col-md-3 control-label") }}
-						<div class="col-md-8">
-							{{ form.name(maxlength=64, class='form-control') }}
+		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.name(maxlength=64, class='form-control') }}
 
-							{% for error in form.errors.name %}
-							<span class="help-block">{{ error }}</span><br>
-							{% endfor %}
-						</div>
-					</div>
-                    <div class="form-group">
-						{{ form.en_name.label(class="col-md-3 control-label") }}
-						<div class="col-md-8">
-							{{ form.en_name(maxlength=64, class='form-control') }}
-						</div>
-					</div>
-
-					<div class="form-group required {% if form.errors.code %} has-error{% endif %}">
-						{{ form.code.label(class="col-md-3 control-label") }}
-						<div class="col-md-8">
-							{{ form.code(class='form-control') }}
-							{% for error in form.errors.code %}
-							<span class="help-block">{{ error }}</span><br>
-							{% endfor %}
-						</div>
-					</div>
-
-					<div class="form-group">
-						{{ form.code2.label(class="col-md-3 control-label") }}
-						<div class="col-md-8">
-							{{ form.code2(class='form-control') }}
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-md-3 text-right">
-							{{ form.status.label(class="control-label") }}
-							<small data-toggle="tooltip" data-original-title="在国家下拉项中隐藏/显示">
-								<i class="fa fa-question-circle"></i>
-							</small>
-						</div>
-						<div class="col-md-8">
-							{{ form.status(class='radio-inline-group') }}
-						</div>
-					</div>
-				</form>
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
 			</div>
 		</div>
-	</div>
+        <div class="form-group">
+			{{ form.en_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.en_name(maxlength=64, class='form-control') }}
+			</div>
+		</div>
+
+		<div class="form-group required {% if form.errors.code %} has-error{% endif %}">
+			{{ form.code.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.code(class='form-control') }}
+				{% for error in form.errors.code %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-group">
+			{{ form.code2.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.code2(class='form-control') }}
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2 text-right">
+				{{ form.status.label(class="control-label") }}
+				<small data-toggle="tooltip" data-original-title="在国家下拉项中隐藏/显示">
+					<i class="fa fa-question-circle"></i>
+				</small>
+			</div>
+			<div class="col-sm-6">
+				{{ form.status(class='radio-inline-group') }}
+			</div>
+		</div>
+	</form>
 </div>
 {% endblock %}

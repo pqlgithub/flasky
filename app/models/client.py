@@ -10,6 +10,7 @@ __all__ = [
     'ClientStatus'
 ]
 
+
 class ClientStatus:
     # 通过审核
     ENABLED = 2
@@ -18,12 +19,14 @@ class ClientStatus:
     # 拒绝
     DISABLED = -1
 
+
 # 应用的状态
 CLIENT_STATUS = [
     (ClientStatus.ENABLED, lazy_gettext('Approved'), 'success'),
     (ClientStatus.PENDING, lazy_gettext('Pending'), 'success'),
     (ClientStatus.DISABLED, lazy_gettext('Disabled'), 'danger')
 ]
+
 
 class Client(db.Model):
     """应用列表"""
@@ -59,6 +62,7 @@ class Client(db.Model):
         for s in CLIENT_STATUS:
             if s[0] == self.status:
                 return s
+
     @property
     def store(self):
         """获取关联渠道"""
@@ -70,11 +74,12 @@ class Client(db.Model):
         验证API数字签名
         
         签名算法：
-	    1、将app_key,timestamp,nonce_str三个参数字典排序
-	    2、将三个参数字符串拼接成一个字符串+app_secret进行sha1加密
-	    3、加密后的字符串即为signature
-	
+        1、将app_key,timestamp,nonce_str三个参数字典排序
+        2、将三个参数字符串拼接成一个字符串+app_secret进行sha1加密
+        3、加密后的字符串即为signature
+
         :param args: 认证参数
+        :param app_secret: 验证密钥
         :return: 是否签名成功
         """
         ret = {
@@ -88,7 +93,6 @@ class Client(db.Model):
         sign = hashlib.sha1(tmp_str.encode('utf-8') + app_secret.encode('utf-8')).hexdigest()
         
         return sign == args['sign']
-        
-    
+
     def __repr__(self):
         return '<Client {}>'.format(self.id)

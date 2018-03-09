@@ -77,6 +77,14 @@
                                 {{ _('Update Password') }}
                             </a>
                         </li>
+						{% if current_user.is_admin %}
+						<li role="separator" class="divider"></li>
+                        <li>
+                            <a href="{{ url_for('adminlte.admin_index') }}">
+                                {{ _('System Manage') }}
+                            </a>
+                        </li>
+						{% endif %}
                         <li role="separator" class="divider"></li>
                         <li>
                             <a href="{{ url_for('auth.logout') }}">
@@ -88,7 +96,7 @@
 
                 <li>
                     <a href="#" data-toggle="control-sidebar">
-                        <i class="fa fa-gears"></i>
+                        <i class="fa fa-question-circle-o"></i>
                     </a>
                 </li>
             </ul>
