@@ -1,9 +1,9 @@
 <header class="main-header">
     <a class="logo" href="{{ url_for('main.index') }}">
         {% if current_site %}
-            {{ current_site.company_abbr|default('eLingShop') }}
+            {{ current_site.company_abbr|default('moebeast') }}
         {% else %}
-            eLingShop
+            {{ _('moebeast') }}
         {% endif %}
     </a>
     <nav class="navbar navbar-static-top">
@@ -29,17 +29,17 @@
                 <li class="dropdown notifications-menu">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-bell-o"></i>
-                        <span class="label label-warning">0</span>
+                        <span class="label label-warning hidden">0</span>
                     </a>
 
                     <ul class="dropdown-menu">
-                        <li class="header">You have 10 notifications</li>
+                        <li class="header">You have 0 notifications</li>
                         <li>
                             <ul class="menu">
                                 <li>
                                     <a href="">
                                         <i class="fa fa-warning text-yellow"></i>
-                                        Very long description here that may not fit into the page and may cause design problems
+                                        fit into the page and may cause design problems
                                     </a>
                                 </li>
                             </ul>
