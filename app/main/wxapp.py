@@ -81,7 +81,7 @@ def wxapp_setting():
     return render_template('wxapp/setting.html',
                            auth_status=is_auth,
                            auth_app_id=auth_app_id,
-                           wx_mini_app=wx_mini_app.to_json())
+                           wx_mini_app=wx_mini_app)
 
 
 @main.route('/wxapps/authorize')
