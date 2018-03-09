@@ -9,8 +9,8 @@ class BannerForm(Form):
     serial_no = StringField(lazy_gettext('Banner NO.'), validators=[DataRequired(message="Banner NO. can't empty!")])
     name = StringField(lazy_gettext('Banner Spot'), validators=[DataRequired(message="Banner spot can't empty!"),
                                                                 Length(2, 32)])
-    width = IntegerField(lazy_gettext('Width'))
-    height = IntegerField(lazy_gettext('Height'))
+    width = IntegerField(lazy_gettext('Width'), default=0)
+    height = IntegerField(lazy_gettext('Height'), default=0)
     
 
 class BannerImageForm(Form):

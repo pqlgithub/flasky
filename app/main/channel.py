@@ -6,11 +6,12 @@ from flask import g, render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required
 from flask_babelex import gettext
+from sqlalchemy.exc import DataError
 from . import main
 from .. import db
 from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES
 from app.forms import StoreForm, BannerForm, BannerImageForm
-from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, status_response
+from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST
 from ..helpers import MixGenId
 from ..decorators import user_has
 
@@ -283,21 +284,28 @@ def delete_banner():
 def create_spot():
     """新增banner位置"""
     form = BannerForm()
-    if form.validate_on_submit():
-        spot = Banner(
-            master_uid=Master.master_uid(),
-            serial_no=form.serial_no.data,
-            name=form.name.data,
-            width=form.width.data,
-            height=form.height.data,
-            status=1
-        )
-        db.session.add(spot)
-        db.session.commit()
-        
-        flash('Add banner spot is ok!', 'success')
-        
-        return status_response(True, R201_CREATED)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            try:
+                spot = Banner(
+                    master_uid=Master.master_uid(),
+                    serial_no=form.serial_no.data,
+                    name=form.name.data,
+                    width=form.width.data,
+                    height=form.height.data,
+                    status=1
+                )
+                db.session.add(spot)
+                db.session.commit()
+            except DataError as err:
+                current_app.logger.warn('Create banner spot error: %s!' % repr(err))
+                db.session.rollback()
+                return status_response(False, R400_BADREQUEST)
+
+            return status_response(True, R201_CREATED)
+        else:
+            current_app.logger.warn(form.errors)
+            return custom_status('error', 400)
     
     mode = 'create'
     return render_template('banners/_modal_spot_create.html',

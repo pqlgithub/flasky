@@ -31,7 +31,7 @@ class Banner(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
 
     # 位置编号
-    serial_no = db.Column(db.String(12), index=True, nullable=False)
+    serial_no = db.Column(db.String(64), index=True, nullable=False)
     # 位置名称
     name = db.Column(db.String(64), nullable=False)
     status = db.Column(db.SmallInteger, default=0)

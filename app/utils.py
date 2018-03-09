@@ -6,7 +6,7 @@ import random
 import hashlib
 from datetime import datetime
 from string import digits, ascii_letters
-from flask import jsonify, current_app, request
+from flask import jsonify, current_app, request, flash
 from flask_login import current_user
 
 
@@ -158,6 +158,14 @@ def custom_status(message, code=400):
         'message': message
     }
 
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
 
 def get_merged_cells(sheet):
     """

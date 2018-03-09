@@ -28,7 +28,7 @@ class BrandForm(Form):
     features = StringField(lazy_gettext('Features'))
     is_recommended = BooleanField(lazy_gettext('Is Recommended?'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
-    sort_order = IntegerField(lazy_gettext('Sort Order'))
+    sort_order = IntegerField(lazy_gettext('Sort Order'), default=1)
     logo_id = IntegerField(lazy_gettext('Logo'), default=0)
     banner_id = IntegerField(lazy_gettext('Banner'), default=0)
     

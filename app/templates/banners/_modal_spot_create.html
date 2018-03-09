@@ -78,6 +78,7 @@
 				$btn.prop('disabled', false);
 			},
 			success: function (result) {
+				alert('error');
 				if (result.success) {
 				    location.reload();
 				} else {
@@ -85,6 +86,7 @@
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
+				alert('error01');
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 			}
 		});

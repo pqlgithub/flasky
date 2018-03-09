@@ -11,7 +11,13 @@ from app.main import main
 def page_not_found(e):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
-        response = jsonify({'error': 'not found'})
+        response = jsonify({
+            'success': False,
+            'status': {
+                'code': 404,
+                'message': 'not found'
+            }
+        })
         response.status_code = 404
         return response
 
