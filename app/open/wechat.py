@@ -133,13 +133,31 @@ def service_message():
     time_stamp = request.values.get('timestamp')
     nonce = request.values.get('nonce')
     echostr = request.values.get('echostr')
+    openid = request.values.get('openid')
+    encrypt_type = request.values.get('encrypt_type')
+    msg_signature = request.values.get('msg_signature')
+    post_data = request.get_data()
 
-    token = '6e6d7bca7219d822cb08fb6c54d73584'
-    encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
+    #token = '6e6d7bca7219d822cb08fb6c54d73584'
+    #encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
 
-    wx_service = WxService(token=token, encoding_aes_key=encoding_aes_key)
-    if wx_service.check_signature(time_stamp, nonce, signature):
-        return echostr
+    # wx_service = WxService(token=token, encoding_aes_key=encoding_aes_key)
+    # if wx_service.check_signature(time_stamp, nonce, signature):
+    #    return echostr
+
+    # 解密接口
+    des_key = current_app.config['WX_APP_DES_KEY']
+    token = current_app.config['WX_APP_TOKEN']
+    app_id = current_app.config['WX_APP_ID']
+    decrypt = WXBizMsgCrypt(token, des_key, app_id)
+    ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce)
+
+    # 解密成功
+    if ret == 0:
+        # 更新ticket
+        current_app.logger.warn("decrypt content: %s" % decrypt_content)
+
+    return 'success'
 
 
 @open.route('/wx/authorize')
