@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms.fields import StringField, IntegerField, FloatField, RadioField
+from wtforms.fields import StringField, IntegerField, FloatField, RadioField, TextAreaField
 from wtforms.validators import DataRequired,ValidationError
 
 
@@ -25,3 +25,14 @@ class CouponForm(Form):
         (1, lazy_gettext('Enabled')),
         (-1, lazy_gettext('Disabled'))
     ], coerce=int, default=1)
+
+
+class WxReplyForm(Form):
+    auth_app_id = StringField(lazy_gettext('Wxapp ID'))
+    msg_type = RadioField(lazy_gettext('Msg Type'), choices=[
+        ('text', lazy_gettext('text')),
+        ('image', lazy_gettext('image')),
+        ('link', lazy_gettext('link')),
+        ('miniprogrampage', lazy_gettext('miniprogrampage'))
+    ], coerce=str, default='text')
+    content = TextAreaField(lazy_gettext('Content'))

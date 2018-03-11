@@ -7,7 +7,8 @@ from . import main
 from .. import db, cache
 from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage
 from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key
-from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey
+from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey, reply_wxa_service
+from app.forms import WxReplyForm
 from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key
 
 
@@ -213,18 +214,44 @@ def wxapp_service_setting():
                            auth_app_id=auth_app_id)
 
 
-@main.route('/wxapps/service/reply', methods=['POST'])
+@main.route('/wxapps/service/reply', methods=['GET', 'POST'])
 def wxapp_service_reply():
     """回复客服消息"""
-    auth_app_id = request.form.get('auth_app_id')
-    content = request.form.get('content')
-
-    if not auth_app_id:
+    rid = request.values.get('rid')
+    auth_app_id = request.values.get('auth_app_id')
+    if not auth_app_id or not rid:
         abort(400)
+    # 获取回复对象
+    wx_service_message = WxServiceMessage.query.get(int(rid))
+    form = WxReplyForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        auth_app_id = form.auth_app_id.data
+        content = form.content.data
+        msg_type = form.msg_type.data
 
-    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+        wx_reply_message = WxServiceMessage(
+            master_uid=Master.master_uid(),
+            auth_app_id=auth_app_id,
+            to_user=wx_service_message.from_user,
+            from_user=wx_service_message.to_user,
+            msg_id=wx_service_message.msg_id,
+            msg_type=msg_type,
+            content=content,
+            type=2,
+            status=2
+        )
+        db.session.add(wx_reply_message)
+        db.session.commit()
 
-    return status_response()
+        # 异步任务，后台发送
+        reply_wxa_service.apply_async(args=[wx_reply_message.id])
+
+        return status_response()
+
+    return render_template('wxapp/_reply_modal.html',
+                           form=form,
+                           auth_app_id=auth_app_id,
+                           service_message=wx_service_message)
 
 
 @main.route('/wxapps/commit', methods=['POST'])

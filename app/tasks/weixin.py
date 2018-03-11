@@ -8,8 +8,8 @@ from flask import current_app
 from app.extensions import fsk_celery
 
 from app import db, cache
-from app.models import WxToken, WxAuthorizer, Client, ClientStatus, Banner
-from app.helpers import WxApp, WxAppError, WxaOpen3rd
+from app.models import WxToken, WxAuthorizer, Client, ClientStatus, Banner, WxServiceMessage
+from app.helpers import WxApp, WxAppError, WxaOpen3rd, WxReply
 from app.utils import timestamp, make_unique_key, make_pw_hash
 
 FAIL = 'FAIL'
@@ -86,6 +86,44 @@ def refresh_authorizer_token():
     except WxAppError as err:
         current_app.logger.warn('Refresh authorizer token error: %s' % err)
         return FAIL
+
+    return SUCCESS
+
+
+@fsk_celery.task(name='wx.reply_wxa_service')
+def reply_wxa_service(rid):
+    """回复小程序客服消息"""
+    wx_service_message = WxServiceMessage.query.get(int(rid))
+    # 待发送消息，其它类型则跳过
+    if wx_service_message.type != 2 or wx_service_message.status != 2:
+        return FAIL
+
+    send_data = {
+        'touser': wx_service_message.to_user,
+        'msgtype': wx_service_message.msg_type,
+        'text': {
+            'content': wx_service_message.content
+        }
+    }
+
+    # 获取access_token
+    wx_authorizer = WxAuthorizer.query.filter_by(master_uid=wx_service_message.master_uid,
+                                                 auth_app_id=wx_service_message.auth_app_id).first()
+    if wx_authorizer is None:
+        current_app.logger.warn('Reply authorizer is not exist!')
+        return FAIL
+
+    try:
+        wx_reply = WxReply(access_token=wx_authorizer.access_token)
+        wx_reply.send_message(data=send_data)
+    except WxAppError as err:
+        current_app.logger.warn('Reply message error: %s' % err)
+        return FAIL
+
+    # 更新发送状态
+    wx_service_message.status = 3
+
+    db.session.commit()
 
     return SUCCESS
 

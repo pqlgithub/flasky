@@ -93,7 +93,7 @@
 								{{ message.create_time|timestamp2string() }}
 							</td>
 							<td class="text-right">
-								<a href="{{ url_for('main.set_role', user_id=message.id)}}" class="btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								<a href="{{ url_for('main.wxapp_service_reply')}}?rid={{ message.id }}&auth_app_id={{ auth_app_id }}" class="btn-link ajax-modal" data-modal="reply-modal" data-toggle="tooltip" data-original-title="{{ _('Reply') }}">
 									{{ _('Reply') }}
 								</a>
 							</td>

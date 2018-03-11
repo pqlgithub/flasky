@@ -452,6 +452,26 @@ class WxService(object):
         return True if tmp_sign == signature else False
 
 
+class WxReply(object):
+    """微信小程序回复客服消息"""
+
+    wxa_send_url = 'https://api.weixin.qq.com/cgi-bin/message'
+
+    def __init__(self, access_token):
+        self.access_token = access_token
+
+    def send_message(self, data):
+        url = '%s/custom/send?access_token=%s' % (self.wxa_send_url, self.access_token)
+        result = requests.post(url, data=json.dumps(data))
+
+        result = Map(result.json())
+        if result.get('errcode') and result.get('errcode') != 0:
+            current_app.logger.warn('WxReply res code: %d' % result.get('errcode'))
+            raise WxAppError(result.get('errmsg'))
+
+        return result
+
+
 def gen_3rd_session_key():
     """生成长度为32位的hex字符串，用于第三方session的key"""
     return binascii.hexlify(os.urandom(16)).decode()
