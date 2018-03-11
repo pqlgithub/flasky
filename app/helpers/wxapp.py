@@ -433,7 +433,7 @@ class WxService(object):
 
     def __init__(self, token, encoding_aes_key):
         self.token = token
-        self.encoding_aes_key = encoding_aes_key
+        self.key = base64.b64decode(encoding_aes_key + "=")
 
     def check_signature(self, timestamp, nonce, signature):
         """用SHA1算法生成安全签名
@@ -450,6 +450,21 @@ class WxService(object):
         tmp_sign = sha.hexdigest()
 
         return True if tmp_sign == signature else False
+
+    def decrypt(self, encrypted_data):
+        """将加密后的信息解密"""
+        encrypted_data = base64.b64decode(encrypted_data)
+        iv = self.key[:16]
+
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+
+        decrypted = json.loads(self._unpad(cipher.decrypt(encrypted_data).decode('utf-8')))
+        current_app.logger.warn('Decrypt: %s' % decrypted)
+
+        return decrypted
+
+    def _unpad(self, s):
+        return s[:-ord(s[len(s)-1:])]
 
 
 def gen_3rd_session_key():
