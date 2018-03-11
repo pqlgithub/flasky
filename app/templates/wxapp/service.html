@@ -1,0 +1,151 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+		mixpus.hook_ajax_modal();
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="form-page">
+	<h2 class="page-header">
+		{{ _('Wxapp Service') }}
+		<span class="pull-right">
+            <button type="submit" form="wxapp-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</h2>
+
+    <form id="wxapp-form" class="form-horizontal" action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
+		
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active">
+                <a href="#general" id="general-tab" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
+                    客服消息
+                </a>
+            </li>
+            <li>
+                <a href="#data" id="data-tab" role="tab" data-toggle="tab" aria-controls="data" aria-expanded="true">
+                    消息推送设置
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content m-t-30">
+			
+			<!--客服消息列表-->
+            <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="text-center">
+								<input name="check_all" type="checkbox" class="check-all">
+							</th>
+							<th>
+								消息 ID
+							</th>
+							<th>
+								{{ _('From User') }}
+							</th>
+							<th>
+								消息类型
+							</th>
+							<th>
+								消息内部
+							</th>
+							<th class="text-right">
+								{{ _('created at') }}
+							</th>
+							<th class="text-right">
+								{{ _('Action') }}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for message in paginated_messages.items %}
+						<tr>
+							<td class="text-center">
+								<input name="selected[]" class="check-one" value="{{ message.id }}" type="checkbox">
+							</td>
+							<td>
+								{{ message.msg_id }}
+							</td>
+							<td>
+								{{ message.from_user }}
+							</td>
+							<td>
+								{{ message.msg_type }}
+							</td>
+							<td>
+								{{ message.content }}
+							</td>
+							<td class="text-right">
+								{{ message.create_time|timestamp2string() }}
+							</td>
+							<td class="text-right">
+								<a href="{{ url_for('main.set_role', user_id=message.id)}}" class="btn-link ajax-role" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+									{{ _('Reply') }}
+								</a>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+            </div>
+			
+			<!--支付设置-->
+            <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
+				<div class="alert alert-success m-b-30" role="alert">
+					<h4>消息推送设置</h4>
+					<p><i class="fa fa-info-circle"></i> 推送设置保存后，需同步进入小程序后台->消息推送，进行同步设置。</p>
+				</div>
+				
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">URL(服务器地址)</label>
+                    <div class="col-sm-6">
+                        <input class="form-control" name="url" value="{{ service_url }}" />
+                    </div>
+                </div>
+				
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Token(令牌)</label>
+                    <div class="col-sm-6">
+                        <input class="form-control" name="token" value="{{ service_token }}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">EncodingAESKey(加密密钥)</label>
+                    <div class="col-sm-6">
+                        <input class="form-control" name="aes_key" value="{{ service_aes_key }}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">消息加密方式</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">安全模式</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">数据格式</label>
+                    <div class="col-sm-6">
+                        <label class="control-label">JSON</label>
+                    </div>
+                </div>
+            </div>
+			
+		</div>
+
+    </form>
+
+</div>
+{% endblock %}
