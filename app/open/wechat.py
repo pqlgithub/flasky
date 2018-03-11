@@ -137,8 +137,14 @@ def service_message():
     encrypt_type = request.values.get('encrypt_type')
     msg_signature = request.values.get('msg_signature')
     post_data = request.get_data()
-
+    
     current_app.logger.warn('post data: %s' % post_data)
+
+    # 解析内容活动to_user
+    xml_tree = ET.fromstring(post_data)
+    to_user = xml_tree.find('ToUserName').text
+
+    current_app.logger.warn('To user name: %s' % to_user)
 
     token = '6e6d7bca7219d822cb08fb6c54d73584'
     encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
@@ -151,8 +157,6 @@ def service_message():
             return echostr
 
     # 解密接口
-    token = 'AKIAJMIYNJXL7QEHTXNQ'
-    # encoding_aes_key = '16122e1e525b4cdb869d538b143fe231d69a6268fb9'
     decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
     ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce)
 
