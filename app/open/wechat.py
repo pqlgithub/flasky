@@ -138,6 +138,8 @@ def service_message():
     msg_signature = request.values.get('msg_signature')
     post_data = request.get_data()
 
+    current_app.logger.warn('post data: %s' % post_data)
+    
     #token = '6e6d7bca7219d822cb08fb6c54d73584'
     #encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
 
