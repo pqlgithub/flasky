@@ -462,7 +462,7 @@ class WxReply(object):
 
     def send_message(self, data):
         url = '%s/custom/send?access_token=%s' % (self.wxa_send_url, self.access_token)
-        result = requests.post(url, data=data)  # json.dumps()
+        result = requests.post(url, data=bytes(json.dumps(data, ensure_ascii=False), encoding='utf-8'))
 
         result = Map(result.json())
         if result.get('errcode') and result.get('errcode') != 0:

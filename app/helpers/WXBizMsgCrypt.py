@@ -256,7 +256,7 @@ class WXBizMsgCrypt(object):
         pc = Prpcrypt(self.key)
         ret, encrypt = pc.encrypt(sReplyMsg, self.appid)
         if ret != 0:
-            return ret,None
+            return ret, None
         if timestamp is None:
             timestamp = str(int(time.time()))
         # 生成安全签名
