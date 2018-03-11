@@ -5,10 +5,10 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
-from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client
-from app.helpers import WxApp, WxAppError, WxaOpen3rd
+from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage
+from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key
 from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey
-from ..utils import Master, timestamp, status_response, full_response, R200_OK
+from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key
 
 
 @main.route('/wxapps')
@@ -153,6 +153,70 @@ def wxapp_versions():
 
     return render_template('wxapp/version_list.html',
                            auth_app_id=auth_app_id)
+
+
+@main.route('/wxapps/service')
+def wxapp_service():
+    """小程序客服消息"""
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    auth_app_id = request.args.get('auth_app_id')
+    if not auth_app_id:
+        abort(400)
+
+    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    # 获取客服消息
+    builder = WxServiceMessage.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id)
+
+    builder = builder.filter_by(type=1)
+
+    paginated_messages = builder.order_by(WxServiceMessage.create_time.desc()).paginate(page, per_page)
+
+    service_token = mini_app.service_token if mini_app.service_token else gen_3rd_session_key()
+    service_aes_key = mini_app.service_aes_key if mini_app.service_aes_key else make_unique_key(43)
+
+    return render_template('wxapp/service.html',
+                           service_url='https://fx.taihuonio.com/open/wx/service_message',
+                           service_token=service_token,
+                           service_aes_key=service_aes_key,
+                           paginated_messages=paginated_messages,
+                           auth_app_id=auth_app_id)
+
+
+@main.route('/wxapps/service/setting', methods=['POST'])
+def wxapp_service_setting():
+    """小程序客服消息推送设置"""
+    auth_app_id = request.form.get('auth_app_id')
+    token = request.form.get('token')
+    aes_key = request.form.get('aes_key')
+
+    if not auth_app_id or not token or not aes_key:
+        abort(400)
+
+    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    # 设置推送设置
+    mini_app.service_token = token
+    mini_app.service_aes_key = aes_key
+
+    db.session.commit()
+
+    return status_response(True, R200_OK)
+
+
+@main.route('/wxapps/service/reply', methods=['POST'])
+def wxapp_service_reply():
+    """回复客服消息"""
+    auth_app_id = request.form.get('auth_app_id')
+    content = request.form.get('content')
+
+    if not auth_app_id:
+        abort(400)
+
+    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    return status_response()
 
 
 @main.route('/wxapps/commit', methods=['POST'])

@@ -451,21 +451,6 @@ class WxService(object):
 
         return True if tmp_sign == signature else False
 
-    def decrypt(self, encrypted_data):
-        """将加密后的信息解密"""
-        encrypted_data = base64.b64decode(encrypted_data)
-        iv = self.key[:16]
-
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-
-        decrypted = json.loads(self._unpad(cipher.decrypt(encrypted_data).decode('utf-8')))
-        current_app.logger.warn('Decrypt: %s' % decrypted)
-
-        return decrypted
-
-    def _unpad(self, s):
-        return s[:-ord(s[len(s)-1:])]
-
 
 def gen_3rd_session_key():
     """生成长度为32位的hex字符串，用于第三方session的key"""

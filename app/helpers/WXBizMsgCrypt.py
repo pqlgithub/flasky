@@ -87,7 +87,9 @@ class XMLParse:
         try:
             xml_tree = ET.fromstring(xmltext)
             encrypt = xml_tree.find("Encrypt")
-            touser_name = xml_tree.find("AppId")
+            touser_name = xml_tree.find("ToUserName")
+            if type(touser_name) is None:
+                touser_name = xml_tree.find("AppId")
             return WXBizMsgCrypt_OK, encrypt.text, touser_name.text
         except Exception as e:
             current_app.logger.warn('xml extract error: %s' % e)
@@ -266,6 +268,10 @@ class WXBizMsgCrypt(object):
             return ret, None
         if not signature == sMsgSignature:
             return WXBizMsgCrypt_ValidateSignature_Error, None
+
         pc = Prpcrypt(self.key)
         ret, xml_content = pc.decrypt(encrypt, self.appid)
+
+        current_app.logger.debug("ret: %d, decrypt content: %s" % (ret, xml_content))
+        
         return ret, xml_content

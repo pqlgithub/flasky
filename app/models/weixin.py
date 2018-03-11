@@ -14,7 +14,9 @@ __all__ = [
     'WxMiniApp',
     'WxPayment',
     'WxTemplate',
-    'WxVersion'
+    'WxVersion',
+    'WxServiceMessage',
+    'WxServiceFrom'
 ]
 
 
@@ -86,6 +88,10 @@ class WxMiniApp(db.Model):
 
     # 添加体验者, 多个微信号用,隔开
     testers = db.Column(db.String(200))
+
+    # 客服消息推送设置
+    service_token = db.Column(db.String(100))
+    service_aes_key = db.Column(db.String(64))
 
     # 状态: -1 禁用；0 默认；1 正常；
     status = db.Column(db.SmallInteger, default=0)
@@ -180,6 +186,71 @@ class WxPayment(db.Model):
 
     def __repr__(self):
         return '<WxPayment {}>'.format(self.auth_app_id)
+
+
+class WxServiceMessage(db.Model):
+    """微信客服消息"""
+
+    __tablename__ = 'wx_service_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
+
+    to_user = db.Column(db.String(100))
+    from_user = db.Column(db.String(100))
+    # 消息类型：text: 文本；image: 图片；link: 图文链接；miniprogrampage: 小程序卡片
+    msg_type = db.Column(db.String(32))
+    msg_id = db.Column(db.String(100))
+    create_time = db.Column(db.Integer, default=timestamp)
+    # 文本消息
+    content = db.Column(db.Text())
+
+    # 图片消息
+    pic_url = db.Column(db.String(100))
+    media_id = db.Column(db.String(32))
+
+    # 图文链接消息
+    description = db.Column(db.String(200))
+    # 图文链接消息被点击后跳转的链接
+    url = db.Column(db.String(200))
+
+    # 小程序卡片信息
+    title = db.Column(db.String(100))
+    app_id = db.Column(db.String(64))
+    page_path = db.Column(db.String(200))
+    thumb_url = db.Column(db.String(200))
+    thumb_media_id = db.Column(db.String(64))
+
+    # 类型: 1、接收的消息 2、发送的消息
+    type = db.Column(db.SmallInteger, default=1)
+    # 发送回复时间
+    send_at = db.Column(db.Integer, default=timestamp)
+    # 状态： 1、默认；2：待发送；3、已发送；-1：发送失败
+    status = db.Column(db.SmallInteger, default=1)
+    # 返回说明记录
+    reason = db.Column(db.String(100))
+
+    def __repr__(self):
+        return '<WxServiceMessage {}>'.format(self.msg_id)
+
+
+class WxServiceFrom(db.Model):
+    """微信客服发起源"""
+
+    __tablename__ = 'wx_service_from'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    auth_app_id = db.Column(db.String(32), index=True, nullable=False)
+    session_from = db.Column(db.String(100))
+    from_user = db.Column(db.String(100))
+    create_time = db.Column(db.Integer, default=timestamp)
+
+    def __repr__(self):
+        return '<WxServiceFrom {}>'.format(self.session_from)
 
 
 class WxTemplate(db.Model):

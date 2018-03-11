@@ -5,7 +5,7 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxToken, WxAuthorizer
+from app.models import WxToken, WxAuthorizer, WxServiceMessage
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService
 from app.utils import Master, custom_response, timestamp
 
@@ -136,12 +136,14 @@ def service_message():
     openid = request.values.get('openid')
     encrypt_type = request.values.get('encrypt_type')
     msg_signature = request.values.get('msg_signature')
-    post_data = request.get_data()
+    #post_data = request.get_data()
+    post_data = '<xml>\n    <ToUserName><![CDATA[gh_d33b236e2b05]]></ToUserName>\n    <Encrypt><![CDATA[vT5n3/b7WC/U1Pu4nbsHkQEaFZeU2lEsax/l+Ww4VjIas7P2j2hIuCbCXcBtH4eWmuONHoaAKV456J4GFWET0PKMgYtbgNl8a7GUaHp2PApeDpFUwRGEsOFkRVUJc5d+NDGks86DSvNWpYLUwghaFb+wFCghG+w9DnCmoDprfaGLsfskL75Z2jwKDpgA4UFajgl5kMeVnI0vMT0sm/1olJvgQJLmDC4rkv4ifRvBJNUsd99vJFKNP6r6Pnv8JNld1T+AK03uZX1EjzhZoZ0Tkt2H2wpalHH9tCs+xlXFFhi62RCtuDSdjS+iDbQhzDnHBGJscIpQe1HlrbTS8ntDwiD7Mp3bGQPP1loHDmZp7GhV4CwnHOKh3rORpVyy1xE7XVMHSMvUl5LHvdRbx4srDEHhfNZOHhmd7yrwB7oaUtM=]]></Encrypt>\n</xml>\n'
 
     current_app.logger.warn('post data: %s' % post_data)
 
     token = '6e6d7bca7219d822cb08fb6c54d73584'
     encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
+    auth_app_id = 'wx11363b7f6fe26ac8'
 
     # 验证token
     if echostr:
@@ -150,16 +152,34 @@ def service_message():
             return echostr
 
     # 解密接口
-    des_key = current_app.config['WX_APP_DES_KEY']
-    token = current_app.config['WX_APP_TOKEN']
-    app_id = current_app.config['WX_APP_ID']
-    decrypt = WXBizMsgCrypt(token, des_key, app_id)
+    token = 'AKIAJMIYNJXL7QEHTXNQ'
+    # encoding_aes_key = '16122e1e525b4cdb869d538b143fe231d69a6268fb9'
+    decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
     ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce)
-    
+
     # 解密成功
     if ret == 0:
-        # 更新ticket
+        # 更新
         current_app.logger.warn("decrypt content: %s" % decrypt_content)
+        # 解析内容
+        xml_tree = ET.fromstring(decrypt_content)
+
+        msg_type = xml_tree.find('MsgType').text
+
+        if msg_type == 'text':  # 文本消息
+            wx_service_message = WxServiceMessage(
+                master_uid=3,
+                auth_app_id=auth_app_id,
+                to_user=xml_tree.find('ToUserName').text,
+                from_user=xml_tree.find('FromUserName').text,
+                msg_type=msg_type,
+                create_time=xml_tree.find('CreateTime').text,
+                content=xml_tree.find('Content').text,
+                msg_id=xml_tree.find('MsgId').text,
+                type=1
+            )
+            db.session.add(wx_service_message)
+            db.session.commit()
 
     return 'success'
 
