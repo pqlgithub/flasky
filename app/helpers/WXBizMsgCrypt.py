@@ -87,9 +87,18 @@ class XMLParse:
         try:
             xml_tree = ET.fromstring(xmltext)
             encrypt = xml_tree.find("Encrypt")
+            touser_name = xml_tree.find("AppId")
+            return WXBizMsgCrypt_OK, encrypt.text, touser_name.text
+        except Exception as e:
+            current_app.logger.warn('xml extract error: %s' % e)
+            return WXBizMsgCrypt_ParseXml_Error, None, None
+
+    def service_extract(self, xmltext):
+        """针对小程序客服消息解密"""
+        try:
+            xml_tree = ET.fromstring(xmltext)
+            encrypt = xml_tree.find("Encrypt")
             touser_name = xml_tree.find("ToUserName")
-            if type(touser_name) is None:
-                touser_name = xml_tree.find("AppId")
             return WXBizMsgCrypt_OK, encrypt.text, touser_name.text
         except Exception as e:
             current_app.logger.warn('xml extract error: %s' % e)
@@ -247,7 +256,7 @@ class WXBizMsgCrypt(object):
         xml_parse = XMLParse()
         return ret, xml_parse.generate(encrypt, signature, timestamp, sNonce)
 
-    def DecryptMsg(self, sPostData, sMsgSignature, sTimeStamp, sNonce):
+    def DecryptMsg(self, sPostData, sMsgSignature, sTimeStamp, sNonce, type='authorize'):
         # 检验消息的真实性，并且获取解密后的明文
         # @param sMsgSignature: 签名串，对应URL参数的msg_signature
         # @param sTimeStamp: 时间戳，对应URL参数的timestamp
@@ -258,7 +267,10 @@ class WXBizMsgCrypt(object):
         # 验证安全签名
         xml_parse = XMLParse()
         current_app.logger.warn('parse xml start...')
-        ret, encrypt, touser_name = xml_parse.extract(sPostData)
+        if type == 'authorize':
+            ret, encrypt, touser_name = xml_parse.extract(sPostData)
+        else:
+            ret, encrypt, touser_name = xml_parse.service_extract(sPostData)
         if ret != 0:
             return ret, None
         sha1 = SHA1()
@@ -273,5 +285,5 @@ class WXBizMsgCrypt(object):
         ret, xml_content = pc.decrypt(encrypt, self.appid)
 
         current_app.logger.debug("ret: %d, decrypt content: %s" % (ret, xml_content))
-        
+
         return ret, xml_content

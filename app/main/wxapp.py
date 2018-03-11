@@ -164,8 +164,6 @@ def wxapp_service():
     if not auth_app_id:
         abort(400)
 
-    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
-
     # 获取客服消息
     builder = WxServiceMessage.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id)
 
@@ -173,36 +171,46 @@ def wxapp_service():
 
     paginated_messages = builder.order_by(WxServiceMessage.create_time.desc()).paginate(page, per_page)
 
-    service_token = mini_app.service_token if mini_app.service_token else gen_3rd_session_key()
-    service_aes_key = mini_app.service_aes_key if mini_app.service_aes_key else make_unique_key(43)
-
     return render_template('wxapp/service.html',
-                           service_url='https://fx.taihuonio.com/open/wx/service_message',
-                           service_token=service_token,
-                           service_aes_key=service_aes_key,
                            paginated_messages=paginated_messages,
                            auth_app_id=auth_app_id)
 
 
-@main.route('/wxapps/service/setting', methods=['POST'])
+@main.route('/wxapps/service/setting', methods=['GET', 'POST'])
 def wxapp_service_setting():
     """小程序客服消息推送设置"""
-    auth_app_id = request.form.get('auth_app_id')
-    token = request.form.get('token')
-    aes_key = request.form.get('aes_key')
+    if request.method == 'POST':
+        auth_app_id = request.form.get('auth_app_id')
+        token = request.form.get('token')
+        aes_key = request.form.get('aes_key')
 
-    if not auth_app_id or not token or not aes_key:
-        abort(400)
+        if not auth_app_id or not token or not aes_key:
+            abort(400)
 
+        mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+        # 设置推送设置
+        mini_app.service_token = token
+        mini_app.service_aes_key = aes_key
+
+        db.session.commit()
+
+        flash('设置成功！', 'success')
+
+        return redirect('%s?auth_app_id=%s' % (url_for('.wxapp_service_setting'), auth_app_id))
+
+    # GET
+    auth_app_id = request.args.get('auth_app_id')
     mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
 
-    # 设置推送设置
-    mini_app.service_token = token
-    mini_app.service_aes_key = aes_key
+    service_token = mini_app.service_token if mini_app.service_token else gen_3rd_session_key()
+    service_aes_key = mini_app.service_aes_key if mini_app.service_aes_key else make_unique_key(43)
 
-    db.session.commit()
-
-    return status_response(True, R200_OK)
+    return render_template('wxapp/service_setting.html',
+                           service_url='https://fx.taihuonio.com/open/wx/service_message',
+                           service_token=service_token,
+                           service_aes_key=service_aes_key,
+                           auth_app_id=auth_app_id)
 
 
 @main.route('/wxapps/service/reply', methods=['POST'])

@@ -24,18 +24,18 @@
 		</span>
 	</h2>
 
-    <form id="wxapp-form" class="form-horizontal" action="" method="post">
+    <form id="wxapp-form" class="form-horizontal" action="{{ url_for('main.wxapp_service_setting') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 		<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
 		
         <ul class="nav nav-tabs" role="tablist">
             <li class="active">
-                <a href="#general" id="general-tab" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
+                <a href="{{ url_for('main.wxapp_service') }}?auth_app_id={{ auth_app_id }}" >
                     客服消息
                 </a>
             </li>
             <li>
-                <a href="#data" id="data-tab" role="tab" data-toggle="tab" aria-controls="data" aria-expanded="true">
+                <a href="{{ url_for('main.wxapp_service_setting') }}?auth_app_id={{ auth_app_id }}">
                     消息推送设置
                 </a>
             </li>
@@ -103,45 +103,7 @@
 				</table>
             </div>
 			
-			<!--支付设置-->
-            <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
-				<div class="alert alert-success m-b-30" role="alert">
-					<h4>消息推送设置</h4>
-					<p><i class="fa fa-info-circle"></i> 推送设置保存后，需同步进入小程序后台->消息推送，进行同步设置。</p>
-				</div>
-				
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">URL(服务器地址)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="url" value="{{ service_url }}" />
-                    </div>
-                </div>
-				
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Token(令牌)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="token" value="{{ service_token }}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">EncodingAESKey(加密密钥)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="aes_key" value="{{ service_aes_key }}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">消息加密方式</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">安全模式</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">数据格式</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">JSON</label>
-                    </div>
-                </div>
-            </div>
+			
 			
 		</div>
 
