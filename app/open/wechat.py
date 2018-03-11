@@ -136,8 +136,7 @@ def service_message():
     openid = request.values.get('openid')
     encrypt_type = request.values.get('encrypt_type')
     msg_signature = request.values.get('msg_signature')
-    #post_data = request.get_data()
-    post_data = '<xml>\n    <ToUserName><![CDATA[gh_d33b236e2b05]]></ToUserName>\n    <Encrypt><![CDATA[vT5n3/b7WC/U1Pu4nbsHkQEaFZeU2lEsax/l+Ww4VjIas7P2j2hIuCbCXcBtH4eWmuONHoaAKV456J4GFWET0PKMgYtbgNl8a7GUaHp2PApeDpFUwRGEsOFkRVUJc5d+NDGks86DSvNWpYLUwghaFb+wFCghG+w9DnCmoDprfaGLsfskL75Z2jwKDpgA4UFajgl5kMeVnI0vMT0sm/1olJvgQJLmDC4rkv4ifRvBJNUsd99vJFKNP6r6Pnv8JNld1T+AK03uZX1EjzhZoZ0Tkt2H2wpalHH9tCs+xlXFFhi62RCtuDSdjS+iDbQhzDnHBGJscIpQe1HlrbTS8ntDwiD7Mp3bGQPP1loHDmZp7GhV4CwnHOKh3rORpVyy1xE7XVMHSMvUl5LHvdRbx4srDEHhfNZOHhmd7yrwB7oaUtM=]]></Encrypt>\n</xml>\n'
+    post_data = request.get_data()
 
     current_app.logger.warn('post data: %s' % post_data)
 
