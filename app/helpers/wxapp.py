@@ -3,6 +3,7 @@ import os
 import binascii
 import base64
 import json
+import hashlib
 import requests
 import urllib.parse
 from Crypto.Cipher import AES
@@ -425,6 +426,30 @@ class WxaOpen3rd(object):
             raise WxAppError(result.get('errmsg'))
 
         return result
+
+
+class WxService(object):
+    """微信小程序客服消息"""
+
+    def __init__(self, token, encoding_aes_key):
+        self.token = token
+        self.encoding_aes_key = encoding_aes_key
+
+    def check_signature(self, timestamp, nonce, signature):
+        """用SHA1算法生成安全签名
+        @:param token: 验证
+        @:param timestamp: 时间戳
+        @:param nonce: 随机字符串
+        @:param signature: 验证签名
+        @:return: 是否匹配
+        """
+        sort_list = [self.token, timestamp, nonce]
+        sort_list.sort()
+        sha = hashlib.sha1()
+        sha.update(''.join(sort_list).encode('utf-8'))
+        tmp_sign = sha.hexdigest()
+
+        return True if tmp_sign == signature else False
 
 
 def gen_3rd_session_key():

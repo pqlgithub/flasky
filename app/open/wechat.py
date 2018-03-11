@@ -6,7 +6,7 @@ import xml.etree.cElementTree as ET
 from . import open
 from .. import db, cache
 from app.models import WxToken, WxAuthorizer
-from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError
+from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService
 from app.utils import Master, custom_response, timestamp
 
 
@@ -99,8 +99,10 @@ def authorize_callback():
 def receive_message(appid):
     """接收公众号或小程序消息和事件推送"""
     current_app.logger.debug('Appid [%s]' % appid)
-
-    pass
+    signature = request.values.get('signature')
+    timestamp = request.values.get('timestamp')
+    nonce = request.values.get('nonce')
+    echostr = request.values.get('echostr')
 
 
 @open.route('/wx/pay_notify', methods=['POST'])
@@ -120,6 +122,23 @@ def wxpay_notify():
     # TODO:处理业务逻辑
 
     return wx_pay.reply('OK', True)
+
+
+@open.route('/wx/service_message', methods=['GET', 'POST'])
+def service_message():
+    """接收客服消息"""
+    current_app.logger.warn(request.values)
+
+    signature = request.values.get('signature')
+    time_stamp = request.values.get('timestamp')
+    nonce = request.values.get('nonce')
+
+    token = '6e6d7bca7219d822cb08fb6c54d73584'
+    encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
+
+    wx_service = WxService(token=token, encoding_aes_key=encoding_aes_key)
+    if wx_service.check_signature(time_stamp, nonce, signature):
+        return 'SUCCESS'
 
 
 @open.route('/wx/authorize')
