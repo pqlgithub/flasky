@@ -132,13 +132,14 @@ def service_message():
     signature = request.values.get('signature')
     time_stamp = request.values.get('timestamp')
     nonce = request.values.get('nonce')
+    echostr = request.values.get('echostr')
 
     token = '6e6d7bca7219d822cb08fb6c54d73584'
     encoding_aes_key = 'aE1coSGzvs23kiwxynIVnYVTjRBiR3M8XoWarIer302'
 
     wx_service = WxService(token=token, encoding_aes_key=encoding_aes_key)
     if wx_service.check_signature(time_stamp, nonce, signature):
-        return 'SUCCESS'
+        return echostr
 
 
 @open.route('/wx/authorize')
