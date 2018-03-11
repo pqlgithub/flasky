@@ -161,7 +161,7 @@ def service_message():
         wx_service = WxService(token=token, encoding_aes_key=encoding_aes_key)
         if wx_service.check_signature(time_stamp, nonce, signature):
             return echostr
-    
+
     # 解密接口
     decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
     ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce, 'service_message')
@@ -177,7 +177,7 @@ def service_message():
 
         if msg_type == 'text':  # 文本消息
             wx_service_message = WxServiceMessage(
-                master_uid=3,
+                master_uid=wxapp.master_uid,
                 auth_app_id=auth_app_id,
                 to_user=xml_tree.find('ToUserName').text,
                 from_user=xml_tree.find('FromUserName').text,
