@@ -11,11 +11,10 @@ import random
 import hashlib
 import time
 import struct
+from flask import current_app
 from Crypto.Cipher import AES
 import xml.etree.cElementTree as ET
 import socket
-from flask import current_app
-
 
 # 定义错误码含义
 WXBizMsgCrypt_OK = 0
@@ -46,6 +45,14 @@ def throw_exception(message, exception_class=FormatException):
     raise exception_class(message)
 
 
+def to_utf8_bytes(x_str):
+    return x_str.encode("utf8")
+
+
+def utf8_bytes_to_str(x_bytes):
+    return x_bytes.decode("utf8")
+
+
 class SHA1:
     """计算公众平台的消息签名接口"""
 
@@ -61,7 +68,7 @@ class SHA1:
             sortlist = [token, timestamp, nonce, encrypt]
             sortlist.sort()
             sha = hashlib.sha1()
-            sha.update("".join(sortlist).encode('utf-8'))
+            sha.update(to_utf8_bytes("".join(sortlist)))
             return WXBizMsgCrypt_OK, sha.hexdigest()
         except Exception as e:
             current_app.logger.warn('sha1 sign error: %s' % e)
@@ -127,19 +134,20 @@ class PKCS7Encoder:
 
     block_size = 32
 
-    def encode(self, text):
+    def encode(self, text_bytes):
         """ 对需要加密的明文进行填充补位
-        @param text: 需要进行填充补位操作的明文
+        @param text_bytes: 需要进行填充补位操作的明文
         @return: 补齐明文字符串
         """
-        text_length = len(text)
+        text_length = len(text_bytes)
         # 计算需要填充的位数
         amount_to_pad = self.block_size - (text_length % self.block_size)
         if amount_to_pad == 0:
             amount_to_pad = self.block_size
+
         # 获得补位所用的字符
-        pad = chr(amount_to_pad)
-        return text + pad * amount_to_pad
+        pad = bytearray([amount_to_pad])
+        return text_bytes + pad * amount_to_pad
 
     def decode(self, decrypted):
         """删除解密后明文的补位字符
@@ -167,16 +175,18 @@ class Prpcrypt(object):
         @return: 加密得到的字符串
         """
         # 16位随机字符串添加到明文开头
-        text = self.get_random_str() + struct.pack("I",socket.htonl(len(text))) + text + appid
+        text_bytes = to_utf8_bytes(text)
+        text_bytes = to_utf8_bytes(self.get_random_str()) + struct.pack("I", socket.htonl(
+            len(text_bytes))) + text_bytes + to_utf8_bytes(appid)
         # 使用自定义的填充方式对明文进行补位填充
         pkcs7 = PKCS7Encoder()
-        text = pkcs7.encode(text)
+        text = pkcs7.encode(text_bytes)
         # 加密
-        cryptor = AES.new(self.key,self.mode,self.key[:16])
+        cryptor = AES.new(self.key, self.mode, self.key[:16])
         try:
-            ciphertext = cryptor.encrypt(text)
+            ciphertext = cryptor.encrypt(text_bytes)
             # 使用BASE64对加密后的字符串进行编码
-            return WXBizMsgCrypt_OK, base64.b64encode(ciphertext)
+            return WXBizMsgCrypt_OK, utf8_bytes_to_str(base64.b64encode(ciphertext))
         except Exception as e:
             #print e
             return WXBizMsgCrypt_EncryptAES_Error, None
@@ -189,21 +199,21 @@ class Prpcrypt(object):
         try:
             cryptor = AES.new(self.key, self.mode, self.key[:16])
             # 使用BASE64对密文进行解码，然后AES-CBC解密
-            plain_text = cryptor.decrypt(base64.b64decode(text)).decode('utf-8')
+            plain_text = cryptor.decrypt(base64.b64decode(text))
         except Exception as e:
             current_app.logger.warn('Decrypt error: %s' % e)
             return WXBizMsgCrypt_DecryptAES_Error, None
 
         try:
-            pad = ord(plain_text[-1])
+            pad = plain_text[-1]
             # 去掉补位字符串
             #pkcs7 = PKCS7Encoder()
             #plain_text = pkcs7.encode(plain_text)
             # 去除16位随机字符串
             content = plain_text[16:-pad]
-            xml_len = socket.ntohl(struct.unpack("I", content[:4].encode('utf-8'))[0])
+            xml_len = socket.ntohl(struct.unpack("I", content[:4])[0])
             xml_content = content[4: xml_len+4]
-            from_appid = content[xml_len+4:]
+            from_appid = utf8_bytes_to_str(content[xml_len+4:])
         except Exception as e:
             current_app.logger.warn('content error: %s' % e)
             return WXBizMsgCrypt_IllegalBuffer, None
