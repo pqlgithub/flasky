@@ -208,6 +208,7 @@ class Prpcrypt(object):
             current_app.logger.warn('content error: %s' % e)
             return WXBizMsgCrypt_IllegalBuffer, None
 
+        current_app.logger.warn('from_app: %s, appid: %s' % (from_appid, appid))
         if from_appid != appid:
             return WXBizMsgCrypt_ValidateAppid_Error, None
         return 0, xml_content
