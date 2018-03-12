@@ -308,14 +308,14 @@ def wxapp_commit():
 
     try:
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        # result = open3rd.commit(mini_app.template_id, ext_json, user_version, user_desc)
+        result = open3rd.commit(mini_app.template_id, ext_json, user_version, user_desc)
     except WxAppError as err:
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
             'message': err
         })
-
+    
     try:
         # 保存版本
         new_version = WxVersion(
