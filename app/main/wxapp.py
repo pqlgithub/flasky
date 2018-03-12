@@ -43,40 +43,46 @@ def wxapp_setting():
 
         authorizer_info = result.authorizer_info
         authorization_info = result.authorization_info
-        # 新增
-        new_serial_no = WxMiniApp.make_unique_serial_no()
-        wx_mini_app = WxMiniApp(
-            master_uid=Master.master_uid(),
-            serial_no=new_serial_no,
-            auth_app_id=auth_app_id,
-            nick_name=authorizer_info.nick_name,
-            head_img=authorizer_info.head_img,
-            signature=authorizer_info.signature,
-            user_name=authorizer_info.user_name,
-            principal_name=authorizer_info.principal_name,
-            service_type_info=json.dumps(authorizer_info.service_type_info),
-            verify_type_info=json.dumps(authorizer_info.verify_type_info),
-            business_info=json.dumps(authorizer_info.business_info),
-            qrcode_url=authorizer_info.qrcode_url,
-            mini_program_info=json.dumps(authorizer_info.mini_program_info),
-            func_info=json.dumps(authorization_info.func_info)
-        )
-        db.session.add(wx_mini_app)
+        try:
+            # 新增
+            new_serial_no = WxMiniApp.make_unique_serial_no()
+            wx_mini_app = WxMiniApp(
+                master_uid=Master.master_uid(),
+                serial_no=new_serial_no,
+                auth_app_id=auth_app_id,
+                nick_name=authorizer_info.nick_name,
+                head_img=authorizer_info.head_img,
+                signature=authorizer_info.signature,
+                user_name=authorizer_info.user_name,
+                principal_name=authorizer_info.principal_name,
+                service_type_info=json.dumps(authorizer_info.service_type_info),
+                verify_type_info=json.dumps(authorizer_info.verify_type_info),
+                business_info=json.dumps(authorizer_info.business_info),
+                qrcode_url=authorizer_info.qrcode_url,
+                mini_program_info=json.dumps(authorizer_info.mini_program_info),
+                func_info=json.dumps(authorization_info.func_info)
+            )
+            db.session.add(wx_mini_app)
 
-        # 同步增加一个关联店铺
-        new_store = Store(
-            master_uid=Master.master_uid(),
-            operator_id=Master.master_uid(),
-            name=authorizer_info.nick_name,
-            serial_no=new_serial_no,
-            description=authorizer_info.signature,
-            platform=1,
-            type=3,
-            status=1
-        )
-        db.session.add(new_store)
+            # 同步增加一个关联店铺
+            new_store = Store(
+                master_uid=Master.master_uid(),
+                operator_id=Master.master_uid(),
+                name=authorizer_info.nick_name,
+                serial_no=new_serial_no,
+                description=authorizer_info.signature,
+                platform=1,
+                type=3,
+                status=1
+            )
+            db.session.add(new_store)
 
-        db.session.commit()
+            db.session.commit()
+        except Exception as err:
+            db.session.rollback()
+            current_app.logger.warn('Create wxapp error: %s' % str(err))
+            flash('同步小程序信息失败：%s，请重试！' % str(err), 'danger')
+            return render_template('wxapp/index.html', auth_status=is_auth)
 
         # 任务：增加小程序默认配置及API所需key
         create_wxapi_appkey.apply_async(args=[Master.master_uid(), wx_mini_app.nick_name, new_store.id])

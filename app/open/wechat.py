@@ -184,9 +184,10 @@ def service_message():
         xml_tree = ET.fromstring(decrypt_content)
 
         msg_type = xml_tree.find('MsgType').text
-        content = xml_tree.find('Content').text
 
         if msg_type == 'text':  # 文本消息
+            content = xml_tree.find('Content').text
+
             # 微信自动测试拦截，
             # 回应文本消息并最终触达粉丝：Content必须固定为：TESTCOMPONENT_MSG_TYPE_TEXT_callback
             if content.startswith('QUERY_AUTH_CODE'):
