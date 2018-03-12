@@ -183,6 +183,10 @@ class Config:
     # 接口调用上报等级，默认紧错误上报（注意：上报超时间为【1s】，上报无论成败【永不抛出异常】
     WXPAY_REPORT_LEVEL = 1
 
+    # 微信自动化测试的专用测试小程序的信息
+    WX_TEST_APP_ID = 'wxd101a85aa106f53e'
+    WX_TEST_USERNAME = 'gh_8dad206e9538'
+
     @staticmethod
     def init_app(app):
         pass

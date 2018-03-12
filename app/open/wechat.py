@@ -6,7 +6,8 @@ import xml.etree.cElementTree as ET
 from . import open
 from .. import db, cache
 from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp
-from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService
+from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
+from app.tasks import reply_wxa_service
 from app.utils import Master, custom_response, timestamp
 
 
@@ -55,6 +56,9 @@ def authorize_notify():
 
             current_app.logger.warn('Authorizer [%s][%s][%s]' % (authorizer_app_id, authorizer_code,
                                                                  authorizer_expired_time))
+            # 微信自动测试，设置至缓存, 15分钟，无需写入数据库
+            if authorizer_app_id == current_app.config['WX_TEST_APP_ID']:
+                cache.set('wx_%s_auth_code', authorizer_code, timeout=900)
 
         elif info_type == 'unauthorized':  # 取消授权通知
             pass
@@ -146,15 +150,21 @@ def service_message():
 
     current_app.logger.warn('To user name: %s' % to_user)
 
-    # 查询小程序信息
-    wxapp = WxMiniApp.query.filter_by(user_name=to_user).first_or_404()
-    if not wxapp:
-        current_app.logger.warn("Wxapp %s isn't exist!" % to_user)
-        return 'success'
+    # 微信自动测试
+    if to_user != current_app.config['WX_TEST_USERNAME']:
+        # 查询小程序信息
+        wxapp = WxMiniApp.query.filter_by(user_name=to_user).first_or_404()
+        if not wxapp:
+            current_app.logger.warn("Wxapp %s isn't exist!" % to_user)
+            return 'success'
 
-    token = wxapp.service_token
-    encoding_aes_key = wxapp.service_aes_key
-    auth_app_id = wxapp.auth_app_id
+        token = wxapp.service_token
+        encoding_aes_key = wxapp.service_aes_key
+        auth_app_id = wxapp.auth_app_id
+    else:
+        token = current_app.config['WX_APP_TOKEN']
+        encoding_aes_key = current_app.config['WX_APP_DES_KEY']
+        auth_app_id = current_app.config['WX_APP_ID']
 
     # 验证token
     if echostr:
@@ -174,8 +184,55 @@ def service_message():
         xml_tree = ET.fromstring(decrypt_content)
 
         msg_type = xml_tree.find('MsgType').text
+        content = xml_tree.find('Content').text
 
         if msg_type == 'text':  # 文本消息
+            # 微信自动测试拦截，
+            # 回应文本消息并最终触达粉丝：Content必须固定为：TESTCOMPONENT_MSG_TYPE_TEXT_callback
+            if content.startswith('QUERY_AUTH_CODE'):
+                auth_info = content.split(':')
+                auth_code = auth_info[1]
+                reply_content = '{}_from_api'.format(auth_code)
+
+                # 使用授权码换取公众号的授权信息
+                auth_access_token = _exchange_authorizer_token(auth_code)
+                send_data = {
+                    'touser': xml_tree.find('FromUserName').text,
+                    'msgtype': 'text',
+                    'text': {
+                        'content': reply_content
+                    }
+                }
+                try:
+                    wx_reply = WxReply(access_token=auth_access_token)
+                    wx_reply.send_message(data=send_data)
+                except WxAppError as err:
+                    current_app.logger.warn('微信自动测试出错: %s' % err)
+
+                return 'success'
+            elif content == 'TESTCOMPONENT_MSG_TYPE_TEXT':
+                reply_content = 'TESTCOMPONENT_MSG_TYPE_TEXT_callback'
+                wx_reply_message = WxServiceMessage(
+                    master_uid=wxapp.master_uid,
+                    auth_app_id=auth_app_id,
+                    to_user=xml_tree.find('FromUserName').text,
+                    from_user=xml_tree.find('ToUserName').text,
+                    msg_type=msg_type,
+                    create_time=xml_tree.find('CreateTime').text,
+                    content=reply_content,
+                    msg_id=xml_tree.find('MsgId').text,
+                    type=2,
+                    status=2
+                )
+                db.session.add(wx_reply_message)
+                db.session.commit()
+
+                # 异步任务，后台发送
+                reply_wxa_service.apply_async(args=[wx_reply_message.id])
+
+                return 'success'
+
+            # 更新客服信息
             wx_service_message = WxServiceMessage(
                 master_uid=wxapp.master_uid,
                 auth_app_id=auth_app_id,
@@ -183,12 +240,36 @@ def service_message():
                 from_user=xml_tree.find('FromUserName').text,
                 msg_type=msg_type,
                 create_time=xml_tree.find('CreateTime').text,
-                content=xml_tree.find('Content').text,
+                content=content,
                 msg_id=xml_tree.find('MsgId').text,
                 type=1
             )
             db.session.add(wx_service_message)
+
             db.session.commit()
+        elif msg_type == 'event':  # 进入会话事件
+            event = xml_tree.find('Event').text
+            reply_content = '{}from_callback'.format(event)  # 微信自动化测试所需
+            wx_reply_message = WxServiceMessage(
+                master_uid=wxapp.master_uid,
+                auth_app_id=auth_app_id,
+                to_user=xml_tree.find('FromUserName').text,
+                from_user=xml_tree.find('ToUserName').text,
+                msg_type=msg_type,
+                create_time=xml_tree.find('CreateTime').text,
+                content=reply_content,
+                msg_id=xml_tree.find('MsgId').text,
+                type=2,
+                status=2
+            )
+            db.session.add(wx_reply_message)
+
+            db.session.commit()
+
+            # 异步任务，后台发送
+            reply_wxa_service.apply_async(args=[wx_reply_message.id])
+        else:
+            pass
 
     return 'success'
 
@@ -211,6 +292,10 @@ def _exchange_authorizer_token(auth_code):
     authorization_info = result.authorization_info
 
     authorizer_appid = authorization_info.authorizer_appid
+
+    if authorizer_appid == current_app.config['WX_TEST_APP_ID']:  # 微信自动化测试，则无需更新数据库
+        return authorization_info.authorizer_access_token
+
     # 验证是否存在
     wx_authorizer = WxAuthorizer.query.filter_by(auth_app_id=authorizer_appid).first()
     if wx_authorizer is None:
