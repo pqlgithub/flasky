@@ -1,0 +1,61 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">可选类目</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" action="" method="post" id="wxa-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
+				
+				{% for category in category_list %}
+                <div class="form-group">
+					<div class="col-sm-3">
+						<input type="checkbox" name="selected[]" value="{{ category.first_id }}-{{ category.second_id }}{% if category.third_id %}-{{ category.third_id }}{% endif %}" >
+					</div>
+                    <div class="col-sm-8">
+                        {{ category.first_class }}-{{ category.second_class }}{% if category.third_class %}-{{ category.third_class }}{% endif %}
+                    </div>
+                </div>
+				{% endfor %}
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+            <button type="button" id="wxa-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+    var data = {};
+
+    $('#wxa-submit-btn').click(function (e) {
+        data = $('#wxa-form').serialize();
+
+        $.ajax({
+            url: "{{ url_for('main.wxapp_category') }}",
+            type: 'post',
+            data: data,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#wxa-submit-btn').prop('disabled', true);
+            },
+            complete: function() {
+                $('#wxa-submit-btn').prop('disabled', false);
+            },
+            success: function (res) {
+				if (res.success) {
+					$('#wxa-modal').modal('hide');
+					
+				}
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+    //-->
+</script>

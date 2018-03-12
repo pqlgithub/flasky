@@ -5,7 +5,16 @@
     var auth_wxapp_id = '{{ auth_app_id }}';
 	$(function () {
 		mixpus.init_page_layout();
-
+		
+		$('.btn.btn-upload-code').click(function () {
+			$.post("{{ url_for('main.wxapp_commit') }}", { auth_app_id: auth_wxapp_id, csrf_token: mixpus.csrf_token }, function (res) {
+				if (res.success) {
+					mixpus.show_ok_message('上传成功！')
+				} else {
+					mixpus.show_error_message(res.status.message);
+				}
+			});
+		});
 	});
 </script>
 {% endblock %}
@@ -26,9 +35,10 @@
 		</span>
 	</h2>
 	
-	<a class="btn btn-commit-review btn-mixpus" href="javascript:;">
-		<i class="fa fa-cloud-upload"></i> 提交审核
+	<a class="btn btn-upload-code btn-mixpus" href="javascript:;">
+		<i class="fa fa-cloud-upload"></i> 上传代码
 	</a>
+	
     <div id="table-refresh-box" class="m-t-20">
 		<div class="table-responsive">
 			<form id="orders-form" action="{{ url_for('main.delete_order') }}" method="post">
@@ -46,8 +56,11 @@
 							<th class="text-center">
 								审核状态
 							</th>
-							<th>
+							<th class="text-center">
 								审核模板
+							</th>
+							<th>
+								可选类目
 							</th>
 							<th>
 								说明
@@ -58,6 +71,7 @@
 						</tr>
 					</thead>
 					<tbody>
+						{% for version in versions %}
 						<tr class="active">
 							<td>
 								
@@ -68,16 +82,22 @@
 							<td>
 								
 							</td>
-							<td>
-								
+							<td class="text-center">
+								{{ version.template_id }}
 							</td>
 							<td>
-								
+								<a href="{{ url_for('main.wxapp_category') }}?auth_app_id={{ version.auth_app_id }}" class="ajax-modal btn-link" data-modal="wxa-modal">设置</a>
 							</td>
 							<td>
-								
+								{{ version.user_desc }} - {{ version.user_version }}
+							</td>
+							<td class="text-right">
+								<a class="btn btn-commit-review btn-danger" href="javascript:;">
+									<i class="fa fa-cloud-upload"></i> 提交审核
+								</a>
 							</td>
 						</tr>
+						{% endfor %}
 					</tbody>
 				</table>
 			</form>

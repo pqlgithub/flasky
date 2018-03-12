@@ -5,11 +5,12 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
-from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage
+from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage, \
+    WxVersion
 from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key
 from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey, reply_wxa_service
 from app.forms import WxReplyForm
-from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key
+from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key, custom_response
 
 
 @main.route('/wxapps')
@@ -153,15 +154,6 @@ def wxapp_template_choosed():
     return status_response()
 
 
-@main.route('/wxapps/versions', methods=['GET', 'POST'])
-def wxapp_versions():
-    """小程序版本管理"""
-    auth_app_id = request.values.get('auth_app_id')
-
-    return render_template('wxapp/version_list.html',
-                           auth_app_id=auth_app_id)
-
-
 @main.route('/wxapps/service')
 def wxapp_service():
     """小程序客服消息"""
@@ -260,6 +252,18 @@ def wxapp_service_reply():
                            service_message=wx_service_message)
 
 
+@main.route('/wxapps/versions', methods=['GET', 'POST'])
+def wxapp_versions():
+    """小程序版本管理"""
+    auth_app_id = request.values.get('auth_app_id')
+
+    versions = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).all()
+
+    return render_template('wxapp/version_list.html',
+                           versions=versions,
+                           auth_app_id=auth_app_id)
+
+
 @main.route('/wxapps/commit', methods=['POST'])
 def wxapp_commit():
     """上传小程序代码"""
@@ -304,13 +308,29 @@ def wxapp_commit():
 
     try:
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        result = open3rd.commit(mini_app.template_id, ext_json, user_version, user_desc)
+        # result = open3rd.commit(mini_app.template_id, ext_json, user_version, user_desc)
     except WxAppError as err:
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
             'message': err
         })
+
+    try:
+        # 保存版本
+        new_version = WxVersion(
+            master_uid=Master.master_uid(),
+            auth_app_id=auth_app_id,
+            template_id=mini_app.template_id,
+            user_version=user_version,
+            user_desc=user_desc
+        )
+        db.session.add(new_version)
+        db.session.commit()
+    except Exception as err:
+        current_app.logger.warn('Wxapp commit error: %s' % str(err))
+        db.session.rollback()
+        return custom_response(False, '上传代码失败，请稍后重试！', 400)
 
     return status_response()
 
@@ -417,16 +437,18 @@ def wxapp_change_visit_status():
     pass
 
 
-@main.route('/wxapps/get_category', methods=['POST'])
+@main.route('/wxapps/get_category', methods=['GET', 'POST'])
 def wxapp_category():
     """小程序可选类目"""
-    auth_app_id = request.form.get('auth_app_id')
-
+    auth_app_id = request.values.get('auth_app_id')
     if not auth_app_id:
         abort(400)
 
     # 获取小程序信息
     mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    if request.method == 'POST':
+        return status_response()
 
     # 获取授权信息
     authorizer = WxAuthorizer.query.filter_by(master_uid=mini_app.master_uid, auth_app_id=auth_app_id).first_or_404()
@@ -436,15 +458,11 @@ def wxapp_category():
         result = open3rd.get_category()
     except WxAppError as err:
         current_app.logger.warn('Wxapp commit is error: %s' % err)
-        return status_response(False, {
-            'code': 500,
-            'message': err
-        })
+        abort(500)
 
-    return full_response(True, R200_OK, {
-        'category_list': result.category_list,
-        'auth_app_id': auth_app_id
-    })
+    return render_template('wxapp/_category_modal.html',
+                           category_list=result.category_list,
+                           auth_app_id=auth_app_id)
 
 
 @main.route('/wxapps/get_pages', methods=['POST'])
