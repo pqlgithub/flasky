@@ -99,14 +99,68 @@ def authorize_callback():
     return redirect('%s?auth_app_id=%s' % (url_for('main.wxapp_setting'), auth_app_id))
 
 
-@open.route('/wx/<string:appid>/receive_message')
+@open.route('/wx/<string:appid>/receive_message', methods=['GET', 'POST'])
 def receive_message(appid):
     """接收公众号或小程序消息和事件推送"""
     current_app.logger.debug('Appid [%s]' % appid)
+    current_app.logger.warn(request.values)
+
     signature = request.values.get('signature')
-    timestamp = request.values.get('timestamp')
+    time_stamp = request.values.get('timestamp')
     nonce = request.values.get('nonce')
     echostr = request.values.get('echostr')
+    msg_signature = request.values.get('msg_signature')
+    post_data = request.get_data()
+
+    current_app.logger.warn('post data: %s' % post_data)
+
+    # 解析内容活动to_user
+    xml_tree = ET.fromstring(post_data)
+    to_user = xml_tree.find('ToUserName').text
+
+    current_app.logger.warn('To user name: %s' % to_user)
+
+    # 微信自动测试
+    if to_user == current_app.config['WX_TEST_USERNAME']:
+        token = current_app.config['WX_APP_TOKEN']
+        encoding_aes_key = current_app.config['WX_APP_DES_KEY']
+        auth_app_id = current_app.config['WX_APP_ID']
+
+        # 解密接口
+        decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
+        ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce, 'service_message')
+        # 解密成功
+        if ret == 0:
+            # 更新
+            current_app.logger.warn("decrypt content: %s" % decrypt_content)
+            # 解析内容
+            xml_tree = ET.fromstring(decrypt_content)
+
+            msg_type = xml_tree.find('MsgType').text
+
+            if msg_type == 'text':  # 文本消息
+                content = xml_tree.find('Content').text
+                if content.startswith('QUERY_AUTH_CODE'):
+                    auth_info = content.split(':')
+                    auth_code = auth_info[1]
+                    reply_content = '{}_from_api'.format(auth_code)
+
+                    # 使用授权码换取公众号的授权信息
+                    auth_access_token = _exchange_authorizer_token(auth_code)
+                    send_data = {
+                        'touser': xml_tree.find('FromUserName').text,
+                        'msgtype': 'text',
+                        'text': {
+                            'content': reply_content
+                        }
+                    }
+                    try:
+                        wx_reply = WxReply(access_token=auth_access_token)
+                        wx_reply.send_message(data=send_data)
+                    except WxAppError as err:
+                        current_app.logger.warn('微信自动测试出错: %s' % err)
+
+                    return 'success'
 
 
 @open.route('/wx/pay_notify', methods=['POST'])
