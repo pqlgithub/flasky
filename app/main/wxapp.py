@@ -257,11 +257,62 @@ def wxapp_versions():
     """小程序版本管理"""
     auth_app_id = request.values.get('auth_app_id')
 
-    versions = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).all()
+    versions = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id)\
+        .order_by(WxVersion.created_at.desc()).all()
 
     return render_template('wxapp/version_list.html',
                            versions=versions,
                            auth_app_id=auth_app_id)
+
+
+@main.route('/wxapps/qrcode')
+def wxapp_qrcode():
+    """获取体验二维码"""
+    auth_app_id = request.values.get('auth_app_id')
+    if not auth_app_id:
+        abort(400)
+
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    try:
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.get_qrcode()
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp commit is error: %s' % err)
+        return status_response(False, {
+            'code': 500,
+            'message': err
+        })
+
+    return 'ok'
+
+
+@main.route('/wxapps/get_pages', methods=['POST'])
+def wxapp_pages():
+    """小程序提交代码的页面配置"""
+    auth_app_id = request.form.get('auth_app_id')
+
+    if not auth_app_id:
+        abort(400)
+
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    try:
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.get_pages()
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp commit is error: %s' % err)
+        return status_response(False, {
+            'code': 500,
+            'message': err
+        })
+
+    return full_response(True, R200_OK, {
+        'page_list': result.page_list,
+        'auth_app_id': auth_app_id
+    })
 
 
 @main.route('/wxapps/commit', methods=['POST'])
@@ -315,7 +366,7 @@ def wxapp_commit():
             'code': 500,
             'message': err
         })
-    
+
     try:
         # 保存版本
         new_version = WxVersion(
@@ -358,6 +409,13 @@ def wxapp_submit_audit():
             'message': err
         })
 
+    # 更新
+    wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+    wx_version.audit_id = result.auditid
+    wx_version.audit_at = int(timestamp())
+
+    db.session.commit()
+
     return full_response(True, R200_OK, {
         'auditid': result.auditid
     })
@@ -382,7 +440,12 @@ def wxapp_audit_status():
             'code': 500,
             'message': err
         })
-    # todo: 更新数据库提交状态
+
+    # 更新
+    wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+    wx_version.status = result.status
+
+    db.session.commit()
 
     return full_response(True, R200_OK, {
         'status': result.status
@@ -465,31 +528,7 @@ def wxapp_category():
                            auth_app_id=auth_app_id)
 
 
-@main.route('/wxapps/get_pages', methods=['POST'])
-def wxapp_pages():
-    """小程序提交代码的页面配置"""
-    auth_app_id = request.form.get('auth_app_id')
 
-    if not auth_app_id:
-        abort(400)
-
-    # 获取授权信息
-    authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
-
-    try:
-        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        result = open3rd.get_pages()
-    except WxAppError as err:
-        current_app.logger.warn('Wxapp commit is error: %s' % err)
-        return status_response(False, {
-            'code': 500,
-            'message': err
-        })
-
-    return full_response(True, R200_OK, {
-        'page_list': result.page_list,
-        'auth_app_id': auth_app_id
-    })
 
 
 @main.route('/wxapps/tester', methods=['GET', 'POST'])
