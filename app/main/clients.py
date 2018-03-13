@@ -28,9 +28,9 @@ def show_clients(page=1):
     status = request.args.get('status', 0, type=int)
     
     if not status:
-        query = Client.query
+        query = Client.query.filter_by(master_uid=Master.master_uid())
     else:
-        query = Client.query.filter_by(status=status)
+        query = Client.query.filter_by(master_uid=Master.master_uid(), status=status)
     
     paginated_clients = query.order_by(Client.created_at.desc()).paginate(page, per_page)
     
