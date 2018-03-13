@@ -660,7 +660,7 @@ class Brand(db.Model):
     master_uid = db.Column(db.Integer, index=True, default=0)
     supplier_id = db.Column(db.Integer, default=0)
     
-    name = db.Column(db.String(64), unique=True, index=True)
+    name = db.Column(db.String(64), index=True)
     features = db.Column(db.String(100))
     description = db.Column(db.Text())
     
