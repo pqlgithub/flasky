@@ -42,12 +42,13 @@ class DBEnum(enum.Enum):
         return [i.value for i in cls]
 
 
-def create_db_session():
-    # create a new session
+def create_db_session(app):
+    """Connects to the database and return a session"""
+
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
 
-    psql_url = current_app.config['SQLALCHEMY_DATABASE_URI']
+    psql_url = app.config['SQLALCHEMY_DATABASE_URI']
     some_engine = create_engine(psql_url)
 
     # create a configured 'Session' class

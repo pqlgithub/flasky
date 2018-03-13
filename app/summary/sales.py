@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
+
 from app import db
 from app.models import Order, OrderItem, ProductSku, MasterStatistics, StoreStatistics, ProductStatistics
 
@@ -21,7 +22,7 @@ class Sales(object):
         # 创建月份
         self.month = created_at.strftime("%Y%m")
         # 上一年
-        self.last_year = (str)(created_at.year - 1)
+        self.last_year = str(created_at.year - 1)
         # 上一月
         self.last_month = (
             created_at - timedelta(days=created_at.day)).strftime("%Y%m")

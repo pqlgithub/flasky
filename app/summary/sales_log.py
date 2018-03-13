@@ -2,7 +2,9 @@
 from app import db
 from app.models import Order, SalesLogStatistics
 
+
 class SalesLog(object):
+
     def __init__(self, order_id):
         self.order_id = order_id
         # 订单对象
@@ -68,5 +70,3 @@ class SalesLog(object):
         )
 
         db.session.add(sales_log_statistics)
-
-

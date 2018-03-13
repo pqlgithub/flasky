@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy import text, event
 from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
 from ..utils import timestamp, gen_serial_no
@@ -10,6 +11,7 @@ __all__ = [
     'PurchaseReturned',
     'PurchaseReturnedProduct'
 ]
+
 
 class Purchase(db.Model):
     """采购单"""
@@ -94,29 +96,24 @@ class Purchase(db.Model):
         current_supplier = self.supplier
         return '{} {}'.format(current_supplier.short_name, current_supplier.full_name)
 
-
     @property
     def payable_amount(self):
         """应支付的金额"""
         return self.total_amount + self.freight + self.extra_charge
 
-
     def validate_finished(self, new_quantity=0):
         """检测是否入库完成"""
         return True if self.quantity_sum - self.in_quantity == new_quantity else False
-
 
     def update_status(self, status):
         """更新采购单状态"""
         if status in [s[0] for s in PURCHASE_STATUS]:
             self.status = status
 
-
     def update_payed(self, paying):
         """更新付款状态"""
         if paying in [p[0] for p in PURCHASE_PAYED]:
             self.payed = paying
-
 
     @property
     def status_label(self):
@@ -132,21 +129,28 @@ class Purchase(db.Model):
 
     @staticmethod
     def make_unique_serial_no(serial_no):
-        if Purchase.query.filter_by(serial_no=serial_no).first() == None:
+        if Purchase.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
             new_serial_no = gen_serial_no()
-            if Purchase.query.filter_by(serial_no=new_serial_no).first() == None:
+            if Purchase.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
 
-    def __repr__(self):
-        return '<Purchase %r>' % self.serial_no
+    @staticmethod
+    def on_sync_change(mapper, connection, target):
+        """同步数据事件"""
+        from app.tasks import sync_supply_stats
 
+        if target.supplier_id:
+            sync_supply_stats.apply_async(args=[target.master_uid, target.supplier_id])
 
     def to_json(self):
         """资源和JSON的序列化转换"""
         return {c.name: getattr(self, c.name, None) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return '<Purchase %r>' % self.serial_no
 
 
 class PurchaseProduct(db.Model):
@@ -190,11 +194,9 @@ class PurchaseProduct(db.Model):
         """是否完成入库"""
         return True if self.quantity == self.in_quantity else False
 
-
     def validate_quantity(self, offset_quantity):
         """验证数量是否匹配"""
         return True if self.quantity - self.in_quantity >= offset_quantity else False
-
 
     def __repr__(self):
         return '<PurchaseProduct %r>' % self.id
@@ -247,3 +249,7 @@ class PurchaseReturnedProduct(db.Model):
 
     def __repr__(self):
         return '<PurchaseReturnedProduct %r>' % self.id
+
+
+# 添加监听事件, 实现触发器
+event.listen(Purchase, 'after_insert', Purchase.on_sync_change)

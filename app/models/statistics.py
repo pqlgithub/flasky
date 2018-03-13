@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 from app import db
 
-__all__ = ['MasterStatistics', 'StoreStatistics', 'ProductStatistics', 'SalesLogStatistics', 'DaySkuStatistics']
+__all__ = [
+    'MasterStatistics',
+    'StoreStatistics',
+    'ProductStatistics',
+    'SalesLogStatistics',
+    'DaySkuStatistics'
+]
 
 
 class SalesLogStatistics(db.Model):
@@ -11,6 +17,7 @@ class SalesLogStatistics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, nullable=False)
+
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), index=True, nullable=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), index=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), index=True)
@@ -22,6 +29,7 @@ class SalesLogStatistics(db.Model):
     deal_price = db.Column(db.Float, default=0.00)
     quantity = db.Column(db.Integer, default=1)
     discount_amount = db.Column(db.Float, default=0.0)
+
     create_at = db.Column(db.Integer, index=True)
     status = db.Column(db.SmallInteger, default=1)
 
@@ -36,6 +44,7 @@ class DaySkuStatistics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, nullable=False)
+
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), index=True, nullable=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), index=True)
     sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'), index=True)
@@ -46,7 +55,9 @@ class DaySkuStatistics(db.Model):
     profit = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     time = db.Column(db.Integer, index=True)
 
-    __table_args__ = (db.UniqueConstraint('store_id','sku_id','time'), ) 
+    __table_args__ = (
+        db.UniqueConstraint('store_id', 'sku_id', 'time'),
+    )
 
     def __repr__(self):
         return '<DaySkuStatistics %r>' % self.id
@@ -58,6 +69,7 @@ class MasterStatistics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, nullable=False)
+
     income = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     profit = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     type = db.Column(db.SmallInteger, nullable=False)
@@ -67,7 +79,9 @@ class MasterStatistics(db.Model):
     profit_yoy = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
     profit_mom = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
 
-    __table_args__ = (db.UniqueConstraint('master_uid', 'type', 'time'),)
+    __table_args__ = (
+        db.UniqueConstraint('master_uid', 'type', 'time'),
+    )
 
     def __repr__(self):
         return '<MasterStatistics %r>' % self.id
@@ -79,6 +93,7 @@ class StoreStatistics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, nullable=False)
+
     store_id = db.Column(
         db.Integer, db.ForeignKey('stores.id'), index=True, nullable=False)
     income = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
@@ -90,7 +105,10 @@ class StoreStatistics(db.Model):
     profit_yoy = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
     profit_mom = db.Column(db.Numeric(precision=10, scale=2), nullable=True)
 
-    __table_args__ = (db.Index('master_uid', 'time', 'store_id'), db.UniqueConstraint('store_id','type','time'),)
+    __table_args__ = (
+        db.Index('master_uid', 'time', 'store_id'),
+        db.UniqueConstraint('store_id', 'type', 'time'),
+    )
 
     def __repr__(self):
         return '<StoreStatistics %r>' % self.id
@@ -103,6 +121,7 @@ class ProductStatistics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, nullable=False)
+
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), index=True, nullable=True)
     sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
     income = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
@@ -119,7 +138,10 @@ class ProductStatistics(db.Model):
     count = db.Column(db.Integer,nullable=False)
     sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
 
-    __table_args__ = (db.Index(None,'master_uid', 'sku_id','time', 'store_id'), db.UniqueConstraint('store_id', 'sku_id','time','time_type'), )
+    __table_args__ = (
+        db.Index(None, 'master_uid', 'sku_id', 'time', 'store_id'),
+        db.UniqueConstraint('store_id', 'sku_id', 'time', 'time_type'),
+    )
 
     def __repr__(self):
         return '<ProductStatistics %r>' % self.id

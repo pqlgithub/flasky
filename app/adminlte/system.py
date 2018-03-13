@@ -20,6 +20,26 @@ def load_common_data():
     }
 
 
+@adminlte.route('/masters')
+@adminlte.route('/masters/<int:page>')
+def show_masters(page=1):
+    """账号管理"""
+    per_page = request.args.get('per_page', 10, type=int)
+    status = request.args.get('status', 0, type=int)
+
+    if not status:
+        query = User.query.filter_by(id_type=1)
+    else:
+        query = User.query.filter_by(id_type=1, status=status)
+
+    paginated_users = query.order_by(User.created_at.desc()).paginate(page, per_page)
+
+    return render_template('adminlte/system/show_masters.html',
+                           paginated_users=paginated_users,
+                           sub_menu='masters',
+                           **load_common_data())
+
+
 @adminlte.route('/users')
 @adminlte.route('/users/<int:page>')
 def show_users(page=1):

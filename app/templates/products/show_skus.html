@@ -3,9 +3,10 @@
 		<tr>
 			<th class="text-center">{{ _('Image') }}</th>
 			<th class="text-center">{{ _('Serial No.') }}</th>
-			<th class="text-center">{{ _('Commodity Codes') }}</th>
-			<th class="text-center">{{ _('Cost Price') }}</th>
 			<th class="text-center">{{ _('Mode/Color') }}</th>
+			<th class="text-center">{{ _('Price') }}</th>
+			<th class="text-center">{{ _('Stock Quantity') }}</th>
+			<th class="text-center">{{ _('69 Codes') }}</th>
 			<th class="text-center">{{ _('Weight') }}</th>
 			<th>{{ _('Remark') }}</th>
 			<th class="text-right">{{ _('Action') }}</th>
@@ -21,12 +22,6 @@
 			{{ sku.serial_no }}
 		</td>
 		<td class="text-center">
-			<span class="text-mixpus">{{ sku.id_code|supress_none }}</span>
-		</td>
-		<td class="text-center">
-			{{ sku.cost_price }} {{ product.currency_unit }}
-		</td>
-		<td class="text-center">
 			{% if sku.s_model %}
 			<label class="label label-warning">
 				{{ sku.s_model }}
@@ -37,6 +32,20 @@
 				{{ sku.s_color }}
 			</label>
 			{% endif %}
+		</td>
+		<td class="text-center">
+            {% if sku.sale_price > 0 %}
+                <span class="sale-price">{{ sku.sale_price|round(precision=2) }}</span>
+                <span class="price">{{ sku.price|round(precision=2) }}</span>
+            {% else %}
+                <span class="sale-price">{{ sku.price|round(precision=2) }}</span>
+            {% endif %}
+		</td>
+		<td class="text-center">
+			{{ sku.stock_quantity }}
+		</td>
+		<td class="text-center">
+			<span class="text-mixpus">{{ sku.id_code|supress_none }}</span>
 		</td>
 		<td class="text-center">
 			{{ sku.s_weight}}

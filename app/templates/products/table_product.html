@@ -14,6 +14,7 @@
 					<th class="text-center">{{ _('Brand') }}</th>
 					<th class="text-right">{{ _('Cost Price') }}</th>
 					<th class="text-right">{{ _('Sale Price') }} / {{ _('Price') }}</th>
+					<th class="text-right">{{ _('Stock Quantity') }}</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -55,6 +56,9 @@
                         {% else %}
                             <span class="sale-price">{{ product.price|round(precision=2) }}</span>
                         {% endif %}
+					</td>
+					<td class="text-right">
+						{{ product.total_stock }}
 					</td>
 					<td class="text-right">
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>

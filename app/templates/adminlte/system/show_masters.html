@@ -1,0 +1,151 @@
+{% extends "layout/admin.html" %}
+
+{% block sidebar %}
+	{% include 'adminlte/system/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<h2 class="page-header">
+		{{ _('Master List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<button class="btn btn-danger delete-all hidden" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
+				<i class="glyphicon glyphicon-trash"></i>
+			</button>
+		</span>
+	</h2>
+	
+    <form class="form-inline filter-form" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+		<div class="form-group">
+			<input type="text" class="form-control searcher" name="qk" size="60" placeholder="{{ _('Search name...') }}">
+		</div>
+
+		<div class="form-group m-l-5">
+			<div class="dropdown">
+				<input type="hidden" name="st">
+				<button class="btn btn-default dropdown-toggle" id="filter-st" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					{{ _('Edition') }}: <b>{{ _('All') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-select-menu" data-target="st" aria-labelledby="filter-st">
+					<li class="dropdown-header">{{ _('Search Edition')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="1" class="option">免费版</a>
+					</li>
+                    <li>
+						<a href="javascript:void(0);" data-id="6" class="option">专业版</a>
+					</li>
+                    <li>
+						<a href="javascript:void(0);" data-id="8" class="option">企业版</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="form-group pull-right">
+			<div class="dropdown">
+				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
+				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
+					<li class="dropdown-header">{{ _('Sort Order')}}</li>
+					<li class="divider" role="separator"></li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
+					</li>
+					<li>
+						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</form>
+
+	<div class="table-responsive m-t-20">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>{{ _('Account') }}</th>
+					<th>{{ _('Username') }}</th>
+					<th>{{ _('Mobile') }}</th>
+					<th class="text-center">{{ _('Edition') }}</th>
+					<th class="text-right">{{ _('Status') }}</th>
+					<th class="text-right">{{ _('Last Seen') }}</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in paginated_users.items %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ user.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ user.email }}
+					</td>
+					<td>
+						{{ user.username }}
+					</td>
+					<td>{{ user.mobile|supress_none }}</td>
+					<td class="text-center">
+						{{ user.edition_label }}
+					</td>
+					<td class="text-right">
+						{% if user.confirmed %}
+						<span class="indicator success">
+							{{ _('Confirmed') }}
+						</span>
+						{% else %}
+						<span class="indicator danger">
+							{{ _('Pending Confirm') }}
+						</span>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{{ user.last_seen|timestamp2string()}}
+					</td>
+					<td class="text-right">
+
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% import "block/_macros.html" as macros %}
+		<div class="pages-box link">
+			<nav aria-label="Page navigation">
+				{{ macros.pagination_widget(paginated_users, '.show_users') }}
+			</nav>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

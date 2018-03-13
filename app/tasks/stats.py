@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import current_app
 from app.extensions import fsk_celery
-
-from app import db
-from app.models import Currency, Site
 from app.summary import StoreSales, StoreProductSales, SalesLog
 
 
-@fsk_celery.task
+@fsk_celery.task(name='stats.sales_statistics')
 def sales_statistics(order_id):
     SalesLog(order_id).order_pay()
 

@@ -76,7 +76,6 @@ class ProductForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     name = StringField(lazy_gettext('Product Name'), validators=[DataRequired()])
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)
-    currency_id = SelectField(lazy_gettext('Currency'), choices=[], coerce=int)
     region_id = SelectField(lazy_gettext('Region'), choices=[(region['id'], region['name']) for region in DEFAULT_REGIONS], coerce=int)
     cost_price = FloatField(lazy_gettext('Cost Price'))
     price = FloatField(lazy_gettext('Price'))
@@ -115,6 +114,7 @@ class ProductSkuForm(Form):
     s_model = StringField(lazy_gettext('Mode'))
     s_color = StringField(lazy_gettext('Color'))
     s_weight = FloatField(lazy_gettext('Weight'), default=0)
+    stock_quantity = IntegerField(lazy_gettext('Stock Quantity'), default=0)
     remark = TextAreaField(lazy_gettext('Remark'))
 
 

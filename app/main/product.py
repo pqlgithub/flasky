@@ -235,10 +235,7 @@ def ajax_submit_result():
 @login_required
 @user_has('admin_product')
 def create_product():
-    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-
     form = ProductForm()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in currency_list]
     if form.validate_on_submit():
         next_action = request.form.get('next_action', 'finish_save')
         # 设置默认值
@@ -261,7 +258,6 @@ def create_product():
             brand_id=form.brand_id.data,
             name=form.name.data,
             cover_id=form.cover_id.data,
-            currency_id=form.currency_id.data,
             region_id=form.region_id.data,
             cost_price=form.cost_price.data,
             price=form.price.data,
@@ -312,8 +308,6 @@ def create_product():
     mode = 'create'
     
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
-    # 默认为官网默认货币
-    form.currency_id.data = g.current_site.currency_id
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
@@ -337,10 +331,7 @@ def edit_product(rid):
     if product is None:
         abort(404)
 
-    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
     form = ProductForm()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
-                                currency_list]
     if form.validate_on_submit():
         # 根据品牌获取供应商
         if form.brand_id.data:
@@ -389,8 +380,6 @@ def edit_product(rid):
     form.brand_id.data = product.brand_id
     form.name.data = product.name
     form.cover_id.data = product.cover_id
-    # 默认为官网默认货币
-    form.currency_id.data = product.currency_id if product.currency_id else g.current_site.currency_id
     form.region_id.data = product.region_id
     form.cost_price.data = product.cost_price
     form.price.data = product.price
@@ -409,11 +398,7 @@ def edit_product(rid):
         form.content.data = product.details.content
     
     # 当前货币类型
-    if product.currency_id:
-        current_currency = Currency.query.get(product.currency_id)
-        current_currency_unit = current_currency.code
-    else:
-        current_currency_unit = g.current_site.currency
+    current_currency_unit = g.current_site.currency
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1,
@@ -559,7 +544,7 @@ def import_product():
                     continue
 
                 # 验证sku是否已存在
-                rows = ProductSku.validate_unique_id_code(id_code, region_id=reg_id, master_uid=Master.master_uid())
+                rows = ProductSku.validate_unique_id_code(id_code, master_uid=Master.master_uid())
                 if len(rows) >= 1:
                     # 已存在，则跳过
                     continue
@@ -653,10 +638,6 @@ def add_sku(rid):
         # 验证69码是否重复
         id_code = form.id_code.data
 
-        #rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
-        #if len(rows) >= 1:
-        #    return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
-
         sku = ProductSku(
             product_id=product.id,
             supplier_id=product.supplier_id,
@@ -671,6 +652,7 @@ def add_sku(rid):
             price=form.price.data,
             sale_price=form.sale_price.data,
             region_id=product.region_id,
+            stock_quantity=form.stock_quantity.data,
             remark=form.remark.data
         )
         db.session.add(sku)
@@ -680,6 +662,9 @@ def add_sku(rid):
         flask_whooshalchemyplus.index_one_model(ProductSku)
         
         db.session.commit()
+
+        # run the task
+        _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
 
         return full_response(True, R201_CREATED, sku.to_json())
 
@@ -692,8 +677,10 @@ def add_sku(rid):
     return render_template('products/modal_sku.html',
                            form=form,
                            mode=mode,
+                           product=product,
                            post_sku_url=url_for('.add_sku', rid=rid),
-                           product=product)
+                           # 当前货币类型
+                           current_currency_unit=g.current_site.currency)
 
 
 @main.route('/products/<string:rid>/edit_sku/<int:s_id>', methods=['GET', 'POST'])
@@ -708,23 +695,24 @@ def edit_sku(rid, s_id):
     if form.validate_on_submit():
         # 验证69码是否重复
         id_code = form.id_code.data
-        
-        #rows = ProductSku.validate_unique_id_code(id_code=id_code, region_id=product.region_id)
-        #if len(rows) > 1 or (len(rows) == 1 and rows[0][0] != s_id):
-        #    return custom_response(False, gettext('Commodity Codes [%s] already exist!' % id_code))
 
         sku.cover_id = form.sku_cover_id.data
         sku.id_code = form.id_code.data
         sku.s_model = form.s_model.data
         sku.s_color = form.s_color.data
         sku.s_weight = form.s_weight.data
+        sku.id_code = id_code
         sku.cost_price = form.cost_price.data
         sku.price = form.price.data
         sku.sale_price = form.sale_price.data
         sku.region_id = product.region_id
+        sku.stock_quantity = form.stock_quantity.data
         sku.remark = form.remark.data
 
         db.session.commit()
+
+        # run the task
+        _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
 
         return full_response(True, R201_CREATED, sku.to_json())
 
@@ -739,6 +727,7 @@ def edit_sku(rid, s_id):
     form.s_model.data = sku.s_model
     form.s_color.data = sku.s_color
     form.s_weight.data = sku.s_weight
+    form.stock_quantity.data = sku.stock_quantity
     form.remark.data = sku.remark
 
     return render_template('products/modal_sku.html',
@@ -746,7 +735,9 @@ def edit_sku(rid, s_id):
                            mode=mode,
                            product=product,
                            post_sku_url=url_for('.edit_sku', rid=rid, s_id=s_id),
-                           sku=sku)
+                           sku=sku,
+                           # 当前货币类型
+                           current_currency_unit=g.current_site.currency)
 
 
 @main.route('/products/<string:rid>/delete_sku', methods=['POST'])
@@ -757,13 +748,30 @@ def delete_sku(rid):
         if sku is None:
             return custom_response(False, gettext("Product Sku isn't exist!"))
 
+        product_id = sku.product_id
+        master_uid = sku.master_uid
+        supplier_id = sku.supplier_id
+
         db.session.delete(sku)
+
         db.session.commit()
 
+        # run the task
+        _dispatch_sku_task(master_uid, product_id, supplier_id)
+
         return full_response(True, R204_NOCONTENT, {'id': rid})
-    except:
+
+    except Exception as err:
         db.session.rollback()
         return full_response(True, custom_status('Delete sku is failed!', 500))
+
+
+def _dispatch_sku_task(master_uid, product_id, supplier_id):
+    from app.tasks import sync_supply_stats, sync_product_stock
+
+    sync_product_stock.apply_async(args=[product_id], countdown=5)
+    if supplier_id:
+        sync_supply_stats.apply_async(args=[master_uid, supplier_id], countdown=5)
 
 
 @main.route('/products/<string:rid>/orders')
@@ -774,7 +782,7 @@ def sku_of_orders(rid):
     page = request.args.get('page', 1, type=int)
     
     builder = OrderItem.query.filter_by(sku_serial_no=rid)
-    builder = builder.join(Order, OrderItem.order_id==Order.id).filter(Order.master_uid==Master.master_uid())
+    builder = builder.join(Order, OrderItem.order_id == Order.id).filter(Order.master_uid == Master.master_uid())
     
     paginated_orders = builder.order_by(OrderItem.id.desc()).paginate(page, per_page)
 
@@ -1292,6 +1300,7 @@ def ajax_product_for_group(id):
                            brands=brands,
                            bid=bid,
                            cid=cid)
+
 
 @main.route('/product_groups/<int:id>/submit', methods=['POST'])
 @user_has('admin_product')

@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-import random, string
 from sqlalchemy import text, event
 from sqlalchemy.sql import func
 from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
 from .asset import Asset
-from .purchase import Purchase
-from .currency import Currency
-from ..utils import timestamp, gen_serial_no, create_db_session
+from ..utils import timestamp, gen_serial_no
 from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
 from app.helpers import MixGenId
 
@@ -33,16 +30,16 @@ __all__ = [
 # 海关危险品
 DANGEROUS_GOODS_TYPES = [
     ('N', lazy_gettext('No')),
-    ('D', lazy_gettext('Electricity')), # 含电
-    ('Y', lazy_gettext('Liquid')), # 液体
-    ('F', lazy_gettext('Powder')) # 粉末
+    ('D', lazy_gettext('Electricity')),  # 含电
+    ('Y', lazy_gettext('Liquid')),  # 液体
+    ('F', lazy_gettext('Powder'))  # 粉末
 ]
 
 # 供应商合作方式
 BUSINESS_MODE = [
-    ('C', gettext('Direct purchasing'), lazy_gettext('Direct purchasing')), # 直采
-    ('D', gettext('Proxy'), lazy_gettext('Proxy')), # 代理
-    ('Q', gettext('Exclusive'), lazy_gettext('Exclusive')) # 独家
+    ('C', gettext('Direct purchasing'), lazy_gettext('Direct purchasing')),  # 直采
+    ('D', gettext('Proxy'), lazy_gettext('Proxy')),  # 代理
+    ('Q', gettext('Exclusive'), lazy_gettext('Exclusive'))  # 独家
 ]
 
 # 产品的状态
@@ -53,9 +50,9 @@ PRODUCT_STATUS = [
 
 # product and category => N to N
 product_category_table = db.Table('categories_products',
-    db.Column('product_id', db.Integer, db.ForeignKey('products.id')),
-    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'))
-)
+                                  db.Column('product_id', db.Integer, db.ForeignKey('products.id')),
+                                  db.Column('category_id', db.Integer, db.ForeignKey('categories.id'))
+                                  )
 
 
 class Product(db.Model):
@@ -63,17 +60,18 @@ class Product(db.Model):
 
     __tablename__ = 'products'
 
-    __searchable__ = ['serial_no', 'name', 'description', 'supplier_name', 'brand_name', 'all_sku']
+    __searchable__ = ['serial_no', 'name', 'description', 'all_sku']
     __analyzer__ = ChineseAnalyzer()
     
     id = db.Column(db.Integer, primary_key=True)
     # 产品编号
     serial_no = db.Column(db.String(12), unique=True, index=True, nullable=False)
-
     master_uid = db.Column(db.Integer, index=True, default=0)
-    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+
     # 所属品牌
-    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'))
+    brand_id = db.Column(db.Integer, default=0)
+    # 所属供应商
+    supplier_id = db.Column(db.Integer, default=0)
     
     name = db.Column(db.String(128), nullable=False)
     cover_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
@@ -81,14 +79,15 @@ class Product(db.Model):
     id_code = db.Column(db.String(16), nullable=True)
     # 区域
     region_id = db.Column(db.SmallInteger, default=1)
-    # 币种
-    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     # 采购价
     cost_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 零售价
     price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 促销价
     sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 总库存数, 设置sku库存数时自动累加
+    total_stock = db.Column(db.Integer, default=0)
+
     # 用于出库称重和利润计算
     s_weight = db.Column(db.Numeric(precision=10, scale=2), default=0)
     s_length = db.Column(db.Numeric(precision=10, scale=2), default=0)
@@ -120,24 +119,27 @@ class Product(db.Model):
     declaration = db.relationship(
         'CustomsDeclaration', backref='product', uselist=False, cascade='delete'
     )
-    
+
     @property
-    def currency_unit(self):
-        """当前货币单位"""
-        if self.currency_id:
-            current_currency = Currency.query.get(self.currency_id)
-            return current_currency.code
-        else:
-            return None
+    def brand(self):
+        """品牌信息"""
+        return Brand.query.get(self.brand_id) if self.brand_id else None
+
+    @property
+    def supplier(self):
+        """供应商信息"""
+        return Supplier.query.get(self.supplier_id) if self.supplier_id else None
+
+    @property
+    def brand_name(self):
+        """品牌名称，用于索引"""
+        return self.brand.name if self.brand else None
 
     @property
     def supplier_name(self):
-        current_supplier = self.supplier
-        return '{} {}'.format(current_supplier.short_name, current_supplier.full_name)
-    
-    @property
-    def brand_name(self):
-        return self.brand.name
+        """供应商信息，用于索引"""
+        if self.supplier:
+            return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
 
     @property
     def all_sku(self):
@@ -225,7 +227,6 @@ class Product(db.Model):
             supplier_id=json_product.get('supplier_id'),
             name=json_product.get('name'),
             cover_id=json_product.get('cover_id'),
-            currency_id=json_product.get('currency_id'),
             region_id=json_product.get('reg_id'),
             cost_price=json_product.get('cost_price'),
             status=json_product.get('status')
@@ -291,7 +292,7 @@ class ProductSku(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     master_uid = db.Column(db.Integer, index=True, default=0)
-    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    supplier_id = db.Column(db.Integer, default=0)
 
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
 
@@ -314,6 +315,8 @@ class ProductSku(db.Model):
     price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 促销价
     sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 库存数
+    stock_quantity = db.Column(db.Integer, default=0)
     # 备注
     remark = db.Column(db.String(255), nullable=True)
     # 状态：-1、取消或缺省状态； 1、正常（默认）
@@ -336,9 +339,16 @@ class ProductSku(db.Model):
         return self.product.name if self.product else ''
 
     @property
+    def supplier(self):
+        """供应商信息"""
+        return Supplier.query.get(self.supplier_id) if self.supplier_id else None
+
+    @property
     def supplier_name(self):
-        """supplier name"""
-        return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
+        """供应商信息，用于索引"""
+        if self.supplier:
+            return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
+        return None
 
     @property
     def region_label(self):
@@ -366,7 +376,7 @@ class ProductSku(db.Model):
     @property
     def stock_count(self):
         """product sku stock count"""
-        return ProductStock.stock_count_of_product(self.id)
+        return self.stock_quantity
 
     @property
     def no_arrival_count(self):
@@ -374,16 +384,13 @@ class ProductSku(db.Model):
         return ProductStock.stock_count_of_no_arrival(self.id)
     
     @staticmethod
-    def validate_unique_id_code(id_code, region_id=None, master_uid=0):
+    def validate_unique_id_code(id_code, master_uid=0):
         """验证id_code是否唯一"""
         sql = "SELECT s.id,s.id_code FROM `product_skus` AS s LEFT JOIN `products` AS p ON s.product_id=p.id"
         sql += " WHERE s.id_code=%s" % id_code
 
         if master_uid:
             sql += " AND s.master_uid=%d" % master_uid
-
-        if region_id is not None:
-            sql += " AND p.region_id=%d" % int(region_id)
 
         result = db.engine.execute(text(sql))
         return result.fetchall()
@@ -397,7 +404,7 @@ class ProductSku(db.Model):
             if ProductSku.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
-    
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_sku = {
@@ -500,7 +507,8 @@ class ProductStock(db.Model):
     @staticmethod
     def stock_count_of_product(sku_id):
         """获取某个产品所有仓库的库存总数"""
-        total_quantity = ProductStock.query.filter_by(product_sku_id=sku_id).with_entities(func.sum(ProductStock.current_count)).one()
+        total_quantity = ProductStock.query.filter_by(product_sku_id=sku_id)\
+            .with_entities(func.sum(ProductStock.current_count)).one()
 
         return total_quantity[0] if (total_quantity and total_quantity[0] is not None) else 0
 
@@ -513,6 +521,13 @@ class ProductStock(db.Model):
         result = db.engine.execute(sql).fetchone()
 
         return result[0] if result[0] is not None else 0
+
+    @staticmethod
+    def hook_after_change(mapper, connection, target):
+        """插入或更新后事件"""
+        from app.tasks import sync_sku_stock
+        # run the task
+        sync_sku_stock.apply_async(args=[target.product_sku_id], countdown=3)
 
     def __repr__(self):
         return '<ProductStock %r>' % self.id
@@ -577,20 +592,6 @@ class Supplier(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-    # supplier and brand => 1 to N
-    brands = db.relationship(
-        'Brand', backref='supplier', lazy='dynamic'
-    )
-
-    # supplier and product => 1 to N
-    products = db.relationship(
-        'Product', backref='supplier', lazy='dynamic'
-    )
-    # supplier and product sku => 1 to N
-    skus = db.relationship(
-        'ProductSku', backref='supplier', lazy='dynamic'
-    )
-
     # supplier and purchase => 1 to N
     purchases = db.relationship(
         'Purchase', backref='supplier', lazy='dynamic'
@@ -607,14 +608,14 @@ class Supplier(db.Model):
             if t[0] == self.type:
                 return t
 
-    def __repr__(self):
-        return '<Supplier %r>' % self.full_name
-
     def to_json(self):
         """资源和JSON的序列化转换"""
         return {
             c.name: getattr(self, c.name, None) for c in self.__table__.columns
         }
+
+    def __repr__(self):
+        return '<Supplier %r>' % self.full_name
 
 
 class SupplyStats(db.Model):
@@ -644,50 +645,6 @@ class SupplyStats(db.Model):
     def supplier_name(self):
         return '{} {}'.format(self.supplier.short_name, self.supplier.full_name)
 
-    @staticmethod
-    def on_sync_change(mapper, connection, target):
-        """同步数据事件"""
-        master_uid = target.master_uid
-        supplier_id = target.supplier_id
-
-        session = create_db_session()
-        # session.query(User).limit(n).all()
-        # session.execute('select * from user where id = :id', {'id': 1}).first()
-
-        # 1、统计sku count
-        sku_count = ProductSku.query.filter_by(master_uid=master_uid, supplier_id=supplier_id).count()
-
-        # 2、统计purchase / 总收入
-        purchase_result = Purchase.query.filter_by(master_uid=master_uid, supplier_id=supplier_id)\
-            .with_entities(func.count(Purchase.id), func.sum(Purchase.total_amount), func.max(Purchase.created_at))\
-            .one()
-
-        purchase_amount = purchase_result[1] if purchase_result[1] is not None else 0
-        latest_trade_at = purchase_result[2] if purchase_result[2] is not None else 0
-
-        # 3、同步数据
-        supply_stats = session.query(SupplyStats).filter_by(master_uid=master_uid, supplier_id=supplier_id).first()
-        if supply_stats:
-            query = session.query(SupplyStats).filter_by(master_uid=master_uid, supplier_id=supplier_id)
-            query.update({
-                SupplyStats.sku_count: sku_count,
-                SupplyStats.purchase_times: purchase_result[0],
-                SupplyStats.purchase_amount: purchase_amount,
-                SupplyStats.latest_trade_at: latest_trade_at
-            })
-        else:
-            supply_stats = SupplyStats(
-                master_uid = master_uid,
-                supplier_id = supplier_id,
-                sku_count = sku_count,
-                purchase_times = purchase_result[0],
-                purchase_amount = purchase_amount,
-                latest_trade_at = latest_trade_at
-            )
-            session.add(supply_stats)
-
-        session.commit()
-
     def __repr__(self):
         return '<SupplyStats %r>' % self.supplier_id
 
@@ -701,7 +658,7 @@ class Brand(db.Model):
     sn = db.Column(db.String(9), unique=True, index=True, nullable=True)
     
     master_uid = db.Column(db.Integer, index=True, default=0)
-    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    supplier_id = db.Column(db.Integer, default=0)
     
     name = db.Column(db.String(64), unique=True, index=True)
     features = db.Column(db.String(100))
@@ -720,11 +677,11 @@ class Brand(db.Model):
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
-    # brand and product => 1 to N
-    products = db.relationship(
-        'Product', backref='brand', lazy='dynamic'
-    )
-    
+    @property
+    def supplier(self):
+        """供应商信息"""
+        return Supplier.query.get(self.supplier_id) if self.supplier_id else None
+
     @property
     def logo(self):
         """logo asset info"""
@@ -928,7 +885,7 @@ class Wishlist(db.Model):
 # 添加监听事件, 实现触发器
 event.listen(Product, 'before_insert', Product.on_before_change)
 event.listen(Product, 'before_update', Product.on_before_change)
-event.listen(ProductSku, 'after_insert', SupplyStats.on_sync_change)
-event.listen(Purchase, 'after_insert', SupplyStats.on_sync_change)
 # 监听Brand事件
 event.listen(Brand, 'before_insert', Brand.on_before_insert)
+event.listen(ProductStock, 'after_insert', ProductStock.hook_after_change)
+event.listen(ProductStock, 'after_update', ProductStock.hook_after_change)

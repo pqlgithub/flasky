@@ -52,7 +52,7 @@
 						<div class="input-group">
 							{{ form.price(id="price", class="form-control") }}
 							<span class="input-group-addon">
-								{{ product.currency_unit }}
+								{{ current_currency_unit }}
 							</span>
 						</div>
 					</div>
@@ -61,7 +61,7 @@
 						<div class="input-group">
 							{{ form.sale_price(id="sale_price", class="form-control") }}
 							<span class="input-group-addon">
-								{{ product.currency_unit }}
+								{{ current_currency_unit }}
 							</span>
 						</div>
 					</div>
@@ -73,7 +73,7 @@
 						<div class="input-group">
 							{{ form.cost_price(id="cost_price", class="form-control") }}
 							<span class="input-group-addon">
-								{{ product.currency_unit }}
+								{{ current_currency_unit }}
 							</span>
 						</div>
 					</div>
@@ -93,6 +93,16 @@
 								g
 							</span>
 						</div>
+					</div>
+				</div>
+				
+                <div class="form-group">
+					{{ form.stock_quantity.label(class="col-sm-2 control-label text-right") }}
+					<div class="col-sm-10">
+						{{ form.stock_quantity(class="form-control") }}
+						<span class="help-block">
+							<i class="fa fa-info-circle"></i> 如使用仓库管理，系统根据采购数量同步数量，无需设置此项。
+						</span>
 					</div>
 				</div>
 

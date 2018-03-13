@@ -2,6 +2,9 @@
 	<div class="list-group-header">
 		{{ _('Privilege manage') }}
 	</div>
+	<a href="{{ url_for('adminlte.show_masters') }}" class="pjax list-group-item {% if sub_menu == 'masters'%} active{% endif %}">
+		{{ _('Master List') }}
+	</a>
 	<a href="{{ url_for('adminlte.show_users') }}" class="pjax list-group-item {% if sub_menu == 'users'%} active{% endif %}">
 		{{ _('User List') }}
 	</a>

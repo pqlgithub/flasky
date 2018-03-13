@@ -22,15 +22,14 @@ __all__ = [
 
 # 定义user与role关系的辅助表
 user_role_table = db.Table('users_roles',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
-)
+                           db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+                           db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
+                           )
 
 # 定义role与ability关系的辅助表
 role_ability_table = db.Table('roles_abilities',
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
-    db.Column('ability_id', db.Integer, db.ForeignKey('abilities.id'))
-)
+                              db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
+                              db.Column('ability_id', db.Integer, db.ForeignKey('abilities.id')))
 
 
 class UserIdType:
@@ -43,6 +42,19 @@ class UserIdType:
     
     # 普通消费者
     BUYER = 9
+
+
+class UserEdition(object):
+    """系统版本"""
+
+    # 免费版
+    FREE = 1
+
+    # 专业版
+    PROFESSIONAL = 6
+
+    # 企业版 Enterprise
+    ENTERPRISE = 8
 
 
 class User(UserMixin, db.Model):
@@ -58,6 +70,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
+    # 是否已验证
     confirmed = db.Column(db.Boolean, default=False)
 
     # 系统默认管理员
@@ -72,11 +85,13 @@ class User(UserMixin, db.Model):
     mobile = db.Column(db.String(20))
     description = db.Column(db.String(140))
 
-    # 是否配置站点信息
+    # 是否认证公司信息
     is_setting = db.Column(db.Boolean, default=False)
     
     # 身份类型：1、供应商、2、分销客户、9、消费者
-    id_type = db.Column(db.SmallInteger, default=UserIdType.SUPPLIER)
+    id_type = db.Column(db.SmallInteger, default=UserIdType.BUYER)
+    # 版本标准
+    edition = db.Column(db.SmallInteger, default=UserEdition.FREE)
 
     # 第三方账号
     openid = db.Column(db.String(128), index=True, nullable=True)
@@ -153,6 +168,17 @@ class User(UserMixin, db.Model):
         return s.dumps({'confirm': self.id})
 
     @property
+    def edition_label(self):
+        if self.edition == UserEdition.PROFESSIONAL:
+            label = '专业版'
+        elif self.edition == UserEdition.ENTERPRISE:
+            label = '企业版'
+        else:
+            label = '免费版'
+
+        return label
+
+    @property
     def is_master(self):
         """是否为主账号"""
         return self.master_uid == 0
@@ -170,7 +196,8 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
-        except:
+        except Exception as err:
+            current_app.logger.warn('验证用户确认token失败： %s！' % str(err))
             return False
 
         if data.get('confirm') != self.id:
@@ -178,6 +205,7 @@ class User(UserMixin, db.Model):
 
         # 更新状态
         self.confirmed = True
+
         db.session.add(self)
         db.session.commit()
 

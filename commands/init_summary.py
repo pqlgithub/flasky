@@ -3,7 +3,6 @@ from flask import current_app
 from flask_script import Command
 from app import db
 from app.models import Order, OrderStatus
-from app import tasks
 
 
 class InitSummary(Command):
@@ -52,7 +51,8 @@ class InitSummary(Command):
                 break
 
             for order in order_ids:
-                tasks.sales_statistics.delay(order.id)
+                # tasks.sales_statistics.delay(order.id)
+                pass
 
             start_number = end_number
             end_number = start_number + blank

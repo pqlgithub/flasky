@@ -5,9 +5,9 @@ from datetime import datetime
 
 
 class DaySummary(object):
+
     def __init__(self, order_id):
-        self.sales_logs = SalesLogStatistics.query.filter_by(
-            order_id=order_id).all()
+        self.sales_logs = SalesLogStatistics.query.filter_by(order_id=order_id).all()
 
     def pay_run(self):
         self.__action(self.__add)

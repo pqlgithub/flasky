@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import time
+import datetime
+import pandas as pd
+import numpy as np
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response
 from flask_login import login_required, current_user
@@ -7,10 +11,6 @@ from .. import db
 from ..decorators import user_has
 from app.models import MasterStatistics, StoreStatistics, ProductStatistics, DaySkuStatistics, Store, Supplier
 from ..utils import Master, full_response, R200_OK
-import time
-import datetime
-import pandas as pd
-import numpy as np
 
 
 @main.route('/stats')
@@ -19,19 +19,16 @@ import numpy as np
 def stats():
     # 主账号当前月份统计
     month = time.strftime("%Y%m")
-    master_statistics = MasterStatistics.query.filter_by(
-        time=month, master_uid=Master.master_uid(), type=1).first()
+    master_statistics = MasterStatistics.query.filter_by(time=month, master_uid=Master.master_uid(), type=1).first()
 
     # 各店铺当前月份统计
-    store_statistics = StoreStatistics.query.filter_by(
-        time=month, master_uid=Master.master_uid(),
-        type=1).order_by("store_id").all()
+    store_statistics = StoreStatistics.query.filter_by(time=month, master_uid=Master.master_uid(), type=1)\
+        .order_by(StoreStatistics.store_id.asc()).all()
 
-    return render_template(
-        'stats/index.html',
-        master_statistics=master_statistics,
-        store_statistics=store_statistics,
-        sub_menu='stats')
+    return render_template('stats/index.html',
+                           master_statistics=master_statistics,
+                           store_statistics=store_statistics,
+                           sub_menu='stats')
 
 
 @main.route('/stats/store_sku_top', methods=['POST'])
@@ -47,7 +44,7 @@ def store_sku_top():
         type=2,
         time_type=1,
         time=month,
-    ).order_by('income desc').all()
+    ).order_by(ProductStatistics.income.desc()).all()
 
     data = []
     for v in product_top:
@@ -74,8 +71,7 @@ def sales_master():
     """主账户销售统计"""
     new_start_date = request.args.get("start_time")
     new_end_date = request.args.get("end_time")
-    start_time, end_time = list(
-        summary_time_range(new_start_date, new_end_date))
+    start_time, end_time = list(summary_time_range(new_start_date, new_end_date))
 
     day_sku_statistics = db.session.query(
         DaySkuStatistics.income, DaySkuStatistics.time).filter(
@@ -191,7 +187,7 @@ def sales_supplier():
             lambda x: x.strftime("%Y-%m-%d"))
         refund_data[supplier.short_name] = new_data.fillna(0).to_dict('list')
 
-    return full_response(True, R200_OK,refund_data)
+    return full_response(True, R200_OK, refund_data)
 
 
 def summary_time_range(start_time, end_time):
@@ -202,11 +198,11 @@ def summary_time_range(start_time, end_time):
     # 默认开始时间
     default_start_date = default_end_date - datetime.timedelta(days=6)
 
-    if start_time != '' and end_time != '' and start_time != None and end_time != None:
+    if start_time != '' and end_time != '' and start_time is not None and end_time is not None:
         default_start_date = datetime.datetime.strptime(start_time, "%Y-%m-%d")
         default_end_date = datetime.datetime.strptime(end_time, "%Y-%m-%d")
 
     start_time = int(default_start_date.timestamp())
     end_time = int(default_end_date.timestamp())
 
-    return (start_time, end_time)
+    return start_time, end_time

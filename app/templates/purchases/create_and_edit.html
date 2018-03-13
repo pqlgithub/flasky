@@ -27,7 +27,7 @@
 
 			tr_html.push('<tr id="tr_sku_'+ skus[i].rid +'">');
 			tr_html.push('<td class="text-center"><img src="'+ skus[i].cover +'" width="60px"></td>');
-			tr_html.push('<td>'+ skus[i].product_name +'<br>' + skus[i].serial_no +'</td>');
+			tr_html.push('<td>'+ skus[i].product_name +'<br>' + skus[i].rid +'</td>');
 			tr_html.push('<td>');
 			if (skus[i].s_model) {
 				tr_html.push('<label class="label label-warning">'+ skus[i].s_model +'</label>');
@@ -273,7 +273,7 @@
 					</td>
 					<td>
 						{{ item.sku.product.name }}<br>
-						{{ item.sku.serial_no }}
+						{{ item.sku.rid }}
 					</td>
 					<td>
 						{% if item.sku.s_model %}
