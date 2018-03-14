@@ -541,10 +541,10 @@ def wxapp_modify_domain():
 
         # 设置小程序服务器域名
         action = 'add'
-        request_domain = ["https://fx.taihuoniao.com", "https://wx.taihuoniao.com"]
-        wsrequest_domain = ["wss://fx.taihuoniao.com", "wss://wx.taihuoniao.com"]
-        upload_domain = ["https://fx.taihuoniao.com", "https://wx.taihuoniao.com"]
-        download_domain = ["https://fx.taihuoniao.com", "https://wx.taihuoniao.com"]
+        request_domain = ["https://wx.taihuoniao.com"]
+        wsrequest_domain = ["wss://wx.taihuoniao.com"]
+        upload_domain = ["https://wx.taihuoniao.com"]
+        download_domain = ["https://wx.taihuoniao.com"]
 
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
         result = open3rd.modify_domain(action, request_domain, wsrequest_domain, upload_domain, download_domain)
