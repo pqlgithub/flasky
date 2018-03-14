@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 from flask import request, abort, url_for, g, current_app
 from sqlalchemy.exc import IntegrityError
 
@@ -161,6 +162,7 @@ def get_available_coupons():
 
     user_coupons = UserCoupon.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id, is_used=False).all()
     available_coupons = []
+    total_amount = Decimal(total_amount)
     if user_coupons:
         # 过滤是否满足条件
         for user_coupon in user_coupons:
