@@ -288,7 +288,35 @@ def wxapp_qrcode():
     return 'ok'
 
 
-@main.route('/wxapps/get_pages', methods=['POST'])
+@main.route('/wxapps/get_category', methods=['GET', 'POST'])
+def wxapp_category():
+    """小程序可选类目"""
+    auth_app_id = request.values.get('auth_app_id')
+    if not auth_app_id:
+        abort(400)
+
+    # 获取小程序信息
+    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    if request.method == 'POST':
+        return status_response()
+
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=mini_app.master_uid, auth_app_id=auth_app_id).first_or_404()
+
+    try:
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.get_category()
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp commit is error: %s' % err)
+        abort(500)
+
+    return render_template('wxapp/_category_modal.html',
+                           category_list=result.category_list,
+                           auth_app_id=auth_app_id)
+
+
+@main.route('/wxapps/get_pages', methods=['GET', 'POST'])
 def wxapp_pages():
     """小程序提交代码的页面配置"""
     auth_app_id = request.form.get('auth_app_id')
@@ -309,10 +337,9 @@ def wxapp_pages():
             'message': err
         })
 
-    return full_response(True, R200_OK, {
-        'page_list': result.page_list,
-        'auth_app_id': auth_app_id
-    })
+    return render_template('wxapp/_page_modal.html',
+                           page_list=result.page_list,
+                           auth_app_id=auth_app_id)
 
 
 @main.route('/wxapps/commit', methods=['POST'])
@@ -347,7 +374,7 @@ def wxapp_commit():
                 ]
             },
             "api": {
-                "host": "https://fx.taihuoniao.com/api",
+                "host": "https://wx.taihuoniao.com/api",
                 "version": "v1.0",
                 "appKey": client.app_key,
                 "appSecret": client.app_secret
@@ -396,12 +423,25 @@ def wxapp_submit_audit():
     # 获取授权信息
     authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
 
-    # todo: 提交审核项的一个列表（至少填写1项，至多填写5项）
-    item_list = []
-
     try:
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        result = open3rd.submit_audit(item_list)
+
+        pages = open3rd.get_pages()
+
+        categories = open3rd.get_category()
+
+        tags = '创意 原创设计 智能'
+
+        # todo: 提交审核项的一个列表（至少填写1项，至多填写5项）
+        if categories:
+            item = categories[0]
+            item['address'] = pages[0]
+            item['tag'] = tags
+            item['title'] = '精选'
+
+            item_list = [item]
+
+            result = open3rd.submit_audit(item_list)
     except WxAppError as err:
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
@@ -409,12 +449,13 @@ def wxapp_submit_audit():
             'message': err
         })
 
-    # 更新
-    wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
-    wx_version.audit_id = result.auditid
-    wx_version.audit_at = int(timestamp())
+    if result:
+        # 更新
+        wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+        wx_version.audit_id = result.auditid
+        wx_version.audit_at = int(timestamp())
 
-    db.session.commit()
+        db.session.commit()
 
     return full_response(True, R200_OK, {
         'auditid': result.auditid
@@ -498,34 +539,6 @@ def wxapp_revert_release():
 def wxapp_change_visit_status():
     """修改小程序线上代码的可见状态"""
     pass
-
-
-@main.route('/wxapps/get_category', methods=['GET', 'POST'])
-def wxapp_category():
-    """小程序可选类目"""
-    auth_app_id = request.values.get('auth_app_id')
-    if not auth_app_id:
-        abort(400)
-
-    # 获取小程序信息
-    mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
-
-    if request.method == 'POST':
-        return status_response()
-
-    # 获取授权信息
-    authorizer = WxAuthorizer.query.filter_by(master_uid=mini_app.master_uid, auth_app_id=auth_app_id).first_or_404()
-
-    try:
-        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        result = open3rd.get_category()
-    except WxAppError as err:
-        current_app.logger.warn('Wxapp commit is error: %s' % err)
-        abort(500)
-
-    return render_template('wxapp/_category_modal.html',
-                           category_list=result.category_list,
-                           auth_app_id=auth_app_id)
 
 
 @main.route('/wxapps/modify_domain', methods=['POST'])

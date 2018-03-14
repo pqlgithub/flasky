@@ -104,6 +104,8 @@ Supervisor运行于 `Python2.7` 环境下：
     # wx_mini_apps
     head_img = db.Column(db.String(200))
     qrcode_url = db.Column(db.String(200))
+    # user
+    avatar = db.Column(db.String(200))
 
 
 ### 文献资料参考：

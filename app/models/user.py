@@ -81,7 +81,7 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.Integer, default=timestamp)
-    avatar = db.Column(db.String(100))
+    avatar = db.Column(db.String(200))
     mobile = db.Column(db.String(20))
     description = db.Column(db.String(140))
 

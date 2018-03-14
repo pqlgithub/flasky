@@ -135,14 +135,13 @@
 								<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}">
 									<i class="fa fa-view"></i> 预览
 								</a>
-								{% if version.status in [1, 2] %}
-								<a class="btn btn-commit-review btn-danger" href="javascript:;">
-									<i class="fa fa-cloud-upload"></i> 提交审核
-								</a>
-								{% endif %}
 								{% if version.status == 0 %}
 								<a class="btn btn-release btn-danger" href="javascript:;">
 									<i class="fa fa-cloud-upload"></i> 发布
+								</a>
+								{% else %}
+								<a class="btn btn-commit-review btn-warning" href="javascript:;">
+									<i class="fa fa-check"></i> 提交审核
 								</a>
 								{% endif %}
 							</td>

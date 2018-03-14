@@ -194,8 +194,10 @@ def get_product_detail(rid):
     product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
     if product is None:
         abort(404)
-    
-    return full_response(R200_OK, product.details.to_json())
+
+    product_details = product.details.to_json() if product.details else {}
+
+    return full_response(R200_OK, product_details)
 
 
 @api.route('/products/skus')
