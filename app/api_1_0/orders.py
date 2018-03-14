@@ -163,6 +163,13 @@ def create_order():
                 return custom_response("Product sku[%s] is not exist!" % rid, 403, False)
             quantity = product.get('quantity')
 
+            if product_sku.stock_count < quantity:
+                return custom_response("inventory isn't enough!", 403, False)
+
+            # 同步减库存操作
+            product_sku.stock_quantity -= quantity
+
+            """
             # 验证库存
             warehouse_id = product.get('warehouse_id')
             if not warehouse_id:  # 未选择库房，则默认库房
@@ -173,8 +180,9 @@ def create_order():
             
             product_stock = product_sku.stocks.filter_by(warehouse_id=warehouse_id).first()
             if not product_stock or product_stock.available_count < quantity:
-                return custom_response("[%s] Inventory isn't enough!" % rid, 403, False)
-            
+                return custom_response("[%s] inventory isn't enough!" % rid, 403, False)
+            """
+            warehouse_id = 0
             deal_price = float(product.get('deal_price'))
             discount_amount = Decimal(product.get('discount_amount', 0))
             

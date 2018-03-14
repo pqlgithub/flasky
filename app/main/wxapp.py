@@ -488,6 +488,8 @@ def wxapp_audit_status():
             'message': str(err)
         })
 
+    current_app.logger.warn('wxapp audit status: %s' % result)
+
     # 更新状态
     wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
 

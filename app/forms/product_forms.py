@@ -76,7 +76,9 @@ class ProductForm(Form):
     serial_no = StringField(lazy_gettext('Serial No.'), validators=[DataRequired()])
     name = StringField(lazy_gettext('Product Name'), validators=[DataRequired()])
     cover_id = IntegerField(lazy_gettext('Cover'), default=0)
-    region_id = SelectField(lazy_gettext('Region'), choices=[(region['id'], region['name']) for region in DEFAULT_REGIONS], coerce=int)
+    region_id = SelectField(lazy_gettext('Region'),
+                            choices=[(region['id'], region['name']) for region in DEFAULT_REGIONS],
+                            coerce=int, default=2)
     cost_price = FloatField(lazy_gettext('Cost Price'))
     price = FloatField(lazy_gettext('Price'))
     sale_price = StringField(lazy_gettext('Sale Price'))
@@ -90,6 +92,7 @@ class ProductForm(Form):
     ], coerce=bool, default=True)
     sticked = BooleanField(lazy_gettext('Yes'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
+    features = StringField(lazy_gettext('Recommendation'))
     
     # 详情信息
     tags = StringField(lazy_gettext('Tags'))

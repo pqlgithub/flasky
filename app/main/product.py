@@ -269,6 +269,7 @@ def create_product():
             from_url=form.from_url.data,
             status=form.status.data,
             sticked=form.sticked.data,
+            features=form.features.data,
             description=form.description.data
         )
 
@@ -391,6 +392,7 @@ def edit_product(rid):
     form.from_url.data = product.from_url
     form.status.data = product.status
     form.sticked.data = product.sticked
+    form.features.data = product.features
     form.description.data = product.description
     # 内容详情
     if product.details:

@@ -100,6 +100,8 @@ class Product(db.Model):
     description = db.Column(db.Text())
     # 是否推荐
     sticked = db.Column(db.Boolean, default=False)
+    # 推荐语或优势亮点
+    features = db.Column(db.String(100))
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -241,6 +243,7 @@ class Product(db.Model):
             'id_code': self.id_code,
             'sale_price': self.sale_price,
             'price': self.price,
+            'features': self.features,
             'description': self.description,
             'sticked': self.sticked,
             's_weight': self.s_weight,

@@ -320,7 +320,7 @@ class OrderItem(db.Model):
     # 用户ID
     master_uid = db.Column(db.Integer, index=True, default=0)
     # 仓库ID
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'))
+    warehouse_id = db.Column(db.Integer, default=0)  # db.ForeignKey('warehouses.id')
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order_serial_no = db.Column(db.String(20), index=True, nullable=False)
     sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'))
