@@ -306,7 +306,7 @@ class WxaOpen3rd(object):
         }
         url = '%s/submit_audit?access_token=%s' % (self.wxa_host_url, self.access_token)
 
-        res = requests.post(url, data=json.dumps(payload))
+        res = requests.post(url, data=bytes(json.dumps(payload, ensure_ascii=False), encoding='utf-8'))
 
         return self._intercept_result(res)
 
