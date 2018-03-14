@@ -378,6 +378,11 @@
                     <ul class="subtree">
                         <li class="header">{{ _('Subscribe App') }}</li>
                         <li>
+                            <a href="{{ url_for('main.show_coupons') }}" class="pjax">
+                                {{ _('Coupon Tools') }}
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ url_for('main.show_clients') }}" class="pjax">
                                 {{ _('My Apps') }}
                             </a>

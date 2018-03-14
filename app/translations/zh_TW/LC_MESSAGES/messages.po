@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-13 13:28+0800\n"
+"POT-Creation-Date: 2018-03-14 14:43+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -409,7 +409,7 @@ msgstr ""
 #: app/templates/finances/show_payments.html:86
 #: app/templates/orders/_modal_remark.html:19
 #: app/templates/orders/preview_order.html:66
-#: app/templates/products/create_and_edit.html:407
+#: app/templates/products/create_and_edit.html:384
 #: app/templates/products/show_skus.html:11
 #: app/templates/purchases/_modal_arrival.html:37
 #: app/templates/purchases/purchase_table.html:80
@@ -691,7 +691,7 @@ msgstr ""
 #: app/templates/products/_modal_select_products.html:71
 #: app/templates/products/show_set_groups.html:65
 #: app/templates/products/sku_of_orders.html:76
-#: app/templates/products/table_product.html:17
+#: app/templates/products/table_product.html:18
 #: app/templates/purchases/pay_list.html:101
 #: app/templates/purchases/purchase_pay_table.html:11
 #: app/templates/purchases/purchase_table.html:15
@@ -847,7 +847,7 @@ msgstr ""
 #: app/forms/channel_forms.py:21 app/templates/banners/search_result.html:11
 #: app/templates/banners/show_list.html:107
 #: app/templates/products/_modal_select_products.html:65
-#: app/templates/products/create_and_edit.html:400
+#: app/templates/products/create_and_edit.html:377
 #: app/templates/products/show_set_groups.html:59
 #: app/templates/products/show_skus.html:4
 #: app/templates/products/sku_of_orders.html:71
@@ -1079,13 +1079,12 @@ msgid "miniprogrampage"
 msgstr ""
 
 #: app/forms/market_forms.py:38 app/forms/product_forms.py:96
-#: app/templates/products/create_and_edit.html:125
 msgid "Content"
 msgstr ""
 
 #: app/forms/order_forms.py:8 app/forms/product_forms.py:76
 #: app/forms/product_forms.py:108 app/templates/orders/preview_order.html:25
-#: app/templates/products/create_and_edit.html:401
+#: app/templates/products/create_and_edit.html:378
 #: app/templates/products/show_skus.html:5
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:26
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:27
@@ -1256,8 +1255,8 @@ msgstr ""
 #: app/main/warehouse.py:704 app/templates/orders/_modal_split.html:26
 #: app/templates/orders/create_and_edit.html:233
 #: app/templates/orders/preview_order.html:110
-#: app/templates/products/create_and_edit.html:404
-#: app/templates/products/show_skus.html:8
+#: app/templates/products/create_and_edit.html:380
+#: app/templates/products/show_skus.html:7
 #: app/templates/products/table_product.html:16
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:59
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:60
@@ -1268,7 +1267,7 @@ msgstr ""
 
 #: app/forms/product_forms.py:83 app/forms/product_forms.py:102
 #: app/forms/product_forms.py:116
-#: app/templates/products/create_and_edit.html:406
+#: app/templates/products/create_and_edit.html:383
 #: app/templates/products/show_skus.html:10
 msgid "Weight"
 msgstr ""
@@ -1281,11 +1280,11 @@ msgstr ""
 msgid "View Url"
 msgstr ""
 
-#: app/forms/product_forms.py:89 app/models/product.py:50
+#: app/forms/product_forms.py:89 app/models/product.py:47
 msgid "In Sale"
 msgstr ""
 
-#: app/forms/product_forms.py:89 app/models/product.py:51
+#: app/forms/product_forms.py:89 app/models/product.py:48
 msgid "Off Sale"
 msgstr ""
 
@@ -1317,8 +1316,8 @@ msgid "Customs Code"
 msgstr ""
 
 #: app/forms/product_forms.py:110
-#: app/templates/products/create_and_edit.html:402
-#: app/templates/products/show_skus.html:6
+#: app/templates/products/create_and_edit.html:382
+#: app/templates/products/show_skus.html:9
 msgid "69 Codes"
 msgstr ""
 
@@ -1331,8 +1330,9 @@ msgid "Color"
 msgstr ""
 
 #: app/forms/product_forms.py:117
-#: app/templates/products/create_and_edit.html:405
-#: app/templates/products/show_skus.html:9
+#: app/templates/products/create_and_edit.html:381
+#: app/templates/products/show_skus.html:8
+#: app/templates/products/table_product.html:17
 #: app/templates/warehouses/show_stocks.html:136
 #: app/templates/warehouses/stock_table.html:4
 msgid "Stock Quantity"
@@ -1510,8 +1510,8 @@ msgstr ""
 msgid "Distribute products is ok!"
 msgstr ""
 
-#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1147
-#: app/main/product.py:1177
+#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1170
+#: app/main/product.py:1200
 msgid "Name already exist!"
 msgstr ""
 
@@ -1794,35 +1794,35 @@ msgstr ""
 msgid "Import product is ok!"
 msgstr ""
 
-#: app/main/product.py:743
+#: app/main/product.py:749
 msgid "Product Sku isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1156
+#: app/main/product.py:1179
 msgid "Add product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1183
+#: app/main/product.py:1206
 msgid "Update product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1287 app/main/product.py:1315
+#: app/main/product.py:1311 app/main/product.py:1339
 msgid "Product isn't null!"
 msgstr ""
 
-#: app/main/product.py:1291 app/main/product.py:1319
+#: app/main/product.py:1315 app/main/product.py:1343
 msgid "Product can't authorization!"
 msgstr ""
 
-#: app/main/product.py:1297 app/main/product.py:1325
+#: app/main/product.py:1321 app/main/product.py:1349
 msgid "Product isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1308
+#: app/main/product.py:1332
 msgid "Select product is ok!"
 msgstr ""
 
-#: app/main/product.py:1332
+#: app/main/product.py:1356
 msgid "Cancel select is ok!"
 msgstr ""
 
@@ -2023,32 +2023,32 @@ msgstr ""
 msgid "Rated"
 msgstr ""
 
-#: app/models/product.py:35
+#: app/models/product.py:32
 #: app/templates/adminlte/applications/show_list.html:80
 msgid "No"
 msgstr ""
 
-#: app/models/product.py:36
+#: app/models/product.py:33
 msgid "Electricity"
 msgstr ""
 
-#: app/models/product.py:37
+#: app/models/product.py:34
 msgid "Liquid"
 msgstr ""
 
-#: app/models/product.py:38
+#: app/models/product.py:35
 msgid "Powder"
 msgstr ""
 
-#: app/models/product.py:43
+#: app/models/product.py:40
 msgid "Direct purchasing"
 msgstr ""
 
-#: app/models/product.py:44
+#: app/models/product.py:41
 msgid "Proxy"
 msgstr ""
 
-#: app/models/product.py:45
+#: app/models/product.py:42
 msgid "Exclusive"
 msgstr ""
 
@@ -2135,7 +2135,7 @@ msgstr ""
 #: app/templates/orders/show_list.html:291
 #: app/templates/products/show_groups.html:22
 #: app/templates/products/show_list.html:73
-#: app/templates/products/show_skus.html:61
+#: app/templates/products/show_skus.html:60
 #: app/templates/products/sku_of_orders.html:54
 #: app/templates/purchases/show_list.html:148
 #: app/templates/service/show_blacklist.html:13
@@ -2189,7 +2189,7 @@ msgstr ""
 #: app/templates/logistics/create_and_edit.html:17
 #: app/templates/logistics/create_edit_shipper.html:17
 #: app/templates/orders/create_and_edit.html:89
-#: app/templates/products/create_and_edit.html:93
+#: app/templates/products/create_and_edit.html:70
 #: app/templates/purchases/create_and_edit.html:155
 #: app/templates/settings/setting_site.html:9
 #: app/templates/stores/create_and_edit.html:13
@@ -2228,7 +2228,7 @@ msgstr ""
 #: app/templates/orders/import_express_result.html:12
 #: app/templates/orders/import_result.html:12
 #: app/templates/orders/preview_order.html:12
-#: app/templates/products/create_and_edit.html:99
+#: app/templates/products/create_and_edit.html:76
 #: app/templates/products/show_set_groups.html:36
 #: app/templates/purchases/create_and_edit.html:158
 #: app/templates/settings/setting_site.html:12
@@ -2318,14 +2318,14 @@ msgstr ""
 #: app/templates/orders/preview_order.html:115
 #: app/templates/orders/table_order.html:27
 #: app/templates/products/_modal_select_products.html:72
-#: app/templates/products/create_and_edit.html:408
+#: app/templates/products/create_and_edit.html:385
 #: app/templates/products/select_product_modal.html:28
 #: app/templates/products/show_groups.html:41
 #: app/templates/products/show_set_groups.html:66
 #: app/templates/products/show_skus.html:12
 #: app/templates/products/sku_of_orders.html:51
 #: app/templates/products/sku_of_orders.html:77
-#: app/templates/products/table_product.html:18
+#: app/templates/products/table_product.html:19
 #: app/templates/purchases/purchase_pay_table.html:18
 #: app/templates/purchases/purchase_table.html:17
 #: app/templates/service/show_blacklist.html:31
@@ -2347,7 +2347,7 @@ msgstr ""
 #: app/templates/warehouses/show_list.html:37
 #: app/templates/warehouses/stock_table.html:26
 #: app/templates/wxapp/service.html:70 app/templates/wxapp/setting.html:162
-#: app/templates/wxapp/version_list.html:92
+#: app/templates/wxapp/version_list.html:106
 msgid "Action"
 msgstr ""
 
@@ -2387,14 +2387,14 @@ msgstr ""
 #: app/templates/logistics/show_shippers.html:62
 #: app/templates/logistics/show_shippers.html:63
 #: app/templates/orders/table_order.html:95
-#: app/templates/products/create_and_edit.html:454
+#: app/templates/products/create_and_edit.html:431
 #: app/templates/products/show_groups.html:57
 #: app/templates/products/show_groups.html:60
 #: app/templates/products/show_groups.html:61
+#: app/templates/products/show_skus.html:57
 #: app/templates/products/show_skus.html:58
-#: app/templates/products/show_skus.html:59
-#: app/templates/products/table_product.html:63
-#: app/templates/products/table_product.html:64
+#: app/templates/products/table_product.html:67
+#: app/templates/products/table_product.html:68
 #: app/templates/purchases/purchase_pay_table.html:49
 #: app/templates/purchases/purchase_table.html:78
 #: app/templates/settings/show_assets.html:56
@@ -2604,7 +2604,7 @@ msgid "System Settings"
 msgstr ""
 
 #: app/templates/adminlte/system/_sub_menu.html:3
-#: app/templates/block/main-sidebar.html:396
+#: app/templates/block/main-sidebar.html:401
 #: app/templates/settings/_sub_menu.html:6
 msgid "Privilege manage"
 msgstr ""
@@ -2616,7 +2616,7 @@ msgstr ""
 
 #: app/templates/adminlte/system/_sub_menu.html:9
 #: app/templates/adminlte/system/show_list.html:21
-#: app/templates/block/main-sidebar.html:400
+#: app/templates/block/main-sidebar.html:405
 msgid "User List"
 msgstr ""
 
@@ -3209,34 +3209,38 @@ msgid "Subscribe App"
 msgstr ""
 
 #: app/templates/block/main-sidebar.html:382
+msgid "Coupon Tools"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:387
 #: app/templates/clients/show_list.html:33
 msgid "My Apps"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:391
+#: app/templates/block/main-sidebar.html:396
 msgid "Setting"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:406
+#: app/templates/block/main-sidebar.html:411
 #: app/templates/settings/_sub_menu.html:14
 #: app/templates/settings/show_roles.html:38
 msgid "Acl List"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:411
+#: app/templates/block/main-sidebar.html:416
 msgid "General Settings"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:414 app/templates/settings/site.html:6
+#: app/templates/block/main-sidebar.html:419 app/templates/settings/site.html:6
 msgid "Company Info"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:419
+#: app/templates/block/main-sidebar.html:424
 #: app/templates/currencies/show_currencies.html:23
 msgid "Currency List"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:429
+#: app/templates/block/main-sidebar.html:434
 msgid "SCRM"
 msgstr ""
 
@@ -3291,7 +3295,7 @@ msgstr ""
 
 #: app/templates/clients/client_detail.html:19
 #: app/templates/clients/client_detail.html:129
-#: app/templates/products/table_product.html:43
+#: app/templates/products/table_product.html:44
 #: app/templates/warehouses/in_table.html:44
 #: app/templates/warehouses/out_table.html:48
 #: app/templates/warehouses/scan_out_row.html:25
@@ -3600,7 +3604,7 @@ msgid "Date Added"
 msgstr ""
 
 #: app/templates/dashboard/index.html:112
-#: app/templates/products/create_and_edit.html:330
+#: app/templates/products/create_and_edit.html:307
 #: app/templates/purchases/purchase_pay_table.html:50
 msgid "View"
 msgstr ""
@@ -3670,7 +3674,7 @@ msgid "H5mall Manage"
 msgstr ""
 
 #: app/templates/h5mall/setting.html:30
-#: app/templates/products/create_and_edit.html:113
+#: app/templates/products/create_and_edit.html:90
 msgid "General Info"
 msgstr ""
 
@@ -3848,9 +3852,9 @@ msgstr ""
 #: app/templates/orders/_modal_split.html:25
 #: app/templates/orders/create_and_edit.html:232
 #: app/templates/orders/preview_order.html:109
-#: app/templates/products/create_and_edit.html:403
+#: app/templates/products/create_and_edit.html:379
 #: app/templates/products/select_product_modal.html:25
-#: app/templates/products/show_skus.html:7
+#: app/templates/products/show_skus.html:6
 #: app/templates/products/table_product.html:13
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:58
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:59
@@ -3919,10 +3923,10 @@ msgstr ""
 
 #: app/templates/orders/create_and_edit.html:281
 #: app/templates/orders/preview_order.html:156
-#: app/templates/products/create_and_edit.html:457
+#: app/templates/products/create_and_edit.html:434
 #: app/templates/products/select_result.html:25
 #: app/templates/products/select_result_for_order.html:39
-#: app/templates/products/show_skus.html:62
+#: app/templates/products/show_skus.html:61
 #: app/templates/purchases/create_and_edit.html:43
 #: app/templates/purchases/create_and_edit.html:300
 #: app/templates/purchases/create_and_edit.html:301
@@ -4119,50 +4123,54 @@ msgstr ""
 msgid "Category manage"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:87
+#: app/templates/products/create_and_edit.html:64
 msgid "Add Product"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:89
+#: app/templates/products/create_and_edit.html:66
 msgid "Edit Product"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:96
+#: app/templates/products/create_and_edit.html:73
 msgid "Save And Continue"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:119
+#: app/templates/products/create_and_edit.html:96
 #: app/templates/purchases/purchase_modal.html:46
 #: app/templates/purchases/purchase_tr_time.html:8
 msgid "SKU"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:130
+#: app/templates/products/create_and_edit.html:102
+msgid "Image & Text"
+msgstr ""
+
+#: app/templates/products/create_and_edit.html:107
 msgid "Customs Declaration"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:142
+#: app/templates/products/create_and_edit.html:119
 msgid "Select category..."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:154
+#: app/templates/products/create_and_edit.html:131
 msgid "Select brand..."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:167
+#: app/templates/products/create_and_edit.html:144
 msgid "System defaults are generated, and modifications are not recommended"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:209
-#: app/templates/products/create_and_edit.html:369
+#: app/templates/products/create_and_edit.html:186
+#: app/templates/products/create_and_edit.html:346
 msgid "Please note the currency unit."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:276
+#: app/templates/products/create_and_edit.html:253
 msgid "Product Size（LxWxH）"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:394
+#: app/templates/products/create_and_edit.html:371
 #: app/templates/products/modal_sku.html:6
 msgid "Add SKU"
 msgstr ""
@@ -4228,15 +4236,15 @@ msgstr ""
 msgid "Sku Quantity"
 msgstr ""
 
-#: app/templates/products/table_product.html:33
+#: app/templates/products/table_product.html:34
 msgid "Recommended"
 msgstr ""
 
-#: app/templates/products/table_product.html:41
+#: app/templates/products/table_product.html:42
 msgid "sku"
 msgstr ""
 
-#: app/templates/products/table_product.html:43
+#: app/templates/products/table_product.html:44
 msgid "Product Sku"
 msgstr ""
 
@@ -4927,7 +4935,7 @@ msgstr ""
 msgid "Wechat Account"
 msgstr ""
 
-#: app/templates/wxapp/index.html:17 app/templates/wxapp/version_list.html:49
+#: app/templates/wxapp/index.html:17 app/templates/wxapp/version_list.html:59
 #: app/templates/wxapp/wxtemplates.html:34
 msgid "Help?"
 msgstr ""
@@ -4939,7 +4947,7 @@ msgstr ""
 
 #: app/templates/wxapp/service.html:21
 #: app/templates/wxapp/service_setting.html:22
-#: app/templates/wxapp/setting.html:41 app/templates/wxapp/version_list.html:52
+#: app/templates/wxapp/setting.html:41 app/templates/wxapp/version_list.html:62
 #: app/templates/wxapp/wxtemplates.html:37
 msgid "Back"
 msgstr ""
@@ -4960,7 +4968,7 @@ msgstr ""
 msgid "wechat account"
 msgstr ""
 
-#: app/templates/wxapp/version_list.html:46
+#: app/templates/wxapp/version_list.html:56
 msgid "Wxapp Version"
 msgstr ""
 
