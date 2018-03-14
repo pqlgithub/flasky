@@ -35,6 +35,16 @@
 				}
 			});
 		});
+		
+		$('.btn.btn-modify-domain').click(function () {
+			$.post("{{ url_for('main.wxapp_modify_domain') }}", { auth_app_id: auth_wxapp_id, csrf_token: mixpus.csrf_token }, function (res) {
+				if (res.success) {
+					mixpus.show_ok_message('设置成功！')
+				} else {
+					mixpus.show_error_message(res.status.message);
+				}
+			});
+		});
 	});
 </script>
 {% endblock %}
@@ -54,6 +64,10 @@
 			</a>
 		</span>
 	</h2>
+	
+	<a class="btn btn-modify-domain btn-default" href="javascript:;">
+		<i class="fa fa-link"></i> 更新服务域名
+	</a>
 	
 	<a class="btn btn-upload-code btn-mixpus" href="javascript:;">
 		<i class="fa fa-cloud-upload"></i> 上传代码

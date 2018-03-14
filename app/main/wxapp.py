@@ -528,7 +528,38 @@ def wxapp_category():
                            auth_app_id=auth_app_id)
 
 
+@main.route('/wxapps/modify_domain', methods=['POST'])
+def wxapp_modify_domain():
+    """修改小程序服务器域名"""
+    auth_app_id = request.form.get('auth_app_id')
+    if not auth_app_id:
+        abort(400)
 
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+    try:
+
+        # 设置小程序服务器域名
+        action = 'add'
+        request_domain = ["https://fx.taihuoniao.com", "https://beast.taihuoniao.com"]
+        wsrequest_domain = ["wss://fx.taihuoniao.com", "wss://beast.taihuoniao.com"]
+        upload_domain = ["https://fx.taihuoniao.com", "https://beast.taihuoniao.com"]
+        download_domain = ["https://fx.taihuoniao.com", "https://beast.taihuoniao.com"]
+
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.modify_domain(action, request_domain, wsrequest_domain, upload_domain, download_domain)
+
+        # 设置小程序业务域名
+        webviewdomain = ["https://fx.taihuoniao.com", "https://onezao.taihuoniao.com"]
+        result = open3rd.set_webview_domain(action, webviewdomain)
+
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp commit is error: %s' % err)
+        return status_response(False, {
+            'code': 500,
+            'message': err
+        })
+    return status_response()
 
 
 @main.route('/wxapps/tester', methods=['GET', 'POST'])
