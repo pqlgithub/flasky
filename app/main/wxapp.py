@@ -428,7 +428,11 @@ def wxapp_submit_audit():
 
         pages = open3rd.get_pages()
 
+        current_app.logger.warn('pages: %s' % pages)
+
         categories = open3rd.get_category()
+
+        current_app.logger.warn('categories: %s' % categories)
 
         tags = '创意 原创设计 智能'
 
@@ -440,6 +444,8 @@ def wxapp_submit_audit():
             item['title'] = '精选'
 
             item_list = [item]
+
+            current_app.logger.warn('item_list: %s' % item_list)
 
             result = open3rd.submit_audit(item_list)
     except WxAppError as err:
