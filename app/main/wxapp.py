@@ -319,7 +319,7 @@ def wxapp_category():
 @main.route('/wxapps/get_pages', methods=['GET', 'POST'])
 def wxapp_pages():
     """小程序提交代码的页面配置"""
-    auth_app_id = request.form.get('auth_app_id')
+    auth_app_id = request.values.get('auth_app_id')
 
     if not auth_app_id:
         abort(400)
@@ -345,7 +345,7 @@ def wxapp_pages():
 @main.route('/wxapps/commit', methods=['POST'])
 def wxapp_commit():
     """上传小程序代码"""
-    auth_app_id = request.form.get('auth_app_id')
+    auth_app_id = request.values.get('auth_app_id')
 
     if not auth_app_id:
         abort(400)
@@ -416,7 +416,7 @@ def wxapp_commit():
 @main.route('/wxapps/submit_audit', methods=['POST'])
 def wxapp_submit_audit():
     """小程序提交审核"""
-    auth_app_id = request.form.get('auth_app_id')
+    auth_app_id = request.values.get('auth_app_id')
     if not auth_app_id:
         abort(400)
 
@@ -438,8 +438,8 @@ def wxapp_submit_audit():
 
         # todo: 提交审核项的一个列表（至少填写1项，至多填写5项）
         if categories:
-            item = categories[0]
-            item['address'] = pages[0]
+            item = categories.category_list[0]
+            item['address'] = pages.page_list[0]
             item['tag'] = tags
             item['title'] = '精选'
 
