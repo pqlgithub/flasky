@@ -51,6 +51,8 @@
 			$('input[name=next_action]').val('continue_save');
 			$('#products-form').submit();
 		});
+		
+		
 	});
 </script>
 {% endblock %}
@@ -285,7 +287,7 @@
 				<div class="form-group">
 					{{ form.content.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
-						{{ form.content(id="mix_editor", rows="20", class="form-control ckeditor")}}
+						{{ form.content(id="fx-editor", rows="20", class="form-control ckeditor")}}
 					</div>
 				</div>
 
