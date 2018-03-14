@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-    views.py
-	~~~~~~~~~~~~~~
-	公共服务接口
-
-	:copyright: (c) 2017 by mic.
-"""
 from flask import request, abort, g, url_for
-from app.models import User, Product, Country, Banner
+from app.models import User, Product, Country, Banner, BannerImage
 
 from .. import db
 from . import api
@@ -38,7 +31,7 @@ def get_slide():
     if banner_spot is None:
         abort(404)
 
-    banners = banner_spot.images.order_by('updated_at desc').limit(per_page).all()
+    banners = banner_spot.images.order_by(BannerImage.sort_order.desc()).limit(per_page).all()
 
     return full_response(R200_OK, {
         'slides': [banner.to_json() for banner in banners],
