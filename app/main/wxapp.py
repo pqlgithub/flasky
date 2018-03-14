@@ -471,8 +471,8 @@ def wxapp_submit_audit():
 @main.route('/wxapps/audit_status', methods=['POST'])
 def wxapp_audit_status():
     """查询某个指定版本的审核状态"""
-    auth_app_id = request.form.get('auth_app_id')
-    audit_id = request.form.get('audit_id')
+    auth_app_id = request.values.get('auth_app_id')
+    audit_id = request.values.get('audit_id')
     if not auth_app_id or not audit_id:
         abort(400)
 
@@ -485,12 +485,18 @@ def wxapp_audit_status():
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
-            'message': err
+            'message': str(err)
         })
 
-    # 更新
+    # 更新状态
     wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
-    wx_version.status = result.status
+
+    if result.status == 1:  # 审核失败
+        wx_version.mark_audit_fail(result.reason, int(timestamp()))
+    elif result.status == 0:  # 审核成功
+        wx_version.mark_audit_success(int(timestamp()))
+    else:  # 审核中
+        wx_version.status = result.status
 
     db.session.commit()
 

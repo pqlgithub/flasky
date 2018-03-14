@@ -67,6 +67,7 @@
       <w>sortlist</w>
       <w>sticked</w>
       <w>stmp</w>
+      <w>succ</w>
       <w>tablename</w>
       <w>taihuoniao</w>
       <w>tencent</w>
@@ -78,6 +79,7 @@
       <w>updateauthorized</w>
       <w>uploaddomain</w>
       <w>visitstatus</w>
+      <w>weapp</w>
       <w>webview</w>
       <w>webviewdomain</w>
       <w>wechat</w>

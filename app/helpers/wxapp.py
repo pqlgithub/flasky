@@ -423,8 +423,9 @@ class WxaOpen3rd(object):
         result = Map(result.json())
         if result.get('errcode') and result.get('errcode') != 0:
             current_app.logger.warn('WxaOpen3rd res code: %d' % result.get('errcode'))
-            raise WxAppError(result.get('errmsg'))
-
+            errmsg = result.get('errmsg').split(':')
+            raise WxAppError(errmsg[0])
+        
         return result
 
 

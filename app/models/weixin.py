@@ -34,6 +34,13 @@ WXAPP_STATUS = [
     (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
+# 产品的状态
+WXAPP_AUDIT_STATUS = [
+    (0, lazy_gettext('Success'), 'success'),
+    (1, lazy_gettext('Fail'), 'danger'),
+    (2, lazy_gettext('Auditing'), 'warning')
+]
+
 
 class WxMiniApp(db.Model):
     """授权方账号-小程序基本信息"""
@@ -312,10 +319,16 @@ class WxVersion(db.Model):
     template_id = db.Column(db.String(32))
     # 审核 id
     audit_id = db.Column(db.String(16))
-    # 审核状态
-    audit_status = db.Column(db.String(32))
+    # 审核状态, 其中0为审核成功，1为审核失败，2为审核中
+    audit_status = db.Column(db.String(32), default=2)
     # 审核时间
     audit_at = db.Column(db.Integer, default=0)
+    # 审核失败时间
+    fail_at = db.Column(db.Integer, default=0)
+    # 通过时间
+    success_at = db.Column(db.Integer, default=0)
+    # 失败的原因
+    fail_reason = db.Column(db.Text())
     # 说明
     description = db.Column(db.String(200))
     # 代码版本号，开发者可自定义
@@ -324,6 +337,23 @@ class WxVersion(db.Model):
     user_desc = db.Column(db.String(200))
 
     created_at = db.Column(db.Integer, default=timestamp)
+
+    @property
+    def status_label(self):
+        for s in WXAPP_AUDIT_STATUS:
+            if s[0] == int(self.audit_status):
+                return s
+
+    def mark_audit_success(self, success_time):
+        """更新审核通过"""
+        self.audit_status = 0
+        self.success_at = success_time
+
+    def mark_audit_fail(self, reason, fail_time):
+        """审核失败"""
+        self.audit_status = 1
+        self.fail_reason = reason
+        self.fail_at = fail_time
 
     def __repr__(self):
         return '<WxVersion {}>'.format(self.audit_id)

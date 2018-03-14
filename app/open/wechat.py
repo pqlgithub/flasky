@@ -5,7 +5,7 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp
+from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
 from app.tasks import reply_wxa_service
 from app.utils import Master, custom_response, timestamp
@@ -110,6 +110,7 @@ def receive_message(appid):
     nonce = request.values.get('nonce')
     echostr = request.values.get('echostr')
     msg_signature = request.values.get('msg_signature')
+
     post_data = request.get_data()
 
     current_app.logger.warn('post data: %s' % post_data)
@@ -120,25 +121,26 @@ def receive_message(appid):
 
     current_app.logger.warn('To user name: %s' % to_user)
 
-    # 微信自动测试
-    if to_user == current_app.config['WX_TEST_USERNAME']:
-        token = current_app.config['WX_APP_TOKEN']
-        encoding_aes_key = current_app.config['WX_APP_DES_KEY']
-        auth_app_id = current_app.config['WX_APP_ID']
+    token = current_app.config['WX_APP_TOKEN']
+    encoding_aes_key = current_app.config['WX_APP_DES_KEY']
+    auth_app_id = current_app.config['WX_APP_ID']
 
-        # 解密接口
-        decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
-        ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce, 'service_message')
-        # 解密成功
-        if ret == 0:
-            # 更新
-            current_app.logger.warn("decrypt content: %s" % decrypt_content)
-            # 解析内容
-            xml_tree = ET.fromstring(decrypt_content)
+    # 解密接口
+    decrypt = WXBizMsgCrypt(token, encoding_aes_key, auth_app_id)
+    ret, decrypt_content = decrypt.DecryptMsg(post_data, msg_signature, time_stamp, nonce, 'service_message')
 
-            msg_type = xml_tree.find('MsgType').text
+    # 更新
+    current_app.logger.warn("decrypt content: %s" % decrypt_content)
 
-            if msg_type == 'text':  # 文本消息
+    # 解密成功
+    if ret == 0:
+        # 解析内容
+        xml_tree = ET.fromstring(decrypt_content)
+        msg_type = xml_tree.find('MsgType').text
+
+        if msg_type == 'text':  # 文本消息
+            # 微信自动测试
+            if to_user == current_app.config['WX_TEST_USERNAME']:
                 content = xml_tree.find('Content').text
                 if content.startswith('QUERY_AUTH_CODE'):
                     auth_info = content.split(':')
@@ -161,6 +163,26 @@ def receive_message(appid):
                         current_app.logger.warn('微信自动测试出错: %s' % err)
 
                     return 'success'
+        elif msg_type == 'event':  # 事件消息
+            event = xml_tree.find('Event').text
+            if event == 'weapp_audit_success':  # 小程序审核通过
+                success_time = xml_tree.find('SuccTime').text
+
+                wx_version = WxVersion.query.filter_by(auth_app_id=appid).first()
+                if wx_version:
+                    wx_version.mark_audit_success(success_time)
+
+                    db.session.commit()
+
+            elif event == 'weapp_audit_fail':  # 小程序审核失败
+                fail_reason = xml_tree.find('Reason').text
+                fail_time = xml_tree.find('FailTime').text
+
+                wx_version = WxVersion.query.filter_by(auth_app_id=appid).first()
+                if wx_version:
+                    wx_version.mark_audit_fail(fail_reason, fail_time)
+
+                    db.session.commit()
 
 
 @open.route('/wx/pay_notify', methods=['POST'])

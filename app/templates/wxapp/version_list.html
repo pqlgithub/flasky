@@ -26,6 +26,19 @@
 			});
 		});
 		
+		// 查询状态
+		$('.btn-query-status').click(function () {
+			var audit_id = $(this).data('audit_id');
+			$.post("{{ url_for('main.wxapp_audit_status') }}", { auth_app_id: auth_wxapp_id, audit_id: audit_id, csrf_token: mixpus.csrf_token }, function (res) {
+				if (res.success) {
+					mixpus.show_ok_message('已查询！');
+					window.location.reload();
+				} else {
+					mixpus.show_error_message(res.status.message);
+				}
+			});
+		});
+		
 		$('.btn.btn-release').click(function () {
 			$.post("{{ url_for('main.wxapp_release') }}", { auth_app_id: auth_wxapp_id, csrf_token: mixpus.csrf_token }, function (res) {
 				if (res.success) {
@@ -103,6 +116,9 @@
 								说明
 							</th>
 							<th class="text-right">
+								提交时间
+							</th>
+							<th class="text-right">
 								{{ _('Action') }}
 							</th>
 						</tr>
@@ -111,13 +127,21 @@
 						{% for version in versions %}
 						<tr class="active">
 							<td>
-								
+								{% if version.success_at %}
+									{{ version.success_at|timestamp2string() }}
+								{% endif %}
 							</td>
-							<td>
-								
+							<td class="text-center">
+								{{ version.audit_id }}
 							</td>
-							<td>
+							<td class="text-center">
+								<span class="indicator {{ version.status_label[2] }}">{{ version.status_label[1] }}</span>
 								
+								{% if version.audit_status == 1 %}
+								<p class="m-t-10">
+									{{ version.fail_reason }}
+								</p>
+								{% endif %}
 							</td>
 							<td class="text-center">
 								{{ version.template_id }}
@@ -132,6 +156,14 @@
 								{{ version.user_desc }} - {{ version.user_version }}
 							</td>
 							<td class="text-right">
+								{{ version.audit_at|timestamp2string() }}
+							</td>
+							<td class="text-right">
+								{% if version.audit_status != 0 %}
+								<a class="btn-query-status btn-link m-r-10" href="javascript:;" data-audit_id="{{ version.audit_id }}">
+									<i class="fa fa-clock-o"></i> 查询状态
+								</a>
+								{% endif %}
 								<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}">
 									<i class="fa fa-view"></i> 预览
 								</a>
