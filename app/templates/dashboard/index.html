@@ -3,8 +3,7 @@
 {% block mainbar %}
 <div class="page-list">
 	<div class="page-header">
-		{{ _('Overview') }}
-		<small>{{ _('System Dashboard') }}</small>
+		{{ _('Overview') }} <a href="{{ url_for('site.pricing') }}" target="_blank" class="badge badge-mixpus">{{ current_user.edition_label }}</a>
 	</div>
 	<div class="row">
 		<div class="col-md-3">
