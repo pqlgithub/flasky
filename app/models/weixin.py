@@ -340,6 +340,10 @@ class WxVersion(db.Model):
 
     @property
     def status_label(self):
+        # 设置默认值
+        if not self.audit_status:
+            self.audit_status = 2
+
         for s in WXAPP_AUDIT_STATUS:
             if s[0] == int(self.audit_status):
                 return s

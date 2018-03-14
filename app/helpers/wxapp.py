@@ -425,7 +425,7 @@ class WxaOpen3rd(object):
             current_app.logger.warn('WxaOpen3rd res code: %d' % result.get('errcode'))
             errmsg = result.get('errmsg').split(':')
             raise WxAppError(errmsg[0])
-        
+
         return result
 
 
