@@ -207,7 +207,7 @@ def grant_coupons():
         db.session.add(user_coupon)
 
         # 同步更新优惠券领取总数
-        coupon.total_count += 1
+        coupon.got_count += 1
 
         db.session.commit()
 
