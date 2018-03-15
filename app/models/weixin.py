@@ -348,6 +348,11 @@ class WxVersion(db.Model):
             if s[0] == int(self.audit_status):
                 return s
 
+    @property
+    def status(self):
+        """状态转化为整型"""
+        return int(self.audit_status) if self.audit_status else 2
+
     def mark_audit_success(self, success_time):
         """更新审核通过"""
         self.audit_status = 0

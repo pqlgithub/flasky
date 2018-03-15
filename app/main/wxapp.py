@@ -282,7 +282,7 @@ def wxapp_qrcode():
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
-            'message': err
+            'message': str(err)
         })
 
     return 'ok'
@@ -334,7 +334,7 @@ def wxapp_pages():
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
-            'message': err
+            'message': str(err)
         })
 
     return render_template('wxapp/_page_modal.html',
@@ -452,7 +452,7 @@ def wxapp_submit_audit():
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
-            'message': err
+            'message': str(err)
         })
 
     if result:
@@ -523,7 +523,7 @@ def wxapp_release():
         current_app.logger.warn('Wxapp commit is error: %s' % err)
         return status_response(False, {
             'code': 500,
-            'message': err
+            'message': str(err)
         })
     return status_response()
 

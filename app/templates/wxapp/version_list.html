@@ -132,12 +132,12 @@
 								{% endif %}
 							</td>
 							<td class="text-center">
-								{{ version.audit_id }}
+								{{ version.audit_id|supress_none }}
 							</td>
 							<td class="text-center">
 								<span class="indicator {{ version.status_label[2] }}">{{ version.status_label[1] }}</span>
 								
-								{% if version.audit_status == 1 %}
+								{% if version.status == 1 %}
 								<p class="m-t-10">
 									{{ version.fail_reason }}
 								</p>
@@ -159,7 +159,7 @@
 								{{ version.audit_at|timestamp2string() }}
 							</td>
 							<td class="text-right">
-								{% if version.audit_status != 0 %}
+								{% if version.status != 0 %}
 								<a class="btn-query-status btn-link m-r-10" href="javascript:;" data-audit_id="{{ version.audit_id }}">
 									<i class="fa fa-clock-o"></i> 查询状态
 								</a>
