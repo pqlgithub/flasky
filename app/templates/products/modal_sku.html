@@ -140,12 +140,12 @@
 				$('#sku-submit-btn').prop('disabled', false);
 			},
 			success: function (result) {
-				console.log(result);
 				if (result.success) {
 					$('#sku-modal').modal('hide');
 					$('#product-skus').load('{{ url_for("main.show_skus", rid=product.serial_no) }}');
 				} else {
-					$('#sku-form').prepend(mixpus.display_alert(result.status.message))
+					
+					$('#sku-form').prepend(mixpus.display_alert(result.status.errors))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

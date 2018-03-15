@@ -109,6 +109,7 @@ def create_app(config_name):
     csrf.exempt(api_1_0_blueprint)
 
     from .main.filters import timestamp2string, short_filename, supress_none, break_line
+    from .utils import JSONEncoder
     app.add_template_filter(timestamp2string, 'timestamp2string')
     app.add_template_filter(short_filename, 'short_filename')
     app.add_template_filter(supress_none, 'supress_none')
@@ -116,5 +117,7 @@ def create_app(config_name):
 
     # Jinja2 导入我们的类作为所有模板的一个全局变量
     app.jinja_env.globals['momentjs'] = Momentjs
+
+    app.json_encoder = JSONEncoder
 
     return app

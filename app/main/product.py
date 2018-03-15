@@ -13,7 +13,7 @@ from app.models import Product, Supplier, Category, ProductSku, ProductContent, 
     Currency, Order, OrderItem, Brand, ProductPacket
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
-    custom_response, import_product_from_excel
+    custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
 
@@ -694,7 +694,11 @@ def edit_sku(rid, s_id):
 
     sku = ProductSku.query.get_or_404(s_id)
     form = ProductSkuForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            error_list = form_errors_list(form)
+            return form_errors_response(error_list)
+
         # 验证69码是否重复
         id_code = form.id_code.data
 
@@ -707,13 +711,15 @@ def edit_sku(rid, s_id):
         sku.cost_price = form.cost_price.data
         sku.price = form.price.data
         sku.sale_price = form.sale_price.data
-        sku.region_id = product.region_id
         sku.stock_quantity = form.stock_quantity.data
         sku.remark = form.remark.data
+        sku.region_id = product.region_id
 
         db.session.commit()
 
         # run the task
+        current_app.logger.warn('uid: %d, pid: %d, spid: %d' % (sku.master_uid, sku.product_id, sku.supplier_id))
+
         _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
 
         return full_response(True, R201_CREATED, sku.to_json())
@@ -885,7 +891,11 @@ def create_category():
 def edit_category(id):
     category = Category.query.get_or_404(id)
     form = EditCategoryForm(category)
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            flash_errors(form)
+            return redirect(url_for('.show_categories'))
+
         form.populate_obj(category)
 
         db.session.commit()
@@ -896,8 +906,6 @@ def edit_category(id):
         flash('Edit category is ok!', 'success')
 
         return redirect(url_for('.show_categories'))
-    else:
-        current_app.logger.debug(form.errors)
 
     mode = 'edit'
     form.name.data = category.name

@@ -208,10 +208,14 @@ mixpus.hook_pjax_link = function () {
 	});
 };
 
-mixpus.display_alert = function (message) {
+mixpus.display_alert = function (messages) {
 	var html = '<div class="alert alert-warning alert-dismissible fade in" role="alert"> ';
 	html += '<button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
-	html += '<strong>'+ message +'</strong>';
+	
+	for (var i=0; i<messages.length; i++) {
+		html += '<p><strong>'+ messages[i]['field'] +':</strong> '+ messages[i]['message'] +'</p>';
+	}
+	
 	html += '</div>';
 
 	return html

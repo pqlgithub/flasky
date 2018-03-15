@@ -4,10 +4,14 @@ import time
 import xlrd
 import random
 import hashlib
+import speaklater
 from datetime import datetime
 from string import digits, ascii_letters
 from flask import jsonify, current_app, request, flash
 from flask_login import current_user
+from flask._compat import text_type
+from flask.json import JSONEncoder as BaseEncoder
+from speaklater import _LazyString
 
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
@@ -17,6 +21,14 @@ R400_BADREQUEST = { 'code': 400, 'message': 'Bad request.' }
 R403_FORBIDDEN = { 'code': 403, 'message': 'You can not do this.' }
 R404_NOTFOUND = { 'code': 404, 'message': 'No result matched.' }
 R500_BADREQUEST = { 'code': 500, 'message': 'Request failed.' }
+
+
+class JSONEncoder(BaseEncoder):
+    def default(self, o):
+        if isinstance(o, _LazyString):
+            return text_type(o)
+
+        return BaseEncoder.default(self, o)
 
 
 class Master:
@@ -160,13 +172,39 @@ def custom_status(message, code=400):
     }
 
 
+def form_errors_response(errors, code=500):
+    """表单验证出错返回结果"""
+    return jsonify({
+        'success': False,
+        'status': {
+            'code': code,
+            'errors': errors
+        }
+    })
+
+
 def flash_errors(form):
+    """表单错误转化为字符串flash"""
     for field, errors in form.errors.items():
         for error in errors:
-            flash(u"Error in the %s field - %s" % (
+            flash(u"%s: %s" % (
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def form_errors_list(form):
+    """表单错误转化为字符串"""
+    err_list = []
+    for field, errors in form.errors.items():
+        for error in errors:
+            err_list.append({
+                'field': getattr(form, field).label.text,
+                'message': error
+            })
+    current_app.logger.warn(err_list)
+    return err_list
+
 
 def get_merged_cells(sheet):
     """
@@ -187,11 +225,11 @@ def get_merged_cells_value(sheet, row_index, col_index):
     """
     merged = get_merged_cells(sheet)
     for (rlow, rhigh, clow, chigh) in merged:
-        if (row_index >= rlow and row_index < rhigh):
-            if (col_index >= clow and col_index < chigh):
+        if row_index >= rlow and row_index < rhigh:
+            if col_index >= clow and col_index < chigh:
                 cell_value = sheet.cell_value(rlow, clow)
-                return (cell_value, rlow)
-    return (None, None)
+                return cell_value, rlow
+    return None, None
 
 
 def import_product_from_excel(file_path):
@@ -287,14 +325,14 @@ def split_huazhu_address(address_str):
     
     address = '-'.join(addr_ary)
     
-    return (province, city, area, address)
+    return province, city, area, address
 
 
 def make_cache_key(*args, **kwargs):
     """生成缓存唯一Key"""
     path = request.path
     args = str(hash(frozenset(request.args.items())))
-    #lang = get_locale()
+    # lang = get_locale()
     lang = 'zh_cn'
     return (path + args + lang).encode('utf-8')
 
