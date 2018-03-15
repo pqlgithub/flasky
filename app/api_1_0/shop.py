@@ -31,5 +31,8 @@ def get_wxapp():
     if wxapp is None:
         abort(404)
 
-    return full_response(R200_OK, wxapp.to_json())
+    wxapp_info = wxapp.to_json()
+    wxapp_info['banner'] = ''
+
+    return full_response(R200_OK, wxapp_info)
 
