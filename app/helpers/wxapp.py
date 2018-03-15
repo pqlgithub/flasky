@@ -283,6 +283,22 @@ class WxaOpen3rd(object):
 
         res = requests.get(url)
 
+        current_app.logger.warn(res)
+
+        return res
+
+    def get_wxacode(self, path, width=430):
+        """获取小程序码"""
+        url = '%s/getwxacode?access_token==%s' % (self.wxa_host_url, self.access_token)
+        payload = {
+            path: urllib.parse.urlencode(path),
+            width: width
+        }
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        current_app.logger.warn(res)
+
         return res
 
     def get_category(self):

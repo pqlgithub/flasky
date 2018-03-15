@@ -35,6 +35,7 @@
       <w>getgrayreleaseplan</w>
       <w>gettemplatedraftlist</w>
       <w>gettemplatelist</w>
+      <w>getwxacode</w>
       <w>getwxasearchstatus</w>
       <w>githup</w>
       <w>gmail</w>
@@ -87,6 +88,7 @@
       <w>wishlist</w>
       <w>wsrequest</w>
       <w>wsrequestdomain</w>
+      <w>wxacode</w>
       <w>wxapi</w>
       <w>wxapp</w>
       <w>wxapps</w>

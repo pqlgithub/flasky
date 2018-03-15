@@ -279,13 +279,37 @@ def wxapp_qrcode():
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
         result = open3rd.get_qrcode()
     except WxAppError as err:
-        current_app.logger.warn('Wxapp commit is error: %s' % err)
+        current_app.logger.warn('Wxapp qrcode is error: %s' % err)
         return status_response(False, {
             'code': 500,
             'message': str(err)
         })
 
-    return 'ok'
+    return result
+
+
+@main.route('/wxapps/wxacode')
+def wxapp_wxacode():
+    """获取小程序码"""
+    auth_app_id = request.values.get('auth_app_id')
+    if not auth_app_id:
+        abort(400)
+
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    try:
+        path = 'page/index/index'
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.get_wxacode(path)
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp wxacode is error: %s' % err)
+        return status_response(False, {
+            'code': 500,
+            'message': str(err)
+        })
+    
+    return result
 
 
 @main.route('/wxapps/get_category', methods=['GET', 'POST'])
@@ -410,7 +434,7 @@ def wxapp_commit():
         current_app.logger.warn('Wxapp commit error: %s' % str(err))
         db.session.rollback()
         return custom_response(False, '上传代码失败，请稍后重试！', 400)
-    
+
     return status_response()
 
 
