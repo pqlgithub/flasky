@@ -50,6 +50,7 @@
       <w>pldelete</w>
       <w>plupload</w>
       <w>preauthcode</w>
+      <w>proc</w>
       <w>prpcrypt</w>
       <w>psql</w>
       <w>pymydsql</w>
@@ -69,6 +70,7 @@
       <w>sticked</w>
       <w>stmp</w>
       <w>succ</w>
+      <w>supervisorctl</w>
       <w>tablename</w>
       <w>taihuoniao</w>
       <w>tencent</w>

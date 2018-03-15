@@ -308,7 +308,7 @@ def wxapp_wxacode():
             'code': 500,
             'message': str(err)
         })
-    
+
     return result
 
 

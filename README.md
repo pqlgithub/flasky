@@ -83,6 +83,12 @@ Supervisor运行于 `Python2.7` 环境下：
 查看Supervisor的状态:
 
     supervisorctl -c supervisor.conf status
+    
+重启某个case:
+    
+    supervisorctl restart backend
+    
+    supervisorctl restart celery
 
 ## 常用扩展说明
 ** flower - 针对Celery的基于网页的实时管理工具, 启动命令：

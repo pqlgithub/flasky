@@ -253,3 +253,6 @@ config = {
     'production': ProductionConfig,
     'default': DevelopmentConfig
 }
+
+conf_name = os.getenv('FLASK_CONFIG') or 'default'
+running_config = config[conf_name]
