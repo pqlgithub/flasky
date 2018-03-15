@@ -5,13 +5,13 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="Access-Control-Allow-Origin" content="*">
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 		{% if title %}
 		<title>{{ title }} - {{ _('moebeast') }}</title>
 		{% else %}
 		<title>{{ _('moebeast') }} - 小程序解决方案</title>
 		{% endif %}
-
 		<style type="text/css">
             @font-face {
                 font-family: 'Fineix';
@@ -36,7 +36,7 @@
 				src: url('/static/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/static/fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/static/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/static/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/static/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 			}
 		</style>
-
+		
 		{% assets "admin_css" %}
 		<link href="{{ ASSET_URL }}" type="text/css"  rel="stylesheet">
   		{% endassets %}
