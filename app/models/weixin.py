@@ -321,7 +321,7 @@ class WxVersion(db.Model):
     audit_id = db.Column(db.String(16))
     # 审核状态, 其中0为审核成功，1为审核失败，2为审核中
     audit_status = db.Column(db.String(32), default=2)
-    # 审核时间
+    # 提交时间
     audit_at = db.Column(db.Integer, default=0)
     # 审核失败时间
     fail_at = db.Column(db.Integer, default=0)

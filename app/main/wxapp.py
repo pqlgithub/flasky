@@ -401,7 +401,8 @@ def wxapp_commit():
             auth_app_id=auth_app_id,
             template_id=mini_app.template_id,
             user_version=user_version,
-            user_desc=user_desc
+            user_desc=user_desc,
+            audit_at=int(timestamp())
         )
         db.session.add(new_version)
         db.session.commit()
@@ -409,7 +410,7 @@ def wxapp_commit():
         current_app.logger.warn('Wxapp commit error: %s' % str(err))
         db.session.rollback()
         return custom_response(False, '上传代码失败，请稍后重试！', 400)
-
+    
     return status_response()
 
 
