@@ -314,6 +314,37 @@
                      </ul>
                  </div>
              </li>
+			 
+             <li class="{% if sub_menu == 'app_store'%}active {% endif %} treeview">
+                 <a href="{{ url_for('main.show_apps') }}">
+                     <i class="fa fa-shopping-bag fa-2x"></i>
+                     <span>{{ _('App Store') }}</span>
+                 </a>
+
+                 <div class="treeview-menu tree-2x">
+                     <ul class="subtree">
+                         <li class="header">{{ _('App Manage') }}</li>
+                         <li>
+                             <a href="{{ url_for('main.show_apps') }}" class="pjax">
+                                 {{ _('All List') }}
+                             </a>
+                         </li>
+                     </ul>
+                     <ul class="subtree">
+                         <li class="header">{{ _('Subscribe App') }}</li>
+                         <li>
+                             <a href="{{ url_for('main.show_coupons') }}" class="pjax">
+                                 {{ _('Coupon Tools') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('main.show_clients') }}" class="pjax">
+                                 {{ _('My Apps') }}
+                             </a>
+                         </li>
+                     </ul>
+                 </div>
+             </li>
 
             <li class="{% if sub_menu == 'finance'%}active {% endif %} treeview">
                 <a href="#">
@@ -365,36 +396,7 @@
                      </ul>
                  </div>
             </li>
-            <li class="{% if sub_menu == 'app_store'%}active {% endif %} treeview">
-                <a href="{{ url_for('main.show_apps') }}">
-                    <i class="fa fa-shopping-bag fa-2x"></i>
-                    <span>{{ _('App Store') }}</span>
-                </a>
-
-                <div class="treeview-menu tree-2x">
-                    <ul class="subtree">
-                        <li class="header">{{ _('App Manage') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.show_apps') }}" class="pjax">
-                                {{ _('All List') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="subtree">
-                        <li class="header">{{ _('Subscribe App') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.show_coupons') }}" class="pjax">
-                                {{ _('Coupon Tools') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.show_clients') }}" class="pjax">
-                                {{ _('My Apps') }}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+			
             <li class="{% if sub_menu == 'settings'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.site') }}">
                     <i class="fa fa-gears fa-2x"></i>
