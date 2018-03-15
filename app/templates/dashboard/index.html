@@ -6,68 +6,69 @@
 		{{ _('Overview') }} <a href="{{ url_for('site.pricing') }}" target="_blank" class="badge badge-mixpus">{{ current_user.edition_label }}</a>
 	</div>
 	<div class="row">
-		<div class="col-md-3">
-			<div class="info-box">
-            	<span class="info-box-icon bg-aqua">
-					<i class="fa fa-jpy"></i>
-				</span>
-
-            	<div class="info-box-content">
-              		<span class="info-box-text">{{ _('Total Revenue') }}</span>
-              		<span class="info-box-number">{{ total_revenue[0]|default(0)|round(2) if total_revenue[0] }} {{ current_site.currency }}</span>
-            	</div>
-            	<!-- /.info-box-content -->
-          	</div>
-		</div>
-		<div class="col-md-3">
-			<div class="info-box">
-            	<span class="info-box-icon bg-green">
-					<i class="fa fa-shopping-cart"></i>
-				</span>
-
-            	<div class="info-box-content">
-              		<span class="info-box-text">{{ _('Total Orders') }}</span>
-              		<span class="info-box-number">{{ total_order_count }}</span>
-					<span class="rate hidden text-danger">
-						<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
-					</span>
-            	</div>
-            	<!-- /.info-box-content -->
-          	</div>
-		</div>
-		<div class="col-md-3">
-			<div class="info-box">
-            	<span class="info-box-icon bg-red">
-					<i class="fa fa-cubes"></i>
-				</span>
-
-            	<div class="info-box-content">
-              		<span class="info-box-text">{{ _('Total Products') }}</span>
-              		<span class="info-box-number">{{ total_product_count }}</span>
-					<span class="rate hidden text-danger">
-						<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
-					</span>
-            	</div>
-            	<!-- /.info-box-content -->
-          	</div>
-		</div>
-		<div class="col-md-3">
-			<div class="info-box">
-            	<span class="info-box-icon bg-yellow">
-					<i class="fa fa-truck"></i>
-				</span>
-
-            	<div class="info-box-content">
-              		<span class="info-box-text">{{ _('Total Stocks') }}</span>
-              		<span class="info-box-number">{% if total_stock_quantity[0] == None %}0{% else %}{{ total_stock_quantity[0] }}{% endif %}</span>
-            	</div>
-            	<!-- /.info-box-content -->
-          	</div>
-		</div>
-	</div>
-
-	<div class="row">
 		<div class="col-md-9">
+			
+			<div class="row">
+				<div class="col-md-3">
+					<div class="info-box">
+		            	<span class="info-box-icon bg-red">
+							<i class="fa fa-jpy"></i>
+						</span>
+
+		            	<div class="info-box-content">
+		              		<span class="info-box-text">{{ _('Total Revenue') }}</span>
+		              		<span class="info-box-number">{{ total_revenue[0]|default(0)|round(2) if total_revenue[0] }} <small>{{ current_site.currency }}</small></span>
+		            	</div>
+		            	<!-- /.info-box-content -->
+		          	</div>
+				</div>
+				<div class="col-md-3">
+					<div class="info-box">
+		            	<span class="info-box-icon bg-green">
+							<i class="fa fa-shopping-cart"></i>
+						</span>
+
+		            	<div class="info-box-content">
+		              		<span class="info-box-text">{{ _('Total Orders') }}</span>
+		              		<span class="info-box-number">{{ total_order_count }}</span>
+							<span class="rate hidden text-danger">
+								<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
+							</span>
+		            	</div>
+		            	<!-- /.info-box-content -->
+		          	</div>
+				</div>
+				<div class="col-md-3">
+					<div class="info-box">
+		            	<span class="info-box-icon bg-aqua">
+							<i class="fa fa-cubes"></i>
+						</span>
+
+		            	<div class="info-box-content">
+		              		<span class="info-box-text">{{ _('Total Products') }}</span>
+		              		<span class="info-box-number">{{ total_product_count }}</span>
+							<span class="rate hidden text-danger">
+								<i class="glyphicon glyphicon-arrow-up"></i> 22.5%
+							</span>
+		            	</div>
+		            	<!-- /.info-box-content -->
+		          	</div>
+				</div>
+				<div class="col-md-3">
+					<div class="info-box">
+		            	<span class="info-box-icon bg-yellow">
+							<i class="fa fa-truck"></i>
+						</span>
+
+		            	<div class="info-box-content">
+		              		<span class="info-box-text">{{ _('Total Stocks') }}</span>
+		              		<span class="info-box-number">{% if total_stock_quantity[0] == None %}0{% else %}{{ total_stock_quantity[0] }}{% endif %}</span>
+		            	</div>
+		            	<!-- /.info-box-content -->
+		          	</div>
+				</div>
+			</div>
+			
 
 			<h3 class="box-title">
 				{{ _('Latest Orders') }}
