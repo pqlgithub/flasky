@@ -7,7 +7,7 @@ import hashlib
 import requests
 import urllib.parse
 from Crypto.Cipher import AES
-from flask import current_app
+from flask import current_app, redirect
 from app.utils import Map
 
 
@@ -281,9 +281,13 @@ class WxaOpen3rd(object):
         if path:
             url += '&path=%s' % urllib.parse.urlencode(path)
 
-        res = requests.get(url)
+        current_app.logger.warn('url: %s' % url)
 
-        return res
+        return redirect(url)
+
+        # res = requests.get(url)
+
+        # return res
 
     def get_wxacode(self, path, width=430):
         """获取小程序码"""
