@@ -285,7 +285,7 @@ def wxapp_qrcode():
             'message': str(err)
         })
 
-    return make_response(result)
+    return result
 
 
 @main.route('/wxapps/wxacode')

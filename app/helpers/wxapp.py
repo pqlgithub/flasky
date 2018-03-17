@@ -283,8 +283,6 @@ class WxaOpen3rd(object):
 
         res = requests.get(url)
 
-        current_app.logger.warn(res)
-
         return res
 
     def get_wxacode(self, path, width=430):
