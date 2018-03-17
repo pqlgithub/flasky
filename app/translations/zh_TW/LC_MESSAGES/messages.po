@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-15 00:08+0800\n"
+"POT-Creation-Date: 2018-03-16 00:31+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -215,7 +215,7 @@ msgstr ""
 msgid "By Brand"
 msgstr ""
 
-#: app/constant.py:275
+#: app/constant.py:275 app/templates/block/main-sidebar.html:265
 msgid "Marketing"
 msgstr ""
 
@@ -1005,7 +1005,7 @@ msgstr ""
 #: app/forms/product_forms.py:21 app/forms/warehouse_forms.py:13
 #: app/main/purchase.py:618 app/main/warehouse.py:709
 #: app/templates/customers/create_and_edit.html:86
-#: app/templates/layout/admin.html:72
+#: app/templates/layout/admin.html:73
 #: app/templates/logistics/show_shippers.html:36
 #: app/templates/orders/preview_order.html:90
 msgid "Address"
@@ -1514,8 +1514,8 @@ msgstr ""
 msgid "Distribute products is ok!"
 msgstr ""
 
-#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1172
-#: app/main/product.py:1202
+#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1180
+#: app/main/product.py:1210
 msgid "Name already exist!"
 msgstr ""
 
@@ -1528,11 +1528,11 @@ msgid "Update Customer Grade is ok!"
 msgstr ""
 
 #: app/main/customer.py:428
-msgid "Add Templet Grade is ok!"
+msgid "Add Discount Templet is ok!"
 msgstr ""
 
 #: app/main/customer.py:453
-msgid "Update Templet Grade is ok!"
+msgid "Update Discount Templet is ok!"
 msgstr ""
 
 #: app/main/customer.py:535
@@ -1798,35 +1798,35 @@ msgstr ""
 msgid "Import product is ok!"
 msgstr ""
 
-#: app/main/product.py:751
+#: app/main/product.py:757
 msgid "Product Sku isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1181
+#: app/main/product.py:1189
 msgid "Add product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1208
+#: app/main/product.py:1216
 msgid "Update product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1313 app/main/product.py:1341
+#: app/main/product.py:1321 app/main/product.py:1349
 msgid "Product isn't null!"
 msgstr ""
 
-#: app/main/product.py:1317 app/main/product.py:1345
+#: app/main/product.py:1325 app/main/product.py:1353
 msgid "Product can't authorization!"
 msgstr ""
 
-#: app/main/product.py:1323 app/main/product.py:1351
+#: app/main/product.py:1331 app/main/product.py:1359
 msgid "Product isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1334
+#: app/main/product.py:1342
 msgid "Select product is ok!"
 msgstr ""
 
-#: app/main/product.py:1358
+#: app/main/product.py:1366
 msgid "Cancel select is ok!"
 msgstr ""
 
@@ -2177,7 +2177,7 @@ msgstr ""
 
 #: app/templates/adminlte/applications/_sub_menu.html:6
 #: app/templates/adminlte/clients/show_list.html:9
-#: app/templates/block/main-sidebar.html:379
+#: app/templates/block/main-sidebar.html:286
 msgid "All List"
 msgstr ""
 
@@ -2620,7 +2620,7 @@ msgid "System Settings"
 msgstr ""
 
 #: app/templates/adminlte/system/_sub_menu.html:3
-#: app/templates/block/main-sidebar.html:406
+#: app/templates/block/main-sidebar.html:409
 #: app/templates/settings/_sub_menu.html:6
 msgid "Privilege manage"
 msgstr ""
@@ -2632,7 +2632,7 @@ msgstr ""
 
 #: app/templates/adminlte/system/_sub_menu.html:9
 #: app/templates/adminlte/system/show_list.html:21
-#: app/templates/block/main-sidebar.html:410
+#: app/templates/block/main-sidebar.html:413
 msgid "User List"
 msgstr ""
 
@@ -2752,7 +2752,7 @@ msgid "Has Abilities"
 msgstr ""
 
 #: app/templates/adminlte/weixin/_sub_menu.html:3
-#: app/templates/layout/admin.html:75
+#: app/templates/layout/admin.html:76
 msgid "WeiXin"
 msgstr ""
 
@@ -2893,14 +2893,14 @@ msgstr ""
 msgid "Filter Spot"
 msgstr ""
 
-#: app/templates/block/_select_items.html:2 app/templates/layout/admin.html:174
+#: app/templates/block/_select_items.html:2 app/templates/layout/admin.html:175
 #: app/templates/layout/base.html:133
 msgid "items selected"
 msgstr ""
 
-#: app/templates/block/main-header.html:6 app/templates/layout/admin.html:10
-#: app/templates/layout/admin.html:12 app/templates/layout/admin.html:58
-#: app/templates/layout/base.html:10 app/templates/layout/base.html:12
+#: app/templates/block/main-header.html:6 app/templates/layout/admin.html:11
+#: app/templates/layout/admin.html:13 app/templates/layout/admin.html:59
+#: app/templates/layout/base.html:11 app/templates/layout/base.html:13
 msgid "moebeast"
 msgstr ""
 
@@ -2908,21 +2908,20 @@ msgstr ""
 msgid "Select languages"
 msgstr ""
 
-#: app/templates/block/main-header.html:65 app/templates/layout/admin.html:95
+#: app/templates/block/main-header.html:65 app/templates/layout/admin.html:96
 msgid "Quick Links"
 msgstr ""
 
 #: app/templates/block/main-header.html:68
-#: app/templates/settings/setting_site.html:6
-msgid "Company Setting"
+msgid "Company Authentication"
 msgstr ""
 
-#: app/templates/block/main-header.html:72 app/templates/layout/admin.html:98
+#: app/templates/block/main-header.html:72 app/templates/layout/admin.html:99
 #: app/templates/users/preference.html:6
 msgid "Preference Setting"
 msgstr ""
 
-#: app/templates/block/main-header.html:77 app/templates/layout/admin.html:101
+#: app/templates/block/main-header.html:77 app/templates/layout/admin.html:102
 #: app/templates/settings/_sub_menu.html:17 app/templates/users/passwd.html:10
 msgid "Update Password"
 msgstr ""
@@ -2931,11 +2930,11 @@ msgstr ""
 msgid "System Manage"
 msgstr ""
 
-#: app/templates/block/main-header.html:91 app/templates/layout/admin.html:113
+#: app/templates/block/main-header.html:91 app/templates/layout/admin.html:114
 msgid "Logout"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:8 app/templates/layout/admin.html:107
+#: app/templates/block/main-sidebar.html:8 app/templates/layout/admin.html:108
 msgid "Dashboard"
 msgstr ""
 
@@ -3140,129 +3139,125 @@ msgstr ""
 msgid "Stock Setting"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:265
-msgid "Statistics"
-msgstr ""
-
 #: app/templates/block/main-sidebar.html:270
-#: app/templates/block/main-sidebar.html:273
-msgid "Sales Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:278
-msgid "Products Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:283
-msgid "Brands Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:288
-msgid "Category Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:293
-msgid "Customer Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:298
-msgid "Stock Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:301
-msgid "In-Out Report"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:306
-msgid "Shipments Stats"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:311
-msgid "Supplier Stats"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:321
-msgid "Finance"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:326
-msgid "Funds Manage"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:329
-msgid "Capital account"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:334
-msgid "Payment Confirm"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:339
-msgid "Receivables Confirm"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:344
-msgid "Capital Detail"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:349
-msgid "Refund Manage"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:354
-#: app/templates/block/main-sidebar.html:362
-msgid "Account Setting"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:357
-msgid "Items Setting"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:371
-msgid "App Store"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:376
-msgid "App Manage"
-msgstr ""
-
-#: app/templates/block/main-sidebar.html:384
 msgid "Subscribe App"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:387
+#: app/templates/block/main-sidebar.html:273
 msgid "Coupon Tools"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:392
+#: app/templates/block/main-sidebar.html:278
 #: app/templates/clients/show_list.html:33
 msgid "My Apps"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:401
+#: app/templates/block/main-sidebar.html:283
+msgid "App Manage"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:296
+msgid "Statistics"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:301
+#: app/templates/block/main-sidebar.html:304
+msgid "Sales Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:309
+msgid "Products Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:314
+msgid "Brands Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:319
+msgid "Category Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:324
+msgid "Customer Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:329
+msgid "Stock Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:332
+msgid "In-Out Report"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:337
+msgid "Shipments Stats"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:342
+msgid "Supplier Stats"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:353
+msgid "Finance"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:358
+msgid "Funds Manage"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:361
+msgid "Capital account"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:366
+msgid "Payment Confirm"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:371
+msgid "Receivables Confirm"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:376
+msgid "Capital Detail"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:381
+msgid "Refund Manage"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:386
+#: app/templates/block/main-sidebar.html:394
+msgid "Account Setting"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:389
+msgid "Items Setting"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:404
 msgid "Setting"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:416
+#: app/templates/block/main-sidebar.html:419
 #: app/templates/settings/_sub_menu.html:14
 #: app/templates/settings/show_roles.html:38
 msgid "Acl List"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:421
+#: app/templates/block/main-sidebar.html:424
 msgid "General Settings"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:424 app/templates/settings/site.html:6
+#: app/templates/block/main-sidebar.html:427 app/templates/settings/site.html:6
 msgid "Company Info"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:429
+#: app/templates/block/main-sidebar.html:432
 #: app/templates/currencies/show_currencies.html:23
 msgid "Currency List"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:439
+#: app/templates/block/main-sidebar.html:442
 msgid "SCRM"
 msgstr ""
 
@@ -3588,23 +3583,19 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: app/templates/dashboard/index.html:7
-msgid "System Dashboard"
-msgstr ""
-
-#: app/templates/dashboard/index.html:17
+#: app/templates/dashboard/index.html:19
 msgid "Total Revenue"
 msgstr ""
 
-#: app/templates/dashboard/index.html:30
+#: app/templates/dashboard/index.html:32
 msgid "Total Orders"
 msgstr ""
 
-#: app/templates/dashboard/index.html:46
+#: app/templates/dashboard/index.html:48
 msgid "Total Products"
 msgstr ""
 
-#: app/templates/dashboard/index.html:62
+#: app/templates/dashboard/index.html:64
 msgid "Total Stocks"
 msgstr ""
 
@@ -3704,23 +3695,23 @@ msgstr ""
 msgid "Data"
 msgstr ""
 
-#: app/templates/layout/admin.html:63
+#: app/templates/layout/admin.html:64
 msgid "Users"
 msgstr ""
 
-#: app/templates/layout/admin.html:66
+#: app/templates/layout/admin.html:67
 msgid "Clients"
 msgstr ""
 
-#: app/templates/layout/admin.html:69
+#: app/templates/layout/admin.html:70
 msgid "Applications"
 msgstr ""
 
-#: app/templates/layout/admin.html:78
+#: app/templates/layout/admin.html:79
 msgid "Settings"
 msgstr ""
 
-#: app/templates/layout/admin.html:175 app/templates/layout/base.html:134
+#: app/templates/layout/admin.html:176 app/templates/layout/base.html:134
 msgid "Copy successfully"
 msgstr ""
 
@@ -4468,6 +4459,10 @@ msgstr ""
 msgid "Set the ability"
 msgstr ""
 
+#: app/templates/settings/setting_site.html:6
+msgid "Company Setting"
+msgstr ""
+
 #: app/templates/settings/setting_site.html:57
 msgid "Choose currencies carefully, and later changes will affect numeric."
 msgstr ""
@@ -5043,5 +5038,20 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Currency exchange rate"
+#~ msgstr ""
+
+#~ msgid "App Store"
+#~ msgstr ""
+
+#~ msgid "System Dashboard"
+#~ msgstr ""
+
+#~ msgid "Market"
+#~ msgstr ""
+
+#~ msgid "Add Templet Grade is ok!"
+#~ msgstr ""
+
+#~ msgid "Update Templet Grade is ok!"
 #~ msgstr ""
 

@@ -425,7 +425,7 @@ def create_discount_templet():
         db.session.add(discount_templet)
         db.session.commit()
         
-        flash(gettext('Add Templet Grade is ok!'), 'success')
+        flash(gettext('Add Discount Templet is ok!'), 'success')
         
         return redirect(url_for('main.show_discount_templets'))
     
@@ -450,7 +450,7 @@ def edit_discount_templet(id):
         
         db.session.commit()
         
-        flash(gettext('Update Templet Grade is ok!'), 'success')
+        flash(gettext('Update Discount Templet is ok!'), 'success')
         
         return redirect(url_for('main.show_discount_templets'))
     else:

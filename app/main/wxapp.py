@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from flask import render_template, redirect, url_for, flash, request, current_app, abort
+from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response
 from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
@@ -285,7 +285,7 @@ def wxapp_qrcode():
             'message': str(err)
         })
 
-    return result
+    return make_response(result)
 
 
 @main.route('/wxapps/wxacode')
