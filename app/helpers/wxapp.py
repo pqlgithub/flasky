@@ -289,7 +289,7 @@ class WxaOpen3rd(object):
         """获取小程序码"""
         url = '%s/getwxacode?access_token==%s' % (self.wxa_host_url, self.access_token)
         payload = {
-            path: urllib.parse.urlencode(path),
+            path: path,  # urllib.parse.urlencode
             width: width
         }
 
