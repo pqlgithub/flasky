@@ -309,7 +309,7 @@ def wxapp_wxacode():
             'message': str(err)
         })
 
-    return result
+    return make_response(result.content)
 
 
 @main.route('/wxapps/get_category', methods=['GET', 'POST'])

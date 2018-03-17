@@ -293,9 +293,9 @@ class WxaOpen3rd(object):
             width: width
         }
 
-        res = requests.post(url, data=json.dumps(payload))
+        current_app.logger.warn('url: %s' % url)
 
-        current_app.logger.warn(res)
+        res = requests.post(url, data=json.dumps(payload))
 
         return res
 
