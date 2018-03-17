@@ -285,10 +285,6 @@ class WxaOpen3rd(object):
 
         return redirect(url)
 
-        # res = requests.get(url)
-
-        # return res
-
     def get_wxacode(self, path, width=430):
         """获取小程序码"""
         url = '%s/getwxacode?access_token==%s' % (self.wxa_host_url, self.access_token)

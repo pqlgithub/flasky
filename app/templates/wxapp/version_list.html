@@ -164,7 +164,7 @@
 									<i class="fa fa-clock-o"></i> 查询状态
 								</a>
 								{% endif %}
-								<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}">
+								<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}" target="_blank">
 									<i class="fa fa-view"></i> 预览
 								</a>
 								{% if version.status == 0 %}
