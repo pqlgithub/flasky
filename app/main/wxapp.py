@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import hashlib
 from flask import render_template, redirect, url_for, flash, request, current_app, abort, make_response
 from flask_login import login_required, current_user
 from sqlalchemy.sql import func
@@ -7,10 +8,11 @@ from . import main
 from .. import db, cache
 from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage, \
     WxVersion
-from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key
+from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key, QiniuStorage
 from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey, reply_wxa_service
 from app.forms import WxReplyForm
 from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key, custom_response
+from qiniu import Auth, put_data, etag, urlsafe_base64_encode
 
 
 @main.route('/wxapps')
@@ -309,9 +311,28 @@ def wxapp_wxacode():
             'message': str(err)
         })
 
-    current_app.logger.warn(result)
+    current_app.logger.warn(result.content)
 
-    return make_response(result.content)
+    # 根据获取的二进制数据创建一张图片
+    # from PIL import Image
+    # from io import BytesIO
+    # i = Image.open(BytesIO(result.content))
+
+    # 构建鉴权对象
+    cfg = current_app.config
+    q = Auth(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'])
+
+    # 上传到七牛后保存的文件名
+    key = 'wxacode-%s-%s.jpg' % (auth_app_id, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
+    # 生成上传 Token，可以指定过期时间等
+    token = q.upload_token(cfg['QINIU_BUCKET_NAME'], key, 3600)
+
+    ret, info = put_data(token, key, result.content)
+
+    current_app.logger.warn('ret: %s' % ret)
+    current_app.logger.warn('info: %s' % info)
+
+    return ret
 
 
 @main.route('/wxapps/get_category', methods=['GET', 'POST'])
