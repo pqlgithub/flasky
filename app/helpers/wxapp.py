@@ -293,7 +293,7 @@ class WxaOpen3rd(object):
             width: width
         }
 
-        current_app.logger.warn('url: %s' % url)
+        current_app.logger.warn('Get wxacode data: %s' % payload)
 
         res = requests.post(url, data=json.dumps(payload))
 

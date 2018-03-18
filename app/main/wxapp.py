@@ -299,7 +299,7 @@ def wxapp_wxacode():
     authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
 
     try:
-        path = 'page/index/index'
+        path = 'pages/index/index'
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
         result = open3rd.get_wxacode(path)
     except WxAppError as err:
@@ -308,6 +308,8 @@ def wxapp_wxacode():
             'code': 500,
             'message': str(err)
         })
+
+    current_app.logger.warn(result)
 
     return make_response(result.content)
 
