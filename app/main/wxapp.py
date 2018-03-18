@@ -516,7 +516,8 @@ def wxapp_audit_status():
     current_app.logger.warn('wxapp audit status: %s' % result)
 
     # 更新状态
-    wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+    wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id)\
+        .order_by(WxVersion.created_at.desc()).first_or_404()
 
     if result.status == 1:  # 审核失败
         wx_version.mark_audit_fail(result.reason, int(timestamp()))

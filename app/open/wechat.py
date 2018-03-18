@@ -168,7 +168,7 @@ def receive_message(appid):
             if event == 'weapp_audit_success':  # 小程序审核通过
                 success_time = xml_tree.find('SuccTime').text
 
-                wx_version = WxVersion.query.filter_by(auth_app_id=appid).first()
+                wx_version = WxVersion.query.filter_by(auth_app_id=appid).order_by(WxVersion.created_at.desc()).first()
                 if wx_version:
                     wx_version.mark_audit_success(success_time)
 
