@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 from . import main
 from .. import db, cache
 from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage, \
-    WxVersion
+    WxVersion, Asset
 from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key, QiniuStorage
 from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey, reply_wxa_service
 from app.forms import WxReplyForm
@@ -61,7 +61,6 @@ def wxapp_setting():
                 service_type_info=json.dumps(authorizer_info.service_type_info),
                 verify_type_info=json.dumps(authorizer_info.verify_type_info),
                 business_info=json.dumps(authorizer_info.business_info),
-                qrcode_url=authorizer_info.qrcode_url,
                 mini_program_info=json.dumps(authorizer_info.mini_program_info),
                 func_info=json.dumps(authorization_info.func_info)
             )
@@ -294,14 +293,17 @@ def wxapp_qrcode():
 def wxapp_wxacode():
     """获取小程序码"""
     auth_app_id = request.values.get('auth_app_id')
+    path = request.values.get('path')
     if not auth_app_id:
         abort(400)
+
+    if not path:
+        path = 'pages/index/index'
 
     # 获取授权信息
     authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
 
     try:
-        path = 'pages/index/index'
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
         result = open3rd.get_wxacode(path)
     except WxAppError as err:
@@ -310,8 +312,6 @@ def wxapp_wxacode():
             'code': 500,
             'message': str(err)
         })
-
-    current_app.logger.warn(result.content)
 
     # 根据获取的二进制数据创建一张图片
     # from PIL import Image
@@ -323,16 +323,25 @@ def wxapp_wxacode():
     q = Auth(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'])
 
     # 上传到七牛后保存的文件名
-    key = 'wxacode-%s-%s.jpg' % (auth_app_id, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
+    key = 'qrcode/wxacode-%s-%s.jpg' % (auth_app_id, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
     # 生成上传 Token，可以指定过期时间等
     token = q.upload_token(cfg['QINIU_BUCKET_NAME'], key, 3600)
-
+    # 开始上传
     ret, info = put_data(token, key, result.content)
 
     current_app.logger.warn('ret: %s' % ret)
     current_app.logger.warn('info: %s' % info)
 
-    return ret
+    view_url = '%s/%s' % (Asset.host_url(), key)
+
+    # 保存最新生成的二维码
+    wx_mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+    wx_mini_app.qrcode_url = view_url
+    wx_mini_app.commit()
+
+    return full_response(True, R200_OK, {
+        'wxacode_url': view_url
+    })
 
 
 @main.route('/wxapps/get_category', methods=['GET', 'POST'])

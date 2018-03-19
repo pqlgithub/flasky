@@ -1,4 +1,4 @@
-{% extends pjax("layout/base.html") %}
+{% extends "layout/base.html" %}
 
 {% block after_jquery %}
 <script type="text/javascript">
@@ -24,6 +24,21 @@
 		mixpus.hook_ajax_modal();
 		
 		unbind_tester();
+		
+		$('.btn.btn-wxacode').click(function () {
+			var url = $(this).attr('href');
+			var auth_wxapp_id = $(this).data('wxapp-id');
+			$.post(url, { auth_app_id: auth_wxapp_id, csrf_token: mixpus.csrf_token }, function (res) {
+				if (res.success) {
+					$('#wxa-code-image')
+						.attr('src', res.data.wxacode_url)
+						.removeClass('hidden');
+				} else {
+					mixpus.show_error_message(res.status.message);
+				}
+			});
+		});
+		
 	});
 </script>
 {% endblock %}
@@ -174,9 +189,14 @@
 		
 			<!--预览-->
 			<div id="preview" class="tab-pane" role="tabpanel" aria-labelledby="preview-tab">
-				<a class="btn btn-mixpus m-r-10" target="_blank" href="{{ url_for('main.wxapp_wxacode') }}?auth_app_id={{ auth_app_id }}">
+				<a class="btn btn-wxacode btn-mixpus" href="{{ url_for('main.wxapp_wxacode') }}" data-wxapp-id="{{ auth_app_id }}">
 					<i class="fa fa-link"></i> 获取小程序码
 				</a>
+				
+				<div class="wxacode m-t-30 m-l-20">
+					<img src="{{ wx_mini_app.qrcode_url }}" id="wxa-code-image" {% if not wx_mini_app.qrcode_url %}class="hidden"{% endif %} width="300px">
+				</div>
+				
 			</div>
 		</div>
 
