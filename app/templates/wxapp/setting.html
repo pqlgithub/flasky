@@ -39,6 +39,42 @@
 			});
 		});
 		
+		$('#payment-form').on('submit', function (event) {
+			// 显示进度条
+			$('.progress').css('display', 'block');
+			// 阻止元素发生默认的行为，此处用来阻止对表单的提交
+			event.preventDefault();
+			var formData = new FormData(this);
+			// jQuery Ajax 上传文件，关键在于设置：processData 和 contentType
+			$.ajax({
+				xhr: function () {
+					var xhr = new XMLHttpRequest();
+					xhr.upload.addEventListener('progress', function (e) {
+						if (e.lengthComputable) {
+							var percent = Math.round(e.loaded * 100 / e.total);
+							$('.progress-bar').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%');
+						}
+					});
+					return xhr;
+				},
+				type: "POST",
+				url: "{{ url_for('main.wxapp_payment') }}",
+				cache: false,
+				data: formData,
+				// 告诉 jQuery 不要去处理发送的数据
+				processData: false,
+				// 告诉 jQuery 不要去设置 Content-Type 请求头
+				// 因为这里是由 <form> 表单构造的 FormData 对象，且已经声明了属性 enctype="multipart/form-data"，所以设置为 false
+				contentType: false
+			}).done(function (res) {
+				if (res.success) {
+					mixpus.show_ok_message('设置成功！');
+				}
+			}).fail(function (res) {
+				mixpus.show_error_message(res.status.message);
+			});
+		});
+		
 	});
 </script>
 {% endblock %}
@@ -50,45 +86,40 @@
 		{{ _('Wx App') }}
 		<small><i class="fa fa-info-circle"></i> 如使用中发现接口有异常，请点击 <a href="">重新授权</a> 试试。</small>
 		<span class="pull-right">
-            <button type="submit" form="shop-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="fa fa-save"></i>
-			</button>
 			<a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
+	
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#general" id="general-tab" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
+                微信小程序授权
+            </a>
+        </li>
+        <li>
+            <a href="#data" id="data-tab" role="tab" data-toggle="tab" aria-controls="data" aria-expanded="true">
+                小程序支付设置
+            </a>
+        </li>
+        <li>
+            <a href="#experience" id="experience-tab" role="tab" data-toggle="tab" aria-controls="experience" aria-expanded="true">
+                管理者体验
+            </a>
+        </li>
+        <li>
+            <a href="#preview" id="preview-tab" role="tab" data-toggle="tab" aria-controls="preview" aria-expanded="true">
+                预览
+            </a>
+        </li>
+    </ul>
 
-    <form id="shop-form" class="form-horizontal" action="" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-		
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="active">
-                <a href="#general" id="general-tab" role="tab" data-toggle="tab" aria-controls="general" aria-expanded="true">
-                    微信小程序授权
-                </a>
-            </li>
-            <li>
-                <a href="#data" id="data-tab" role="tab" data-toggle="tab" aria-controls="data" aria-expanded="true">
-                    小程序支付设置
-                </a>
-            </li>
-            <li>
-                <a href="#experience" id="experience-tab" role="tab" data-toggle="tab" aria-controls="experience" aria-expanded="true">
-                    管理者体验
-                </a>
-            </li>
-            <li>
-                <a href="#preview" id="preview-tab" role="tab" data-toggle="tab" aria-controls="preview" aria-expanded="true">
-                    预览
-                </a>
-            </li>
-        </ul>
-
-        <div class="tab-content m-t-30">
-			
-			<!--授权信息-->
-            <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
+    <div class="tab-content m-t-30">
+		<!--授权信息-->
+        <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
+		    <form id="wxapp-form" class="form-horizontal" action="" method="post">
+		        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
                 {% if auth_status %}
                     <div class="form-group">
                         <label class="col-sm-2 control-label">小程序原始ID</label>
@@ -122,85 +153,94 @@
                         </div>
                     </div>
                 {% endif %}
-            </div>
-			
-			<!--支付设置-->
-            <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
-				<div class="alert alert-success m-b-30" role="alert">
-					<h4>支付设置提示</h4>
-					<p><i class="fa fa-info-circle"></i> 小程序必须使用自有的微信支付，配置完成后，每笔交易货款都将直接进入您的微信支付对应的财付通账号。</p>
-					<p><i class="fa fa-info-circle"></i> 未申请微信支付的商户，如已有微信商户平台账户，可在授权的小程序微信后台，直接绑定已开通的微信支付，无需重新申请新的支付。</p>
-				</div>
-				
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">商户号</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">密钥</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">API证书</label>
-                    <div class="col-sm-6">
-
-                    </div>
-                </div>
-                <div class="form-group m-t-30">
-                    <div class="col-sm-6 col-md-offset-2">
-                        <button class="btn btn-mixpus">确认提交</button>
-                    </div>
-                </div>
-            </div>
-        	
-			<!--管理者体验-->
-			<div id="experience" class="tab-pane" role="tabpanel" aria-labelledby="experience-tab">
-				
-				<div class="testers">
-					<div class="form-group">
-						<div class="col-sm-8">
-							<a href="{{ url_for('main.wxapp_add_tester') }}?auth_app_id={{ auth_app_id }}" class="btn btn-mixpus ajax-modal" data-modal="tester-modal">
-								<i class="fa fa-plus"></i> 添加体验者
-							</a>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-8">
-							<table class="table table-bordered">
-								<thead>
-									<tr>
-										<th>{{ _('wechat account') }}</th>
-										<th class="text-right">{{ _('Action') }}</th>
-									</tr>
-								</thead>
-								<tbody id="wxapp-tester-table">
-									{% include 'wxapp/tester_list.html' %}
-								</tbody>
-							</table>
-						</div>
-					</div>
-					
-				</div>
-			</div>
+			</form>
+        </div>
 		
-			<!--预览-->
-			<div id="preview" class="tab-pane" role="tabpanel" aria-labelledby="preview-tab">
-				<a class="btn btn-wxacode btn-mixpus" href="{{ url_for('main.wxapp_wxacode') }}" data-wxapp-id="{{ auth_app_id }}">
-					<i class="fa fa-link"></i> 获取小程序码
-				</a>
-				
-				<div class="wxacode m-t-30 m-l-20">
-					<img src="{{ wx_mini_app.qrcode_url }}" id="wxa-code-image" {% if not wx_mini_app.qrcode_url %}class="hidden"{% endif %} width="300px">
+		<!--支付设置-->
+        <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
+			<div class="alert alert-success m-b-30" role="alert">
+				<h4>支付设置提示</h4>
+				<p><i class="fa fa-info-circle"></i> 小程序必须使用自有的微信支付，配置完成后，每笔交易货款都将直接进入您的微信支付对应的财付通账号。</p>
+				<p><i class="fa fa-info-circle"></i> 未申请微信支付的商户，如已有微信商户平台账户，可在授权的小程序微信后台，直接绑定已开通的微信支付，无需重新申请新的支付。</p>
+			</div>
+			
+		    <form id="payment-form" class="form-horizontal" action="{{ url_for('main.wxapp_payment') }}" method="post" enctype="multipart/form-data">
+		        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="auth_app_id" value="{{ wx_mini_app.auth_app_id }}" >
+			
+	            <div class="form-group">
+	                <label class="col-sm-2 control-label">商户号</label>
+	                <div class="col-sm-6">
+	                    {{ payment_form.mch_id(id="mch_id", class="form-control") }}
+	                </div>
+	            </div>
+	            <div class="form-group">
+	                <label class="col-sm-2 control-label">密钥</label>
+	                <div class="col-sm-6">
+	                    {{ payment_form.mch_key(id="mch_key", class="form-control") }}
+	                </div>
+	            </div>
+	            <div class="form-group">
+	                <label class="col-sm-2 control-label">API证书</label>
+	                <div class="col-sm-6">
+						{{ payment_form.ssl_cert(id="ssl_cert") }}
+						<div class="progress m-t-10" style="display: none;">
+						    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+						        0%
+						    </div>
+						</div>
+	                </div>
+	            </div>
+	            <div class="form-group m-t-30">
+	                <div class="col-sm-6 col-md-offset-2">
+	                    <button class="btn btn-mixpus" type="submit" form="payment-form">确认提交</button>
+	                </div>
+	            </div>
+			</form>
+        </div>
+    	
+		<!--管理者体验-->
+		<div id="experience" class="tab-pane" role="tabpanel" aria-labelledby="experience-tab">
+			
+			<div class="testers">
+				<div class="form-group">
+					<div class="col-sm-8">
+						<a href="{{ url_for('main.wxapp_add_tester') }}?auth_app_id={{ auth_app_id }}" class="btn btn-mixpus ajax-modal" data-modal="tester-modal">
+							<i class="fa fa-plus"></i> 添加体验者
+						</a>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-8">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>{{ _('wechat account') }}</th>
+									<th class="text-right">{{ _('Action') }}</th>
+								</tr>
+							</thead>
+							<tbody id="wxapp-tester-table">
+								{% include 'wxapp/tester_list.html' %}
+							</tbody>
+						</table>
+					</div>
 				</div>
 				
 			</div>
 		</div>
-
-    </form>
+	
+		<!--预览-->
+		<div id="preview" class="tab-pane" role="tabpanel" aria-labelledby="preview-tab">
+			<a class="btn btn-wxacode btn-mixpus" href="{{ url_for('main.wxapp_wxacode') }}" data-wxapp-id="{{ auth_app_id }}">
+				<i class="fa fa-link"></i> 获取小程序码
+			</a>
+			
+			<div class="wxacode m-t-30 m-l-20">
+				<img src="{{ wx_mini_app.qrcode_url }}" id="wxa-code-image" {% if not wx_mini_app.qrcode_url %}class="hidden"{% endif %} width="300px">
+			</div>
+			
+		</div>
+	</div>
 
 </div>
 {% endblock %}

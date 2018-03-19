@@ -5,13 +5,14 @@ from flask import render_template, redirect, url_for, flash, request, current_ap
 from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
-from .. import db, cache
+from .. import db, cache, uploader
 from app.models import WxToken, WxMiniApp, Store, WxTemplate, WxPayment, WxAuthorizer, Client, WxServiceMessage, \
     WxVersion, Asset
 from app.helpers import WxApp, WxAppError, WxaOpen3rd, gen_3rd_session_key, QiniuStorage
 from app.tasks import bind_wxa_tester, unbind_wxa_tester, create_banner_spot, create_wxapi_appkey, reply_wxa_service
-from app.forms import WxReplyForm
-from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key, custom_response
+from app.forms import WxReplyForm, WxPaymentForm
+from ..utils import Master, timestamp, status_response, full_response, R200_OK, make_unique_key, custom_response, \
+    R201_CREATED
 from qiniu import Auth, put_data, etag, urlsafe_base64_encode
 
 
@@ -92,9 +93,11 @@ def wxapp_setting():
         create_banner_spot.apply_async(args=[Master.master_uid(), 'wx_index_slide', '小程序-首页-大图轮换'])
 
     is_auth = True
+    payment_form = WxPaymentForm()
     return render_template('wxapp/setting.html',
                            auth_status=is_auth,
                            auth_app_id=auth_app_id,
+                           payment_form=payment_form,
                            wx_mini_app=wx_mini_app)
 
 
@@ -153,6 +156,40 @@ def wxapp_template_choosed():
     db.session.commit()
 
     return status_response()
+
+
+@main.route('/wxapps/payment', methods=['POST'])
+def wxapp_payment():
+    """小程序支付设置"""
+    form = WxPaymentForm()
+    if form.validate_on_submit():
+        auth_app_id = form.auth_app_id.data
+        storage_folder = 'wxa_payment/%s' % str(auth_app_id)
+
+        # Upload to local
+        filename = uploader.save(request.files['ssl_cert'], folder=storage_folder)
+        url = uploader.url(filename)
+        current_app.logger.debug('path: %s, url: %s' % (uploader.path(filename), url))
+
+        # 检测是否已配置
+        wx_payment = WxPayment.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first()
+        if wx_payment is None:
+            wx_payment = WxPayment(
+                master_uid=Master.master_uid(),
+                auth_app_id=auth_app_id,
+                mch_id=form.mch_id.data,
+                mch_key=form.mch_key.data,
+                ssl_cert=filename
+            )
+            db.session.add(wx_payment)
+        else:
+            wx_payment.mch_id = form.mch_id.data
+            wx_payment.mch_key = form.mch_key.data
+            wx_payment.ssl_cert = filename
+
+        db.session.commit()
+
+        return status_response(True, R201_CREATED)
 
 
 @main.route('/wxapps/service')
@@ -289,7 +326,7 @@ def wxapp_qrcode():
     return result
 
 
-@main.route('/wxapps/wxacode')
+@main.route('/wxapps/wxacode', methods=['POST'])
 def wxapp_wxacode():
     """获取小程序码"""
     auth_app_id = request.values.get('auth_app_id')

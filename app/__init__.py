@@ -32,7 +32,7 @@ from .momentjs import Momentjs
 # 创建set
 uploader = UploadSet(
     'photos',
-    extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv')
+    extensions=('xls', 'xlsx', 'jpg', 'jpe', 'jpeg', 'png', 'gif', 'csv', 'pem', 'p12')
 )
 # 属性可以设为None、'basic' 或'strong'
 login_manager.session_protection = 'strong'
