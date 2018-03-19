@@ -10,6 +10,7 @@ __all__ = [
     'Invoice'
 ]
 
+
 class PayAccount(db.Model):
     """支付账户"""
 
@@ -74,10 +75,8 @@ class TransactDetail(db.Model):
             if type[0] == self.target_type:
                 return type
 
-
     def __repr__(self):
         return '<TransactDetail %r>' % self.id
-
 
 
 class Invoice(db.Model):

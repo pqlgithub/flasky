@@ -81,8 +81,7 @@ class Customer(db.Model):
     def __repr__(self):
         return '<Customer {}>'.format(self.name)
     
-    
-    
+
 class CustomerGrade(db.Model):
     """分销商等级"""
     
@@ -100,8 +99,7 @@ class CustomerGrade(db.Model):
     customers = db.relationship(
         'Customer', backref='grade', lazy='dynamic'
     )
-    
-    
+
     def __repr__(self):
         return '<CustomerGrade {}>'.format(self.name)
     
@@ -132,12 +130,10 @@ class ProductPacket(db.Model):
         """追加产品到组"""
         self.products.extend([product for product in product_list if product not in self.products])
     
-    
     def remove_product(self, *product_list):
         """从组删除产品"""
         self.products = [product for product in self.products if product not in product_list]
-    
-    
+
     def __repr__(self):
         return '<ProductPacket {}>'.format(self.name)
     
@@ -159,8 +155,7 @@ class DiscountTemplet(db.Model):
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     @property
     def type_label(self):
         for t in DISCOUNT_TEMPLET_TYPES:
@@ -192,8 +187,7 @@ class DiscountTempletItem(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    
+
     def __repr__(self):
         return '<DiscountTempletItem {}>'.format(self.id)
 
@@ -212,5 +206,3 @@ class CustomerDistributePacket(db.Model):
     
     def __repr__(self):
         return '<CustomerDistributePacket {}>'.format(self.id)
-    
-    

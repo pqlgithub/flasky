@@ -118,7 +118,7 @@
                         {{ place.created_at|timestamp2string() }}
                     </td>
                     <td class="text-right">
-                        <a href="{{ url_for('adminlte.create_place') }}?pid={{ place.id }}" class="btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Add Next Child') }}">
+                        <a href="{{ url_for('adminlte.create_place') }}?pid={{ place.id }}" class="btn-link m-r-10" data-toggle="tooltip" data-original-title="{{ _('Add Child') }}">
                             <i class="fa fa-sitemap"></i> {{ _('Add Child') }}
                         </a>
                         <a href="{{ url_for('adminlte.edit_place', id=place.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">

@@ -17,17 +17,17 @@ def get_customers():
     
     pagination = Customer.query.filter_by(master_uid=g.master_uid).paginate(page, per_page=per_page, error_out=False)
     customers = pagination.items
-    prev = None
+    prev_url = None
     if pagination.has_prev:
-        prev = url_for('api.get_customers', page=page - 1, _external=True)
-    next = None
+        prev_url = url_for('api.get_customers', page=page - 1, _external=True)
+    next_url = None
     if pagination.has_next:
-        next = url_for('api.get_customers', page=page + 1, _external=True)
+        next_url = url_for('api.get_customers', page=page + 1, _external=True)
     
     return full_response(R200_OK, {
         'customers': [customer.to_json() for customer in customers],
-        'prev': prev,
-        'next': next,
+        'prev': prev_url,
+        'next': next_url,
         'count': pagination.total
     })
 
@@ -46,7 +46,7 @@ def get_customer(rid):
 @auth.login_required
 def create_customer():
     """添加新分销客户"""
-    if not request.json or not 'name' in request.json:
+    if not request.json or 'name' not in request.json:
         abort(400)
     
     # todo: 数据验证
@@ -58,7 +58,7 @@ def create_customer():
     try:
         db.session.add(customer)
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Create customer fail: {}'.format(str(err)))
         
         db.session.rollback()
@@ -81,7 +81,7 @@ def update_customer(rid):
     
     try:
         db.session.commit()
-    except (IntegrityError) as err:
+    except IntegrityError as err:
         current_app.logger.error('Update customer fail: {}'.format(str(err)))
         db.session.rollback()
         return status_response(custom_status('Update failed!', 400), False)

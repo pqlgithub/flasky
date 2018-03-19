@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-16 00:31+0800\n"
+"POT-Creation-Date: 2018-03-20 00:14+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -28,7 +28,7 @@ msgstr ""
 
 #: app/constant.py:67 app/templates/block/main-sidebar.html:148
 #: app/templates/wxapp/authorize_result.html:15
-#: app/templates/wxapp/index.html:15 app/templates/wxapp/setting.html:35
+#: app/templates/wxapp/index.html:15 app/templates/wxapp/setting.html:86
 msgid "Wx App"
 msgstr ""
 
@@ -1490,6 +1490,7 @@ msgid "En Address"
 msgstr ""
 
 #: app/forms/warehouse_forms.py:17
+#: app/templates/orders/create_and_edit.html:150
 msgid "Currency"
 msgstr ""
 
@@ -1504,6 +1505,22 @@ msgstr ""
 #: app/forms/warehouse_forms.py:25 app/templates/layout/list.html:34
 #: app/templates/warehouses/show_list.html:33
 msgid "Default Warehouse"
+msgstr ""
+
+#: app/forms/wxapp_forms.py:9
+msgid "Authorize ID"
+msgstr ""
+
+#: app/forms/wxapp_forms.py:11
+msgid "MCH ID"
+msgstr ""
+
+#: app/forms/wxapp_forms.py:12
+msgid "MCH Key"
+msgstr ""
+
+#: app/forms/wxapp_forms.py:13
+msgid "SSL Cert"
 msgstr ""
 
 #: app/main/clients.py:117
@@ -2217,7 +2234,6 @@ msgstr ""
 #: app/templates/warehouses/edit_in_warehouse.html:25
 #: app/templates/wxapp/service.html:18
 #: app/templates/wxapp/service_setting.html:19
-#: app/templates/wxapp/setting.html:38
 msgid "Save"
 msgstr ""
 
@@ -2362,7 +2378,7 @@ msgstr ""
 #: app/templates/warehouses/show_inout.html:179
 #: app/templates/warehouses/show_list.html:37
 #: app/templates/warehouses/stock_table.html:26
-#: app/templates/wxapp/service.html:70 app/templates/wxapp/setting.html:162
+#: app/templates/wxapp/service.html:70 app/templates/wxapp/setting.html:219
 #: app/templates/wxapp/version_list.html:122
 msgid "Action"
 msgstr ""
@@ -2604,9 +2620,6 @@ msgid "Update Date"
 msgstr ""
 
 #: app/templates/adminlte/places/show_list.html:121
-msgid "Add Next Child"
-msgstr ""
-
 #: app/templates/adminlte/places/show_list.html:122
 msgid "Add Child"
 msgstr ""
@@ -3921,10 +3934,6 @@ msgstr ""
 msgid "Customer Info"
 msgstr ""
 
-#: app/templates/orders/create_and_edit.html:150
-msgid "币种"
-msgstr ""
-
 #: app/templates/orders/create_and_edit.html:222
 #: app/templates/orders/create_and_edit.html:223
 #: app/templates/purchases/create_and_edit.html:245
@@ -4964,7 +4973,7 @@ msgstr ""
 
 #: app/templates/wxapp/service.html:21
 #: app/templates/wxapp/service_setting.html:22
-#: app/templates/wxapp/setting.html:41 app/templates/wxapp/version_list.html:75
+#: app/templates/wxapp/setting.html:89 app/templates/wxapp/version_list.html:75
 #: app/templates/wxapp/wxtemplates.html:37
 msgid "Back"
 msgstr ""
@@ -4981,7 +4990,7 @@ msgstr ""
 msgid "Reply"
 msgstr ""
 
-#: app/templates/wxapp/setting.html:161
+#: app/templates/wxapp/setting.html:218
 msgid "wechat account"
 msgstr ""
 
@@ -5053,5 +5062,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Update Templet Grade is ok!"
+#~ msgstr ""
+
+#~ msgid "Add Next Child"
+#~ msgstr ""
+
+#~ msgid "币种"
 #~ msgstr ""
 
