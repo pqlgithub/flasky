@@ -551,7 +551,8 @@ def wxapp_submit_audit():
 
     if result:
         # 更新
-        wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+        wx_version = WxVersion.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id)\
+            .order_by(WxVersion.created_at.desc()).first_or_404()
         wx_version.audit_id = result.auditid
         wx_version.audit_at = int(timestamp())
 
