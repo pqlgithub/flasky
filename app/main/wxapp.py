@@ -374,7 +374,7 @@ def wxapp_wxacode():
     # 保存最新生成的二维码
     wx_mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
     wx_mini_app.qrcode_url = view_url
-    wx_mini_app.commit()
+    db.session.commit()
 
     return full_response(True, R200_OK, {
         'wxacode_url': view_url
