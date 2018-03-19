@@ -86,7 +86,7 @@ class Config:
     # BOOTSTRAP_SERVE_LOCAL = False
 
     UPLOADED_PHOTOS_DEST = basedir + '/public/uploads'
-    ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+    ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'pem', 'p12'])
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
 
     # csrf protected
@@ -233,7 +233,7 @@ class ProductionConfig(Config):
 
     ERROR_LOG = '/var/log/fxerp/mix-error.log'
 
-    UPLOADED_PHOTOS_DEST = '/opt/project/fxerp/uploads'
+    UPLOADED_PHOTOS_DEST = '/data/fxerp/uploads'
 
     # Whoose Index of Full Text Search
     WHOOSH_BASE = '/opt/project/whoose'

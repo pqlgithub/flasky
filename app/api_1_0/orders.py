@@ -383,7 +383,7 @@ def pay_order_jsapi():
     return full_response(R200_OK, data)
 
 
-def _wxapp_pay_params(rid, pay_amount):
+def _wxapp_pay_params(rid, pay_amount, store_id=0):
     """小程序支付签名"""
     openid = g.current_user.openid
     cfg = current_app.config
