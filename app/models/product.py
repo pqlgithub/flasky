@@ -265,16 +265,31 @@ class ProductContent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, index=True, default=0)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
-    
+
+    # 附件图片列表，多个图片逗号隔开
+    asset_ids = db.Column(db.String(200))
     content = db.Column(db.Text, nullable=True)
     tags = db.Column(db.String(200), nullable=True)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
+    @property
+    def images(self):
+        imgs = []
+        if not self.asset_ids:
+            return imgs
+
+        asset_ids = self.asset_ids.split(',')
+        assets = Asset.query.filter(Asset.id.in_(asset_ids)).all()
+
+        return [asset.to_json() for asset in assets]
+
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
+            'images': self.images,
             'tags': self.tags,
             'content': self.content
         }

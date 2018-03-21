@@ -432,13 +432,19 @@ mixpus.upload_file_manager = function () {
 		if ($popover) {
 			return;
 		}
-
+		
+		var ppv = '<button type="button" id="button-image" class="btn btn-mixpus m-r-10"><i class="fa fa-edit"></i></button> <button type="button" id="button-clear" class="btn btn-danger"><i class="fa fa-trash"></i></button>'
+		
+		if ($target == 'multi-mode') {
+			ppv = '<button type="button" id="button-image" class="btn btn-mixpus"><i class="fa fa-edit"></i></button>'
+		}
+		
 		$element.popover({
 			html: true,
 			placement: $placement,
 			trigger: 'manual',
 			content: function() {
-				return '<button type="button" id="button-image" class="btn btn-mixpus m-r-10"><i class="fa fa-edit"></i></button> <button type="button" id="button-clear" class="btn btn-danger"><i class="fa fa-trash"></i></button>';
+				return ppv;
 			}
 		});
 
@@ -486,6 +492,5 @@ mixpus.upload_file_manager = function () {
 
 			$element.popover('destroy');
 		});
-
 	});
 };

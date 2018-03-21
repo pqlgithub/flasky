@@ -7,8 +7,18 @@ from app.helpers import WxApp, WxAppError
 from app.utils import custom_response, timestamp
 
 
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'settings'
+    }
+
+
 @adminlte.route('/settings')
 def setting_index():
-    return render_template('adminlte/settings/index.html')
+    return render_template('adminlte/settings/index.html',
+                           **load_common_data())
 
 

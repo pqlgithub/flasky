@@ -57,6 +57,7 @@ a:focus {
   border-radius: 1px;
 }
 .img-thumbnail {
+  position: relative;
   display: inline-block;
   max-width: 100%;
   height: auto;
@@ -70,6 +71,12 @@ a:focus {
   -webkit-transition: none;
        -o-transition: none;
           transition: none;
+}
+.img-thumbnail i.fa {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 9;
 }
 .caret-right,
 .caret-left,

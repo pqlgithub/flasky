@@ -16,6 +16,7 @@ from ..utils import Master, full_response, status_response, custom_status, R200_
     custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
+from app.helpers import QiniuStorage
 
 
 def load_common_data():
@@ -276,9 +277,11 @@ def create_product():
         db.session.add(product)
         
         # 更新内容详情
-        if form.tags.data or form.content.data:
+        asset_ids = request.form.getlist('asset_ids[]')
+        if form.tags.data or form.content.data or asset_ids:
             detail = ProductContent(
                 master_uid=Master.master_uid(),
+                asset_ids=','.join(asset_ids),
                 tags=form.tags.data,
                 content=form.content.data
             )
@@ -307,11 +310,12 @@ def create_product():
         current_app.logger.debug(form.errors)
 
     mode = 'create'
-    
+    # 初始化编号
     form.serial_no.data = Product.make_unique_serial_no(gen_serial_no())
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
-    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1, 1000)
+    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid())\
+        .order_by(Brand.created_at.desc()).paginate(1, 1000)
 
     return render_template('products/create_and_edit.html',
                            form=form,
@@ -342,13 +346,16 @@ def edit_product(rid):
         form.populate_obj(product)
 
         # 更新内容详情
-        if form.tags.data or form.content.data:
-            if product.details: # 已存在，则更新
+        asset_ids = request.form.getlist('asset_ids[]')
+        if form.tags.data or form.content.data or asset_ids:
+            if product.details:  # 已存在，则更新
+                product.details.asset_ids = ','.join(asset_ids)
                 product.details.tags = form.tags.data
                 product.details.content = form.content.data
             else:
                 detail = ProductContent(
                     master_uid=Master.master_uid(),
+                    asset_ids=','.join(asset_ids),
                     tags=form.tags.data,
                     content=form.content.data
                 )
@@ -405,12 +412,22 @@ def edit_product(rid):
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1,
                                                                                                                   1000)
+    # 生成上传token
+    cfg = current_app.config
+    up_token = QiniuStorage.up_token(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'], cfg['QINIU_BUCKET_NAME'],
+                                     cfg['DOMAIN_URL'])
+    if current_app.config['MODE'] == 'prod':
+        up_endpoint = cfg['QINIU_UPLOAD']
+    else:
+        up_endpoint = url_for('main.flupload')
 
     return render_template('products/create_and_edit.html',
                            form=form,
                            mode=mode,
                            sub_menu='products',
                            product=product,
+                           up_endpoint=up_endpoint,
+                           up_token=up_token,
                            current_currency_unit=current_currency_unit,
                            paginated_categories=paginated_categories,
                            paginated_brands=paginated_brands,
@@ -1156,7 +1173,6 @@ def delete_supplier():
     return redirect(url_for('.show_suppliers'))
 
 
-
 @main.route('/product_groups', methods=['GET', 'POST'])
 @main.route('/product_groups/<int:page>', methods=['GET', 'POST'])
 @login_required
@@ -1340,6 +1356,7 @@ def submit_product_for_group(id):
     db.session.commit()
     
     return status_response(True, gettext("Select product is ok!"))
+
 
 @main.route('/product_groups/<int:id>/remove', methods=['POST'])
 @user_has('admin_product')

@@ -12,6 +12,24 @@
 		mixpus.init_page_layout();
 
 		mixpus.upload_file_manager();
+		
+		var ue = UE.getEditor('editor-container', {
+			/* 上传图片配置项 */
+		    "imageUrl": "{{ up_endpoint }}",
+		    "imageActionName": "uploadimage", /* 执行上传图片的action名称 */
+		    "imageFieldName": "file", /* 提交的图片表单名称 */
+		    "imageMaxSize": 2048000, /* 上传大小限制，单位B */
+		    "imageAllowFiles": [  ".jpg", ".jpeg" ], /* 上传图片格式显示 */
+		    "imageCompressEnable": true, /* 是否压缩图片,默认是true */
+		    "imageCompressBorder": 1600, /* 图片压缩最长边限制 */
+		    "imageInsertAlign": "none", /* 插入的图片浮动方式 */
+		    "imageUrlPrefix": "https://kg.erp.taihuoniao.com/", /* 图片访问路径前缀 */
+		    "imagePathFormat": "upload/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
+		});
+		
+		$('.img-thumbnail > i.fa-close').on('click', function() {
+			$(this).parent().remove();
+		});
 
 		$('.ajax-sku').click(function (e) {
 			var $btn = $(this), post_url=$(this).attr('href');
@@ -239,6 +257,25 @@
 			<div id="product-content" class="tab-pane fade in" role="tabpanel" aria-labelledby="content-tab">
                 
 				<div class="form-group">
+					<label class="col-sm-2 control-label">展示图</label>
+					<div class="col-sm-6" id="multi_thumb_image">
+						<a href="javascript:void(0);" data-target="multi-mode" data-toggle="image" class="upload-thumbnail m-r-10 m-b-10 pull-left">
+							<i class="fa fa-cloud-upload fa-3x" data-toggle="tooltip" data-original-title="{{ _('Batch upload or select pictures') }}"></i>
+						</a>
+						
+						{% if mode == 'edit' %}
+							{% for image in product.details.images %}
+							<a href="javascript:;" class="img-thumbnail pull-left m-r-10 m-b-10">
+								<i class="fa fa-close"></i>
+								<img src="{{ image.view_url }}" width="100px">
+								<input name="asset_ids[]" value="{{ image.id }}" type="hidden">
+							</a>
+							{% endfor %}
+						{% endif %}
+					</div>
+				</div>
+				
+				<div class="form-group">
 					{{ form.features.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
 						{{ form.features(id="features", class="form-control")}}
@@ -252,13 +289,18 @@
 					{{ form.tags.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
 						{{ form.tags(id="tags", class="form-control")}}
+						<span class="help-block">
+							<i class="fa fa-info-circle"></i> 标签之间使用英文状态，逗号隔开
+						</span>
 					</div>
 				</div>
 
 				<div class="form-group">
 					{{ form.content.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
-						{{ form.content(id="fx-editor", rows="20", class="form-control ckeditor")}}
+						<script id="editor-container" name="content" type="text/plain">
+							{{ form.content.data }}
+						</script>
 					</div>
 				</div>
 				

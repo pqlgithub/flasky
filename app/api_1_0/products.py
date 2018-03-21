@@ -167,7 +167,7 @@ def get_product(rid):
     
     result = product.to_json()
     result['content'] = content
-    result['brand'] = brand.to_json()
+    result['brand'] = brand.to_json() if brand else None
     
     return full_response(R200_OK, result)
 

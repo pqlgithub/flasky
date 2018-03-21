@@ -68,7 +68,6 @@ class EditCategoryForm(CategoryForm):
 
 
 class ProductForm(Form):
-
     supplier_id = IntegerField(lazy_gettext('Supplier'), default=0)
     brand_id = IntegerField(lazy_gettext('Brand'))
     category_id = IntegerField(lazy_gettext('Category'))

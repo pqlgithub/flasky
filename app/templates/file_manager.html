@@ -26,6 +26,9 @@
 					<button type="button" data-toggle="tooltip" id="button-delete" class="btn btn-danger" data-original-title="{{ _('Delete') }}">
 						<i class="fa fa-trash"></i>
 					</button>
+					<button type="button" data-toggle="tooltip" id="button-checked" class="btn btn-info" data-original-title="{{ _('Batch Submit') }}">
+						<i class="fa fa-check"></i>
+					</button>
 				</div>
 				<div class="col-sm-7">
 					<div id="uploader"></div>
@@ -38,7 +41,7 @@
 				<div class="col-sm-3 col-xs-6 text-center">
 					<div class="text-center">
 						<a href="{{ url_for('main.show_asset') }}?up_target={{ up_target }}&directory={% if current_directory %}{{ current_directory }}/{% endif %}{{ d.name|safe }}" class="directory" style="vertical-align: middle;">
-							<i class="glyphicon glyphicon-folder-close fa-5x"></i>
+							<i class="fa fa-folder fa-5x"></i>
 						</a>
 					</div>
 					<label>
@@ -49,13 +52,13 @@
 				{% endfor %}
 
 				{% for a in paginated_assets.items %}
-				<div class="col-sm-3 col-xs-6 text-center">
-					<a href="{{ a.view_url }}" class="thumbnail" data-target="{{ a.id }}">
+				<div class="col-sm-2 col-xs-4 m-b-10 text-center">
+					<a href="javascript:;" class="thumbnail" data-target="{{ a.id }}">
 						<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
 					</a>
 					<label>
 						<input name="path[]" value="{{ a.filepath }}" type="checkbox">
-						{{ a.filename|short_filename }}
+						{{ a.filename|short_filename(6) }}
 					</label>
 				</div>
 				{% endfor %}
@@ -80,14 +83,31 @@
 		$('a.thumbnail').on('click', function(e) {
 			e.preventDefault();
 			var asset_id = $(this).data('target');
+			var asset_url = $(this).find('img').attr('src');
+			
+			var upload_target = '{{ up_target }}';
+			if (upload_target == 'multi-mode') {
+				$('#multi_thumb_image').append(
+					'<a href="javascript:;" class="img-thumbnail pull-left m-r-10 m-b-10">' +
+					'<i class="fa fa-close"></i>' +
+					'<img src="'+ asset_url +'" width="100px">' +
+					'<input name="asset_ids[]" value="'+ asset_id +'" type="hidden">' +
+					'</a>'
+				);
+				$('.img-thumbnail > i.fa-close').on('click', function() {
+					$(this).parent().remove();
+				});
+			} else {
+				$('#{{ up_target }}_thumb_image').find('img').attr('src', $(this).find('img').attr('src'));
 
-			$('#{{ up_target }}_thumb_image').find('img').attr('src', $(this).find('img').attr('src'));
-
-			$('#{{ up_target }}_id').val(asset_id);
-
+				$('#{{ up_target }}_id').val(asset_id);
+			}
+			
 			$('#modal-image').modal('hide');
 		});
 	};
+	
+	
 
 	// hock img thumbnail
 	hock_thumbnail();
@@ -257,6 +277,29 @@
                 }
             });
 		});
+	});
+	
+	$('#button-checked').on('click', function() {
+        var path = [];
+        $('input[name^=\'path\']:checked').each(function () {
+			var $target = $(this).parent().parent().find('.thumbnail');
+			var asset_id = $target.data('target');
+			var asset_url = $target.find('img').attr('src');
+			
+			$('#multi_thumb_image').append(
+				'<a href="javascript:;" class="img-thumbnail pull-left m-r-10 m-b-10">' +
+				'<i class="fa fa-close"></i>' +
+				'<img src="'+ asset_url +'" width="100px">' +
+				'<input name="asset_ids[]" value="'+ asset_id +'" type="hidden">' +
+				'</a>'
+			);
+        });
+		
+		$('.img-thumbnail > i.fa-close').on('click', function() {
+			$(this).parent().remove();
+		});
+		
+		$('#modal-image').modal('hide');
 	});
 
 //--></script>

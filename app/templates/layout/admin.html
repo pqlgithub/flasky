@@ -69,13 +69,10 @@
 					<li {% if top_menu == 'applications' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.show_applications') }}">{{ _('Applications') }}</a>
 					</li>
-					<li {% if top_menu == 'address' %}class="active"{% endif %}>
-						<a href="{{ url_for('adminlte.show_places') }}">{{ _('Address') }}</a>
-					</li>
                     <li {% if top_menu == 'weixin' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.setting_weixin') }}">{{ _('WeiXin') }}</a>
 					</li>
-                    <li {% if top_menu == 'Settings' %}class="active"{% endif %}>
+                    <li {% if top_menu == 'settings' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.setting_index') }}">{{ _('Settings') }}</a>
 					</li>
 				</ul>

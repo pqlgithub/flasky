@@ -421,7 +421,7 @@ used as it is.
 					$.get('/file_manager/get_asset/'+parseInt(json_result.ids[0]), function (result) {
 						//var json_a_res = eval('(' + result + ')');
 						$('#uploader_result').prepend(
-							'<div class="col-sm-3 col-xs-6 text-center">' +
+							'<div class="col-sm-2 col-xs-4 m-b-10 text-center">' +
 								'<a href="#" data-target="'+ result.id +'" class="thumbnail">' +
 									'<img src="'+ result.view_url +'" alt="'+ result.filename +'">' +
 								'</a>' +

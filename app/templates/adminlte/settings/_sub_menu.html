@@ -2,6 +2,15 @@
 	<div class="list-group-header">
 		{{ _('Setting manage') }}
 	</div>
-
+	
+	<div class="list-group-header">
+		{{ _('Address List') }}
+	</div>
+	<a href="{{ url_for('adminlte.show_places') }}" class="pjax list-group-item {% if sub_menu == 'places'%} active{% endif %}">
+		{{ _('Place List') }}
+	</a>
+	<a href="{{ url_for('adminlte.show_countries') }}?layer=1" class="pjax list-group-item {% if sub_menu == 'countries'%} active{% endif %}">
+		{{ _('Country List') }}
+	</a>
 
 </div>

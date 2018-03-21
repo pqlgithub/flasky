@@ -13,7 +13,7 @@ def load_common_data():
     私有方法，装载共用数据
     """
     return {
-        'top_menu': 'address'
+        'top_menu': 'settings'
     }
 
 
