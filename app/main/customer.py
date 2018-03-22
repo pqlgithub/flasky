@@ -161,14 +161,14 @@ def create_customer():
         return redirect(url_for('.show_customers'))
     else:
         current_app.logger.warn(form.errors)
-    
-    
+
     mode = 'create'
     form.sn.data = MixGenId.gen_customer_sn()
     return render_template('customers/create_and_edit.html',
                            mode=mode,
                            form=form,
                            **load_common_data())
+
 
 @main.route('/customers/<string:sn>/edit', methods=['GET', 'POST'])
 @login_required

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask import abort, current_app, g
 from flask_babelex import lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 import flask_whooshalchemyplus
@@ -65,7 +66,28 @@ class Customer(db.Model):
         for s in CUSTOMER_STATUS:
             if s[0] == self.status:
                 return s
-            
+
+    @staticmethod
+    def create(data, user=None):
+        """创建新客户"""
+        order = Customer(user=user or g.current_user)
+        order.from_json(data, partial_update=True)
+
+        return order
+
+    def from_json(self, data, partial_update=True):
+        """从请求json里导入数据"""
+        fields = ['master_uid', 'user_id', 'sn', 'name', 'grade_id',
+                  'province', 'city', 'area', 'street_address', 'zipcode', 'mobile', 'phone', 'email', 'qq']
+
+        for field in fields:
+            try:
+                setattr(self, field, data[field])
+            except KeyError as err:
+                current_app.logger.warn('Customer set error: %s' % str(err))
+                if not partial_update:
+                    abort(400)
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_customer = {
@@ -99,6 +121,13 @@ class CustomerGrade(db.Model):
     customers = db.relationship(
         'Customer', backref='grade', lazy='dynamic'
     )
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        return {
+            'rid': self.id,
+            'name': self.name
+        }
 
     def __repr__(self):
         return '<CustomerGrade {}>'.format(self.name)

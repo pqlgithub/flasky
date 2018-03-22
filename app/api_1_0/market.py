@@ -11,6 +11,30 @@ from app.models import Coupon, UserCoupon
 from app.utils import datestr_to_timestamp, timestamp
 
 
+@api.route('/market/banners')
+def get_banners():
+    """获取广告列表"""
+    pass
+
+
+@api.route('/market/banners/create', methods=['POST'])
+def create_banner():
+    """新增广告图"""
+    pass
+
+
+@api.route('/market/banners/update', methods=['PUT'])
+def update_banner():
+    """更新广告图"""
+    pass
+
+
+@api.route('/market/banners/delete', methods=['DELETE'])
+def delete_banner():
+    """删除广告图"""
+    pass
+
+
 @api.route('/market/coupons')
 def get_coupons():
     """平台-获取优惠券列表"""
