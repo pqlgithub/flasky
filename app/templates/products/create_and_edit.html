@@ -7,7 +7,7 @@
 		var qiniu_upload_domain='https://up.qbox.me';   		//七牛云上传地址，https需要修改成对应的七牛云https上传域名
 		var qiniu_bucket_domain='https://kg.erp.taihuoniao.com';   //七牛云bucket设置的域名
 	</script>
-    {% assets "ckeditor_js" %}
+    {% assets "editor_js" %}
   		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
 {% endblock %}
@@ -19,7 +19,7 @@
 
 		mixpus.upload_file_manager();
 		
-		initFxEditor();
+		mixpus.hook_summer_editor();
 		
 		$('.img-thumbnail > i.fa-close').on('click', function() {
 			$(this).parent().remove();
@@ -292,7 +292,7 @@
 				<div class="form-group">
 					{{ form.content.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-6">
-						<textarea id="editor" name="content" class="form-control">
+						<textarea id="editor" name="content" class="form-control summernote">
 							{{ form.content.data }}
 						</textarea>
 					</div>

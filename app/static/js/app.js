@@ -414,6 +414,73 @@ mixpus.update_order_status_count = function (status_count) {
 	}
 };
 
+
+mixpus.hook_summer_editor = function () {
+	// Override summernotes image manager
+	$('.summernote').each(function() {
+		var element = this;
+
+		$(element).summernote({
+			disableDragAndDrop: true,
+			height: 300,
+			emptyPara: '',
+			toolbar: [
+				['font', ['bold', 'underline', 'clear']],
+				['para', ['ul', 'ol']],
+				['insert', ['link', 'image', 'video']],
+				['view', ['fullscreen', 'codeview', 'help']],
+				['history', ['undo', 'redo']]
+			],
+			buttons: {
+    			image: function() {
+					var ui = $.summernote.ui;
+
+					// create button
+					var button = ui.button({
+						contents: '<i class="note-icon-picture" />',
+						tooltip: $.summernote.lang[$.summernote.options.lang].image.image,
+						click: function () {
+							$('#modal-image').remove();
+
+							if ($.cookie('img_last_open_folder') && ($.cookie('img_last_open_folder') != 'undefined')) {
+								img_last_open_folder = $.cookie('img_last_open_folder');
+							}
+
+							$.ajax({
+								url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder,
+								dataType: 'html',
+								beforeSend: function() {
+									$('#button-image i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');
+									$('#button-image').prop('disabled', true);
+								},
+								complete: function() {
+									$('#button-image i').replaceWith('<i class="fa fa-upload"></i>');
+									$('#button-image').prop('disabled', false);
+								},
+								success: function(html) {
+									$('body').append('<div id="modal-image" class="modal">' + html + '</div>');
+
+									$('#modal-image').modal('show');
+
+									$('#modal-image').delegate('a.thumbnail', 'click', function(e) {
+										e.preventDefault();
+
+										$(element).summernote('insertImage', $(this).find('img').attr('src'));
+
+										$('#modal-image').modal('hide');
+									});
+								}
+							});
+						}
+					});
+
+					return button.render();
+				}
+  			}
+		});
+	});
+};
+
 // 文件上传管理器
 mixpus.upload_file_manager = function () {
 	// Image Manager

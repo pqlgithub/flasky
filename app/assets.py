@@ -25,11 +25,10 @@ bundles = {
         filters='jsmin',
         output='js/app.min.js'
     ),
-    'ckeditor_js': Bundle(
-        'js/ckeditor/ckeditor.min.js',
-        'js/ckeditor/init-editor.js',
+    'editor_js': Bundle(
+        'js/summernote.js',
         filters='jsmin',
-        output='js/ckeditor/ckeditor.min.js'
+        output='js/editor.min.js'
     ),
     'admin_css': Bundle(
         'css/bootstrap.min.css',
@@ -41,6 +40,7 @@ bundles = {
         'css/select2.css',
         'css/jquery.plupload.queue.css',
         'css/bootstrap-datetimepicker.css',
+        'css/summernote.css',
         filters='cssmin',
         output='css/admin.min.css'
     ),

@@ -317,10 +317,21 @@ def create_product():
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid())\
         .order_by(Brand.created_at.desc()).paginate(1, 1000)
 
+    # 生成上传token
+    cfg = current_app.config
+    up_token = QiniuStorage.up_token(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'], cfg['QINIU_BUCKET_NAME'],
+                                     cfg['DOMAIN_URL'])
+    if current_app.config['MODE'] == 'prod':
+        up_endpoint = cfg['QINIU_UPLOAD']
+    else:
+        up_endpoint = url_for('main.flupload')
+
     return render_template('products/create_and_edit.html',
                            form=form,
                            mode=mode,
                            sub_menu='products',
+                           up_endpoint=up_endpoint,
+                           up_token=up_token,
                            current_currency_unit=g.current_site.currency,
                            product=None,
                            paginated_categories=paginated_categories,
