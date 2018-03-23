@@ -2,9 +2,9 @@
 
 {% block private_js %}
 	<script type="text/javascript">
-		var saveto ='qiniu';   //储存位置为七牛云，对应于插件里的判断值
+		var saveto='qiniu';   //储存位置为七牛云，对应于插件里的判断值
 		var qiniu_uptoken='{{ up_token }}';  //七牛云服务端生成的uptoken
-		var qiniu_upload_domain='https://up.qbox.me';   		//七牛云上传地址，https需要修改成对应的七牛云https上传域名，如果你是一匹来自北方的狼，那你需要up-z1.qiniu.com
+		var qiniu_upload_domain='https://up.qbox.me';   		//七牛云上传地址，https需要修改成对应的七牛云https上传域名
 		var qiniu_bucket_domain='https://kg.erp.taihuoniao.com';   //七牛云bucket设置的域名
 	</script>
     {% assets "ckeditor_js" %}

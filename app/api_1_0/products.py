@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask import request, abort, g, url_for
+from flask import request, abort, g, url_for, current_app
+from sqlalchemy.exc import IntegrityError
+
 from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku
+from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku, Asset
+from app.helpers import MixGenId
 
 
 @api.route('/products')
@@ -245,19 +248,108 @@ def get_product_skus():
     
 
 @api.route('/products', methods=['POST'])
+@auth.login_required
 def create_product():
     """添加新的商品信息"""
-    pass
+    if not request.json or 'name' not in request.json:
+        abort(400)
+
+    # todo: 数据验证
+    # 同步保存商品基本信息
+    data = request.json
+    # 添加 master_uid
+    data['master_uid'] = g.master_uid
+    # 设置默认值
+    if not request.json.get('cover_id'):
+        default_cover = Asset.query.filter_by(is_default=True).first()
+        data['cover_id'] = default_cover.id
+
+    # 根据品牌获取供应商
+    brand_id = request.json.get('brand_id')
+    if brand_id:
+        brand = Brand.query.filter_by(master_uid=g.master_uid, id=int(brand_id)).first()
+        data['supplier_id'] = brand.supplier_id if brand else 0
+
+    try:
+        # 生成新sku
+        new_sn = Product.make_unique_serial_no(MixGenId.gen_product_sku())
+        data['serial_no'] = new_sn
+
+        product = Product.create(data)
+        db.session.add(product)
+
+        # 更新所属分类
+        category_id = request.json.get('category_id')
+        if category_id:
+            _categories = [Category.query.get(int(category_id))]
+            product.update_categories(*_categories)
+
+        db.session.commit()
+    except IntegrityError as err:
+        current_app.logger.error('Create product fail: {}'.format(str(err)))
+        db.session.rollback()
+        return status_response(custom_status('Create failed!', 400), False)
+
+    return full_response(R201_CREATED, product.to_json())
 
 
 @api.route('/products/<string:rid>', methods=['PUT'])
+@auth.login_required
 def update_product(rid):
     """更新商品信息"""
-    pass
+    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+
+    # 同步保存商品基本信息
+    data = request.json
+
+    # 设置默认值
+    if not request.json.get('cover_id'):
+        default_cover = Asset.query.filter_by(is_default=True).first()
+        data['cover_id'] = default_cover.id
+
+    # 根据品牌获取供应商
+    brand_id = request.json.get('brand_id')
+    if brand_id:
+        brand = Brand.query.filter_by(master_uid=g.master_uid, id=int(brand_id)).first()
+        data['supplier_id'] = brand.supplier_id if brand else 0
+
+    try:
+        # 更新所属分类
+        category_id = request.json.get('category_id')
+        if category_id:
+            _categories = [Category.query.get(int(category_id))]
+            product.update_categories(*_categories)
+
+        # 更新基本信息
+        product.name = data.get('name', product.name)
+        product.brand_id = data.get('brand_id', product.brand_id)
+        product.supplier_id = data.get('supplier_id', product.supplier_id)
+        product.cover_id = data.get('cover_id', product.cover_id)
+        product.id_code = data.get('id_code', product.id_code)
+        product.cost_price = data.get('cost_price', product.cost_price)
+        product.price = data.get('price', product.price)
+        product.sale_price = data.get('sale_price', product.sale_price)
+        product.status = data.get('status', product.status)
+        product.description = data.get('description', product.description)
+        product.features = data.get('features', product.features)
+        product.sticked = data.get('sticked', product.sticked)
+
+        db.session.commit()
+    except IntegrityError as err:
+        current_app.logger.error('Update product fail: {}'.format(str(err)))
+        db.session.rollback()
+        return status_response(custom_status('Update failed!', 400), False)
+
+    return full_response(R201_CREATED, product.to_json())
 
 
 @api.route('/products/<string:rid>', methods=['DELETE'])
+@auth.login_required
 def delete_product(rid):
     """删除商品"""
-    pass
+    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+
+    db.session.delete(product)
+
+    return status_response(R200_OK)
 

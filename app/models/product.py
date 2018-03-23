@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import text, event
 from sqlalchemy.sql import func
+from flask import current_app, abort
 from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
 from app import db
@@ -188,7 +189,7 @@ class Product(db.Model):
         if Product.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
-            new_serial_no = gen_serial_no()
+            new_serial_no = MixGenId.gen_product_sku()
             if Product.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no
@@ -221,18 +222,26 @@ class Product(db.Model):
         return db.engine.execute(text(sql))
 
     @staticmethod
-    def from_json(json_product, master_uid):
-        # ['name', 'mode', 'color', 'id_code', 'cost_price']
-        return Product(
-            master_uid=master_uid,
-            serial_no=json_product.get('serial_no'),
-            supplier_id=json_product.get('supplier_id'),
-            name=json_product.get('name'),
-            cover_id=json_product.get('cover_id'),
-            region_id=json_product.get('reg_id'),
-            cost_price=json_product.get('cost_price'),
-            status=json_product.get('status')
-        )
+    def create(data):
+        """创建新产品"""
+        product = Product()
+        product.from_json(data, partial_update=True)
+
+        return product
+
+    def from_json(self, data, partial_update=True):
+        """从请求json里导入数据"""
+        fields = ['master_uid', 'serial_no', 'brand_id', 'supplier_id', 'name', 'cover_id', 'id_code', 'cost_price',
+                  'price', 'sale_price', 's_weight', 's_length', 's_width', 's_height', 'type', 'status', 'description',
+                  'features', 'sticked']
+
+        for field in fields:
+            try:
+                setattr(self, field, data[field])
+            except KeyError as err:
+                current_app.logger.warn('Product set error: %s' % str(err))
+                if not partial_update:
+                    abort(400)
     
     def to_json(self):
         """资源和JSON的序列化转换"""
@@ -284,7 +293,6 @@ class ProductContent(db.Model):
         assets = Asset.query.filter(Asset.id.in_(asset_ids)).all()
 
         return [asset.to_json() for asset in assets]
-
 
     def to_json(self):
         """资源和JSON的序列化转换"""
@@ -418,7 +426,7 @@ class ProductSku(db.Model):
         if ProductSku.query.filter_by(serial_no=serial_no).first() is None:
             return serial_no
         while True:
-            new_serial_no = gen_serial_no()
+            new_serial_no = MixGenId.gen_product_sku()
             if ProductSku.query.filter_by(serial_no=new_serial_no).first() is None:
                 break
         return new_serial_no

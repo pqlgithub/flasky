@@ -26,7 +26,7 @@ bundles = {
         output='js/app.min.js'
     ),
     'ckeditor_js': Bundle(
-        'js/ckeditor/ckeditor.js',
+        'js/ckeditor/ckeditor.min.js',
         'js/ckeditor/init-editor.js',
         filters='jsmin',
         output='js/ckeditor/ckeditor.min.js'

@@ -37,6 +37,17 @@ class Directory(db.Model):
 
         return self.name
 
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        return {
+            'rid': self.id,
+            'name': self.fx_name,
+            'parent_id': self.parent_id,
+            'top': self.top,
+            'type': self.type,
+            'is_default': self.is_default
+        }
+
     def __repr__(self):
         return '<Directory {}>'.format(self.name)
 

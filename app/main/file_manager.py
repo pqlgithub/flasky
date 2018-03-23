@@ -152,6 +152,10 @@ def flupload():
     if directory:
         current_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=directory).first()
         directory_id = current_directory.id
+    else:
+        # 获取默认目录
+        current_directory = Directory.query.filter_by(master_uid=Master.master_uid(), is_default=True).first()
+        directory_id = current_directory.id if current_directory else 0
 
     # for key, file in request.files.iteritems():
     for f in request.files.getlist('file'):
