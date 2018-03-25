@@ -274,6 +274,7 @@ def create_order():
             try:
                 # 授权id
                 auth_app_id = request.json.get('authAppid')
+                current_app.logger.warn('Order pay amount: {}'.format(pay_amount))
                 pay_params = _wxapp_pay_params(order_serial_no, pay_amount, auth_app_id)
                 return full_response(R201_CREATED, {
                     'order': new_order.to_json(),
@@ -402,8 +403,9 @@ def pay_order_jsapi():
 
 def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     """小程序支付签名"""
-    openid = g.current_user.openid
+    current_app.logger.debug('Order pay amount: {}'.format(pay_amount))
 
+    openid = g.current_user.openid
     # 获取小程序支付配置
     wx_payment = WxPayment.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
     if not wx_payment:
@@ -416,12 +418,12 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
 
     current_app.logger.warn('pay settings: [%s]--[%s]--[%s]' % (auth_app_id, wx_payment.mch_id, wx_payment.mch_key))
 
-    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
+    current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(pay_amount * 100)))
     prepay_result = wxpay.unified_order(
         body='D3IN未来店-小程序',
         openid=openid,  # 付款用户openid
         out_trade_no=rid,
-        total_fee=str(int(pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
+        total_fee=str(pay_amount * 100),  # total_fee 单位是 分， 100 = 1元
         trade_type='JSAPI')
 
     current_app.logger.warn('Unified order result: %s' % prepay_result)
