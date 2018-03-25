@@ -10,7 +10,7 @@ from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus
 from app.utils import timestamp
-from app.tasks import remove_order_cart, update_coupon_status
+from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock
 
 
 @api.route('/orders')
@@ -160,11 +160,11 @@ def create_order():
             # 验证sku信息
             product_sku = ProductSku.query.filter_by(serial_no=rid).first()
             if not product_sku:
-                return custom_response("Product sku[%s] is not exist!" % rid, 403, False)
+                return custom_response("商品不存在" % rid, 403, False)
             quantity = product.get('quantity')
 
             if product_sku.stock_count < quantity:
-                return custom_response("inventory isn't enough!", 403, False)
+                return custom_response("库存不足", 403, False)
 
             # 同步减库存操作
             product_sku.stock_quantity -= quantity
@@ -260,6 +260,7 @@ def create_order():
         return custom_response('Create order failed: %s' % str(err), 400, False)
 
     # 触发任务
+    _dispatch_sku_task(products)
 
     # 订单提交成功后，需删除本次购物车商品
     remove_order_cart.apply_async(args=[g.master_uid, order_serial_no])
@@ -446,3 +447,10 @@ def _js_wxpay_params(rid):
     )
     
     return js_api_params
+
+
+def _dispatch_sku_task(skus):
+    """下单后同步更新商品库存数"""
+    for sku in skus:
+        product_sku = ProductSku.query.filter_by(serial_no=sku['rid']).first()
+        sync_product_stock.apply_async(args=[product_sku.product_id])
