@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import re
 from sqlalchemy import text, event
 from sqlalchemy.sql import func
+from bs4 import BeautifulSoup, element
 from flask import current_app, abort
 from flask_babelex import gettext, lazy_gettext
 from jieba.analyse.analyzer import ChineseAnalyzer
@@ -294,12 +296,45 @@ class ProductContent(db.Model):
 
         return [asset.to_json() for asset in assets]
 
+    @property
+    def split_content(self):
+        """将移动应用拆分内容为列表"""
+        content_list = []
+        if not self.content:
+            return content_list
+        rex = re.compile('\W+')  # 匹配任意不是字母，数字，下划线，汉字的字符
+        html = BeautifulSoup(self.content, 'html.parser')
+        for node in html.select('p'):
+            if type(node) == element.NavigableString:
+                c = rex.sub('', node.string)
+                if c:
+                    content_list.append({
+                        'type': 'text',
+                        'content': c
+                    })
+            else:
+                for child in node.children:
+                    if type(child) == element.NavigableString:
+                        c = rex.sub('', child.string)
+                        if c:
+                            content_list.append({
+                                'type': 'text',
+                                'content': c
+                            })
+                    elif type(child) == element.Tag and child.name == 'img':
+                        content_list.append({
+                            'type': 'image',
+                            'content': child['src']
+                        })
+
+        return content_list
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
             'images': self.images,
             'tags': self.tags,
-            'content': self.content
+            'content': self.split_content
         }
         return json_obj
 
@@ -711,7 +746,11 @@ class Brand(db.Model):
     @property
     def logo(self):
         """logo asset info"""
-        return Asset.query.get(self.logo_id) if self.logo_id else Asset.default_logo()
+        if self.logo_id:
+            asset = Asset.query.get(self.logo_id)
+            if asset:
+                return asset
+        return Asset.default_logo()
 
     @property
     def banner(self):

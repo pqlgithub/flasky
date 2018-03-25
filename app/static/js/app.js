@@ -425,10 +425,8 @@ mixpus.hook_summer_editor = function () {
 			height: 300,
 			emptyPara: '',
 			toolbar: [
-				['font', ['bold', 'underline', 'clear']],
-				['para', ['ul', 'ol']],
-				['insert', ['link', 'image', 'video']],
-				['view', ['fullscreen', 'codeview', 'help']],
+				['insert', ['image', 'video']],
+				['view', ['fullscreen', 'codeview']],
 				['history', ['undo', 'redo']]
 			],
 			buttons: {

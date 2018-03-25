@@ -165,11 +165,7 @@ def get_product(rid):
     # 添加品牌信息
     brand = product.brand
     
-    # 商品详情
-    content = product.details.content if product.details else ''
-    
     result = product.to_json()
-    result['content'] = content
     result['brand'] = brand.to_json() if brand else None
     
     return full_response(R200_OK, result)

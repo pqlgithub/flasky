@@ -50,10 +50,10 @@ def create_customer():
     if not request.json or 'name' not in request.json:
         abort(400)
     
-    # todo: 数据验证
+    # todo: 数据验证 account, name 是否唯一
+
 
     try:
-
         new_sn = MixGenId.gen_customer_sn()
 
         # 首先添加分销客户
