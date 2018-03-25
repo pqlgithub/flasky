@@ -309,6 +309,7 @@ class ProductContent(db.Model):
                 c = rex.sub('', node.string)
                 if c:
                     content_list.append({
+                        'rid': MixGenId.gen_digits(),
                         'type': 'text',
                         'content': c
                     })
@@ -318,11 +319,13 @@ class ProductContent(db.Model):
                         c = rex.sub('', child.string)
                         if c:
                             content_list.append({
+                                'rid': MixGenId.gen_digits(),
                                 'type': 'text',
                                 'content': c
                             })
                     elif type(child) == element.Tag and child.name == 'img':
                         content_list.append({
+                            'rid': MixGenId.gen_digits(),
                             'type': 'image',
                             'content': child['src']
                         })
