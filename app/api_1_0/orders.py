@@ -403,6 +403,8 @@ def pay_order_jsapi():
 
 def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     """小程序支付签名"""
+    # 四舍五入，保留几位小数
+    pay_amount = pay_amount.quantize(Decimal('0.00'))
     current_app.logger.debug('Order pay amount: {}'.format(pay_amount))
 
     openid = g.current_user.openid
