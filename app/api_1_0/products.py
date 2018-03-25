@@ -196,6 +196,10 @@ def get_product_detail(rid):
 
     product_details = product.details.to_json() if product.details else {}
 
+    # 检测展示图是否为空
+    if not product_details.get('images') and product.cover_id:
+        product_details['images'] = [product.cover.to_json()]
+
     return full_response(R200_OK, product_details)
 
 
