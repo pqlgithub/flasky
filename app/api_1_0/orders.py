@@ -376,8 +376,13 @@ def wxapp_prepay_sign():
     if current_order.status != OrderStatus.PENDING_PAYMENT:
         return custom_response('Order status is error!', 403, False)
 
-    pay_params = _wxapp_pay_params(rid, current_order.pay_amount, auth_app_id)
-
+    try:
+        pay_params = _wxapp_pay_params(rid, current_order.pay_amount, auth_app_id)
+    except WxPayError as err:
+        current_app.logger.warn('Get pay params error: %s' % str(err))
+        return full_response(R200_OK, {
+            'pay_params': {}
+        })
     return full_response(R200_OK, pay_params)
 
 
@@ -408,6 +413,8 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     cfg = current_app.config
     wxpay = WxPay(wx_app_id=auth_app_id, wx_mch_id=wx_payment.mch_id, wx_mch_key=wx_payment.mch_key,
                   wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
+
+    current_app.logger.warn('pay settings: [%s]--[%s]--[%s]' % (auth_app_id, wx_payment.mch_id, wx_payment.mch_key))
 
     current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
     prepay_result = wxpay.unified_order(
