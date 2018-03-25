@@ -8,7 +8,7 @@ from . import api
 from .auth import auth
 from .utils import *
 from app.helpers import WxPay, WxPayError
-from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus
+from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment
 from app.utils import timestamp
 from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock
 
@@ -271,11 +271,20 @@ def create_order():
 
     if sync_pay:  # 同步返回客户端js支付所需参数
         if from_client == 1:  # 小程序
-            pay_params = _wxapp_pay_params(order_serial_no, pay_amount)
-            return full_response(R201_CREATED, {
-                'order': new_order.to_json(),
-                'pay_params': pay_params
-            })
+            try:
+                # 授权id
+                auth_app_id = request.json.get('authAppid')
+                pay_params = _wxapp_pay_params(order_serial_no, pay_amount, auth_app_id)
+                return full_response(R201_CREATED, {
+                    'order': new_order.to_json(),
+                    'pay_params': pay_params
+                })
+            except WxPayError as err:
+                current_app.logger.warn('Get pay params error: %s' % str(err))
+                return full_response(R201_CREATED, {
+                    'order': new_order.to_json(),
+                    'pay_params': {}
+                })
 
     return full_response(R201_CREATED, {
         'order': new_order.to_json()
@@ -360,12 +369,14 @@ def delete_order():
 def wxapp_prepay_sign():
     """微信小程序支付签名"""
     rid = request.json.get('rid')
+    # 授权id
+    auth_app_id = request.json.get('authAppid')
     current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
     # 验证订单状态
     if current_order.status != OrderStatus.PENDING_PAYMENT:
         return custom_response('Order status is error!', 403, False)
 
-    pay_params = _wxapp_pay_params(rid, current_order.pay_amount)
+    pay_params = _wxapp_pay_params(rid, current_order.pay_amount, auth_app_id)
 
     return full_response(R200_OK, pay_params)
 
@@ -384,11 +395,18 @@ def pay_order_jsapi():
     return full_response(R200_OK, data)
 
 
-def _wxapp_pay_params(rid, pay_amount, store_id=0):
+def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     """小程序支付签名"""
     openid = g.current_user.openid
+
+    # 获取小程序支付配置
+    wx_payment = WxPayment.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
+    if not wx_payment:
+        # 未设置支付参数
+        return {}
+
     cfg = current_app.config
-    wxpay = WxPay(wx_app_id=cfg['WXPAY_APP_ID'], wx_mch_id=cfg['WXPAY_MCH_ID'], wx_mch_key=cfg['WXPAY_MCH_SECRET'],
+    wxpay = WxPay(wx_app_id=auth_app_id, wx_mch_id=wx_payment.mch_id, wx_mch_key=wx_payment.mch_key,
                   wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
 
     current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
