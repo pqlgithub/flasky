@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+import hashlib
 from decimal import Decimal
 from flask import request, abort, url_for, g, current_app
 from sqlalchemy.exc import IntegrityError
@@ -7,21 +9,61 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import Coupon, UserCoupon
+from app.models import Coupon, UserCoupon, WxAuthorizer, Asset, Product
+from app.helpers import WxaOpen3rd, WxAppError
 from app.utils import datestr_to_timestamp, timestamp
+from qiniu import Auth, put_data, etag, urlsafe_base64_encode
 
 
 @api.route('/market/wxacode', methods=['POST'])
 def get_wxacode_card():
-    """获取小程序码"""
+    """获取推广商品的小程序码"""
     auth_app_id = request.json.get('auth_app_id')
     path = request.json.get('path')
     rid = request.json.get('rid')
 
     current_app.logger.warn('path: %s, rid: %s' % (path, rid))
 
+    # 检测商品是否存在
+    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+
+    data = {
+
+    }
+
+
+    # 获取授权信息
+    authorizer = WxAuthorizer.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first_or_404()
+
+    try:
+        open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+        result = open3rd.get_wxacode(path)
+    except WxAppError as err:
+        current_app.logger.warn('Wxapp wxacode is error: %s' % err)
+        return status_response(False, {
+            'code': 500,
+            'message': str(err)
+        })
+
+    # 构建鉴权对象
+    cfg = current_app.config
+    q = Auth(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'])
+
+    # 上传到七牛后保存的文件名
+    key = 'qrcode/wxacode-%s-%s.jpg' % (auth_app_id, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
+    # 生成上传 Token，可以指定过期时间等
+    token = q.upload_token(cfg['QINIU_BUCKET_NAME'], key, 3600)
+    # 开始上传
+    ret, info = put_data(token, key, result.content)
+
+    current_app.logger.warn('ret: %s' % ret)
+    current_app.logger.warn('info: %s' % info)
+
     # 生成小程序码
-    wxa_image_url = 'https://kg.erp.taihuoniao.com/20180314/Fk1vEAP_tIVwmPRfHRfl8jpn07CZ.png'
+    wxa_image_url = '%s/%s' % (Asset.host_url(), key)
+
+
+
 
     return full_response(R200_OK, {
         'wxa_image': wxa_image_url
