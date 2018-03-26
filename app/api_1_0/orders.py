@@ -406,19 +406,20 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     pay_amount = pay_amount.quantize(Decimal('0.00'))
     current_app.logger.debug('Order pay amount: {}'.format(pay_amount))
     openid = g.current_user.openid
+    pay_params = {}
 
     # 获取小程序信息
     wx_mini_app = WxMiniApp.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
     if not wx_mini_app:
         # 不存在该小程序信息
         current_app.logger.warn('不存在该小程序信息')
-        return {}
+        return pay_params
     # 获取小程序支付配置
     wx_payment = WxPayment.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
     if not wx_payment:
         # 未设置支付参数
         current_app.logger.warn('该小程序未设置支付参数')
-        return {}
+        return pay_params
 
     cfg = current_app.config
     wxpay = WxPay(wx_app_id=auth_app_id, wx_mch_id=wx_payment.mch_id, wx_mch_key=wx_payment.mch_key,
