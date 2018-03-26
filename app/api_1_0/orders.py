@@ -428,7 +428,7 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
 
     current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
     prepay_result = wxpay.unified_order(
-        body='%-小程序' % wx_mini_app.nick_name,
+        body='%s-小程序' % wx_mini_app.nick_name,
         openid=openid,  # 付款用户openid
         out_trade_no=rid,
         total_fee=str(int(pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
