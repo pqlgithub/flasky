@@ -8,7 +8,7 @@ from . import api
 from .auth import auth
 from .utils import *
 from app.helpers import WxPay, WxPayError
-from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment
+from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment, WxMiniApp
 from app.utils import timestamp
 from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock
 
@@ -405,12 +405,19 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
     # 四舍五入，保留几位小数
     pay_amount = pay_amount.quantize(Decimal('0.00'))
     current_app.logger.debug('Order pay amount: {}'.format(pay_amount))
-
     openid = g.current_user.openid
+
+    # 获取小程序信息
+    wx_mini_app = WxMiniApp.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
+    if not wx_mini_app:
+        # 不存在该小程序信息
+        current_app.logger.warn('不存在该小程序信息')
+        return {}
     # 获取小程序支付配置
     wx_payment = WxPayment.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
     if not wx_payment:
         # 未设置支付参数
+        current_app.logger.warn('该小程序未设置支付参数')
         return {}
 
     cfg = current_app.config
@@ -421,7 +428,7 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
 
     current_app.logger.warn('openid[%s],total_fee:[%s]' % (openid, str(int(pay_amount * 100))))
     prepay_result = wxpay.unified_order(
-        body='D3IN未来店-小程序',
+        body='%-小程序' % wx_mini_app.nick_name,
         openid=openid,  # 付款用户openid
         out_trade_no=rid,
         total_fee=str(int(pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
