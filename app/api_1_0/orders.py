@@ -441,7 +441,7 @@ def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
 
         # 生成签名
         pay_params = {
-            'appId': cfg['WXPAY_APP_ID'],
+            'appId': auth_app_id,
             'nonceStr': WxPay.nonce_str(32),
             'package': 'prepay_id=%s' % prepay_id,
             'signType': 'MD5',
