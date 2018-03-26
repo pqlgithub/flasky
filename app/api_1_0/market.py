@@ -11,6 +11,23 @@ from app.models import Coupon, UserCoupon
 from app.utils import datestr_to_timestamp, timestamp
 
 
+@api.route('/market/wxacode', methods=['POST'])
+def get_wxacode_card():
+    """获取小程序码"""
+    auth_app_id = request.json.get('auth_app_id')
+    path = request.json.get('path')
+    rid = request.json.get('rid')
+
+    current_app.logger.warn('path: %s, rid: %s' % (path, rid))
+
+    # 生成小程序码
+    wxa_image_url = 'https://kg.erp.taihuoniao.com/20180314/Fk1vEAP_tIVwmPRfHRfl8jpn07CZ.png'
+
+    return full_response(R200_OK, {
+        'wxa_image': wxa_image_url
+    })
+
+
 @api.route('/market/banners')
 def get_banners():
     """获取广告列表"""
