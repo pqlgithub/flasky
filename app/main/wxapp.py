@@ -594,7 +594,7 @@ def wxapp_audit_status():
     elif result.status == 0:  # 审核成功
         wx_version.mark_audit_success(int(timestamp()))
     else:  # 审核中
-        wx_version.status = result.status
+        wx_version.mark_audit_pending()
 
     db.session.commit()
 

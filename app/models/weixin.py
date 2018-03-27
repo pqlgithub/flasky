@@ -364,6 +364,10 @@ class WxVersion(db.Model):
         self.fail_reason = reason
         self.fail_at = fail_time
 
+    def mark_audit_pending(self):
+        """审核中"""
+        self.audit_status = 2
+
     def __repr__(self):
         return '<WxVersion {}>'.format(self.audit_id)
 
