@@ -299,6 +299,36 @@ class WxaOpen3rd(object):
 
         return res
 
+    def get_wxacode_unlimit(self, path, scene, width=430):
+        """获取小程序码(不限量)"""
+        url = '%s/getwxacodeunlimit?access_token=%s' % (self.wxa_host_url, self.access_token)
+        payload = {
+            'path': path,
+            'scene': scene,
+            'width': width
+        }
+
+        current_app.logger.warn('Get wxacode unlimit data: %s' % payload)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return res
+
+    def create_wxaqrcode(self, path, width=430):
+        """获取小程序二维码"""
+        url = 'https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s' % self.access_token
+
+        payload = {
+            'path': path,
+            'width': width
+        }
+
+        current_app.logger.warn('Get wxaqrcode data: %s' % payload)
+
+        res = requests.post(url, data=json.dumps(payload))
+
+        return res
+
     def get_category(self):
         """获取授权小程序帐号的可选类目"""
         url = '%s/get_category?access_token=%s' % (self.wxa_host_url, self.access_token)

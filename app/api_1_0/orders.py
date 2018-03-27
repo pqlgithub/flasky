@@ -146,10 +146,10 @@ def create_order():
     address = Address.query.filter_by(user_id=g.current_user.id, serial_no=address_rid).first()
     if address is None:
         return custom_response("Address isn't exist!", 403, False)
-    
+
     # 是否同步支付
     sync_pay = request.json.get('sync_pay')
-    
+
     try:
         total_quantity = 0
         total_amount = 0
@@ -160,14 +160,16 @@ def create_order():
             # 验证sku信息
             product_sku = ProductSku.query.filter_by(serial_no=rid).first()
             if not product_sku:
-                return custom_response("商品不存在" % rid, 403, False)
-            quantity = product.get('quantity')
+                return custom_response("商品不存在", 403, False)
 
+            quantity = product.get('quantity')
             if product_sku.stock_count < quantity:
                 return custom_response("库存不足", 403, False)
 
             # 同步减库存操作
             product_sku.stock_quantity -= quantity
+
+            current_app.logger.warn('Order items rid, quantity is ok!')
 
             """
             # 验证库存
@@ -199,6 +201,8 @@ def create_order():
             total_quantity += quantity
             total_amount += deal_price * quantity
             total_discount += discount_amount
+
+        current_app.logger.warn('Order items is ok!')
 
         outside_target_id = request.json.get('outside_target_id')
         freight = request.json.get('freight')

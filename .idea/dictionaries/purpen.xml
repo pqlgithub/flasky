@@ -36,6 +36,7 @@
       <w>gettemplatedraftlist</w>
       <w>gettemplatelist</w>
       <w>getwxacode</w>
+      <w>getwxacodeunlimit</w>
       <w>getwxasearchstatus</w>
       <w>githup</w>
       <w>gmail</w>
@@ -80,6 +81,7 @@
       <w>ueditor</w>
       <w>undocodeaudit</w>
       <w>unionid</w>
+      <w>unlimit</w>
       <w>unpad</w>
       <w>unstyled</w>
       <w>updateauthorized</w>
@@ -97,6 +99,7 @@
       <w>wxapi</w>
       <w>wxapp</w>
       <w>wxapps</w>
+      <w>wxaqrcode</w>
       <w>wxtemplate</w>
       <w>wxtemplates</w>
       <w>xmltext</w>

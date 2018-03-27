@@ -9,8 +9,8 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import Coupon, UserCoupon, WxAuthorizer, Asset, Product
-from app.helpers import WxaOpen3rd, WxAppError
+from app.models import Coupon, UserCoupon, WxAuthorizer, Asset, Product, WxMiniApp
+from app.helpers import WxaOpen3rd, WxAppError, Fxaim
 from app.utils import datestr_to_timestamp, timestamp
 from qiniu import Auth, put_data, etag, urlsafe_base64_encode
 
@@ -24,20 +24,18 @@ def get_wxacode_card():
 
     current_app.logger.warn('path: %s, rid: %s' % (path, rid))
 
-    # 检测商品是否存在
+    # 商品是否存在
     product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
 
-    data = {
-
-    }
-
-
-    # 获取授权信息
-    authorizer = WxAuthorizer.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first_or_404()
+    # 小程序名称
+    wxa = WxMiniApp.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first_or_404()
 
     try:
+        # 获取授权信息
+        authorizer = WxAuthorizer.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first_or_404()
+        # 获得小程序码
         open3rd = WxaOpen3rd(access_token=authorizer.access_token)
-        result = open3rd.get_wxacode(path)
+        result = open3rd.get_wxacode_unlimit(path, scene=rid)
     except WxAppError as err:
         current_app.logger.warn('Wxapp wxacode is error: %s' % err)
         return status_response(False, {
@@ -50,7 +48,7 @@ def get_wxacode_card():
     q = Auth(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'])
 
     # 上传到七牛后保存的文件名
-    key = 'qrcode/wxacode-%s-%s.jpg' % (auth_app_id, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
+    key = 'qrcode/wxacode-%s-%s.jpg' % (rid, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
     # 生成上传 Token，可以指定过期时间等
     token = q.upload_token(cfg['QINIU_BUCKET_NAME'], key, 3600)
     # 开始上传
@@ -62,11 +60,26 @@ def get_wxacode_card():
     # 生成小程序码
     wxa_image_url = '%s/%s' % (Asset.host_url(), key)
 
+    if product.sale_price > 0:
+        sale_price = product.sale_price
+    else:
+        sale_price = product.price
 
+    data = {
+        'title': product.name,
+        'sale_price': str(sale_price.quantize(Decimal('0.00'))),
+        'goods_img': product.cover.view_url,
+        'brand_name': wxa.nick_name,
+        'logo_img': wxa.head_img,
+        'qr_code_img': wxa_image_url
+    }
 
+    # 发起请求
+    fxaim = Fxaim()
+    result = fxaim.get_wxa_poster(data)
 
     return full_response(R200_OK, {
-        'wxa_image': wxa_image_url
+        'wxa_image': result.image_url
     })
 
 
