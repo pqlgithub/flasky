@@ -55,6 +55,7 @@ class WxMiniApp(db.Model):
     auth_app_id = db.Column(db.String(20), index=True, nullable=False)
     nick_name = db.Column(db.String(100), index=True, nullable=False)
     head_img = db.Column(db.String(200))
+    cover_id = db.Column(db.Integer, default=0)
     # 模板ID
     template_id = db.Column(db.String(32))
     # 帐号介绍
@@ -121,6 +122,11 @@ class WxMiniApp(db.Model):
     def test_list(self):
         """字符串转换为列表"""
         return self.testers.split(',') if self.testers else []
+
+    @property
+    def cover(self):
+        """cover asset info"""
+        return Asset.query.get(self.cover_id) if self.cover_id else Asset.default_logo()
 
     @staticmethod
     def make_unique_serial_no():

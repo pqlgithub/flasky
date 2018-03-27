@@ -101,6 +101,32 @@ def wxapp_setting():
                            wx_mini_app=wx_mini_app)
 
 
+@main.route('/wxapps/setting/update', methods=['POST'])
+def update_wxapp_setting():
+    """更新配置小程序参数"""
+    auth_app_id = request.values.get('auth_app_id')
+    if not auth_app_id:
+        return redirect(url_for('.wxapps'))
+
+    wx_mini_app = WxMiniApp.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+
+    wx_mini_app.nick_name = request.form.get('nick_name', wx_mini_app.nick_name)
+    wx_mini_app.signature = request.form.get('signature', wx_mini_app.signature)
+
+    if request.form.get('cover_id'):
+        wx_mini_app.cover_id = request.form.get('cover_id')
+        # 获取当前附件
+        asset = Asset.query.get(int(request.form.get('cover_id')))
+        if asset:
+            wx_mini_app.head_img = asset.view_url
+
+    db.session.commit()
+
+    flash('更新信息成功', 'success')
+
+    return redirect('%s?auth_app_id=%s' % (url_for('.wxapp_setting'), auth_app_id))
+
+
 @main.route('/wxapps/authorize')
 def wxapp_authorize():
     """跳转授权页"""

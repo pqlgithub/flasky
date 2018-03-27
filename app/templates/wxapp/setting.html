@@ -23,6 +23,8 @@
 		mixpus.init_page_layout();
 		mixpus.hook_ajax_modal();
 		
+		mixpus.upload_file_manager();
+		
 		unbind_tester();
 		
 		$('.btn.btn-wxacode').click(function () {
@@ -118,13 +120,24 @@
     <div class="tab-content m-t-30">
 		<!--授权信息-->
         <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
-		    <form id="wxapp-form" class="form-horizontal" action="" method="post">
+		    <form id="wxapp-form" class="form-horizontal" action="{{ url_for('main.update_wxapp_setting') }}" method="post">
 		        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
+				
                 {% if auth_status %}
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序原始ID</label>
+                        <label class="col-sm-2 control-label">小程序Logo</label>
                         <div class="col-sm-6">
-                            <p class="form-control-static"><strong class="text-success">{{ wx_mini_app.user_name }}</strong></p>
+							{% if mode == 'create' %}
+							<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
+								<img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" />
+							</a>
+							{% else %}
+							<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
+								<img src="{{ wx_mini_app.cover.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" />
+							</a>
+							{% endif %}
+							<input id="cover_id" name="cover_id" value="{{ wx_mini_app.cover_id|default(0) }}" type="hidden">
                         </div>
                     </div>
                     <div class="form-group">
@@ -145,11 +158,17 @@
                             <p class="form-control-static">{{ wx_mini_app.status_label[1] }}</p>
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">小程序原始ID</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-static"><strong class="text-success">{{ wx_mini_app.user_name }}</strong></p>
+                        </div>
+                    </div>
                     <div class="form-group m-t-30">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-6">
                             <a href="" class="btn btn-default">重新授权</a>
+							<button class="btn btn-mixpus" type="submit" form="wxapp-form" >更新信息</button>
                         </div>
                     </div>
                 {% endif %}
