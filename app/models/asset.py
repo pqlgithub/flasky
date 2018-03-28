@@ -86,12 +86,9 @@ class Asset(db.Model):
             url = '{}{}/{}'.format(
                 proto,
                 current_app.config['THUMB_CDN_DOMAIN'],
-                self.filepath) if not self.is_default else '{}'.format(
                 self.filepath)
         else:
-            url = uploader.url(
-                self.filepath) if not self.is_default else '{}'.format(
-                self.filepath)
+            url = uploader.url(self.filepath)
 
         return url
 

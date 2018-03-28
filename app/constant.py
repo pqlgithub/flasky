@@ -139,7 +139,7 @@ DEFAULT_SUPPLIER = {
 
 # 默认附件
 DEFAULT_ASSET = {
-    'filepath': '/static/img/mic_logo180x180.jpg',
+    'filepath': 'static/img/default-logo-180x180.png',
     'filename': 'mic_logo180x180.jpg',
     'width': 180,
     'height': 180,
