@@ -362,7 +362,7 @@ def edit_product(rid):
         for sku in product.skus:
             sku.price = price
             sku.sale_price = sale_price
-        
+
         # 更新内容详情
         asset_ids = request.form.getlist('asset_ids[]')
         if form.tags.data or form.content.data or asset_ids:
