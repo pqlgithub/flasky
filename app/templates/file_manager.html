@@ -11,10 +11,10 @@
 		<div class="modal-body">
 			<div class="row">
 				<div class="col-sm-5">
-					<a href="{{ url_for('main.show_asset') }}?directory={{ parent_directory }}&up_target={{ up_target }}" data-toggle="tooltip" id="button-parent" class="btn btn-default" data-original-title="{{ _('Parent') }}">
+					<a href="{{ url_for('main.show_asset') }}?directory={{ parent_directory }}&directory_id={{ parent_id }}&up_target={{ up_target }}" data-toggle="tooltip" id="button-parent" class="btn btn-default" data-original-title="{{ _('Parent') }}">
 						<i class="fa fa-level-up"></i>
 					</a>
-					<a href="{{ url_for('main.show_asset') }}?directory={{ current_directory }}&up_target={{ up_target }}" data-toggle="tooltip" id="button-refresh" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
+					<a href="{{ url_for('main.show_asset') }}?directory={{ current_directory }}&directory_id={{ current_directory_id }}&up_target={{ up_target }}" data-toggle="tooltip" id="button-refresh" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
 						<i class="fa fa-refresh"></i>
 					</a>
 					<button type="button" data-toggle="tooltip" id="uploader_browse" class="btn btn-mixpus" data-original-title="{{ _('Upload') }}">
@@ -40,12 +40,12 @@
 				{% for d in all_directory %}
 				<div class="col-sm-3 col-xs-6 text-center">
 					<div class="text-center">
-						<a href="{{ url_for('main.show_asset') }}?up_target={{ up_target }}&directory={% if current_directory %}{{ current_directory }}/{% endif %}{{ d.name|safe }}" class="directory" style="vertical-align: middle;">
+						<a href="{{ url_for('main.show_asset') }}?up_target={{ up_target }}&directory={% if current_directory %}{{ current_directory }}/{% endif %}{{ d.name|safe }}&directory_id={{ d.id }}" class="directory" style="vertical-align: middle;">
 							<i class="fa fa-folder fa-5x"></i>
 						</a>
 					</div>
 					<label>
-						<input name="path[]" value="{{ d.name }}" type="checkbox">
+						<input name="path[]" value="{{ d.name }}" data-rid="{{ d.id }}" type="checkbox">
 						{{ d.fx_name|safe }}
 					</label>
 				</div>
@@ -120,7 +120,8 @@
 
 		var args = mixpus.get_url_params($(this).attr('href'));
 		if (args || args != null) {
-			$.cookie('img_last_open_folder', args['directory']);
+			$.cookie('last_open_folder', args['directory']);
+			$.cookie('last_open_folder_id', args['directory_id']);
 		}
 
 		$('#modal-image').load($(this).attr('href'));
@@ -134,6 +135,12 @@
 
 	$('#button-parent').on('click', function(e) {
 		e.preventDefault();
+		
+		var args = mixpus.get_url_params($(this).attr('href'));
+		if (args || args != null) {
+			$.cookie('last_open_folder', args['directory']);
+			$.cookie('last_open_folder_id', args['directory_id']);
+		}
 
 		$('[data-toggle="tooltip"]').tooltip('hide');
 
@@ -142,6 +149,13 @@
 
 	$('#button-refresh').on('click', function(e) {
 		e.preventDefault();
+		
+		var args = mixpus.get_url_params($(this).attr('href'));
+		if (args || args != null) {
+			$.cookie('last_open_folder', args['directory']);
+			$.cookie('last_open_folder_id', args['directory_id']);
+		}
+		
 		$('[data-toggle="tooltip"]').tooltip('hide');
 		$('#modal-image').load($(this).attr('href'));
 	});
@@ -170,7 +184,7 @@
 				dataType: 'json',
 				data: {
 					folder: encodeURIComponent($('input[name=\'folder\']').val()),
-					parent_directory: '{{ current_directory }}',
+					parent_id: '{{ current_directory_id|default(0) }}',
 					csrf_token: mixpus.csrf_token
 				},
 				beforeSend: function() {
@@ -183,9 +197,7 @@
 					if (result['success']) {
 						$('#button-refresh').trigger('click');
 					} else {
-						$btn
-							.parent().parent()
-							.before(mixpus.display_alert(result['status']['message']));
+						mixpus.show_error_message(result['status']['message']);
 					}
 				},
 				error: function(xhr, ajaxOptions, thrownError) {

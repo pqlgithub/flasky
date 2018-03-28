@@ -16,7 +16,8 @@ var mixpus = {
 	},
 	lodop: '', // 网络打印机实例
 	container_id: '#pjax-container',
-	img_last_open_folder: '', // 缓存最近的上传目录
+	last_open_folder: '', // 缓存最近的上传目录
+	last_open_folder_id: 0,
 	show_ok_message: function (message) {
 		swal({
 		 	title: message,
@@ -443,12 +444,13 @@ mixpus.hook_summer_editor = function () {
 						click: function () {
 							$('#modal-image').remove();
 
-							if ($.cookie('img_last_open_folder') && ($.cookie('img_last_open_folder') != 'undefined')) {
-								img_last_open_folder = $.cookie('img_last_open_folder');
+							if ($.cookie('last_open_folder') && $.cookie('last_open_folder_id') && $.cookie('last_open_folder') != 'undefined' && $.cookie('last_open_folder_id') != 'undefined') {
+								mixpus.last_open_folder = $.cookie('last_open_folder');
+								mixpus.last_open_folder_id = $.cookie('last_open_folder_id');
 							}
-
+							
 							$.ajax({
-								url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder + '&up_target=editor-mode',
+								url: mixpus.urls.show_assets + '?directory=' + mixpus.last_open_folder + '&directory_id='+ mixpus.last_open_folder_id +'&up_target=editor-mode',
 								dataType: 'html',
 								beforeSend: function() {
 									$('#button-image i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');
@@ -545,12 +547,13 @@ mixpus.upload_file_manager = function () {
 
 			$('#modal-image').remove();
 
-			if ($.cookie('img_last_open_folder') && ($.cookie('img_last_open_folder') != 'undefined')) {
-				mixpus.img_last_open_folder = $.cookie('img_last_open_folder');
+			if ($.cookie('last_open_folder') && $.cookie('last_open_folder_id') && $.cookie('last_open_folder') != 'undefined' && $.cookie('last_open_folder_id') != 'undefined') {
+				mixpus.last_open_folder = $.cookie('last_open_folder');
+				mixpus.last_open_folder_id = $.cookie('last_open_folder_id');
 			}
 
 			$.ajax({
-				url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder + '&up_target=' + $target,
+				url: mixpus.urls.show_assets + '?directory=' + mixpus.last_open_folder + '&directory_id='+ mixpus.last_open_folder_id +'&up_target=' + $target,
 				dataType: 'html',
 				beforeSend: function() {
 					$button.prop('disabled', true);

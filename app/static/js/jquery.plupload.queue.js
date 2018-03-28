@@ -420,7 +420,7 @@ used as it is.
 					var json_result = eval('(' + responseObject.response + ')');
 					$.get('/file_manager/get_asset/'+parseInt(json_result.ids[0]), function (result) {
 						//var json_a_res = eval('(' + result + ')');
-						$('#uploader_result').prepend(
+						$('#uploader_result').append(
 							'<div class="col-sm-2 col-xs-4 m-b-10 text-center">' +
 								'<a href="#" data-target="'+ result.id +'" class="thumbnail">' +
 									'<img src="'+ result.view_url +'" alt="'+ result.filename +'">' +

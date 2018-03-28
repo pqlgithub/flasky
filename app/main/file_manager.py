@@ -3,7 +3,7 @@ import os, time, hashlib, re
 from urllib import parse
 from os.path import splitext,getsize
 from PIL import Image
-from flask import current_app, render_template, redirect, url_for, flash, request, jsonify
+from flask import current_app, render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_required, current_user
 from flask_babelex import gettext
 from wtforms import ValidationError
@@ -17,16 +17,14 @@ from app.helpers import MixGenId, QiniuStorage
 
 
 @main.route('/file_manager/folder', methods=['POST'])
-@main.route('/file_manager/folder/<int:page>', methods=['POST'])
 @login_required
-def folder(page=1):
-    parent_id = 0
+def folder():
     top = 0
     success = True
 
     if request.method == 'POST':
         sub_folder = request.form.get('folder')
-        parent_directory = request.form.get('parent_directory', '')
+        parent_id = request.form.get('parent_id', 0)
 
         sub_folder = parse.unquote(sub_folder)
         # 截取头尾空格
@@ -37,21 +35,15 @@ def folder(page=1):
 
         # 替换中间空格符
         sub_folder = re.sub(r'\s+', '_', sub_folder)
-
         pattern = re.compile(r'[!#@\$\/%\?&]')
         if len(pattern.findall(sub_folder)):
             return custom_response(False, gettext("Directory name can't contain special characters [!#@$/?&]!"))
 
-        if Directory.query.filter_by(master_uid=Master.master_uid(), name=sub_folder).first():
+        # 验证同级目录是否存在相同名称
+        if Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=parent_id, name=sub_folder).first():
             return custom_response(False, gettext("Directory name is already exist!"))
 
-        if parent_directory != '':
-            directories = parent_directory.split('/')
-            # pop last item
-            last_directory_name = directories.pop()
-            last_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory_name).first()
-
-            parent_id = last_directory.id
+        if parent_id:
             top = 1
 
         try:
@@ -66,7 +58,8 @@ def folder(page=1):
 
             db.session.commit()
 
-        except ValidationError:
+        except ValidationError as err:
+            current_app.logger.warn('Create folder error: %s' % str(err))
             success = False
 
     return status_response(success)
@@ -76,25 +69,32 @@ def folder(page=1):
 @main.route('/file_manager/show_asset/<int:page>')
 @login_required
 def show_asset(page=1):
-    per_page = 20
+    per_page = request.values.get('per_page', 20)
     parent_directory = ''
+    parent_id = 0
     all_directory = []
     paginated_assets = []
 
     current_directory = request.args.get('directory', '')
+    current_directory_id = request.args.get('directory_id', 0)
     up_target = request.args.get('up_target', 'mic')
     # top level
-    if current_directory == '' or current_directory is None:
-        all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), top=0).all()
+    if current_directory == '' or not current_directory or not current_directory_id:
+        all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=0).all()
         paginated_assets = Asset.query.filter_by(master_uid=Master.master_uid(), directory_id=0).paginate(page, per_page)
+        # current_directory，current_directory_id不匹配，则重置
+        current_directory = ''
+        current_directory_id = 0
     else:
         directories = current_directory.split('/')
-        # pop last item
+
+        # 删除最末文件夹
         last_directory_name = directories.pop()
-
-        last_directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory_name).first()
-
         current_app.logger.debug('Directory name: [%s]' % last_directory_name)
+
+        last_directory = Directory.query.get(int(current_directory_id))
+        if last_directory.master_uid != Master.master_uid():
+            abort(401)
 
         if last_directory:
             all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=last_directory.id).all()
@@ -104,6 +104,7 @@ def show_asset(page=1):
             if last_directory.parent_id:
                 # directories.pop()
                 parent_directory = '/'.join(directories)
+                parent_id = last_directory.parent_id
 
     # 生成上传token
     cfg = current_app.config
@@ -120,7 +121,9 @@ def show_asset(page=1):
                            up_token=up_token,
                            master_uid=Master.master_uid(),
                            current_directory=current_directory,
+                           current_directory_id=current_directory_id,
                            parent_directory=parent_directory,
+                           parent_id=parent_id,
                            all_directory=all_directory,
                            paginated_assets=paginated_assets)
 
@@ -216,14 +219,20 @@ def pldelete():
                 last_directory = _pop_last_directory(filepath)
                 directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory).first()
                 if directory:
-                    db.session.delete(directory)
+                    # 如有子文件夹，不能删除
+                    if Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=directory.id).first():
+                        return custom_response(False, '此文件夹下有子文件夹,不能删除！')
 
+                    # 如有子元素，不能删除
+                    if directory.assets.count():
+                        return custom_response(False, '此文件夹正在使用中,不能删除！')
+
+                db.session.delete(directory)
+
+        db.session.commit()
     except IntegrityError as err:
         db.session.rollback()
         current_app.logger.warn('Pldelete asset error: %s' % err)
-        return custom_response(False, '此图正在被使用中,不能被删！')
-    else:
-        db.session.rollback()
         return custom_response(False, '此图正在被使用中,不能被删！')
 
     return status_response()
