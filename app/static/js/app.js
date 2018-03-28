@@ -422,10 +422,13 @@ mixpus.hook_summer_editor = function () {
 
 		$(element).summernote({
 			disableDragAndDrop: true,
-			height: 300,
+			height: 780,
+			lang: 'zh-CN',
 			emptyPara: '',
 			toolbar: [
-				['insert', ['image', 'video']],
+				['style', ['bold', 'italic', 'underline', 'clear']], // 字体粗体、字体斜体、字体下划线、字体格式清除
+				['font', ['strikethrough', 'superscript', 'subscript']], //字体划线、字体上标、字体下标   
+				['insert', ['link', 'image', 'video']],
 				['view', ['fullscreen', 'codeview']],
 				['history', ['undo', 'redo']]
 			],
@@ -445,7 +448,7 @@ mixpus.hook_summer_editor = function () {
 							}
 
 							$.ajax({
-								url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder,
+								url: mixpus.urls.show_assets + '?directory=' + mixpus.img_last_open_folder + '&up_target=editor-mode',
 								dataType: 'html',
 								beforeSend: function() {
 									$('#button-image i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');
@@ -459,12 +462,33 @@ mixpus.hook_summer_editor = function () {
 									$('body').append('<div id="modal-image" class="modal">' + html + '</div>');
 
 									$('#modal-image').modal('show');
-
+										
+									// 单张插入
 									$('#modal-image').delegate('a.thumbnail', 'click', function(e) {
 										e.preventDefault();
 
-										$(element).summernote('insertImage', $(this).find('img').attr('src'));
-
+										$(element).summernote('insertImage', $(this).find('img').attr('src'), function ($image) {
+											$image.css('width', '100%');
+											$image.css('height', 'auto');
+										});
+										
+										$('#modal-image').modal('hide');
+									});
+									
+									// 批量插入
+									$('#modal-image').delegate('#button-checked', 'click', function(e) {
+										e.preventDefault();
+										
+								        $('input[name^=\'path\']:checked').each(function () {
+											var $target = $(this).parent().parent().find('.thumbnail');
+											var asset_url = $target.find('img').attr('src');
+											
+											$(element).summernote('insertImage', asset_url, function ($image) {
+												$image.css('width', '100%');
+												$image.css('height', 'auto');
+											});
+								        });
+										
 										$('#modal-image').modal('hide');
 									});
 								}

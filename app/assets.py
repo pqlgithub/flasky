@@ -27,6 +27,7 @@ bundles = {
     ),
     'editor_js': Bundle(
         'js/summernote.js',
+        'js/summernote-zh-CN.js',
         filters='jsmin',
         output='js/editor.min.js'
     ),

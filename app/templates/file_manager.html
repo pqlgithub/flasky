@@ -97,11 +97,14 @@
 				$('.img-thumbnail > i.fa-close').on('click', function() {
 					$(this).parent().remove();
 				});
+			
+			} else if (upload_target == 'editor-mode') {
+				// nothing to do
 			} else {
 				$('#{{ up_target }}_thumb_image').find('img').attr('src', $(this).find('img').attr('src'));
 
 				$('#{{ up_target }}_id').val(asset_id);
-			}
+			} 
 			
 			$('#modal-image').modal('hide');
 		});
@@ -281,25 +284,28 @@
 	
 	$('#button-checked').on('click', function() {
         var path = [];
-        $('input[name^=\'path\']:checked').each(function () {
-			var $target = $(this).parent().parent().find('.thumbnail');
-			var asset_id = $target.data('target');
-			var asset_url = $target.find('img').attr('src');
+		var upload_target = '{{ up_target }}';
+		if (upload_target == 'multi-mode') {
+	        $('input[name^=\'path\']:checked').each(function () {
+				var $target = $(this).parent().parent().find('.thumbnail');
+				var asset_id = $target.data('target');
+				var asset_url = $target.find('img').attr('src');
 			
-			$('#multi_thumb_image').append(
-				'<a href="javascript:;" class="img-thumbnail pull-left m-r-10 m-b-10">' +
-				'<i class="fa fa-close"></i>' +
-				'<img src="'+ asset_url +'" width="100px">' +
-				'<input name="asset_ids[]" value="'+ asset_id +'" type="hidden">' +
-				'</a>'
-			);
-        });
+				$('#multi_thumb_image').append(
+					'<a href="javascript:;" class="img-thumbnail pull-left m-r-10 m-b-10">' +
+					'<i class="fa fa-close"></i>' +
+					'<img src="'+ asset_url +'" width="100px">' +
+					'<input name="asset_ids[]" value="'+ asset_id +'" type="hidden">' +
+					'</a>'
+				);
+	        });
 		
-		$('.img-thumbnail > i.fa-close').on('click', function() {
-			$(this).parent().remove();
-		});
+			$('.img-thumbnail > i.fa-close').on('click', function() {
+				$(this).parent().remove();
+			});
 		
-		$('#modal-image').modal('hide');
+			$('#modal-image').modal('hide');
+		}
 	});
 
 //--></script>

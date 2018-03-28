@@ -224,6 +224,11 @@ select {
 	text-align: center;
 	color: #bfbfbf;
 }
+a.thumbnail {
+    max-width: 100px;
+    max-height: 100px;
+    overflow: hidden;
+}
 .img-thumbnail {
   position: relative;
 }
@@ -241,6 +246,13 @@ select {
 }
 .tooltip-inner {
   border: 0px solid #fff;
+}
+.note-editable p {
+	padding: 0;
+	margin: 0;
+}
+.note-editable p img {
+	max-width: 100%;
 }
 
 .indicator,

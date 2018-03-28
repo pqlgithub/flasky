@@ -356,6 +356,13 @@ def edit_product(rid):
         
         form.populate_obj(product)
 
+        # 同步sku销售价及促销价
+        price = form.price.data if form.price.data else 0.0
+        sale_price = form.sale_price.data if form.sale_price.data else 0.0
+        for sku in product.skus:
+            sku.price = price
+            sku.sale_price = sale_price
+        
         # 更新内容详情
         asset_ids = request.form.getlist('asset_ids[]')
         if form.tags.data or form.content.data or asset_ids:
@@ -489,7 +496,6 @@ def copy_product():
         flash(gettext('Product already exists without duplication'), 'danger')
         return redirect(url_for('.show_products'))
 
-    currency_list = Currency.query.filter_by(status=1).all()
     new_serial_no = Product.make_unique_serial_no(gen_serial_no())
     some_product = Product(
         master_uid=Master.master_uid(),
