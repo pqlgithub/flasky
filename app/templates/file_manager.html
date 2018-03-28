@@ -80,8 +80,9 @@
 	mixpus.hook_tooltip_toggle();
 
 	var hock_thumbnail = function () {
-		$('a.thumbnail').on('click', function(e) {
+		$('a.thumbnail').unbind('click').bind('click',function(e) {
 			e.preventDefault();
+			
 			var asset_id = $(this).data('target');
 			var asset_url = $(this).find('img').attr('src');
 			
