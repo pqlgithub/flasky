@@ -423,7 +423,7 @@ class ProductSku(db.Model):
     @property
     def cover(self):
         """cover asset info"""
-        return Asset.query.get(self.cover_id) if self.cover_id else DEFAULT_IMAGES['cover']
+        return Asset.query.get(self.cover_id) if self.cover_id else Asset.default_logo()
     
     @property
     def mode(self):
