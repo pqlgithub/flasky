@@ -16,7 +16,7 @@ class SupplierForm(Form):
     full_name = StringField(lazy_gettext('Full Name'), validators=[DataRequired()])
     start_date = StringField(lazy_gettext('Start date'))
     end_date = StringField(lazy_gettext('End date'))
-    contact_name = StringField(lazy_gettext('Contact'))
+    contact_name = StringField(lazy_gettext('Contact Name'))
     phone = StringField(lazy_gettext('Phone'))
     address = StringField(lazy_gettext('Address'))
     remark = TextAreaField(lazy_gettext('Remark'))

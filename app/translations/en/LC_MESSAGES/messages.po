@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-28 12:04+0800\n"
+"POT-Creation-Date: 2018-03-28 16:59+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -340,7 +340,7 @@ msgid "Supplier"
 msgstr ""
 
 #: app/constant.py:303 app/forms/logistics_forms.py:13
-#: app/forms/logistics_forms.py:44
+#: app/forms/logistics_forms.py:44 app/forms/product_forms.py:19
 msgid "Contact Name"
 msgstr ""
 
@@ -409,7 +409,7 @@ msgstr ""
 #: app/templates/finances/show_payments.html:86
 #: app/templates/orders/_modal_remark.html:19
 #: app/templates/orders/preview_order.html:66
-#: app/templates/products/create_and_edit.html:425
+#: app/templates/products/create_and_edit.html:428
 #: app/templates/products/show_skus.html:11
 #: app/templates/purchases/_modal_arrival.html:37
 #: app/templates/purchases/purchase_table.html:80
@@ -847,7 +847,7 @@ msgstr ""
 #: app/forms/channel_forms.py:21 app/templates/banners/search_result.html:11
 #: app/templates/banners/show_list.html:107
 #: app/templates/products/_modal_select_products.html:65
-#: app/templates/products/create_and_edit.html:418
+#: app/templates/products/create_and_edit.html:421
 #: app/templates/products/show_set_groups.html:59
 #: app/templates/products/show_skus.html:4
 #: app/templates/products/sku_of_orders.html:71
@@ -1083,7 +1083,7 @@ msgstr ""
 
 #: app/forms/order_forms.py:8 app/forms/product_forms.py:75
 #: app/forms/product_forms.py:110 app/templates/orders/preview_order.html:25
-#: app/templates/products/create_and_edit.html:419
+#: app/templates/products/create_and_edit.html:422
 #: app/templates/products/show_skus.html:5
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:26
 #: app/templates/warehouses/_modal_preview_outwarehouse.html:27
@@ -1168,14 +1168,6 @@ msgstr ""
 msgid "End date"
 msgstr ""
 
-#: app/forms/product_forms.py:19 app/templates/brands/search_result.html:13
-#: app/templates/logistics/show_list.html:36
-#: app/templates/orders/table_order.html:19
-#: app/templates/suppliers/search_result.html:13
-#: app/templates/suppliers/show_list.html:94 app/templates/web/_header.html:38
-msgid "Contact"
-msgstr ""
-
 #: app/forms/product_forms.py:27 app/templates/brands/show_list.html:91
 #: app/templates/customers/set_discount.html:84
 msgid "Brand Name"
@@ -1254,7 +1246,7 @@ msgstr ""
 #: app/main/warehouse.py:704 app/templates/orders/_modal_split.html:26
 #: app/templates/orders/create_and_edit.html:233
 #: app/templates/orders/preview_order.html:110
-#: app/templates/products/create_and_edit.html:421
+#: app/templates/products/create_and_edit.html:424
 #: app/templates/products/show_skus.html:7
 #: app/templates/products/table_product.html:16
 #: app/templates/warehouses/_modal_preview_inwarehouse.html:59
@@ -1266,7 +1258,7 @@ msgstr ""
 
 #: app/forms/product_forms.py:84 app/forms/product_forms.py:104
 #: app/forms/product_forms.py:118
-#: app/templates/products/create_and_edit.html:424
+#: app/templates/products/create_and_edit.html:427
 #: app/templates/products/show_skus.html:10
 msgid "Weight"
 msgstr ""
@@ -1319,7 +1311,7 @@ msgid "Customs Code"
 msgstr ""
 
 #: app/forms/product_forms.py:112
-#: app/templates/products/create_and_edit.html:423
+#: app/templates/products/create_and_edit.html:426
 #: app/templates/products/show_skus.html:9
 msgid "69 Codes"
 msgstr ""
@@ -1333,7 +1325,7 @@ msgid "Color"
 msgstr ""
 
 #: app/forms/product_forms.py:119
-#: app/templates/products/create_and_edit.html:422
+#: app/templates/products/create_and_edit.html:425
 #: app/templates/products/show_skus.html:8
 #: app/templates/products/table_product.html:17
 #: app/templates/warehouses/show_stocks.html:136
@@ -1530,8 +1522,8 @@ msgstr ""
 msgid "Distribute products is ok!"
 msgstr ""
 
-#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1207
-#: app/main/product.py:1237
+#: app/main/customer.py:327 app/main/customer.py:356 app/main/product.py:1213
+#: app/main/product.py:1243
 msgid "Name already exist!"
 msgstr ""
 
@@ -1555,15 +1547,15 @@ msgstr ""
 msgid "Set Discount is ok!"
 msgstr ""
 
-#: app/main/file_manager.py:36 app/main/settings.py:259
+#: app/main/file_manager.py:34 app/main/settings.py:259
 msgid "Directory name isn't empty!"
 msgstr ""
 
-#: app/main/file_manager.py:43 app/main/settings.py:266
+#: app/main/file_manager.py:40 app/main/settings.py:266
 msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr ""
 
-#: app/main/file_manager.py:46 app/main/settings.py:269
+#: app/main/file_manager.py:44 app/main/settings.py:269
 msgid "Directory name is already exist!"
 msgstr ""
 
@@ -1786,63 +1778,63 @@ msgstr ""
 msgid "The basic information is complete"
 msgstr ""
 
-#: app/main/product.py:387
+#: app/main/product.py:394
 msgid "Basic information is complete and continue editing"
 msgstr ""
 
-#: app/main/product.py:390
+#: app/main/product.py:397
 msgid "Basic information is complete"
 msgstr ""
 
-#: app/main/product.py:454
+#: app/main/product.py:461
 msgid "Delete product is null!"
 msgstr ""
 
-#: app/main/product.py:468
+#: app/main/product.py:475
 msgid "Delete product is ok!"
 msgstr ""
 
-#: app/main/product.py:489
+#: app/main/product.py:496
 msgid "Product already exists without duplication"
 msgstr ""
 
-#: app/main/product.py:541
+#: app/main/product.py:547
 msgid "Copy product is ok!"
 msgstr ""
 
-#: app/main/product.py:621
+#: app/main/product.py:627
 msgid "Import product is ok!"
 msgstr ""
 
-#: app/main/product.py:785
+#: app/main/product.py:791
 msgid "Product Sku isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1216
+#: app/main/product.py:1222
 msgid "Add product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1243
+#: app/main/product.py:1249
 msgid "Update product group is ok!"
 msgstr ""
 
-#: app/main/product.py:1348 app/main/product.py:1377
+#: app/main/product.py:1354 app/main/product.py:1383
 msgid "Product isn't null!"
 msgstr ""
 
-#: app/main/product.py:1352 app/main/product.py:1381
+#: app/main/product.py:1358 app/main/product.py:1387
 msgid "Product can't authorization!"
 msgstr ""
 
-#: app/main/product.py:1358 app/main/product.py:1387
+#: app/main/product.py:1364 app/main/product.py:1393
 msgid "Product isn't exist!"
 msgstr ""
 
-#: app/main/product.py:1369
+#: app/main/product.py:1375
 msgid "Select product is ok!"
 msgstr ""
 
-#: app/main/product.py:1394
+#: app/main/product.py:1400
 msgid "Cancel select is ok!"
 msgstr ""
 
@@ -2354,7 +2346,7 @@ msgstr ""
 #: app/templates/orders/preview_order.html:115
 #: app/templates/orders/table_order.html:27
 #: app/templates/products/_modal_select_products.html:72
-#: app/templates/products/create_and_edit.html:426
+#: app/templates/products/create_and_edit.html:429
 #: app/templates/products/select_product_modal.html:28
 #: app/templates/products/show_groups.html:41
 #: app/templates/products/show_set_groups.html:66
@@ -2423,7 +2415,7 @@ msgstr ""
 #: app/templates/logistics/show_shippers.html:62
 #: app/templates/logistics/show_shippers.html:63
 #: app/templates/orders/table_order.html:95
-#: app/templates/products/create_and_edit.html:472
+#: app/templates/products/create_and_edit.html:475
 #: app/templates/products/show_groups.html:57
 #: app/templates/products/show_groups.html:60
 #: app/templates/products/show_groups.html:61
@@ -3302,6 +3294,14 @@ msgstr ""
 msgid "Supplier Name"
 msgstr ""
 
+#: app/templates/brands/search_result.html:13
+#: app/templates/logistics/show_list.html:36
+#: app/templates/orders/table_order.html:19
+#: app/templates/suppliers/search_result.html:13
+#: app/templates/suppliers/show_list.html:94 app/templates/web/_header.html:38
+msgid "Contact"
+msgstr ""
+
 #: app/templates/categories/create_and_edit.html:16
 msgid "Add Category"
 msgstr ""
@@ -3633,7 +3633,7 @@ msgid "Date Added"
 msgstr ""
 
 #: app/templates/dashboard/index.html:112
-#: app/templates/products/create_and_edit.html:348
+#: app/templates/products/create_and_edit.html:351
 #: app/templates/purchases/purchase_pay_table.html:50
 msgid "View"
 msgstr ""
@@ -3881,7 +3881,7 @@ msgstr ""
 #: app/templates/orders/_modal_split.html:25
 #: app/templates/orders/create_and_edit.html:232
 #: app/templates/orders/preview_order.html:109
-#: app/templates/products/create_and_edit.html:420
+#: app/templates/products/create_and_edit.html:423
 #: app/templates/products/select_product_modal.html:25
 #: app/templates/products/show_skus.html:6
 #: app/templates/products/table_product.html:13
@@ -3948,7 +3948,7 @@ msgstr ""
 
 #: app/templates/orders/create_and_edit.html:281
 #: app/templates/orders/preview_order.html:156
-#: app/templates/products/create_and_edit.html:475
+#: app/templates/products/create_and_edit.html:478
 #: app/templates/products/select_result.html:25
 #: app/templates/products/select_result_for_order.html:39
 #: app/templates/products/show_skus.html:61
@@ -4183,19 +4183,19 @@ msgid "System defaults are generated, and modifications are not recommended"
 msgstr ""
 
 #: app/templates/products/create_and_edit.html:192
-#: app/templates/products/create_and_edit.html:387
+#: app/templates/products/create_and_edit.html:390
 msgid "Please note the currency unit."
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:251
+#: app/templates/products/create_and_edit.html:254
 msgid "Batch upload or select pictures"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:308
+#: app/templates/products/create_and_edit.html:311
 msgid "Product Size（LxWxH）"
 msgstr ""
 
-#: app/templates/products/create_and_edit.html:412
+#: app/templates/products/create_and_edit.html:415
 #: app/templates/products/modal_sku.html:6
 msgid "Add SKU"
 msgstr ""
