@@ -20,6 +20,7 @@ def get_upload_token():
     up_endpoint = cfg['QINIU_UPLOAD']
 
     return full_response(R200_OK, {
+        'user_id': g.master_uid,
         'up_token': up_token,
         'up_endpoint': up_endpoint
     })
