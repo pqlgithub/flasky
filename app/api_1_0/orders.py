@@ -157,20 +157,24 @@ def create_order():
         order_items = []
         for product in products:
             rid = product['rid']
+            quantity = int(product.get('quantity'))
+            deal_price = Decimal(product.get('deal_price', 0))
+            discount_amount = Decimal(product.get('discount_amount', 0))
+
             # 验证sku信息
             product_sku = ProductSku.query.filter_by(serial_no=rid).first()
             if not product_sku:
                 return custom_response("商品不存在", 403, False)
-
-            quantity = product.get('quantity')
+            # 验证库存数量
             if product_sku.stock_count < quantity:
                 return custom_response("库存不足", 403, False)
 
             # 同步减库存操作
             product_sku.stock_quantity -= quantity
 
-            current_app.logger.warn('Order items rid, quantity is ok!')
+            current_app.logger.debug('Order items rid, quantity is ok!')
 
+            warehouse_id = 0
             """
             # 验证库存
             warehouse_id = product.get('warehouse_id')
@@ -184,10 +188,6 @@ def create_order():
             if not product_stock or product_stock.available_count < quantity:
                 return custom_response("[%s] inventory isn't enough!" % rid, 403, False)
             """
-            warehouse_id = 0
-            deal_price = float(product.get('deal_price'))
-            discount_amount = Decimal(product.get('discount_amount', 0))
-            
             order_items.append({
                 'master_uid': g.master_uid,
                 'warehouse_id': warehouse_id,
@@ -205,17 +205,21 @@ def create_order():
         current_app.logger.warn('Order items is ok!')
 
         outside_target_id = request.json.get('outside_target_id')
-        freight = request.json.get('freight')
         affiliate_code = request.json.get('affiliate_code')
-        # 总优惠金额
-        discount_amount = request.json.get('discount_amount')
         from_client = request.json.get('from_client')
+
+        freight = Decimal(request.json.get('freight', 0))
+        # 总优惠金额
+        discount_amount = Decimal(request.json.get('discount_amount', 0))
         if discount_amount:
             total_discount += discount_amount
-        pay_amount = Decimal(total_amount) + freight - Decimal(total_discount)
+        pay_amount = total_amount + freight - total_discount
+
+        current_app.logger.debug('Order pay amount: %s' % pay_amount)
+
         # 支付金额不能为负数
         if pay_amount < 0:
-            pay_amount = 0.01
+            pay_amount = Decimal('0.01')
 
         order_serial_no = Order.make_unique_serial_no()
         append_dict = {

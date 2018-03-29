@@ -12,8 +12,103 @@ from pymysql.err import IntegrityError
 from app import db, uploader
 from . import main
 from app.models import Asset, Directory
-from app.utils import timestamp, status_response, Master, custom_response
+from app.utils import timestamp, status_response, Master, custom_response, R400_BADREQUEST
 from app.helpers import MixGenId, QiniuStorage
+
+
+@main.route('/file_manager/folders')
+@login_required
+def get_folders():
+    """获取目录结构"""
+    pid = request.values.get('pid', 0)
+    _type = request.values.get('type', 'all')
+
+    directories = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=pid).all()
+
+    if _type == 'children':
+        return render_template('assets/_children_folder.html',
+                               directories=directories)
+
+    return render_template('assets/_modal_directory.html',
+                           move_folder_url=url_for('.move_folder'),
+                           directories=directories)
+
+
+@main.route('/file_manager/folders/move', methods=['POST'])
+@login_required
+def move_folder():
+    """移动到某个目录"""
+    select_folder_id = request.form.get('select_folder_id', 0, type=int)
+    folders = request.form.get('folders')
+    files = request.form.get('files')
+    if not select_folder_id:
+        return custom_response(False, '未选择移动至目录')
+    if not folders and not files:
+        return status_response(False, R400_BADREQUEST)
+
+    if folders:
+        folder_ids = folders.split(',')
+        for folder_id in folder_ids:
+            directory = Directory.query.get(int(folder_id))
+            if not directory:
+                continue
+
+            # 验证不能移动自己的子目录里
+            if Directory.is_children(Master.master_uid(), directory.id, select_folder_id):
+                return custom_response(False, '不能设置到自己的子目录中')
+
+            directory.parent_id = select_folder_id
+
+    if files:
+        file_ids = files.split(',')
+        for file_id in file_ids:
+            asset = Asset.query.get(int(file_id))
+            asset.directory_id = select_folder_id
+
+    db.session.commit()
+
+    return status_response(True)
+
+
+@main.route('/file_manager/folders/rename', methods=['GET', 'POST'])
+@login_required
+def rename_folder():
+    """重命名某个目录"""
+    folder_id = request.values.get('folder_id', 0, type=int)
+    if not folder_id:
+        return custom_response(False, '未选择目录')
+
+    directory = Directory.query.get(folder_id)
+    if not directory or not Master.is_can(directory.master_uid):
+        return custom_response(False, '该目录您无权操作')
+
+    if request.method == 'POST':
+        new_name = request.form.get('new_name')
+        # 验证目录
+        if new_name is None or new_name == '':
+            return custom_response(False, gettext("Directory name isn't empty!"))
+
+        # 截取头尾空格
+        new_name = new_name.strip()
+        # 替换中间空格符
+        new_name = re.sub(r'\s+', '_', new_name)
+        pattern = re.compile(r'[!#@\$\/%\?&]')
+        if len(pattern.findall(new_name)):
+            return custom_response(False, gettext("Directory name can't contain special characters [!#@$/?&]!"))
+
+        # 验证同级目录是否存在相同名称
+        if Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=directory.parent_id, name=new_name).first():
+            return custom_response(False, gettext("Directory name is already exist!"))
+
+        directory.name = new_name
+
+        db.session.commit()
+
+        return status_response()
+
+    return render_template('assets/_modal_rename.html',
+                           rename_folder_url=url_for('.rename_folder'),
+                           directory=directory)
 
 
 @main.route('/file_manager/folder', methods=['POST'])
@@ -206,31 +301,46 @@ def flupload():
 @main.route('/file_manager/pldelete', methods=['POST'])
 @login_required
 def pldelete():
-    path_list = request.form.getlist('path[]')
-
-    current_app.logger.debug('delete path list %s' % path_list)
+    folders = request.form.get('folders')
+    files = request.form.get('files')
+    if not folders and not files:
+        return status_response(False, R400_BADREQUEST)
 
     try:
-        for filepath in path_list:
-            if re.match(r'([a-zA-Z0-9]+\/)?[0-9]{6}\/\w{15}\.\w{3,4}$', filepath):
-                asset = Asset.query.filter_by(filepath=filepath).first()
-                db.session.delete(asset)
-            else:
-                last_directory = _pop_last_directory(filepath)
-                directory = Directory.query.filter_by(master_uid=Master.master_uid(), name=last_directory).first()
-                if directory:
-                    # 如有子文件夹，不能删除
-                    if Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=directory.id).first():
-                        return custom_response(False, '此文件夹下有子文件夹,不能删除！')
+        if folders:
+            folder_ids = folders.split(',')
+            for folder_id in folder_ids:
+                directory = Directory.query.get(int(folder_id))
+                if not directory:  # 不存在则跳过
+                    continue
 
-                    # 如有子元素，不能删除
-                    if directory.assets.count():
-                        return custom_response(False, '此文件夹正在使用中,不能删除！')
+                if not Master.is_can(directory.master_uid):
+                    return custom_response(False, '您无权进行删除操作！')
+
+                # 如有子文件夹，不能删除
+                if Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=directory.id).first():
+                    return custom_response(False, '此文件夹下有子文件夹,不能删除！')
+
+                # 如有子元素，不能删除
+                if directory.assets.count():
+                    return custom_response(False, '此文件夹正在使用中,不能删除！')
 
                 db.session.delete(directory)
 
+        if files:
+            file_ids = files.split(',')
+            for file_id in file_ids:
+                asset = Asset.query.get(int(file_id))
+                if not asset:  # 不存在则跳过
+                    continue
+
+                if not Master.is_can(asset.master_uid):
+                    return custom_response(False, '您无权进行删除操作！')
+
+                db.session.delete(asset)
+
         db.session.commit()
-    except IntegrityError as err:
+    except Exception as err:
         db.session.rollback()
         current_app.logger.warn('Pldelete asset error: %s' % err)
         return custom_response(False, '此图正在被使用中,不能被删！')

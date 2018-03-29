@@ -244,8 +244,31 @@ a.thumbnail {
   line-height: 16px;
   border-radius: 1px;
 }
+.directory {
+	padding-left: 16px;
+	line-height: 1.8;
+}
+.directory .directory {
+	padding-left: 32px;
+}
+.directory .marker,
+.directory .folder {
+	color: #333;
+}
+.directory .folder > i {
+	color: #f39c12;
+}
+.directory .folder.active,
+.directory .folder.active > i {
+	color: #00a65a;
+}
+
 .tooltip-inner {
   border: 0px solid #fff;
+}
+#uploader_result {
+	max-height: 435px;
+	overflow-y: auto;
 }
 .note-editable p {
 	padding: 0;

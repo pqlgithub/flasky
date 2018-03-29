@@ -179,14 +179,14 @@ body.stop-scrolling {
     box-shadow: none;
     font-size: 17px;
     font-weight: 500;
-    -webkit-border-radius: 4px;
+    -webkit-border-radius: 2px;
     border-radius: 2px;
     padding: 10px 32px;
     margin: 26px 5px 0 5px;
     cursor: pointer; }
     .sweet-alert button:focus {
       outline: none;
-      box-shadow: 0 0 2px rgba(128, 179, 235, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.05); }
+    }
     .sweet-alert button:hover {
       background-color: #2aaeb0; }
     .sweet-alert button:active {
@@ -197,8 +197,7 @@ body.stop-scrolling {
         background-color: #b9b9b9; }
       .sweet-alert button.cancel:active {
         background-color: #a8a8a8; }
-      .sweet-alert button.cancel:focus {
-        box-shadow: rgba(197, 205, 211, 0.8) 0px 0px 2px, rgba(0, 0, 0, 0.0470588) 0px 0px 0px 1px inset !important; }
+      .sweet-alert button.cancel:focus { }
     .sweet-alert button[disabled] {
       opacity: .6;
       cursor: default; }

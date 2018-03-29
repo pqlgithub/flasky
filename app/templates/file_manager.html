@@ -23,12 +23,27 @@
 					<button type="button" data-toggle="tooltip" id="button-folder" class="btn btn-warning" data-original-title="{{ _('New Folder') }}">
 						<i class="fa fa-folder-open"></i>
 					</button>
-					<button type="button" data-toggle="tooltip" id="button-delete" class="btn btn-danger" data-original-title="{{ _('Delete') }}">
-						<i class="fa fa-trash"></i>
-					</button>
 					<button type="button" data-toggle="tooltip" id="button-checked" class="btn btn-info" data-original-title="{{ _('Batch Submit') }}">
 						<i class="fa fa-check"></i>
 					</button>
+					<div class="btn-group">
+						<button class="btn btn-default dropdown-toggle" type="button" id="batch-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							{{ _('Actions') }}
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="batch-actions">
+							<li>
+								<a href="{{ url_for('main.get_folders') }}" id="button-move" data-modal="modal-directory">{{ _('Move') }}</a>
+							</li>
+							<li>
+								<a href="javascript:;" id="button-rename" data-modal="modal-directory">{{ _('Rename') }}</a>
+							</li>
+							<li class="divider" role="separator"></li>
+							<li>
+								<a href="javascript:;" id="button-delete">{{ _('Delete') }}</a>
+							</li>
+						</ul>
+					</div>
 				</div>
 				<div class="col-sm-7">
 					<div id="uploader"></div>
@@ -45,7 +60,7 @@
 						</a>
 					</div>
 					<label>
-						<input name="path[]" value="{{ d.name }}" data-rid="{{ d.id }}" type="checkbox">
+						<input name="path[]" value="{{ d.name }}" data-rid="{{ d.id }}" data-name="folder" type="checkbox">
 						{{ d.fx_name|safe }}
 					</label>
 				</div>
@@ -57,7 +72,7 @@
 						<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
 					</a>
 					<label>
-						<input name="path[]" value="{{ a.filepath }}" type="checkbox">
+						<input name="path[]" value="{{ a.filepath }}" data-rid="{{ a.id }}" data-name="file" type="checkbox">
 						{{ a.filename|short_filename(6) }}
 					</label>
 				</div>
@@ -77,6 +92,7 @@
 <script type="text/javascript"><!--
 	mixpus.hook_all_check();
 	mixpus.hook_select2();
+	mixpus.hook_ajax_modal();
 	mixpus.hook_tooltip_toggle();
 
 	var hock_thumbnail = function () {
@@ -207,6 +223,61 @@
 			});
 		});
 	});
+	
+	// 移动
+	$('#button-move').bind('click', function (e) {
+		e.preventDefault();
+		
+        if ($('input[name^=\'path\']:checked').length == 0) {
+			mixpus.show_error_message('请选定需移动的目录或文件');
+        } else {
+			var url = $(this).attr('href'), modal_name = $(this).data('modal');
+			$.get(url, function (html) {
+				$('#'+ modal_name).remove();
+
+				$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
+
+				$('#'+ modal_name).modal({
+					backdrop: false,
+					show: true
+				});
+			});
+        }
+		
+		return false;
+	});
+	
+	// 重命名
+	$('#button-rename').bind('click', function (e) {
+		e.preventDefault();
+		
+		var folders = [], modal_name = $(this).data('modal');
+		$('input[name^=\'path\']:checked').each(function () {
+			var name = $(this).data('name');
+			var rid = $(this).data('rid');
+			if (name == 'folder') {
+				folders.push(rid)
+			}
+		});
+		if (folders.length == 0) {
+			mixpus.show_error_message('请选定一个需重命名的目录');
+		} else if (folders.length == 1) {
+			$.get("{{ url_for('main.rename_folder') }}", { folder_id: folders[0] }, function (html) {
+				$('#'+ modal_name).remove();
+
+				$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
+
+				$('#'+ modal_name).modal({
+					backdrop: false,
+					show: true
+				});
+			});
+		} else {
+			mixpus.show_error_message('请选定仅一个目录，不支持多选');
+		}
+		
+		return false;
+	});
 
 	var total_image_count = 0;
 	var files_to_remove = [];
@@ -248,6 +319,32 @@
     });
 
 	$('#modal-image #button-delete').on('click', function() {
+        var data = {
+            'csrf_token': mixpus.csrf_token
+        };
+		
+		var folders = [];
+		var files = [];
+        $('input[name^=\'path\']:checked').each(function () {
+			var name = $(this).data('name');
+			var rid = $(this).data('rid');
+			
+			if (name == 'folder') {
+				folders.push(rid);
+			} else {
+				files.push(rid);
+			}
+        });
+		if (folders.length) {
+			data['folders'] = folders.join(',');
+		}
+		if (files.length) {
+			data['files'] = files.join(',');
+		}
+		if (folders.length == 0 && files.length == 0) {
+			return mixpus.show_error_message('请选定需删除的目录或文件');
+		}
+		
 		swal({
 			title: "确定要删除?",
 			text: "删除后将不能恢复，请慎重！",
@@ -256,42 +353,31 @@
             cancelButtonText: '取消',
             confirmButtonColor: '#c6322a',
 			confirmButtonText: "确认删除"
-		}).then(function () {
-            var path = [];
-            $('input[name^=\'path\']:checked').each(function () {
-                path.push($(this).val());
-            });
-            var data = {
-                'path[]': path,
-                'csrf_token': mixpus.csrf_token
-            };
-
-            $.ajax({
-                url: '{{ url_for("main.pldelete") }}',
-                type: 'post',
-                dataType: 'json',
-                data: data,
-                beforeSend: function() {
-                    $('#button-delete').prop('disabled', true);
-                },
-                complete: function() {
-                    $('#button-delete').prop('disabled', false);
-                },
-                success: function(result) {
-                    if (result.success) {
-                        $('#button-refresh').trigger('click');
-                    } else {
-                        swal(
-                            '出错了',
-                            result.status.message,
-                            'error'
-                        );
-                    }
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-                }
-            });
+		}).then(function (isConfirm) {
+			if (isConfirm.value === true) {
+	            $.ajax({
+	                url: '{{ url_for("main.pldelete") }}',
+	                type: 'post',
+	                dataType: 'json',
+	                data: data,
+	                beforeSend: function() {
+	                    $('#button-delete').prop('disabled', true);
+	                },
+	                complete: function() {
+	                    $('#button-delete').prop('disabled', false);
+	                },
+	                success: function(result) {
+	                    if (result.success) {
+	                        $('#button-refresh').trigger('click');
+	                    } else {
+							mixpus.show_error_message(result.status.message);
+	                    }
+	                },
+	                error: function(xhr, ajaxOptions, thrownError) {
+	                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+	                }
+	            });
+			}
 		});
 	});
 	

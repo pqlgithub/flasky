@@ -37,6 +37,24 @@ class Directory(db.Model):
 
         return self.name
 
+    @property
+    def has_children(self):
+        """是否有子集"""
+        return Directory.query.filter_by(master_uid=self.master_uid, parent_id=self.id).count()
+
+    @staticmethod
+    def is_children(uid, rid, pid):
+        """获取某个目录的所有子孙目录"""
+        directories = Directory.query.filter_by(master_uid=uid, parent_id=rid).all()
+        for directory in directories:
+            if directory.id == pid:
+                return True
+            # 递归检测是否下级目录
+            if Directory.is_children(uid, directory.id, pid):
+                return True
+
+        return False
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         return {

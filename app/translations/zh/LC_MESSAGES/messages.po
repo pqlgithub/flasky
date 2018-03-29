@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-28 16:59+0800\n"
-"PO-Revision-Date: 2018-03-28 12:05+0800\n"
+"POT-Creation-Date: 2018-03-29 16:38+0800\n"
+"PO-Revision-Date: 2018-03-29 16:39+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.4.0\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: app/constant.py:7 app/templates/orders/create_and_edit.html:147
 msgid "China"
@@ -641,6 +642,7 @@ msgstr "账号或密码有误！"
 #: app/forms/address_forms.py:10 app/forms/application_forms.py:29
 #: app/templates/adminlte/places/show_list.html:97
 #: app/templates/adminlte/weixin/show_list.html:54
+#: app/templates/assets/_modal_rename.html:13
 msgid "Name"
 msgstr "名称"
 
@@ -1547,15 +1549,18 @@ msgstr "更新折扣模板成功！"
 msgid "Set Discount is ok!"
 msgstr "设置折扣成功！"
 
-#: app/main/file_manager.py:34 app/main/settings.py:259
+#: app/main/file_manager.py:89 app/main/file_manager.py:129
+#: app/main/settings.py:259
 msgid "Directory name isn't empty!"
 msgstr "目录名称不能为空！"
 
-#: app/main/file_manager.py:40 app/main/settings.py:266
+#: app/main/file_manager.py:97 app/main/file_manager.py:135
+#: app/main/settings.py:266
 msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr "目录名称不能包含 [!#@$/?&]!"
 
-#: app/main/file_manager.py:44 app/main/settings.py:269
+#: app/main/file_manager.py:101 app/main/file_manager.py:139
+#: app/main/settings.py:269
 msgid "Directory name is already exist!"
 msgstr "目录名称已存在！"
 
@@ -2134,6 +2139,27 @@ msgstr "上传"
 msgid "New Folder"
 msgstr "文件夹"
 
+#: app/templates/file_manager.html:26
+#: app/templates/products/_modal_select_products.html:127
+msgid "Batch Submit"
+msgstr "批量提交"
+
+#: app/templates/file_manager.html:31 app/templates/orders/show_list.html:240
+#: app/templates/products/show_list.html:49
+#: app/templates/products/sku_of_orders.html:47
+#: app/templates/purchases/show_list.html:124
+#: app/templates/warehouses/show_stocks.html:67
+msgid "Actions"
+msgstr "批量操作"
+
+#: app/templates/file_manager.html:36
+msgid "Move"
+msgstr "移动"
+
+#: app/templates/file_manager.html:39
+msgid "Rename"
+msgstr "重命名"
+
 #: app/templates/adminlte/clients/show_list.html:50
 #: app/templates/adminlte/countries/show_countries.html:26
 #: app/templates/adminlte/places/show_list.html:26
@@ -2151,7 +2177,7 @@ msgstr "文件夹"
 #: app/templates/currencies/show_currencies.html:33
 #: app/templates/customers/show_discount_templets.html:21
 #: app/templates/customers/show_grades.html:21
-#: app/templates/customers/show_list.html:71 app/templates/file_manager.html:26
+#: app/templates/customers/show_list.html:71 app/templates/file_manager.html:43
 #: app/templates/finances/show_payments.html:63
 #: app/templates/finances/show_receives.html:18
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
@@ -2178,11 +2204,6 @@ msgstr "文件夹"
 #: app/templates/warehouses/show_stocks.html:81
 msgid "Delete"
 msgstr "删除"
-
-#: app/templates/file_manager.html:29
-#: app/templates/products/_modal_select_products.html:127
-msgid "Batch Submit"
-msgstr "批量提交"
 
 #: app/templates/adminlte/applications/_sub_menu.html:3
 msgid "Service Market"
@@ -2663,6 +2684,8 @@ msgid "Reset Password"
 msgstr "重置密码"
 
 #: app/templates/adminlte/system/password_modal.html:35
+#: app/templates/assets/_modal_directory.html:31
+#: app/templates/assets/_modal_rename.html:29
 #: app/templates/banners/_modal_spot_create.html:59
 #: app/templates/customers/_modal_create.html:26
 #: app/templates/customers/_modal_distribute.html:51
@@ -2799,6 +2822,45 @@ msgstr "应用列表"
 msgid "Search Type"
 msgstr "搜索类型"
 
+#: app/templates/assets/_modal_directory.html:5
+msgid "Move To Directory"
+msgstr "移至目录"
+
+#: app/templates/assets/_modal_directory.html:32
+#: app/templates/assets/_modal_rename.html:30
+#: app/templates/banners/_modal_spot_create.html:60
+#: app/templates/customers/_modal_create.html:27
+#: app/templates/orders/_modal_export.html:68
+#: app/templates/orders/_modal_express.html:41
+#: app/templates/orders/_modal_import.html:52
+#: app/templates/orders/_modal_import_express.html:40
+#: app/templates/orders/_modal_remark.html:29
+#: app/templates/products/_modal_create_group.html:27
+#: app/templates/products/_modal_import.html:52
+#: app/templates/products/select_product_modal.html:83
+#: app/templates/purchases/_modal_arrival.html:109
+#: app/templates/purchases/_modal_export.html:58
+#: app/templates/purchases/_modal_express.html:52
+#: app/templates/purchases/_modal_import.html:40
+#: app/templates/purchases/purchase_modal.html:77
+#: app/templates/users/add_child_user.html:50
+#: app/templates/warehouses/ex_warehouse_modal.html:57
+#: app/templates/warehouses/in_warehouse_modal.html:66
+#: app/templates/wxapp/_category_modal.html:27
+#: app/templates/wxapp/_page_modal.html:27
+#: app/templates/wxapp/_reply_modal.html:31
+#: app/templates/wxapp/_tester_modal.html:23
+msgid "Submit"
+msgstr "确认"
+
+#: app/templates/assets/_modal_rename.html:5
+msgid "Rename Directory"
+msgstr "重命名目录"
+
+#: app/templates/assets/_modal_rename.html:20
+msgid "New Name"
+msgstr "新名称"
+
 #: app/templates/auth/login.html:30
 msgid "Login"
 msgstr "登录"
@@ -2844,31 +2906,6 @@ msgstr "新增广告位"
 #: app/templates/banners/_modal_spot_create.html:11
 msgid "Edit Banner Spot"
 msgstr "编辑广告位"
-
-#: app/templates/banners/_modal_spot_create.html:60
-#: app/templates/customers/_modal_create.html:27
-#: app/templates/orders/_modal_export.html:68
-#: app/templates/orders/_modal_express.html:41
-#: app/templates/orders/_modal_import.html:52
-#: app/templates/orders/_modal_import_express.html:40
-#: app/templates/orders/_modal_remark.html:29
-#: app/templates/products/_modal_create_group.html:27
-#: app/templates/products/_modal_import.html:52
-#: app/templates/products/select_product_modal.html:83
-#: app/templates/purchases/_modal_arrival.html:109
-#: app/templates/purchases/_modal_export.html:58
-#: app/templates/purchases/_modal_express.html:52
-#: app/templates/purchases/_modal_import.html:40
-#: app/templates/purchases/purchase_modal.html:77
-#: app/templates/users/add_child_user.html:50
-#: app/templates/warehouses/ex_warehouse_modal.html:57
-#: app/templates/warehouses/in_warehouse_modal.html:66
-#: app/templates/wxapp/_category_modal.html:27
-#: app/templates/wxapp/_page_modal.html:27
-#: app/templates/wxapp/_reply_modal.html:31
-#: app/templates/wxapp/_tester_modal.html:23
-msgid "Submit"
-msgstr "确认"
 
 #: app/templates/banners/create_and_edit.html:16
 msgid "Add Banner"
@@ -4016,14 +4053,6 @@ msgstr "支付日期"
 msgid "Print Express"
 msgstr "打印快递"
 
-#: app/templates/orders/show_list.html:240
-#: app/templates/products/show_list.html:49
-#: app/templates/products/sku_of_orders.html:47
-#: app/templates/purchases/show_list.html:124
-#: app/templates/warehouses/show_stocks.html:67
-msgid "Actions"
-msgstr "批量操作"
-
 #: app/templates/orders/show_list.html:246
 msgid "Deliver Goods"
 msgstr ""
@@ -5010,4 +5039,3 @@ msgstr "小程序版本管理"
 
 #~ msgid "System Dashboard"
 #~ msgstr "控制台"
-

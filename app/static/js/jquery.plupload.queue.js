@@ -200,7 +200,7 @@ used as it is.
 						.addClass('active')
 						.css('width', uploader.total.percent + '%');
 					$('div.plupload_upload_status', target).html(
-						plupload.sprintf(_('%d/%d 文件'), uploader.total.uploaded, uploader.files.length)
+						plupload.sprintf(_('%d/%d'), uploader.total.uploaded, uploader.files.length)
 					);
 				}
 
@@ -250,7 +250,7 @@ used as it is.
 					if (uploader.total.queued === 0) {
 						$('span.plupload_add_text', target).html(_('Add Files'));
 					} else {
-						$('span.plupload_add_text', target).html(plupload.sprintf(_('%d files queued'), uploader.total.queued));
+						$('span.plupload_add_text', target).html(plupload.sprintf(_('%d'), uploader.total.queued));
 					}
 
 					$('a.plupload_start', target).toggleClass('plupload_disabled', uploader.files.length == (uploader.total.uploaded + uploader.total.failed));
@@ -426,7 +426,7 @@ used as it is.
 									'<img src="'+ result.view_url +'" alt="'+ result.filename +'">' +
 								'</a>' +
 								'<label>' +
-								'<input name="path[]" value="'+ result.filepath +'" type="checkbox">' + result.filename +
+								'<input name="path[]" value="'+ result.filepath +'" data-rid="{{ result.id }}" data-name="file" type="checkbox">' + result.filename +
 								'</label>' +
 							'</div>'
 						);

@@ -40,7 +40,7 @@
 			</div>
 		</div>
 
-		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+		<div class="form-group required {% if form.errors.short_name %} has-error{% endif %}">
 			{{ form.short_name.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-6">
 				{{ form.short_name(id="short_name", class="form-control") }}
@@ -60,8 +60,10 @@
 			</div>
 		</div>
 
-		<div class="form-group required">
-			{{ form.start_date.label(class="col-sm-2 control-label") }}
+		<div class="form-group">
+			<div class="col-sm-2 text-right required {% if form.errors.start_date %} has-error{% endif %}">
+				{{ form.start_date.label(class="control-label") }}
+			</div>
 			<div class="col-sm-2">
 				<div class="input-group form-date">
 					{{ form.start_date(id="start_date", class="form-control form-datetime") }}
@@ -69,8 +71,13 @@
 						<i class="glyphicon glyphicon-calendar"></i>
 					</span>
 				</div>
+				{% for error in form.errors.start_date %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
 			</div>
-			{{ form.end_date.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-2 text-right required {% if form.errors.end_date %} has-error{% endif %}">
+				{{ form.end_date.label(class="control-label") }}
+			</div>
 			<div class="col-sm-2">
 				<div class="input-group form-date">
 					{{ form.end_date(id="end_date", class="form-control form-datetime") }}
@@ -78,20 +85,33 @@
 						<i class="glyphicon glyphicon-calendar"></i>
 					</span>
 				</div>
+				{% for error in form.errors.end_date %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
 			</div>
 		</div>
 
 		<div class="form-group required">
-			{{ form.contact_name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-2 text-right required {% if form.errors.contact_name %} has-error{% endif %}">
+				{{ form.contact_name.label(class="control-label") }}
+			</div>
 			<div class="col-sm-2">
 				<div class="input-group">
 					<span class="input-group-addon">@</span>
 					{{ form.contact_name(id="contact_name", class="form-control") }}
 				</div>
+				{% for error in form.errors.contact_name %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
 			</div>
-			{{ form.phone.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-2 text-right required {% if form.errors.phone %} has-error{% endif %}">
+				{{ form.phone.label(class="control-label") }}
+			</div>
 			<div class="col-sm-2">
 				{{ form.phone(id="phone", class="form-control") }}
+				{% for error in form.errors.phone %}
+				<span class="help-block">{{ error }}</span>
+				{% endfor %}
 			</div>
 		</div>
 

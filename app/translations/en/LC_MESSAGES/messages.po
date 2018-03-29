@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-28 16:59+0800\n"
+"POT-Creation-Date: 2018-03-29 16:38+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -641,6 +641,7 @@ msgstr ""
 #: app/forms/address_forms.py:10 app/forms/application_forms.py:29
 #: app/templates/adminlte/places/show_list.html:97
 #: app/templates/adminlte/weixin/show_list.html:54
+#: app/templates/assets/_modal_rename.html:13
 msgid "Name"
 msgstr ""
 
@@ -1547,15 +1548,18 @@ msgstr ""
 msgid "Set Discount is ok!"
 msgstr ""
 
-#: app/main/file_manager.py:34 app/main/settings.py:259
+#: app/main/file_manager.py:89 app/main/file_manager.py:129
+#: app/main/settings.py:259
 msgid "Directory name isn't empty!"
 msgstr ""
 
-#: app/main/file_manager.py:40 app/main/settings.py:266
+#: app/main/file_manager.py:97 app/main/file_manager.py:135
+#: app/main/settings.py:266
 msgid "Directory name can't contain special characters [!#@$/?&]!"
 msgstr ""
 
-#: app/main/file_manager.py:44 app/main/settings.py:269
+#: app/main/file_manager.py:101 app/main/file_manager.py:139
+#: app/main/settings.py:269
 msgid "Directory name is already exist!"
 msgstr ""
 
@@ -2134,6 +2138,27 @@ msgstr ""
 msgid "New Folder"
 msgstr ""
 
+#: app/templates/file_manager.html:26
+#: app/templates/products/_modal_select_products.html:127
+msgid "Batch Submit"
+msgstr ""
+
+#: app/templates/file_manager.html:31 app/templates/orders/show_list.html:240
+#: app/templates/products/show_list.html:49
+#: app/templates/products/sku_of_orders.html:47
+#: app/templates/purchases/show_list.html:124
+#: app/templates/warehouses/show_stocks.html:67
+msgid "Actions"
+msgstr ""
+
+#: app/templates/file_manager.html:36
+msgid "Move"
+msgstr ""
+
+#: app/templates/file_manager.html:39
+msgid "Rename"
+msgstr ""
+
 #: app/templates/adminlte/clients/show_list.html:50
 #: app/templates/adminlte/countries/show_countries.html:26
 #: app/templates/adminlte/places/show_list.html:26
@@ -2151,7 +2176,7 @@ msgstr ""
 #: app/templates/currencies/show_currencies.html:33
 #: app/templates/customers/show_discount_templets.html:21
 #: app/templates/customers/show_grades.html:21
-#: app/templates/customers/show_list.html:71 app/templates/file_manager.html:26
+#: app/templates/customers/show_list.html:71 app/templates/file_manager.html:43
 #: app/templates/finances/show_payments.html:63
 #: app/templates/finances/show_receives.html:18
 #: app/templates/layout/list.html:17 app/templates/logistics/show_list.html:16
@@ -2177,11 +2202,6 @@ msgstr ""
 #: app/templates/warehouses/show_outlist.html:86
 #: app/templates/warehouses/show_stocks.html:81
 msgid "Delete"
-msgstr ""
-
-#: app/templates/file_manager.html:29
-#: app/templates/products/_modal_select_products.html:127
-msgid "Batch Submit"
 msgstr ""
 
 #: app/templates/adminlte/applications/_sub_menu.html:3
@@ -2663,6 +2683,8 @@ msgid "Reset Password"
 msgstr ""
 
 #: app/templates/adminlte/system/password_modal.html:35
+#: app/templates/assets/_modal_directory.html:31
+#: app/templates/assets/_modal_rename.html:29
 #: app/templates/banners/_modal_spot_create.html:59
 #: app/templates/customers/_modal_create.html:26
 #: app/templates/customers/_modal_distribute.html:51
@@ -2799,6 +2821,45 @@ msgstr ""
 msgid "Search Type"
 msgstr ""
 
+#: app/templates/assets/_modal_directory.html:5
+msgid "Move To Directory"
+msgstr ""
+
+#: app/templates/assets/_modal_directory.html:32
+#: app/templates/assets/_modal_rename.html:30
+#: app/templates/banners/_modal_spot_create.html:60
+#: app/templates/customers/_modal_create.html:27
+#: app/templates/orders/_modal_export.html:68
+#: app/templates/orders/_modal_express.html:41
+#: app/templates/orders/_modal_import.html:52
+#: app/templates/orders/_modal_import_express.html:40
+#: app/templates/orders/_modal_remark.html:29
+#: app/templates/products/_modal_create_group.html:27
+#: app/templates/products/_modal_import.html:52
+#: app/templates/products/select_product_modal.html:83
+#: app/templates/purchases/_modal_arrival.html:109
+#: app/templates/purchases/_modal_export.html:58
+#: app/templates/purchases/_modal_express.html:52
+#: app/templates/purchases/_modal_import.html:40
+#: app/templates/purchases/purchase_modal.html:77
+#: app/templates/users/add_child_user.html:50
+#: app/templates/warehouses/ex_warehouse_modal.html:57
+#: app/templates/warehouses/in_warehouse_modal.html:66
+#: app/templates/wxapp/_category_modal.html:27
+#: app/templates/wxapp/_page_modal.html:27
+#: app/templates/wxapp/_reply_modal.html:31
+#: app/templates/wxapp/_tester_modal.html:23
+msgid "Submit"
+msgstr ""
+
+#: app/templates/assets/_modal_rename.html:5
+msgid "Rename Directory"
+msgstr ""
+
+#: app/templates/assets/_modal_rename.html:20
+msgid "New Name"
+msgstr ""
+
 #: app/templates/auth/login.html:30
 msgid "Login"
 msgstr ""
@@ -2843,31 +2904,6 @@ msgstr ""
 
 #: app/templates/banners/_modal_spot_create.html:11
 msgid "Edit Banner Spot"
-msgstr ""
-
-#: app/templates/banners/_modal_spot_create.html:60
-#: app/templates/customers/_modal_create.html:27
-#: app/templates/orders/_modal_export.html:68
-#: app/templates/orders/_modal_express.html:41
-#: app/templates/orders/_modal_import.html:52
-#: app/templates/orders/_modal_import_express.html:40
-#: app/templates/orders/_modal_remark.html:29
-#: app/templates/products/_modal_create_group.html:27
-#: app/templates/products/_modal_import.html:52
-#: app/templates/products/select_product_modal.html:83
-#: app/templates/purchases/_modal_arrival.html:109
-#: app/templates/purchases/_modal_export.html:58
-#: app/templates/purchases/_modal_express.html:52
-#: app/templates/purchases/_modal_import.html:40
-#: app/templates/purchases/purchase_modal.html:77
-#: app/templates/users/add_child_user.html:50
-#: app/templates/warehouses/ex_warehouse_modal.html:57
-#: app/templates/warehouses/in_warehouse_modal.html:66
-#: app/templates/wxapp/_category_modal.html:27
-#: app/templates/wxapp/_page_modal.html:27
-#: app/templates/wxapp/_reply_modal.html:31
-#: app/templates/wxapp/_tester_modal.html:23
-msgid "Submit"
 msgstr ""
 
 #: app/templates/banners/create_and_edit.html:16
@@ -4014,14 +4050,6 @@ msgstr ""
 
 #: app/templates/orders/show_list.html:166
 msgid "Print Express"
-msgstr ""
-
-#: app/templates/orders/show_list.html:240
-#: app/templates/products/show_list.html:49
-#: app/templates/products/sku_of_orders.html:47
-#: app/templates/purchases/show_list.html:124
-#: app/templates/warehouses/show_stocks.html:67
-msgid "Actions"
 msgstr ""
 
 #: app/templates/orders/show_list.html:246
