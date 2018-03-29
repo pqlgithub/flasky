@@ -1,0 +1,118 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">{{ _('Move To Directory') }}</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="directory-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+				<input type="hidden" name="select_folder_id" id="select_folder_id" />
+				
+				<div class="form-group">
+					<div class="col-sm-10" id="uploader_result">
+						{% for directory in directories %}
+						<div class="directory" id="directory-{{ directory.id }}">
+							{% if directory.has_children %}
+							<a href="javascript:;" data-rid="{{ directory.id }}" class="marker">
+								<i class="fa fa-plus-square-o"></i>
+							</a>
+							{% endif %}
+							<a href="javascript:;" data-rid="{{ directory.id }}" class="folder">
+								<i class="fa fa-folder"></i> {{ directory.fx_name }}
+							</a>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default m-l-20" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="directory-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	var data = {};
+	
+	var hook_mark = function() {
+		$('a.marker').unbind('click').bind('click', function() {
+			var rid = $(this).data('rid');
+			if (!$(this).hasClass('open')) {
+				$(this)
+					.addClass('open')
+					.html('<i class="fa fa-minus-square-o"></i>');
+				
+				$.get("{{ url_for('main.get_folders') }}", { 'pid': rid, 'type': 'children' }, function(html) {
+					$('#directory-'+ rid).append(html);
+				}, 'html');
+			}
+		});
+	}
+	
+	var hook_folder = function() {
+		$('a.folder').unbind('click').bind('click', function() {
+			var rid = $(this).data('rid');
+			$('#select_folder_id').val(rid);
+		
+			$('a.folder').removeClass('active');
+			$(this).addClass('active');
+		});
+	}
+	
+	hook_mark();
+	hook_folder();
+	
+	$('#directory-submit-btn').click(function (e) {		
+		var folders = [];
+		var files = [];
+		
+        $('input[name^=\'path\']:checked').each(function () {
+			var name = $(this).data('name');
+			var rid = $(this).data('rid');
+			
+			if (name == 'folder') {
+				folders.push(rid);
+			} else {
+				files.push(rid);
+			}
+        });
+		if (folders.length) {
+			data['folders'] = folders.join(',');
+		}
+		if (files.length) {
+			data['files'] = files.join(',');
+		}
+		
+		data['csrf_token'] = '{{ csrf_token() }}';
+		data['select_folder_id'] = $('#select_folder_id').val();
+			
+		$.ajax({
+			url: "{{ move_folder_url }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$('#directory-submit-btn').prop('disabled', true);
+			},
+			complete: function() {
+				$('#directory-submit-btn').prop('disabled', false);
+			},
+			success: function (result) {
+				console.log(result);
+				if (result.success) {
+					$('#modal-directory').modal('hide');
+					$('#button-refresh').trigger('click');
+				} else {
+					mixpus.show_error_message(result.status.message);
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>
