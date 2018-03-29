@@ -1,15 +1,17 @@
-{% for directory in directories %}
-<div class="directory" id="directory-{{ directory.id }}">
-	{% if directory.has_children %}
-	<a href="javascript:;" data-rid="{{ directory.id }}" class="marker">
-		<i class="fa fa-plus-square-o"></i>
-	</a>
-	{% endif %}
-	<a href="javascript:;" data-rid="{{ directory.id }}" class="folder">
-		<i class="fa fa-folder"></i> {{ directory.fx_name }}
-	</a>
+<div id="directory-{{ pid }}-children">
+	{% for directory in directories %}
+	<div class="directory" id="directory-{{ directory.id }}">
+		{% if directory.has_children %}
+		<a href="javascript:;" data-rid="{{ directory.id }}" class="marker">
+			<i class="fa fa-plus-square-o"></i>
+		</a>
+		{% endif %}
+		<a href="javascript:;" data-rid="{{ directory.id }}" class="folder">
+			<i class="fa fa-folder"></i> {{ directory.fx_name }}
+		</a>
+	</div>
+	{% endfor %}
 </div>
-{% endfor %}
 
 <script type="text/javascript">
 	hook_mark();

@@ -292,17 +292,18 @@ def show_assets(page=1):
 
     # 某文件夹下的子目录
     paginated_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=pid).order_by(
-        Directory.id.asc()).paginate(page, per_page)
+        Directory.id.asc()).all()
 
     # 某文件夹下的文件
-    all_child_assets = Asset.query.filter_by(master_uid=Master.master_uid(), directory_id=pid).order_by(Asset.created_at.desc()).all()
+    paginated_assets = Asset.query.filter_by(master_uid=Master.master_uid(), directory_id=pid)\
+        .order_by(Asset.created_at.asc()).paginate(page, per_page)
 
     return render_template('settings/show_assets.html',
                            sub_menu='assets',
                            pid=pid,
                            current_directory=current_directory,
                            paginated_directory=paginated_directory,
-                           all_child_assets=all_child_assets,
+                           paginated_assets=paginated_assets,
                            **load_common_data())
 
 

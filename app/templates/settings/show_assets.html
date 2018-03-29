@@ -6,7 +6,98 @@
 		mixpus.init_page_layout();
 
 		mixpus.hook_per_page_select();
+		
+		$('#button-refresh').on('click', function(e) {
+			e.preventDefault();
+			window.location.reload();
+		});
+		
+		// 移动
+		$('#button-move').bind('click', function (e) {
+			e.preventDefault();
+			
+	        if ($('input[name^=\'path\']:checked').length == 0) {
+				mixpus.show_error_message('请选定需移动的目录或文件');
+	        } else {
+				var modal_name = $(this).data('modal');
+				$.get("{{ url_for('main.get_folders') }}", function (html) {
+					$('#'+ modal_name).remove();
 
+					$('body').append('<div id="'+ modal_name +'" role="dialog" class="modal">' + html + '</div>');
+
+					$('#'+ modal_name).modal({
+						backdrop: false,
+						show: true
+					});
+				});
+	        }
+		
+			return false;
+		});
+		
+		// 删除
+		$('#button-delete').on('click', function() {
+	        var data = {
+	            'csrf_token': mixpus.csrf_token
+	        };
+		
+			var folders = [];
+			var files = [];
+	        $('input[name^=\'path\']:checked').each(function () {
+				var name = $(this).data('name');
+				var rid = $(this).data('rid');
+			
+				if (name == 'folder') {
+					folders.push(rid);
+				} else {
+					files.push(rid);
+				}
+	        });
+			if (folders.length) {
+				data['folders'] = folders.join(',');
+			}
+			if (files.length) {
+				data['files'] = files.join(',');
+			}
+			if (folders.length == 0 && files.length == 0) {
+				return mixpus.show_error_message('请选定需删除的目录或文件');
+			}
+		
+			swal({
+				title: "确定要删除?",
+				text: "删除后将不能恢复，请慎重！",
+				type: "warning",
+				showCancelButton: true,
+	            cancelButtonText: '取消',
+	            confirmButtonColor: '#c6322a',
+				confirmButtonText: "确认删除"
+			}).then(function (isConfirm) {
+				if (isConfirm.value === true) {
+		            $.ajax({
+		                url: '{{ url_for("main.pldelete") }}',
+		                type: 'post',
+		                dataType: 'json',
+		                data: data,
+		                beforeSend: function() {
+		                    $('#button-delete').prop('disabled', true);
+		                },
+		                complete: function() {
+		                    $('#button-delete').prop('disabled', false);
+		                },
+		                success: function(result) {
+		                    if (result.success) {
+		                        window.location.reload();
+		                    } else {
+								mixpus.show_error_message(result.status.message);
+		                    }
+		                },
+		                error: function(xhr, ajaxOptions, thrownError) {
+		                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		                }
+		            });
+				}
+			});
+		});
 	});
 </script>
 {% endblock %}
@@ -14,27 +105,30 @@
 {% block mainbar %}
 <div class="list-page">
 	<h2 class="page-header">
-		{{ _('Asset List') }}
+		{{ _('Picture Space') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-placement="left" data-toggle="image" class="btn btn-warning" data-original-title="{{ _('Upload / Delete Files') }}">
-				<i class="glyphicon glyphicon-upload"></i> {{ _('Upload Files') }}
+			<a href="{{ url_for('main.show_assets') }}?pid={{ current_directory.id }}" data-toggle="tooltip" id="button-refresh" class="btn btn-default" data-original-title="{{ _('Refresh') }}">
+				<i class="fa fa-refresh"></i>
 			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="assets-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+			<button type="button" data-toggle="tooltip" id="button-move" data-modal="modal-directory" class="btn btn-warning" data-original-title="{{ _('Move') }}">
+				<i class="fa fa-exchange"></i>
+			</button>
+			<button class="btn btn-danger" id="button-delete" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="fa fa-trash"></i>
 			</button>
 		</span>
 	</h2>
 
 	<div class="table-responsive m-t-20">
-		<form id="assets-form" action="{{ url_for('main.delete_asset') }}" method="post">
+		<form id="assets-form" action="" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-
+			
 			{% if current_directory %}
 			<div class="col-sm-2 col-xs-6 text-center">
 				<div class="text-center">
 					<a href="{{ url_for('main.show_assets') }}?pid={{ current_directory.parent_id|default(0) }}" class="pjax directory">
-						<i class="glyphicon glyphicon-level-up fa-5x"></i>
+						<i class="fa fa-level-up fa-5x"></i>
 					</a>
 				</div>
 				<label>
@@ -43,28 +137,28 @@
 			</div>
 			{% endif %}
 
-			{% for d in paginated_directory.items %}
+			{% for d in paginated_directory %}
 			<div class="col-sm-2 col-xs-6 text-center">
 				<div class="text-center">
 					<a href="{{ url_for('main.show_assets') }}?pid={{ d.id }}" class="pjax directory" style="vertical-align: middle;">
-						<i class="glyphicon glyphicon-folder-close fa-5x"></i>
+						<i class="fa fa-folder fa-5x"></i>
 					</a>
 				</div>
 				<label>
-					<input name="directories[]" class="check-one" value="{{ d.id }}" type="checkbox">
+					<input name="path[]" value="{{ d.name }}" data-rid="{{ d.id }}" data-name="folder" type="checkbox">
 					{{ d.fx_name|safe }}
 					<a href="{{ url_for('main.modify_directory', id=d.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit') }}</a>
 				</label>
 			</div>
 			{% endfor %}
 
-			{% for a in all_child_assets %}
+			{% for a in paginated_assets.items %}
 			<div class="col-sm-2 col-xs-6 text-center">
 				<a href="javascript:void(0);" class="thumbnail" data-target="{{ a.id }}">
 					<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
 				</a>
 				<label>
-					<input name="images[]" class="check-one" value="{{ a.id }}" type="checkbox">
+					<input name="path[]" value="{{ a.filepath }}" data-rid="{{ a.id }}" data-name="file" type="checkbox">
 					{{ a.filename|short_filename }} <a href="javascript:void(0);" data-clipboard-text="{{ a.view_url }}" class="zclip" data-toggle="tooltip" data-original-title="{{ _('Copy Link') }}">{{ _('Copy Link') }}</a>
 				</label>
 			</div>
@@ -74,6 +168,6 @@
 	</div>
 
 	{% import "block/_macros.html" as macros %}
-	{{ macros.pagination_widget(paginated_directory, '.show_assets', pid=pid) }}
+	{{ macros.pagination_widget(paginated_assets, '.show_assets', pid=pid) }}
 </div>
 {% endblock %}

@@ -48,6 +48,12 @@
 				$.get("{{ url_for('main.get_folders') }}", { 'pid': rid, 'type': 'children' }, function(html) {
 					$('#directory-'+ rid).append(html);
 				}, 'html');
+			} else {
+				$(this)
+					.removeClass('open')
+					.html('<i class="fa fa-plus-square-o"></i>');
+					
+				$('#directory-'+ rid +'-children').remove();
 			}
 		});
 	}

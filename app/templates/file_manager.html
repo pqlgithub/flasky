@@ -81,9 +81,7 @@
 		</div>
 		<div class="modal-footer">
 			{% if paginated_assets %}
-			<div class="pull-right">
-				{{ macros.pagination_widget(paginated_assets, '.show_asset', directory=current_directory, up_target=up_target) }}
-			</div>
+			{{ macros.pagination_widget(paginated_assets, '.show_asset', directory=current_directory, directory_id=current_directory_id, up_target=up_target) }}
 			{% endif %}
 		</div>
 	</div><!-- /.modal-content -->
@@ -149,6 +147,12 @@
 
 		$('#modal-image').load($(this).attr('href'));
 	});
+	
+	$('.per-page').change(function (e) {
+		e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+		$('#modal-image').load(url);
+    });
 
 	$('#button-parent').on('click', function(e) {
 		e.preventDefault();

@@ -27,9 +27,11 @@ def get_folders():
 
     if _type == 'children':
         return render_template('assets/_children_folder.html',
+                               pid=pid,
                                directories=directories)
 
     return render_template('assets/_modal_directory.html',
+                           pid=pid,
                            move_folder_url=url_for('.move_folder'),
                            directories=directories)
 
@@ -164,7 +166,7 @@ def folder():
 @main.route('/file_manager/show_asset/<int:page>')
 @login_required
 def show_asset(page=1):
-    per_page = request.values.get('per_page', 20)
+    per_page = request.values.get('per_page', 25, type=int)
     parent_directory = ''
     parent_id = 0
     all_directory = []
