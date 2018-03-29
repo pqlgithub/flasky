@@ -447,6 +447,14 @@ mixpus.hook_summer_editor = function () {
 							if ($.cookie('last_open_folder') && $.cookie('last_open_folder_id') && $.cookie('last_open_folder') != 'undefined' && $.cookie('last_open_folder_id') != 'undefined') {
 								mixpus.last_open_folder = $.cookie('last_open_folder');
 								mixpus.last_open_folder_id = $.cookie('last_open_folder_id');
+								
+								// 目录名与id不匹配，重置
+								if ((mixpus.last_open_folder != '' && mixpus.last_open_folder_id == 0) || (mixpus.last_open_folder == '' && mixpus.last_open_folder_id != 0)) {
+									mixpus.last_open_folder = '';
+									mixpus.last_open_folder_id = 0;
+									$.cookie('last_open_folder', '');
+									$.cookie('last_open_folder_id', 0);
+								}
 							}
 							
 							$.ajax({
@@ -550,6 +558,14 @@ mixpus.upload_file_manager = function () {
 			if ($.cookie('last_open_folder') && $.cookie('last_open_folder_id') && $.cookie('last_open_folder') != 'undefined' && $.cookie('last_open_folder_id') != 'undefined') {
 				mixpus.last_open_folder = $.cookie('last_open_folder');
 				mixpus.last_open_folder_id = $.cookie('last_open_folder_id');
+				
+				// 目录名与id不匹配，重置
+				if ((mixpus.last_open_folder != '' && mixpus.last_open_folder_id == 0) || (mixpus.last_open_folder == '' && mixpus.last_open_folder_id != 0)) {
+					mixpus.last_open_folder = '';
+					mixpus.last_open_folder_id = 0;
+					$.cookie('last_open_folder', '');
+					$.cookie('last_open_folder_id', 0);
+				}
 			}
 
 			$.ajax({
