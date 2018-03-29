@@ -188,8 +188,6 @@ def show_asset(page=1):
         current_app.logger.debug('Directory name: [%s]' % last_directory_name)
 
         last_directory = Directory.query.get(int(current_directory_id))
-        if last_directory.master_uid != Master.master_uid():
-            abort(401)
 
         if last_directory:
             all_directory = Directory.query.filter_by(master_uid=Master.master_uid(), parent_id=last_directory.id).all()
