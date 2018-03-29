@@ -426,7 +426,7 @@ used as it is.
 									'<img src="'+ result.view_url +'" alt="'+ result.filename +'">' +
 								'</a>' +
 								'<label>' +
-								'<input name="path[]" value="'+ result.filepath +'" data-rid="{{ result.id }}" data-name="file" type="checkbox">' + result.filename +
+								'<input name="path[]" value="'+ result.filepath +'" data-rid="'+ result.id +'" data-name="file" type="checkbox">' + result.filename +
 								'</label>' +
 							'</div>'
 						);
