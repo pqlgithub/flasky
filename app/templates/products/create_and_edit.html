@@ -453,13 +453,13 @@
 								<td class="text-center">
 			                        {% if sku.sale_price > 0 %}
 			                            <span class="sale-price">{{ sku.sale_price|round(precision=2) }}</span>
-										{% if sku.price > 0 %}
+										{% if sku.price %}
 			                            <span class="price">
 											{{ sku.price|round(precision=2) }}
 										</span>
 										{% endif %}
 			                        {% else %}
-										{% if sku.price > 0 %}
+										{% if sku.price %}
 			                            <span class="sale-price">{{ sku.price|round(precision=2) }}</span>
 										{% endif %}
 			                        {% endif %}
