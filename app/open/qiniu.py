@@ -4,7 +4,7 @@ from flask import current_app, request, jsonify
 from . import open
 from .. import db
 from app.models import Asset, Directory
-from app.utils import status_response, R400_BADREQUEST
+from app.utils import status_response, R400_BADREQUEST, custom_response
 
 
 @open.route('/qiniu/notify', methods=['POST'])
@@ -19,20 +19,25 @@ def upload_notify():
     width = request.values.get('width')
     height = request.values.get('height')
     master_uid = request.values.get('user_id')
+    directory_id = request.values.get('directory_id', 0, type=int)
 
     if not filepath or not master_uid or not filename:
         current_app.logger.warn('Qiniu callback params is empty!')
         return status_response(False, R400_BADREQUEST)
 
     # 所属的目录
-    directory_id = 0
-    directory = _pop_last_directory(request.values.get('directory'))
-    if directory:
-        current_directory = Directory.query.filter_by(master_uid=master_uid, name=directory).first()
-        directory_id = current_directory.id
+    if not directory_id:
+        directory = _pop_last_directory(request.values.get('directory', None))
+        if directory:
+            current_directory = Directory.query.filter_by(master_uid=master_uid, name=directory).first()
+            if not current_directory:
+                return custom_response(False, '目录不存在', 400)
+            directory_id = current_directory.id
+
+    if not directory_id:
+        return custom_response(False, '没有设置默认目录', 400)
 
     saved_asset_ids = []
-
     # 更新记录
     new_asset = Asset(
         directory_id=directory_id,
