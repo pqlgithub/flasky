@@ -22,7 +22,8 @@ class QiniuStorage(object):
             'deadline': int(timestamp()) + 3600,
             'callbackUrl': '%s/open/qiniu/notify' % domain_url,
             'callbackBody': 'filepath=$(key)&filename=$(fname)&filesize=$(fsize)&mime=$(mimeType)&user_id=$(x:user_id)'
-                            '&width=$(imageInfo.width)&height=$(imageInfo.height)&ext=$(ext)&directory=$(x:directory)',
+                            '&width=$(imageInfo.width)&height=$(imageInfo.height)&ext=$(ext)&directory=$(x:directory)'
+                            '&directory_id=$(x:directory_id)',
             'saveKey': save_key,
             'fsizeLimit': 20 * 1024 * 1024,  # 限定上传文件大小最大值, 20M
             'returnUrl': '',
