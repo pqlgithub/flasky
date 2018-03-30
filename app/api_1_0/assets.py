@@ -19,7 +19,11 @@ def get_upload_token():
                                      cfg['DOMAIN_URL'])
     up_endpoint = cfg['QINIU_UPLOAD']
 
+    # 获取默认目录ID
+    default_directory = Directory.query.filter_by(master_uid=g.master_uid, is_default=True).first_or_404()
+
     return full_response(R200_OK, {
+        'directory_id': default_directory.id,
         'user_id': g.master_uid,
         'up_token': up_token,
         'up_endpoint': up_endpoint
