@@ -79,6 +79,7 @@ class Config:
     ERROR_LOG = 'logs/mic-error.log'
 
     # pagination
+    MAX_PER_PAGE = 500
     MAX_SEARCH_RESULTS = 50
     POSTS_PER_PAGE = 50
 

@@ -1,0 +1,222 @@
+<aside class="main-sidebar">
+    <section class="sidebar">
+        <ul class="sidebar-menu tree" data-widget="tree">
+            <li class="header">NAVIGATION</li>
+            <li class="{% if sub_menu == 'dashboard'%}active {% endif %} treeview">
+                <a href="{{ url_for('distribute.index') }}">
+                    <i class="fa fa-dashboard fa-2x"></i>
+                    <span>{{ _('Dashboard') }}</span>
+                </a>
+            </li>
+             <li class="{% if sub_menu == 'orders'%}active {% endif %} treeview">
+                 <a href="{{ url_for('distribute.show_orders') }}">
+                     <i class="fa fa-shopping-cart fa-2x"></i>
+                     <span>{{ _('Sales') }}</span>
+                 </a>
+                 <div class="treeview-menu">
+                     <ul class="subtree">
+                         <li class="header">{{ _('Order Manage') }}</li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}" class="pjax">
+		                         {{ _('Order List') }}
+	                         </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}?s=1" class="pjax">
+		                         {{ _('Pending Payment') }}
+	                         </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}?s=5" class="pjax">
+		                         {{ _('Pending Review') }}
+	                         </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}?s=10" class="pjax">
+		                         {{ _('Pending Shipment') }}
+	                         </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}?s=13" class="pjax">
+		                         {{ _('UnPrinting') }}
+	                         </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_orders') }}?s=16" class="pjax">
+		                         {{ _('Shipped') }}
+	                         </a>
+                         </li>
+                     </ul>
+                 </div>
+             </li>
+            <li class="{% if sub_menu == 'products'%}active {% endif %} treeview">
+                <a href="{{ url_for('distribute.show_products') }}">
+                    <i class="fa fa-cubes fa-2x"></i>
+                    <span>{{ _('Products') }}</span>
+                </a>
+                <div class="treeview-menu">
+                     <ul class="subtree">
+                         <li class="header">{{ _('Product Manage') }}</li>
+                         <li>
+                             <a href="{{ url_for('distribute.show_products') }}" class="pjax">
+                                 {{ _('Product List') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('distribute.create_product') }}" class="pjax">
+                                 {{ _('New Product') }}
+                             </a>
+                         </li>
+                     </ul>
+                 </div>
+            </li>
+			
+            <li class="{% if sub_menu == 'statistics'%}active {% endif %} treeview">
+                <a href="#">
+                    <i class="fa fa-pie-chart fa-2x"></i>
+                    <span>{{ _('Statistics') }}</span>
+                </a>
+
+                <div class="treeview-menu tree-2x">
+                     <ul class="subtree">
+                         <li class="header">{{ _('Sales Report') }}</li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Sales Report') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Products Report') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Brands Report') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Category Report') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Customer Report') }}
+                             </a>
+                         </li>
+                     </ul>
+                     <ul class="subtree">
+                         <li class="header">{{ _('Stock Report') }}</li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('In-Out Report') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Shipments Stats') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Supplier Stats') }}
+                             </a>
+                         </li>
+                     </ul>
+                 </div>
+             </li>
+             
+
+            <li class="{% if sub_menu == 'finance'%}active {% endif %} treeview">
+                <a href="#">
+                    <i class="fa fa-yen fa-2x"></i>
+                    <span>{{ _('Finance') }}</span>
+                </a>
+
+                <div class="treeview-menu tree-2x">
+                     <ul class="subtree">
+                         <li class="header">{{ _('Funds Manage') }}</li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Capital account') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('main.show_payments') }}?s=1" class="pjax">
+                                 {{  _('Payment Confirm') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('main.show_receives') }}" class="pjax">
+                                 {{ _('Receivables Confirm') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Capital Detail') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Refund Manage') }}
+                             </a>
+                         </li>
+                     </ul>
+                     <ul class="subtree">
+                         <li class="header">{{ _('Account Setting') }}</li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Items Setting') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="" class="pjax">
+                                 {{ _('Account Setting') }}
+                             </a>
+                         </li>
+                     </ul>
+                 </div>
+            </li>
+			
+            <li class="{% if sub_menu == 'settings'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.site') }}">
+                    <i class="fa fa-gears fa-2x"></i>
+                    <span>{{ _('Setting') }}</span>
+                </a>
+
+                <div class="treeview-menu tree-2x">
+                    <ul class="subtree">
+                        <li class="header">{{ _('Privilege manage') }}</li>
+                        {% if g.user.is_master %}
+                        <li>
+                            <a href="{{ url_for('main.child_users') }}" class="pjax">
+                                {{ _('User List') }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ url_for('main.setting_roles') }}" class="pjax">
+                                {{ _('Acl List') }}
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="subtree">
+                        <li class="header">{{ _('General Settings') }}</li>
+                        <li>
+                            <a href="{{ url_for('main.site') }}" class="pjax">
+                                {{ _('Company Info') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.show_currencies') }}" class="pjax">
+                                {{ _('Currency List') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+        </ul>
+    </section>
+</aside>

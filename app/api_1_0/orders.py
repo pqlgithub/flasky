@@ -17,14 +17,14 @@ from app.tasks import remove_order_cart, update_coupon_status, sync_product_stoc
 @auth.login_required
 def get_orders():
     """订单列表"""
-    page = request.values.get('page', 1, type=int)
-    per_page = request.values.get('per_page', 10, type=int)
+    page = correct_page(request.values.get('page', 1, type=int))
+    per_page = correct_per_page(request.values.get('per_page', 10, type=int))
     status = request.values.get('status', type=int)
     prev_url = None
     next_url = None
 
     builder = Order.query.filter_by(master_uid=g.master_uid, user_id=g.current_user.id)
-    
+
     if status:
         builder = builder.filter_by(status=status)
     

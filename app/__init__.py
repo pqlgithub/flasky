@@ -98,6 +98,9 @@ def create_app(config_name):
     from .adminlte import adminlte as admin_blueprint
     app.register_blueprint(admin_blueprint, url_prefix='/adminlte')
 
+    from .distribute import distribute as distribute_blueprint
+    app.register_blueprint(distribute_blueprint, url_prefix='/distribute')
+
     from .open import open as open_blueprint
     app.register_blueprint(open_blueprint, url_prefix='/open')
     # 禁用csrf

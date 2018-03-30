@@ -1,4 +1,4 @@
-{% extends 'layout/base.html' %}
+{% extends "layout/distribute.html" %}
 
 {% block content %}
 <div class="content-wrapper--fluid">
@@ -12,7 +12,7 @@
 							<strong>{{ errmsg }}</strong>
 						</p>
 						
-						<a href="{{url_for('main.index')}}" class="btn btn-danger btn-lg m-t-20">
+						<a href="{{url_for('distribute.index')}}" class="btn btn-danger btn-lg m-t-20">
 							{{ _('Go Back') }}
 						</a>
 					</div>

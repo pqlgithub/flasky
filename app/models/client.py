@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
+from flask import current_app
 from flask_babelex import gettext, lazy_gettext
 from app import db
 from app.models import Store
@@ -91,6 +92,8 @@ class Client(db.Model):
         tmp_str = '&'.join(['%s=%s' % (key.lower(), ret[key]) for key in sorted(ret)])
         
         sign = hashlib.sha1(tmp_str.encode('utf-8') + app_secret.encode('utf-8')).hexdigest()
+
+        current_app.logger.debug('Sign: %s' % sign)
         
         return sign == args['sign']
 

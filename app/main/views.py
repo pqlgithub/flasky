@@ -7,7 +7,33 @@ from . import main
 from .. import db, babel
 from ..constant import SUPPORT_LANGUAGES
 from ..utils import Master, full_response
+from ..decorators import user_is_supplier
 from app.models import Site, Currency
+
+
+# 必须使用before_app_request修饰器
+@main.before_request
+@user_is_supplier
+def before_request():
+    """
+    Such a function is executed before each request, even if outside of a blueprint.
+    """
+    g.user = current_user
+    g.current_site = None
+
+    # 验证用户
+    if current_user.is_authenticated:
+        # 每次收到用户的请求时都要调用ping()方法
+        current_user.ping()
+        if not current_user.confirmed and request.endpoint[:5] != 'auth.':
+            return redirect(url_for('auth.unconfirmed'))
+
+        # 注入站点信息
+        g.current_site = Site.query.filter_by(
+            master_uid=Master.master_uid()).first()
+
+    # 设置本地化语言
+    g.locale = get_locale()
 
 
 @babel.localeselector
@@ -37,30 +63,6 @@ def get_timezone():
     user = getattr(g, 'user', None)
     if user is not None:
         return user.timezone
-
-
-# 必须使用before_app_request修饰器
-@main.before_app_request
-def before_request():
-    """
-    Such a function is executed before each request, even if outside of a blueprint.
-    """
-    g.user = current_user
-    g.current_site = None
-
-    # 验证用户
-    if current_user.is_authenticated:
-        # 每次收到用户的请求时都要调用ping()方法
-        current_user.ping()
-        if not current_user.confirmed and request.endpoint[:5] != 'auth.':
-            return redirect(url_for('auth.unconfirmed'))
-
-        # 注入站点信息
-        g.current_site = Site.query.filter_by(
-            master_uid=Master.master_uid()).first()
-
-    # 设置本地化语言
-    g.locale = get_locale()
 
 
 @main.context_processor

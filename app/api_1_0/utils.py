@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import jsonify, g
+from flask import jsonify, g, current_app
 
 R200_OK = {'code': 200, 'message': 'Ok all right.'}
 R201_CREATED = {'code': 201, 'message': 'All created.'}
@@ -64,3 +64,24 @@ def can_admin(uid):
 def is_owner(uid):
     """是否为属主"""
     return g.current_user.id == uid
+
+
+def correct_page(page):
+    """修正参数"""
+    if page is None or page <= 0:
+        page = 1
+
+    return page
+
+
+def correct_per_page(per_page):
+    """修正每页数量"""
+    if per_page is None or per_page <= 0:
+        per_page = 1
+
+    # 设置最大值
+    if per_page > current_app.config['MAX_PER_PAGE']:
+        per_page = current_app.config['MAX_PER_PAGE']
+
+    return per_page
+

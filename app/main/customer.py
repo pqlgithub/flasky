@@ -12,7 +12,7 @@ from app.models import Customer, CustomerGrade, User, DiscountTemplet, Category,
     ProductPacket, CustomerDistributePacket
 from app.forms import CustomerForm, CustomerGradeForm, CustomerEditForm, DiscountTempletForm, DiscountTempletEditForm
 from app.helpers import MixGenId
-from ..utils import Master, custom_response, status_response, full_response, R200_OK
+from ..utils import Master, custom_response, status_response, full_response, R200_OK, flash_errors
 from ..decorators import user_has
 from ..constant import CUSTOMER_STATUS
 
@@ -122,45 +122,45 @@ def create_customer():
     """新增客户"""
     form = CustomerForm()
     form.grade_id.choices = [(grade.id, grade.name) for grade in CustomerGrade.query.all()]
-    if form.validate_on_submit():
-        
-        # 首先添加用户
-        user = User()
-        
-        user.email = form.customer_account.data
-        user.username = form.sn.data
-        user.password = form.customer_pwd.data
-        user.time_zone = 'zh'
-        user.id_type = 2
-        
-        db.session.add(user)
-        
-        # 然后，添加关联客户信息
-        customer = Customer(
-            master_uid=Master.master_uid(),
-            name=form.name.data,
-            sn=form.sn.data,
-            grade_id=form.grade_id.data,
-            province=form.province.data,
-            city=form.city.data,
-            area=form.area.data,
-            street_address=form.street_address.data,
-            zipcode=form.zipcode.data,
-            mobile=form.mobile.data,
-            phone=form.phone.data,
-            email=form.email.data,
-            qq=form.qq.data
-        )
-        customer.user = user
-        
-        db.session.add(customer)
-        
-        db.session.commit()
-        
-        flash('Add customer is ok!', 'success')
-        return redirect(url_for('.show_customers'))
-    else:
-        current_app.logger.warn(form.errors)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # 首先添加用户
+            user = User()
+
+            user.email = form.customer_account.data
+            user.username = form.sn.data
+            user.password = form.customer_pwd.data
+            user.time_zone = 'zh'
+            user.id_type = 2
+
+            db.session.add(user)
+
+            # 然后，添加关联客户信息
+            customer = Customer(
+                master_uid=Master.master_uid(),
+                name=form.name.data,
+                sn=form.sn.data,
+                grade_id=form.grade_id.data,
+                province=form.province.data,
+                city=form.city.data,
+                area=form.area.data,
+                street_address=form.street_address.data,
+                zipcode=form.zipcode.data,
+                mobile=form.mobile.data,
+                phone=form.phone.data,
+                email=form.email.data,
+                qq=form.qq.data
+            )
+            customer.user = user
+
+            db.session.add(customer)
+
+            db.session.commit()
+
+            flash('Add customer is ok!', 'success')
+            return redirect(url_for('.show_customers'))
+        else:
+            current_app.logger.warn(form.errors)
 
     mode = 'create'
     form.sn.data = MixGenId.gen_customer_sn()
@@ -549,8 +549,7 @@ def set_discount(id):
         
         for item in discount_templet.items:
             selected_items[item.brand_id] = item.discount
-    
-    
+
     return render_template('customers/set_discount.html',
                            discount_templet=discount_templet,
                            selected_items=selected_items,

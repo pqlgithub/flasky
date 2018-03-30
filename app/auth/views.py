@@ -18,12 +18,20 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.verify_password(form.password.data):
+            # 商家入口，消费者不能登录
+            if user.id_type == UserIdType.BUYER:
+                abort(401)
+
             login_user(user, form.remember_me.data)
             next_url = request.args.get('next')
             if not next_is_valid(next_url):
                 abort(400)
 
-            return redirect(next_url or url_for('main.index'))
+            default_index = url_for('main.index')
+            if user.id_type == UserIdType.CUSTOMER:  # 跳转分销商后台
+                default_index = url_for('distribute.index')
+
+            return redirect(next_url or default_index)
 
         flash(gettext('Account or Password is Error!'), 'danger')
 
@@ -109,3 +117,11 @@ def unconfirmed():
 
     return render_template('auth/unconfirmed.html',
                            token=current_user.generate_confirmation_token())
+
+
+@auth.route('/forbidden')
+def forbidden():
+    """拒绝访问"""
+    errmsg = '权限限制，不允许访问！'
+
+    return render_template('auth/forbidden.html', errmsg=errmsg)

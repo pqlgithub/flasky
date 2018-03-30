@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import abort
+from flask import abort, redirect, url_for
 from functools import wraps
 from werkzeug.exceptions import Forbidden
 
@@ -58,6 +58,38 @@ def super_user_required(func, get_user=import_user):
         current_user = get_user()
         if current_user.is_adminstractor():
             return func(*args, **kwargs)
-        abort(403)
+
+        # 拒绝访问
+        return redirect(url_for('auth.forbidden'))
+
+    return decorator
+
+
+def user_is_supplier(func, get_user=import_user):
+    """装饰器：用户是否为供应商"""
+
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        current_user = get_user()
+        if current_user.id_type == 1:
+            return func(*args, **kwargs)
+
+        # 拒绝访问
+        return redirect(url_for('auth.forbidden'))
+
+    return decorator
+
+
+def user_is_distributer(func, get_user=import_user):
+    """装饰器：用户是否为分销商"""
+
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        current_user = get_user()
+        if current_user.id_type == 2:
+            return func(*args, **kwargs)
+
+        # 拒绝访问
+        return redirect(url_for('auth.forbidden'))
 
     return decorator

@@ -277,6 +277,14 @@ a.thumbnail {
 .note-editable p img {
 	max-width: 100%;
 }
+.block-error {
+	min-height: 700px;
+}
+/* block */
+.block-header {
+    padding-bottom: 5px;
+}
+
 
 .indicator,
 .indicator-right {
