@@ -94,6 +94,7 @@ class Client(db.Model):
         sign = hashlib.sha1(tmp_str.encode('utf-8') + app_secret.encode('utf-8')).hexdigest()
 
         current_app.logger.debug('Sign: %s' % sign)
+        current_app.logger.debug('Args sign: %s' % args['sign'])
         
         return sign == args['sign']
 
