@@ -38,6 +38,8 @@ uploader = UploadSet(
 login_manager.session_protection = 'strong'
 # 设置登录页面的端点
 login_manager.login_view = 'auth.login'
+login_manager.login_message = '请先登录'
+login_manager.login_message_category = 'danger'
 
 
 def create_app(config_name):
