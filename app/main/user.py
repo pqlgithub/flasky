@@ -21,13 +21,11 @@ def load_common_data():
 
 
 @main.route('/users/profile', methods=['GET', 'POST'])
-@login_required
 def profile():
     return render_template('users/profile.html')
 
 
 @main.route('/users/preference', methods=['GET', 'POST'])
-@login_required
 def preference():
     form = PreferenceForm()
 
@@ -47,7 +45,6 @@ def preference():
 
 
 @main.route('/site/child_users')
-@login_required
 @user_has('admin_setting')
 def child_users():
     master_uid = Master.master_uid()
@@ -62,7 +59,6 @@ def child_users():
 
 
 @main.route('/site/add_child_user', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def add_child_user():
     master_uid = Master.master_uid()
@@ -93,7 +89,6 @@ def add_child_user():
 
 
 @main.route('/users/set_role/<int:user_id>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def set_role(user_id):
     user = User.query.get_or_404(user_id)
@@ -121,7 +116,6 @@ def set_role(user_id):
 
 
 @main.route('/users/passwd', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def passwd():
     """更新密码"""

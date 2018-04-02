@@ -2,7 +2,7 @@
 from datetime import timedelta
 from flask import g, session, current_app, request, redirect, url_for, app
 from flask_sqlalchemy import get_debug_queries
-from flask_login import current_user, login_manager
+from flask_login import current_user, login_manager, login_required
 from . import main
 from .. import db, babel
 from ..constant import SUPPORT_LANGUAGES
@@ -13,6 +13,7 @@ from app.models import Site, Currency
 
 # 必须使用before_app_request修饰器
 @main.before_request
+@login_required
 @user_is_supplier
 def before_request():
     """

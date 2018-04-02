@@ -31,7 +31,6 @@ def load_common_data():
 
 @main.route('/products')
 @main.route('/products/<int:page>')
-@login_required
 @user_has('admin_product')
 def show_products(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -53,7 +52,6 @@ def show_products(page=1):
 
 
 @main.route('/products/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def search_products():
     """支持全文索引搜索产品"""
@@ -105,7 +103,6 @@ def search_products():
 
 
 @main.route('/products/ajax_search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def ajax_search_products():
     """搜索产品,满足采购等选择产品"""
@@ -162,7 +159,6 @@ def ajax_search_products():
     
 
 @main.route('/products/skus', methods=['POST'])
-@login_required
 @user_has('admin_product')
 def ajax_find_skus():
     selected_ids = request.form.getlist('selected[]')
@@ -178,7 +174,6 @@ def ajax_find_skus():
 
 
 @main.route('/products/ajax_select', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def ajax_select_products():
     """搜索库存产品,满足下单/出库等选择产品"""
@@ -206,7 +201,6 @@ def ajax_select_products():
 
 
 @main.route('/products/ajax_submit_result', methods=['POST'])
-@login_required
 @user_has('admin_product')
 def ajax_submit_result():
     """返回已选定产品的结果"""
@@ -233,7 +227,6 @@ def ajax_submit_result():
 
 
 @main.route('/products/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def create_product():
     form = ProductForm()
@@ -340,7 +333,6 @@ def create_product():
 
 
 @main.route('/products/<string:rid>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def edit_product(rid):
     product = Product.query.filter_by(serial_no=rid).first()
@@ -453,7 +445,6 @@ def edit_product(rid):
 
 
 @main.route('/products/delete', methods=['POST'])
-@login_required
 @user_has('admin_product')
 def delete_product():
     selected_ids = request.form.getlist('selected[]')
@@ -478,7 +469,6 @@ def delete_product():
 
 
 @main.route('/products/copy')
-@login_required
 @user_has('admin_product')
 def copy_product():
     """复制产品"""
@@ -550,7 +540,6 @@ def copy_product():
 
 
 @main.route('/products/import', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def import_product():
     if request.method == 'POST' and 'excel' in request.files:
@@ -636,7 +625,6 @@ def import_product():
 
 
 @main.route('/products/download_template')
-@login_required
 @user_has('admin_product')
 def download_product_tpl():
     pass
@@ -817,7 +805,6 @@ def _dispatch_sku_task(master_uid, product_id, supplier_id):
 
 
 @main.route('/products/<string:rid>/orders')
-@login_required
 def sku_of_orders(rid):
     """某个sku订单列表"""
     per_page = request.args.get('per_page', 15, type=int)
@@ -846,7 +833,6 @@ def sku_of_orders(rid):
 
 @main.route('/categories')
 @main.route('/categories/<int:page>')
-@login_required
 @user_has('admin_product')
 def show_categories(page=1):
     per_page = request.args.get('per_page', 15, type=int)
@@ -875,7 +861,6 @@ def show_categories(page=1):
 
 @main.route('/categories/repair')
 @main.route('/categories/repair/<int:parent_id>')
-@login_required
 def repair_category_path(parent_id=0):
 
     Category.repair_categories(Master.master_uid(), parent_id)
@@ -884,7 +869,6 @@ def repair_category_path(parent_id=0):
 
 
 @main.route('/categories/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def create_category():
     form = CategoryForm()
@@ -920,7 +904,6 @@ def create_category():
 
 
 @main.route('/categories/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def edit_category(id):
     category = Category.query.get_or_404(id)
@@ -961,7 +944,6 @@ def edit_category(id):
 
 
 @main.route('/categories/delete', methods=['POST'])
-@login_required
 @user_has('admin_product')
 def delete_category():
     selected_ids = request.form.getlist('selected[]')
@@ -988,7 +970,6 @@ def delete_category():
 
 
 @main.route('/suppliers/search_supply', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def search_supply():
     per_page = request.values.get('per_page', 10, type=int)
@@ -1025,7 +1006,6 @@ def search_supply():
 
 
 @main.route('/suppliers/supply_list', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def supply_list():
     per_page = request.values.get('per_page', 10, type=int)
@@ -1049,7 +1029,6 @@ def get_order_key(key):
 
 
 @main.route('/suppliers/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def search_suppliers():
     """搜索供应商"""
@@ -1090,7 +1069,6 @@ def search_suppliers():
 
 @main.route('/suppliers', methods=['GET', 'POST'])
 @main.route('/suppliers/<int:page>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -1102,7 +1080,6 @@ def show_suppliers(page=1):
 
 
 @main.route('/suppliers/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_supplier')
 def create_supplier():
     form = SupplierForm()
@@ -1136,7 +1113,6 @@ def create_supplier():
 
 
 @main.route('/suppliers/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_supplier')
 def edit_supplier(id):
     supplier = Supplier.query.get_or_404(id)
@@ -1168,7 +1144,6 @@ def edit_supplier(id):
 
 
 @main.route('/suppliers/delete', methods=['POST'])
-@login_required
 @user_has('admin_supplier')
 def delete_supplier():
     selected_ids = request.form.getlist('selected[]')
@@ -1192,7 +1167,6 @@ def delete_supplier():
 
 @main.route('/product_groups', methods=['GET', 'POST'])
 @main.route('/product_groups/<int:page>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def show_product_groups(page=1):
     per_page = request.args.get('per_page', 10, type=int)

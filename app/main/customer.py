@@ -101,7 +101,6 @@ def search_customers():
 
 @main.route('/customers')
 @main.route('/customers/<int:page>')
-@login_required
 def show_customers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_customers = Customer.query.filter_by(master_uid=Master.master_uid())\
@@ -117,7 +116,6 @@ def show_customers(page=1):
 
 
 @main.route('/customers/create', methods=['GET', 'POST'])
-@login_required
 def create_customer():
     """新增客户"""
     form = CustomerForm()
@@ -171,7 +169,6 @@ def create_customer():
 
 
 @main.route('/customers/<string:sn>/edit', methods=['GET', 'POST'])
-@login_required
 def edit_customer(sn):
     customer = Customer.query.filter_by(sn=sn).first_or_404()
     if not Master.is_can(customer.master_uid):
@@ -209,7 +206,6 @@ def edit_customer(sn):
 
 
 @main.route('/customers/<string:sn>/distribute', methods=['GET', 'POST'])
-@login_required
 def distribute_products(sn):
     """为客户分发商品"""
     customer = Customer.query.filter_by(sn=sn).first_or_404()
@@ -257,7 +253,6 @@ def distribute_products(sn):
     
 
 @main.route('/customers/ajax_verify', methods=['POST'])
-@login_required
 def ajax_verify_customer():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:
@@ -282,7 +277,6 @@ def ajax_verify_customer():
 
 
 @main.route('/customers/delete', methods=['POST'])
-@login_required
 def delete_customer():
     selected_ids = request.form.getlist('selected[]')
     if not selected_ids or selected_ids is None:

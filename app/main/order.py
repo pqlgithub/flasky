@@ -42,7 +42,6 @@ status_list = (
 
 @main.route('/orders')
 @main.route('/orders/<int:page>')
-@login_required
 @user_has('admin_order')
 def show_orders(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -63,7 +62,6 @@ def show_orders(page=1):
 
 
 @main.route('/orders/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def search_orders(page=1):
     """订单搜索"""
@@ -136,7 +134,6 @@ def search_orders(page=1):
 
 
 @main.route('/orders/<string:rid>/ajax_add_express', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def order_express_no(rid):
     """手动设置物流单号，开始发货"""
@@ -235,7 +232,6 @@ def order_express_no(rid):
 
 
 @main.route('/orders/shipment', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def shipment_order():
     """获取订单的电子面单"""
@@ -345,7 +341,6 @@ def shipment_order():
 
 
 @main.route('/orders/print_eorder', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def print_eorder():
     """打印电子面单"""
@@ -432,7 +427,6 @@ def print_eorder():
 
 
 @main.route('/orders/print_order_pdf')
-@login_required
 @user_has('admin_order')
 def print_order_pdf():
     """打印发货单"""
@@ -504,7 +498,6 @@ def print_order_pdf():
 
 @main.route('/orders/import', methods=['GET', 'POST'])
 @user_has('admin_order')
-@login_required
 def import_orders():
     """导入订单"""
     if request.method == 'POST':
@@ -574,7 +567,6 @@ def import_orders():
 
 @main.route('/orders/import_express', methods=['GET', 'POST'])
 @user_has('admin_order')
-@login_required
 def import_order_express():
     """导入订单物流信息"""
     if request.method == 'POST':
@@ -635,7 +627,6 @@ def import_order_express():
 
 
 @main.route('/orders/export', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def export_orders():
     """导出订单"""
@@ -750,7 +741,6 @@ def export_orders():
 
 
 @main.route('/orders/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def create_order():
     form = OrderForm()
@@ -869,7 +859,6 @@ def create_order():
 
 
 @main.route('/orders/<string:sn>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def edit_order(sn):
     current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
@@ -920,7 +909,6 @@ def edit_order(sn):
 
 
 @main.route('/orders/<string:rid>/service', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def service_order(rid):
     """添加售后服务订单"""
@@ -950,7 +938,6 @@ def service_order(rid):
 
 
 @main.route('/orders/<string:sn>/add_remark', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def add_remark(sn):
     form = OrderRemark()
@@ -970,7 +957,6 @@ def add_remark(sn):
 
 
 @main.route('/orders/<string:sn>/show')
-@login_required
 @user_has('admin_order')
 def preview_order(sn):
     order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
@@ -980,7 +966,6 @@ def preview_order(sn):
 
 
 @main.route('/orders/<string:sn>/split', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_order')
 def split_order(sn):
     current_order = Order.query.filter_by(master_uid=Master.master_uid(), serial_no=sn).first()
@@ -1059,7 +1044,6 @@ def split_order(sn):
 
 
 @main.route('/orders/ajax_verify', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def ajax_verify_order():
     """订单审核"""
@@ -1108,7 +1092,6 @@ def ajax_verify_order():
     
 
 @main.route('/orders/ajax_shipped', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def ajax_shipped():
     """订单发货"""
@@ -1132,7 +1115,6 @@ def ajax_shipped():
 
 
 @main.route('/orders/<string:rid>/ajax_canceled', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def ajax_canceled(rid):
     """订单取消"""
@@ -1165,7 +1147,6 @@ def ajax_canceled(rid):
 
 
 @main.route('/orders/delete', methods=['POST'])
-@login_required
 @user_has('admin_order')
 def delete_order():
     """删除订单"""
@@ -1191,7 +1172,6 @@ def delete_order():
 
 
 @main.route('/orders/download_template')
-@login_required
 def download_order_tpl():
     dest_filename = r'mic_template_orders.xlsx'
     export_path = current_app.root_path + '/static/tpl/'
@@ -1204,7 +1184,6 @@ def download_order_tpl():
 
 
 @main.route('/orders/download_express_tpl')
-@login_required
 def download_express_tpl():
     """下载物流批量发货模板"""
     dest_filename = r'mic_template_express.xlsx'

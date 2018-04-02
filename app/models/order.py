@@ -141,6 +141,8 @@ class Order(db.Model):
     from_client = db.Column(db.SmallInteger, default=0)
     # 推广码
     affiliate_code = db.Column(db.String(16), nullable=True)
+    # 优惠券
+    coupon_code = db.Column(db.String(16), nullable=True)
     
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -287,7 +289,7 @@ class Order(db.Model):
                 if not partial_update:
                     abort(400)
 
-    def to_json(self):
+    def to_json(self, filter_fields=()):
         """资源和JSON的序列化转换"""
         opened_columns = ['rid', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
                           'discount_amount', 'express_no', 'remark', 'buyer_name', 'buyer_tel', 'buyer_phone',
@@ -304,7 +306,7 @@ class Order(db.Model):
         json_order['store_name'] = '{}({})'.format(self.store.name, self.store.platform_name)
         
         # 添加订单明细
-        json_order['items'] = [item.to_json() for item in self.items]
+        json_order['items'] = [item.to_json(filter_fields) for item in self.items]
         
         return json_order
 
@@ -343,7 +345,7 @@ class OrderItem(db.Model):
     def sku(self):
         return ProductSku.query.get(self.sku_id)
     
-    def to_json(self):
+    def to_json(self, filter_fields=()):
         """资源和JSON的序列化转换"""
         json_item = {
             'rid': self.sku_serial_no,
@@ -351,7 +353,7 @@ class OrderItem(db.Model):
             'deal_price': self.deal_price,
             'discount_amount': self.discount_amount
         }
-        return dict(json_item, **self.sku.to_json())
+        return dict(json_item, **self.sku.to_json(filter_fields))
 
     def __repr__(self):
         return '<OrderItem %r>' % self.id

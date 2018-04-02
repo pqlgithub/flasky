@@ -26,7 +26,6 @@ def load_common_data():
 
 
 @main.route('/stores')
-@login_required
 @user_has('admin_setting')
 def show_stores():
     per_page = request.args.get('per_page', 20, type=int)
@@ -40,7 +39,6 @@ def show_stores():
 
 
 @main.route('/stores/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def create_store():
     form = StoreForm()
@@ -79,7 +77,6 @@ def create_store():
 
 
 @main.route('/stores/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def edit_store(id):
     store = Store.query.get_or_404(id)

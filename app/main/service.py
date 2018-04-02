@@ -20,7 +20,6 @@ def load_common_data():
 
 
 @main.route('/blacklist')
-@login_required
 @user_has('admin_service')
 def show_blacklist():
     top_orders = Order.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').limit(10).all()

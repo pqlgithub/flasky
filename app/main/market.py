@@ -14,7 +14,6 @@ from app.forms import CouponForm
 
 @main.route('/market/apps')
 @main.route('/market/apps/<int:page>')
-@login_required
 @user_has('admin_app_store')
 def show_apps(page=1):
     per_page = request.args.get('per_page', 10, type=int)

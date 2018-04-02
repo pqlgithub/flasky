@@ -17,7 +17,6 @@ from app.helpers import MixGenId, QiniuStorage
 
 
 @main.route('/file_manager/folders')
-@login_required
 def get_folders():
     """获取目录结构"""
     pid = request.values.get('pid', 0)
@@ -37,7 +36,6 @@ def get_folders():
 
 
 @main.route('/file_manager/folders/move', methods=['POST'])
-@login_required
 def move_folder():
     """移动到某个目录"""
     select_folder_id = request.form.get('select_folder_id', 0, type=int)
@@ -73,7 +71,6 @@ def move_folder():
 
 
 @main.route('/file_manager/folders/rename', methods=['GET', 'POST'])
-@login_required
 def rename_folder():
     """重命名某个目录"""
     folder_id = request.values.get('folder_id', 0, type=int)
@@ -114,7 +111,6 @@ def rename_folder():
 
 
 @main.route('/file_manager/folder', methods=['POST'])
-@login_required
 def folder():
     top = 0
     success = True
@@ -164,7 +160,6 @@ def folder():
 
 @main.route('/file_manager/show_asset')
 @main.route('/file_manager/show_asset/<int:page>')
-@login_required
 def show_asset(page=1):
     per_page = request.values.get('per_page', 25, type=int)
     parent_directory = ''
@@ -224,21 +219,18 @@ def show_asset(page=1):
 
 
 @main.route('/file_manager/get_asset/<int:id>')
-@login_required
 def get_asset(id):
     asset = Asset.query.get_or_404(id)
     return jsonify(asset.to_json())
 
 
 @main.route('/file_manager/view_asset/<int:id>')
-@login_required
 def view_asset(id):
     asset = Asset.query.get_or_404(id)
     return jsonify(asset.to_json())
 
 
 @main.route('/file_manager/flupload', methods=['POST'])
-@login_required
 def flupload():
     """开发环境文件上传，生产环境使用七牛直传"""
     saved_asset_ids = []
@@ -299,7 +291,6 @@ def flupload():
 
 
 @main.route('/file_manager/pldelete', methods=['POST'])
-@login_required
 def pldelete():
     folders = request.form.get('folders')
     files = request.form.get('files')

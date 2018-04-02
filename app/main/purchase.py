@@ -49,7 +49,6 @@ def load_common_data():
 
 @main.route('/purchases')
 @main.route('/purchases/<int:page>')
-@login_required
 @user_has('admin_purchase')
 def show_purchases(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -69,7 +68,6 @@ def show_purchases(page=1):
 
 
 @main.route('/purchases/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def search_purchases():
     """支持全文索引搜索采购单"""
@@ -128,7 +126,6 @@ def search_purchases():
 
 @main.route('/purchases/payments')
 @main.route('/purchases/payments/<int:page>')
-@login_required
 @user_has('admin_purchase')
 def payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -147,7 +144,6 @@ def payments(page=1):
 
 
 @main.route('/purchases/<string:rid>/preview')
-@login_required
 @user_has('admin_purchase')
 def preview_purchase(rid):
     """预览或查看采购单详情"""
@@ -163,7 +159,6 @@ def preview_purchase(rid):
 
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def create_purchase():
     form = PurchaseForm()
@@ -236,7 +231,6 @@ def create_purchase():
 
 
 @main.route('/purchases/<string:rid>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def edit_purchase(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -308,7 +302,6 @@ def edit_purchase(rid):
         select_warehouse = Warehouse.query.get(purchase.warehouse_id)
         currency_unit = select_warehouse.currency_unit
 
-
     return render_template('purchases/create_and_edit.html',
                            form=form,
                            mode=mode,
@@ -320,7 +313,6 @@ def edit_purchase(rid):
 
 
 @main.route('/purchases/delete', methods=['POST'])
-@login_required
 @user_has('admin_purchase')
 def delete_purchase():
     selected_ids = request.form.getlist('selected[]')
@@ -346,7 +338,6 @@ def delete_purchase():
 
 
 @main.route('/purchases/delete_item', methods=['POST'])
-@login_required
 @user_has('admin_purchase')
 def delete_purchase_item():
     item_id = request.form.get('item_id')
@@ -372,7 +363,6 @@ def delete_purchase_item():
 
 
 @main.route('/purchases/<string:rid>/ajax_canceled', methods=['POST'])
-@login_required
 @user_has('admin_purchase')
 def ajax_canceled_purchase(rid):
     """取消采购单"""
@@ -392,7 +382,6 @@ def ajax_canceled_purchase(rid):
     
 
 @main.route('/purchases/ajax_verify', methods=['POST'])
-@login_required
 @user_has('admin_purchase')
 def ajax_verify():
     selected_ids = request.form.getlist('selected[]')
@@ -419,7 +408,6 @@ def ajax_verify():
 
 
 @main.route('/purchases/<string:rid>/ajax_arrival', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def ajax_arrival(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -509,7 +497,6 @@ def ajax_arrival(rid):
 
 
 @main.route('/purchases/ajax_apply_pay', methods=['POST'])
-@login_required
 @user_has('admin_purchase')
 def ajax_apply_pay():
     selected_ids = request.form.getlist('selected[]')
@@ -552,7 +539,6 @@ def ajax_apply_pay():
 
 
 @main.route('/purchases/<string:rid>/add_express_no', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def purchase_express_no(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -577,7 +563,6 @@ def purchase_express_no(rid):
 
 
 @main.route('/purchases/output_purchase')
-@login_required
 @user_has('admin_purchase')
 def output_purchase():
     rid = request.args.get('rid')
@@ -588,7 +573,6 @@ def output_purchase():
 
 
 @main.route('/purchases/print_purchase_pdf')
-@login_required
 @user_has('admin_purchase')
 def print_purchase_pdf():
     """输出pdf，并打印"""
@@ -669,7 +653,6 @@ def print_purchase_pdf():
 
 
 @main.route('/purchases/export_purchase', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def export_purchase():
     per_page = request.args.get('per_page', 30, type=int)
@@ -769,6 +752,7 @@ def _rebuild_header_value(key, current_site):
         return '{}({})'.format(PURCHASE_EXCEL_FIELDS[key], current_site.currency)
     return PURCHASE_EXCEL_FIELDS[key]
 
+
 def _check_id_code(product_skus):
     """检测69码是否重复"""
     id_codes = {}
@@ -783,7 +767,6 @@ def _check_id_code(product_skus):
 
 
 @main.route('/purchases/import_purchase', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_purchase')
 def import_purchase():
     if request.method == 'POST':
@@ -872,7 +855,6 @@ def import_purchase():
 
 
 @main.route('/purchases/download_template')
-@login_required
 def download_purchase_tpl():
     dest_filename = r'mic_template_purchasing.xlsx'
     export_path = current_app.root_path + '/static/tpl/'

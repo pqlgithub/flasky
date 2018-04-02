@@ -34,7 +34,6 @@ def load_common_data():
 
 @main.route('/stocks', methods=['GET', 'POST'])
 @main.route('/stocks/<int:page>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def show_stocks(page=1):
     """显示库存清单"""
@@ -63,7 +62,6 @@ def show_stocks(page=1):
 
 
 @main.route('/stocks/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def search_stocks():
     """搜素库存列表"""
@@ -98,14 +96,12 @@ def search_stocks():
 
 
 @main.route('/stocks/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def edit_stock(id):
     pass
 
 
 @main.route('/inout/<int:id>/preview')
-@login_required
 @user_has('admin_warehouse')
 def preview_inout(id):
     """展示详情信息"""
@@ -114,7 +110,6 @@ def preview_inout(id):
 
 @main.route('/inout', methods=['GET', 'POST'])
 @main.route('/inout/<int:page>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def show_inout(page=1):
     """显示库存变化明细"""
@@ -174,7 +169,6 @@ def show_inout(page=1):
 
 
 @main.route('/ex_warehouse/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def create_ex_warehouse():
     """添加出库单"""
@@ -260,7 +254,6 @@ def create_ex_warehouse():
 
 
 @main.route('/inwarehouses/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def search_in_warehouses():
     per_page = request.values.get('per_page', 10, type=int)
@@ -293,7 +286,6 @@ def search_in_warehouses():
 
 @main.route('/inwarehouses')
 @main.route('/inwarehouses/<int:page>')
-@login_required
 @user_has('admin_warehouse')
 def show_in_warehouses(page=1):
     """显示入库单列表"""
@@ -308,7 +300,6 @@ def show_in_warehouses(page=1):
 
 
 @main.route('/inwarehouses/print')
-@login_required
 @user_has('admin_warehouse')
 def print_in_warehouses():
     """打印入库单"""
@@ -388,7 +379,6 @@ def print_in_warehouses():
 
 
 @main.route('/inwarehouses/<string:sn>/preview')
-@login_required
 @user_has('admin_warehouse')
 def preview_inwarehouse(sn):
     """入库单详情"""
@@ -402,7 +392,6 @@ def preview_inwarehouse(sn):
 
 
 @main.route('/inwarehouses/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def create_in_warehouse():
     if request.method == 'POST':
@@ -529,7 +518,6 @@ def create_in_warehouse():
 
 
 @main.route('/inwarehouses/ajax_select_purchase', methods=['POST'])
-@login_required
 @user_has('admin_warehouse')
 def ajax_select_purchase():
     """搜索待入库的采购单"""
@@ -549,7 +537,6 @@ def ajax_select_purchase():
 
 
 @main.route('/inwarehouse/ajax_submit_purchase', methods=['POST'])
-@login_required
 @user_has('admin_warehouse')
 def ajax_submit_purchase():
     """获取选定的采购单明细"""
@@ -608,7 +595,6 @@ def search_out_warehouses():
 
 @main.route('/outwarehouses')
 @main.route('/outwarehouses/<int:page>')
-@login_required
 @user_has('admin_warehouse')
 def show_out_warehouses(page=1):
     """显示出库单列表"""
@@ -624,7 +610,6 @@ def show_out_warehouses(page=1):
 
 
 @main.route('/outwarehouses/scan', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def scan_out_warehouse():
     """扫描出库"""
@@ -652,7 +637,6 @@ def scan_out_warehouse():
 
 
 @main.route('/outwarehouses/<string:sn>')
-@login_required
 @user_has('admin_warehouse')
 def preview_out_warehouse(sn):
     """预览或查看出库单详情"""
@@ -666,7 +650,6 @@ def preview_out_warehouse(sn):
 
 
 @main.route('/outwarehouses/print')
-@login_required
 @user_has('admin_warehouse')
 def print_out_warehouses():
     """打印出库单"""
@@ -743,7 +726,6 @@ def print_out_warehouses():
 
 
 @main.route('/inwarehouses/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def edit_in_warehouse(id):
     in_warehouse = InWarehouse.query.get_or_404(id)
@@ -759,7 +741,6 @@ def edit_in_warehouse(id):
 
 @main.route('/warehouses')
 @main.route('/warehouses/<int:page>')
-@login_required
 @user_has('admin_warehouse')
 def show_warehouses(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -771,7 +752,6 @@ def show_warehouses(page=1):
 
 
 @main.route('/warehouses/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def create_warehouse():
     form = WarehouseForm()
@@ -834,7 +814,6 @@ def create_warehouse():
 
 
 @main.route('/warehouses/<int:rid>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_warehouse')
 def edit_warehouse(rid):
     warehouse = Warehouse.query.get_or_404(rid)
@@ -881,7 +860,6 @@ def edit_warehouse(rid):
 
 
 @main.route('/warehouses/delete', methods=['POST'])
-@login_required
 @user_has('admin_warehouse')
 def delete_warehouse():
     selected_ids = request.form.getlist('selected[]')
@@ -904,7 +882,6 @@ def delete_warehouse():
 
 
 @main.route('/warehouses/add_shelve', methods=['POST'])
-@login_required
 @user_has('admin_warehouse')
 def add_shelve():
     warehouse_id = request.form.get('warehouse_id')
@@ -929,7 +906,6 @@ def add_shelve():
 
 
 @main.route('/warehouses/delete_shelve', methods=['POST'])
-@login_required
 @user_has('admin_warehouse')
 def ajax_delete_shelve():
     shelve_id = request.form.get('id')

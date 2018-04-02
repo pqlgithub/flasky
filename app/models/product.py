@@ -10,7 +10,7 @@ from app import db
 from .asset import Asset
 from ..utils import timestamp, gen_serial_no
 from ..constant import DEFAULT_IMAGES, DEFAULT_REGIONS
-from app.helpers import MixGenId
+from app.helpers import MixGenId, FxFilter
 
 
 __all__ = [
@@ -252,6 +252,7 @@ class Product(db.Model):
             'name': self.name,
             'cover': self.cover.view_url,
             'id_code': self.id_code,
+            'cost_price': str(self.cost_price),
             'sale_price': self.sale_price,
             'price': self.price,
             'features': self.features,
@@ -469,7 +470,7 @@ class ProductSku(db.Model):
                 break
         return new_serial_no
 
-    def to_json(self):
+    def to_json(self, filter_fields=()):
         """资源和JSON的序列化转换"""
         json_sku = {
             'product_name': self.product_name,
@@ -485,6 +486,11 @@ class ProductSku(db.Model):
             's_weight': str(self.s_weight),
             'stock_count': self.stock_count
         }
+
+        # 过滤数据
+        if filter_fields:
+            json_sku = FxFilter.product_data(json_sku, filter_fields)
+
         return json_sku
 
     def __repr__(self):

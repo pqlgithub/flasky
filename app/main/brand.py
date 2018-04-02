@@ -28,7 +28,6 @@ def load_common_data():
 
 
 @main.route('/brands/search', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def search_brands():
     """搜索品牌"""
@@ -66,9 +65,9 @@ def search_brands():
                            paginated_brands=paginated_brands,
                            pagination=pagination)
 
+
 @main.route('/brands', methods=['GET', 'POST'])
 @main.route('/brands/<int:page>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_product')
 def show_brands(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -78,8 +77,8 @@ def show_brands(page=1):
                            paginated_brands=paginated_brands,
                            **load_common_data())
 
+
 @main.route('/brands/create', methods=['GET', 'POST'])
-@login_required
 def create_brand():
     """新增品牌"""
     form = BrandForm()
@@ -118,7 +117,6 @@ def create_brand():
     
 
 @main.route('/brands/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_supplier')
 def edit_brand(id):
     brand = Brand.query.get_or_404(id)
@@ -159,7 +157,6 @@ def edit_brand(id):
 
 
 @main.route('/brands/delete', methods=['POST'])
-@login_required
 @user_has('admin_supplier')
 def delete_brand():
     selected_ids = request.form.getlist('selected[]')

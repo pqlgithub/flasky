@@ -29,7 +29,6 @@ def show_settings():
 
 
 @main.route('/site')
-@login_required
 @user_has('admin_setting')
 def site():
     company = Site.query.filter_by(master_uid=Master.master_uid()).first()
@@ -40,7 +39,6 @@ def site():
 
 
 @main.route('/site/setting', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def setting_site():
     mode = 'create'
@@ -99,7 +97,6 @@ def setting_site():
 
 @main.route('/currencies')
 @main.route('/currencies/<int:page>')
-@login_required
 @user_has('admin_setting')
 def show_currencies(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -116,7 +113,6 @@ def show_currencies(page=1):
 
 
 @main.route('/currencies/sync', methods=['POST'])
-@login_required
 @user_has('admin_setting')
 def sync_exchange_rate():
     """同步汇率"""
@@ -191,7 +187,6 @@ def create_currency():
 
 
 @main.route('/currencies/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def edit_currency(id):
     currency = Currency.query.get_or_404(id)
@@ -220,7 +215,6 @@ def edit_currency(id):
 
 
 @main.route('/currencies/delete', methods=['POST'])
-@login_required
 @user_has('admin_setting')
 def delete_currency():
     selected_ids = request.form.getlist('selected[]')
@@ -243,7 +237,6 @@ def delete_currency():
 
 
 @main.route('/directories/<int:id>/modify', methods=['GET', 'POST'])
-@login_required
 def modify_directory(id):
     """修改目录名称"""
     directory = Directory.query.get(id)
@@ -280,7 +273,6 @@ def modify_directory(id):
 
 @main.route('/assets')
 @main.route('/assets/<int:page>')
-@login_required
 @user_has('admin_setting')
 def show_assets(page=1):
     per_page = request.args.get('per_page', 30, type=int)
@@ -308,7 +300,6 @@ def show_assets(page=1):
 
 
 @main.route('/assets/delete', methods=['POST'])
-@login_required
 @user_has('admin_setting')
 def delete_asset():
     # 子文件夹
@@ -340,7 +331,6 @@ def delete_asset():
 
 @main.route('/roles')
 @main.route('/roles/<int:page>')
-@login_required
 @user_has('admin_setting')
 def setting_roles(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -354,7 +344,6 @@ def setting_roles(page=1):
 
 
 @main.route('/roles/create', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def create_role():
     form = RoleForm()
@@ -377,7 +366,6 @@ def create_role():
 
 
 @main.route('/roles/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def edit_role(id):
     role = Role.query.get_or_404(id)
@@ -404,7 +392,6 @@ def edit_role(id):
 
 
 @main.route('/roles/delete', methods=['POST'])
-@login_required
 @user_has('admin_setting')
 def delete_role():
     selected_ids = request.form.getlist('selected[]')
@@ -427,7 +414,6 @@ def delete_role():
 
 
 @main.route('/roles/set_ability/<int:role_id>', methods=['GET', 'POST'])
-@login_required
 @user_has('admin_setting')
 def set_ability(role_id):
     role = Role.query.get_or_404(role_id)

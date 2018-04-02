@@ -45,6 +45,43 @@ def get_orders():
     })
 
 
+@api.route('/customer/orders')
+def get_customer_orders():
+    """获取分销商订单列表"""
+    page = correct_page(request.values.get('page', 1, type=int))
+    per_page = correct_per_page(request.values.get('per_page', 10, type=int))
+    customer_id = request.values.get('customer_id', type=int)
+    status = request.values.get('status', type=int)
+
+    if not customer_id:
+        return custom_response('缺少分销商参数', 400, False)
+
+    # 分销商身份，过滤成本价、库存数据
+    filter_fields = ('cost_price', 'stock_count')
+
+    builder = Order.query.filter_by(customer_id=customer_id)
+    if status:
+        builder = builder.filter_by(status=status)
+
+    pagination = builder.order_by(Order.created_at.desc()).paginate(page, per_page, error_out=False)
+
+    orders = pagination.items
+    prev_url = None
+    if pagination.has_prev:
+        prev_url = url_for('api.get_customer_orders', status=status, page=page - 1, _external=True)
+
+    next_url = None
+    if pagination.has_next:
+        next_url = url_for('api.get_customer_orders', status=status, page=page + 1, _external=True)
+
+    return full_response(R200_OK, {
+        'orders': [order.to_json(filter_fields=filter_fields) for order in orders],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
 @api.route('/orders/<string:rid>')
 @auth.login_required
 def get_order(rid):

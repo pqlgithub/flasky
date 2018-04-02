@@ -14,7 +14,6 @@ from ..utils import Master, full_response, R200_OK
 
 
 @main.route('/stats')
-@login_required
 @user_has('admin_reports')
 def stats():
     # 主账号当前月份统计
@@ -32,7 +31,6 @@ def stats():
 
 
 @main.route('/stats/store_sku_top', methods=['POST'])
-@login_required
 @user_has('admin_reports')
 def store_sku_top():
     """获取店铺sku销售排行"""
@@ -57,7 +55,6 @@ def store_sku_top():
 
 
 @main.route('/sales/statistics', methods=['GET'])
-@login_required
 @user_has('admin_reports')
 def sales_statistic():
     """销售统计展示页面"""
@@ -65,7 +62,6 @@ def sales_statistic():
 
 
 @main.route('/sales/master', methods=['GET'])
-@login_required
 @user_has('admin_reports')
 def sales_master():
     """主账户销售统计"""
@@ -102,7 +98,6 @@ def sales_master():
 
 
 @main.route('/sales/store', methods=['GET'])
-@login_required
 @user_has('admin_reports')
 def sales_store():
     new_start_date = request.args.get("start_time")
@@ -147,7 +142,6 @@ def sales_store():
 
 
 @main.route('/sales/supplier', methods=['GET'])
-@login_required
 @user_has('admin_reports')
 def sales_supplier():
     new_start_date = request.args.get("start_time")
