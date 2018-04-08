@@ -16,6 +16,7 @@ def get_products():
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
     category_id = request.values.get('cid', type=int)
+    status = request.values.get('status', True, type=bool)
     prev_url = None
     next_url = None
     
@@ -23,9 +24,9 @@ def get_products():
         category = Category.query.get(category_id)
         if category is None or category.master_uid != g.master_uid:
             abort(404)
-        builder = category.products.filter_by(master_uid=g.master_uid)
+        builder = category.products.filter_by(master_uid=g.master_uid, status=status)
     else:
-        builder = Product.query.filter_by(master_uid=g.master_uid)
+        builder = Product.query.filter_by(master_uid=g.master_uid, status=status)
     
     pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
     
@@ -215,10 +216,10 @@ def get_product_skus():
     colors = []
     items = []
     for sku in product.skus:
-        if sku.s_model:
+        if sku.s_model and sku.s_model not in modes:
             modes.append(sku.s_model)
             
-        if sku.s_color:
+        if sku.s_color and sku.s_color not in colors:
             colors.append(sku.s_color)
         
         items.append({
@@ -229,15 +230,14 @@ def get_product_skus():
             's_color': sku.s_color,
             'cover': sku.cover.view_url,
             'price': str(sku.price),
-            'cost_price': str(sku.cost_price),
             'sale_price': str(sku.sale_price),
             's_weight': str(sku.s_weight),
             'stock_count': sku.stock_count
         })
         
     # 去除重复元素
-    modes = [{'name': m, 'valid': True} for m in list(set(modes))]
-    colors = [{'name': c, 'valid': True} for c in list(set(colors))]
+    modes = [{'name': m, 'valid': True} for m in modes]
+    colors = [{'name': c, 'valid': True} for c in colors]
     product_skus = {
         'modes': modes,
         'colors': colors,

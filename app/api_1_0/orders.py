@@ -50,16 +50,16 @@ def get_customer_orders():
     """获取分销商订单列表"""
     page = correct_page(request.values.get('page', 1, type=int))
     per_page = correct_per_page(request.values.get('per_page', 10, type=int))
-    customer_id = request.values.get('customer_id', type=int)
+    customer_code = request.values.get('code')
     status = request.values.get('status', type=int)
 
-    if not customer_id:
+    if not customer_code:
         return custom_response('缺少分销商参数', 400, False)
 
     # 分销商身份，过滤成本价、库存数据
     filter_fields = ('cost_price', 'stock_count')
 
-    builder = Order.query.filter_by(customer_id=customer_id)
+    builder = Order.query.filter_by(customer_code=customer_code)
     if status:
         builder = builder.filter_by(status=status)
 
@@ -242,7 +242,12 @@ def create_order():
         current_app.logger.warn('Order items is ok!')
 
         outside_target_id = request.json.get('outside_target_id')
+        # 推广码
         affiliate_code = request.json.get('affiliate_code')
+        # 优惠券代码
+        coupon_code = request.json.get('coupon_code')
+        # 分销商代码
+        customer_code = request.json.get('customer_code')
         from_client = request.json.get('from_client')
 
         freight = Decimal(request.json.get('freight', 0))
@@ -268,6 +273,8 @@ def create_order():
             'total_amount': total_amount,
             'total_quantity': total_quantity,
             'affiliate_code': affiliate_code,
+            'customer_code': customer_code,
+            'coupon_code': coupon_code,
             'discount_amount': total_discount,
             'outside_target_id': outside_target_id,
             

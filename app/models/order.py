@@ -133,8 +133,8 @@ class Order(db.Model):
     # 过期时间
     expired_time = db.Column(db.Integer, nullable=True)
     
-    # 分销商ID
-    customer_id = db.Column(db.String(20), nullable=True)
+    # 分销商编号
+    customer_code = db.Column(db.String(20), nullable=True)
     # 所属销售人员
     saler_uid = db.Column(db.Integer, default=0)
     # 来源终端, 1、WX 2、H5 3、App 4、TV 5、POS 6、PAD

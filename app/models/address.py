@@ -143,6 +143,29 @@ class Address(db.Model):
             is_from_wx=bool(json_address.get('is_from_wx'))
         )
 
+    def build_full_address(self):
+        """拼接完整的地址"""
+        full_address = []
+        if self.province:
+            full_address.append(self.province)
+
+        if self.city:
+            full_address.append(self.city)
+
+        if self.town:
+            full_address.append(self.town)
+
+        if self.area:
+            full_address.append(self.area)
+
+        if self.street_address:
+            full_address.append(self.street_address)
+
+        if self.street_address_two:
+            full_address.append(self.street_address_two)
+
+        return ''.join(full_address)
+
     def to_json(self):
         """资源和JSON的序列化转换"""
         json_obj = {
@@ -158,6 +181,7 @@ class Address(db.Model):
             'area': self.area,
             'street_address': self.street_address,
             'street_address_two': self.street_address_two,
+            'full_address': self.build_full_address(),
             'zipcode': self.zipcode,
             'is_from_wx': self.is_from_wx,
             'is_default': self.is_default

@@ -88,7 +88,7 @@ class ProductForm(Form):
     from_url = StringField(lazy_gettext('View Url'))
     status = RadioField(lazy_gettext('Status'), choices=[
         (True, lazy_gettext('In Sale')), (False, lazy_gettext('Off Sale'))
-    ], coerce=bool, default=True)
+    ], coerce=bool, default=False)
     sticked = BooleanField(lazy_gettext('Yes'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
     features = StringField(lazy_gettext('Recommendation'))
