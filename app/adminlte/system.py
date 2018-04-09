@@ -24,7 +24,7 @@ def load_common_data():
 @adminlte.route('/masters/<int:page>')
 def show_masters(page=1):
     """账号管理"""
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 25, type=int)
     status = request.args.get('status', 0, type=int)
 
     if not status:
@@ -43,7 +43,7 @@ def show_masters(page=1):
 @adminlte.route('/users')
 @adminlte.route('/users/<int:page>')
 def show_users(page=1):
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 25, type=int)
     status = request.args.get('status', 0, type=int)
 
     if not status:

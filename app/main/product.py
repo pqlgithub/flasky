@@ -645,7 +645,7 @@ def show_skus(rid):
 @main.route('/products/<string:rid>/add_sku', methods=['GET', 'POST'])
 @user_has('admin_product')
 def add_sku(rid):
-    product = Product.query.filter_by(serial_no=rid).first()
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
     if product is None:
         abort(404)
 
@@ -710,7 +710,7 @@ def add_sku(rid):
 @main.route('/products/<string:rid>/edit_sku/<int:s_id>', methods=['GET', 'POST'])
 @user_has('admin_product')
 def edit_sku(rid, s_id):
-    product = Product.query.filter_by(serial_no=rid).first()
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
     if product is None:
         abort(404)
 

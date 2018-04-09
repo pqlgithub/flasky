@@ -2,6 +2,7 @@
 from flask import g, session, current_app, request, redirect, url_for
 from . import open
 
+
 @open.route('/clients')
 def show_clients():
     """
@@ -18,6 +19,7 @@ def create_client():
     :return:
     """
     pass
+
 
 @open.route('/clients/update', methods=['GET', 'POST'])
 def update_client():

@@ -20,6 +20,7 @@ from app.models import User, Role, Order, Product, ProductSku, Purchase
 from app.assets import assets_env
 from commands.initial_data import InitialData
 from commands.fix_data import FixData
+from commands.fix_task import FixTask
 from commands.init_summary import InitSummary
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -83,6 +84,7 @@ manager.add_command('init_summary', InitSummary)
 manager.add_command('assets', ManageAssets(assets_env))
 # 修正数据
 manager.add_command('fix_data', FixData())
+manager.add_command('fix_task', FixTask())
 
 # 启动测试服务器
 server = Server(host='0.0.0.0', port=9000, use_debugger=True)
