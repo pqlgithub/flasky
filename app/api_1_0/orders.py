@@ -178,10 +178,11 @@ def create_order():
     
     # 验证收货地址
     address_rid = request.get_json().get('address_rid')
+
     ship_mode = request.get_json().get('ship_mode')
     # 默认值为1
     ship_mode = 1 if not ship_mode else int(ship_mode)
-    
+
     buyer_info = {
         'buyer_name': 'ZT-%d' % g.store_id
     }
@@ -332,7 +333,9 @@ def create_order():
 
     # 是否同步支付
     sync_pay = request.json.get('sync_pay')
+    sync_pay = int(sync_pay) if sync_pay else 0
     if sync_pay:  # 同步返回客户端js支付所需参数
+        from_client = int(from_client) if from_client else 0
         if from_client == 1:  # 小程序
             try:
                 # 授权id
