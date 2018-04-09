@@ -178,7 +178,10 @@ def create_order():
     
     # 验证收货地址
     address_rid = request.get_json().get('address_rid')
-    ship_mode = int(request.get_json().get('ship_mode'))
+    ship_mode = request.get_json().get('ship_mode')
+    # 默认值为1
+    ship_mode = 1 if not ship_mode else int(ship_mode)
+    
     buyer_info = {
         'buyer_name': 'ZT-%d' % g.store_id
     }
