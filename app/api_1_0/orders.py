@@ -178,14 +178,31 @@ def create_order():
     
     # 验证收货地址
     address_rid = request.get_json().get('address_rid')
-    if address_rid is None:
-        return custom_response('Address param is empty!', 403, False)
-    address = Address.query.filter_by(user_id=g.current_user.id, serial_no=address_rid).first()
-    if address is None:
-        return custom_response("Address isn't exist!", 403, False)
+    ship_mode = int(request.get_json().get('ship_mode'))
+    buyer_info = {
+        'buyer_name': 'ZT-%d' % g.store_id
+    }
+    if ship_mode == 1:  # 需发快递方式
+        if address_rid is None:
+            return custom_response('Address param is empty!', 403, False)
+        address = Address.query.filter_by(user_id=g.current_user.id, serial_no=address_rid).first()
+        if address is None:
+            return custom_response("Address isn't exist!", 403, False)
 
-    # 是否同步支付
-    sync_pay = request.json.get('sync_pay')
+        # 购买者信息
+        buyer_info = {
+            'address_id': address.id,
+            'buyer_name': address.full_name,
+            'buyer_tel': address.phone,
+            'buyer_phone': address.mobile,
+            'buyer_zipcode': address.zipcode,
+            'buyer_address': address.street_address,
+            'buyer_country': address.country.name,
+            'buyer_province': address.province,
+            'buyer_city': address.city,
+            'buyer_town': address.town,
+            'buyer_area': address.city
+        }
 
     try:
         total_quantity = 0
@@ -277,20 +294,9 @@ def create_order():
             'coupon_code': coupon_code,
             'discount_amount': total_discount,
             'outside_target_id': outside_target_id,
-            
-            'address_id': address.id,
-            'buyer_name': address.full_name,
-            'buyer_tel': address.phone,
-            'buyer_phone': address.mobile,
-            'buyer_zipcode': address.zipcode,
-            'buyer_address': address.street_address,
-            'buyer_country': address.country.name,
-            'buyer_province': address.province,
-            'buyer_city': address.city,
-            'buyer_town': address.town,
-            'buyer_area': address.city
+            'ship_mode': ship_mode
         }
-        order_data = dict(request.get_json(), **append_dict)
+        order_data = dict(request.get_json(), **append_dict, **buyer_info)
 
         current_app.logger.warn(order_data)
         
@@ -321,6 +327,8 @@ def create_order():
     if affiliate_code:
         update_coupon_status.apply_async(args=[g.master_uid, order_serial_no])
 
+    # 是否同步支付
+    sync_pay = request.json.get('sync_pay')
     if sync_pay:  # 同步返回客户端js支付所需参数
         if from_client == 1:  # 小程序
             try:

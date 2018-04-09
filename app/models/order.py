@@ -113,7 +113,7 @@ class Order(db.Model):
     invoice_type = db.Column(db.SmallInteger, default=1)
 
     # 顾客信息
-    address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'))
+    address_id = db.Column(db.Integer, default=0)
     buyer_name = db.Column(db.String(50), index=True, nullable=False)
     buyer_tel = db.Column(db.String(20), index=True, nullable=True)
     buyer_phone = db.Column(db.String(20), index=True, nullable=True)
@@ -124,6 +124,8 @@ class Order(db.Model):
     buyer_city = db.Column(db.String(50), nullable=True)
     buyer_town = db.Column(db.String(50), nullable=True)
     buyer_area = db.Column(db.String(50), nullable=True)
+    # 物流方式, 1、快递；2、自提；
+    ship_mode = db.Column(db.SmallInteger, default=1)
     # 买家备注
     buyer_remark = db.Column(db.String(250), nullable=True)
     # 订单状态
@@ -279,13 +281,13 @@ class Order(db.Model):
                   'pay_amount', 'total_amount', 'freight', 'discount_amount', 'invoice_type', 'total_quantity',
                   'buyer_name', 'buyer_tel', 'buyer_phone', 'buyer_zipcode', 'buyer_country', 'buyer_province',
                   'buyer_city', 'buyer_town', 'buyer_area', 'buyer_address', 'buyer_remark',
-                  'from_client', 'affiliate_code']
+                  'from_client', 'affiliate_code', 'ship_mode']
         
         for field in fields:
             try:
                 setattr(self, field, data[field])
             except KeyError as err:
-                current_app.logger.warn(str(err))
+                current_app.logger.debug(str(err))
                 if not partial_update:
                     abort(400)
 
@@ -294,7 +296,7 @@ class Order(db.Model):
         opened_columns = ['rid', 'outside_target_id', 'pay_amount', 'total_amount', 'total_quantity', 'freight',
                           'discount_amount', 'express_no', 'remark', 'buyer_name', 'buyer_tel', 'buyer_phone',
                           'buyer_zipcode', 'buyer_address', 'buyer_country', 'buyer_province', 'buyer_city',
-                          'buyer_remark', 'created_at', 'express_at', 'received_at', 'status']
+                          'buyer_remark', 'created_at', 'express_at', 'received_at', 'status', 'ship_mode']
         
         json_order = { c: getattr(self, c, None) for c in opened_columns }
         
