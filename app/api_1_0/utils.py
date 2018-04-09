@@ -66,6 +66,26 @@ def is_owner(uid):
     return g.current_user.id == uid
 
 
+def correct_int(param):
+    """整数型类型转换"""
+    if param is None or param == '':
+        param = 0
+    else:
+        param = int(param)
+
+    return param
+
+
+def correct_str(param):
+    """字符串类型转换"""
+    if param is None:
+        param = ''
+    else:
+        param = str(param)
+
+    return param
+
+
 def correct_page(page):
     """修正参数"""
     if page is None or page <= 0:

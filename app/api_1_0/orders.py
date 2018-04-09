@@ -269,7 +269,7 @@ def create_order():
         coupon_code = request.json.get('coupon_code')
         # 分销商代码
         customer_code = request.json.get('customer_code')
-        from_client = request.json.get('from_client')
+        from_client = correct_int(request.json.get('from_client'))
 
         freight = Decimal(request.json.get('freight', 0))
         # 总优惠金额
@@ -332,25 +332,36 @@ def create_order():
         update_coupon_status.apply_async(args=[g.master_uid, order_serial_no])
 
     # 是否同步支付
-    sync_pay = request.json.get('sync_pay')
-    sync_pay = int(sync_pay) if sync_pay else 0
+    sync_pay = correct_int(request.json.get('sync_pay'))
     if sync_pay:  # 同步返回客户端js支付所需参数
-        from_client = int(from_client) if from_client else 0
-        if from_client == 1:  # 小程序
-            try:
+        pay_params = {}
+        try:
+            if from_client == 1:  # 小程序
                 # 授权id
                 auth_app_id = request.json.get('authAppid')
-                pay_params = _wxapp_pay_params(order_serial_no, pay_amount, auth_app_id)
-                return full_response(R201_CREATED, {
-                    'order': new_order.to_json(),
-                    'pay_params': pay_params
-                })
-            except WxPayError as err:
-                current_app.logger.warn('Get pay params error: %s' % str(err))
-                return full_response(R201_CREATED, {
-                    'order': new_order.to_json(),
-                    'pay_params': {}
-                })
+                if auth_app_id:
+                    pay_params = _wxapp_pay_params(order_serial_no, pay_amount, auth_app_id)
+                else:
+                    current_app.logger.warn('Pay Order, authAppid is empty!')
+            elif from_client == 5:  # pad收银端-扫码支付
+                pay_params = _scan_pay_params(order_serial_no, pay_amount, products[0]['rid'])  # 取默认第一个商品SKU
+            elif from_client == 3:  # App应用端-App支付
+                pass
+            elif from_client == 2:  # H5微商城
+                pass
+            else:
+                pass
+
+            return full_response(R201_CREATED, {
+                'order': new_order.to_json(),
+                'pay_params': pay_params
+            })
+        except WxPayError as err:
+            current_app.logger.warn('Get pay params error: %s' % str(err))
+            return full_response(R201_CREATED, {
+                'order': new_order.to_json(),
+                'pay_params': {}
+            })
 
     return full_response(R201_CREATED, {
         'order': new_order.to_json()
@@ -464,6 +475,63 @@ def pay_order_jsapi():
         data = _js_wxpay_params(rid)
 
     return full_response(R200_OK, data)
+
+
+def _scan_pay_params(rid, pay_amount, product_rid):
+    """扫码支付签名"""
+    pay_amount = pay_amount.quantize(Decimal('0.00'))
+    pay_params = {}
+
+    # 获取支付配置
+    wx_payment = WxPayment.query.filter_by(master_uid=g.master_uid).first()
+    if not wx_payment:
+        # 未设置支付参数
+        current_app.logger.warn('未设置支付参数')
+        return pay_params
+
+    # 关联到小程序上
+    auth_app_id = wx_payment.auth_app_id
+
+    # 获取小程序信息
+    wx_mini_app = WxMiniApp.query.filter_by(master_uid=g.master_uid, auth_app_id=auth_app_id).first()
+    if not wx_mini_app:
+        # 不存在该小程序信息
+        current_app.logger.warn('不存在小程序信息')
+        return pay_params
+
+    cfg = current_app.config
+    wxpay = WxPay(wx_app_id=auth_app_id, wx_mch_id=wx_payment.mch_id, wx_mch_key=wx_payment.mch_key,
+                  wx_notify_url=cfg['WXPAY_NOTIFY_URL'])
+
+    current_app.logger.warn('pay settings:[%s][%s][%s]' % (auth_app_id, wx_payment.mch_id, wx_payment.mch_key))
+
+    prepay_result = wxpay.unified_order(
+        body=wx_mini_app.nick_name,
+        out_trade_no=rid,
+        product_id=product_rid,
+        total_fee=str(int(pay_amount * 100)),  # total_fee 单位是 分， 100 = 1元
+        trade_type='NATIVE')
+
+    current_app.logger.warn('Unified order result: %s' % prepay_result)
+
+    if prepay_result and prepay_result['prepay_id']:
+        prepay_id = prepay_result['prepay_id']
+
+        # 生成签名
+        pay_params = {
+            'appId': auth_app_id,
+            'nonceStr': WxPay.nonce_str(32),
+            'package': 'prepay_id=%s' % prepay_id,
+            'signType': 'MD5',
+            'timeStamp': int(timestamp())
+        }
+        pay_sign = wxpay.sign(pay_params)
+
+        pay_params['pay_sign'] = pay_sign
+        pay_params['prepay_id'] = prepay_id
+        pay_params['code_url'] = prepay_result['code_url']
+
+    return pay_params
 
 
 def _wxapp_pay_params(rid, pay_amount, auth_app_id=0):
