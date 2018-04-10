@@ -185,10 +185,11 @@ def receive_message(appid):
                     db.session.commit()
 
 
-@open.route('/wx/pay_notify', methods=['POST'])
+@open.route('/wx/pay_notify', methods=['GET', 'POST'])
 def wxpay_notify():
     """微信支付异步通知"""
     current_app.logger.warn(request.data)
+
     data = WxPay.to_dict(request.data)
     # 微信支付初始化参数
     wx_pay = WxPay(

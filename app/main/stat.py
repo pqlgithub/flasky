@@ -3,9 +3,8 @@ import time
 import datetime
 import pandas as pd
 import numpy as np
-from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
-from flask_login import login_required, current_user
+from sqlalchemy import func
+from flask import render_template, redirect, url_for, abort, flash, request
 from . import main
 from .. import db
 from ..decorators import user_has
@@ -69,11 +68,14 @@ def sales_master():
     new_end_date = request.args.get("end_time")
     start_time, end_time = list(summary_time_range(new_start_date, new_end_date))
 
-    day_sku_statistics = db.session.query(
-        DaySkuStatistics.income, DaySkuStatistics.time).filter(
-            DaySkuStatistics.time >= start_time).filter(
-                DaySkuStatistics.time <= end_time).filter_by(
-                    master_uid=Master.master_uid()).group_by('time')
+    builder = db.session.query(func.sum(DaySkuStatistics.income).label('income'), DaySkuStatistics.time)\
+        .select_from(DaySkuStatistics).filter_by(master_uid=Master.master_uid())
+    if start_time:
+        builder = builder.filter(DaySkuStatistics.time >= start_time)
+    if end_time:
+        builder = builder.filter(DaySkuStatistics.time <= end_time)
+
+    day_sku_statistics = builder.group_by(DaySkuStatistics.time)
 
     data = pd.read_sql(day_sku_statistics.statement, db.session.bind)
 

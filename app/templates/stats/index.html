@@ -1,63 +1,15 @@
 {% extends "layout/base.html" %}
 
-{% block sidebar %}
-	{% include 'stats/_sub_menu.html' %}
-{% endblock %}
-
 {% block private_js %}
 <!-- 引入 ECharts 文件 -->
 <script src="{{ url_for('static', filename='js/echarts.min.js') }}" type="text/javascript"></script>
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-	// 基于准备好的dom，初始化echarts实例
-	var store_product_sales = echarts.init(document.getElementById('store-product-sales'));
-
-	// 指定图表的配置项和数据
-	var option = {
-		color: ['#3398DB'],
-		title: {
-			text: '{{ _("Store Sales Top10") }}',
-			subtext: ''
-		},
-		grid: {
-			left: '3%',
-			right: '4%',
-			bottom: '3%',
-			containLabel: true
-		},
-		tooltip: {
-			trigger: 'axis',
-        	axisPointer: {
-            type: 'shadow'
-        	}
-		},
-		legend: {
-			data:['销售金额']
-		},
-		xAxis: {
-			
-		},
-		yAxis: {
-			data: []
-		},
-		series: [{
-			name: '销售金额',
-			type: 'bar',
-			data: []
-		}]
-	};
-	store_product_sales.setOption(option);
-
-	(function (){
-		var store_id = $(".store-id").eq(0).attr('value');
-		loadOption(store_id)
-	}());
-
-	function loadOption(stroe_id){
-		$.post("{{ url_for('main.store_sku_top') }}",{'store_id':stroe_id, 'csrf_token': mixpus.csrf_token}, function(e){
-			if(e.status.code == 200){
+{% block after_jquery %}
+<script type="text/javascript">
+	function loadOption(stroe_id) {
+		$.post("{{ url_for('main.store_sku_top') }}",{ 'store_id':stroe_id, 'csrf_token': mixpus.csrf_token }, function(res) {
+			if (res.success) {
 				var sku_data = [];
 				var income_data = [];
 				for (var key = 0; key < e.data.length; key++){
@@ -67,6 +19,7 @@
 
 				option.yAxis.data = sku_data;
 				option.series[0].data = income_data;
+				
 				store_product_sales.setOption({
 					yAxis: {
 						data: sku_data
@@ -79,14 +32,56 @@
 			}
 		},'json');
 	}
-
-	$(".store-id").click(function(){
-		var store_id = $(this).attr('value');
-		loadOption(store_id)
-	});
 	
+	$(function () {
+		// 基于准备好的dom，初始化echarts实例
+		var store_product_sales = echarts.init(document.getElementById('store-product-sales'));
 
-{#</script>#}
+		// 指定图表的配置项和数据
+		var option = {
+			color: ['#3398DB'],
+			title: {
+				text: '{{ _("Store Sales Top10") }}',
+				subtext: ''
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			tooltip: {
+				trigger: 'axis',
+	        	axisPointer: {
+	            type: 'shadow'
+	        	}
+			},
+			legend: {
+				data:['销售金额']
+			},
+			xAxis: {
+			
+			},
+			yAxis: {
+				data: []
+			},
+			series: [{
+				name: '销售金额',
+				type: 'bar',
+				data: []
+			}]
+		};
+		store_product_sales.setOption(option);
+		
+		var store_id = $(".store-id").eq(0).attr('value');
+		loadOption(store_id)
+		
+		$(".store-id").click(function() {
+			var store_id = $(this).attr('value');
+			loadOption(store_id);
+		});
+	});
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -151,8 +146,7 @@
 			<div class="card m-b-20">
 				<div class="card-block">
 					<h3 class="card-title">{{ _('Sales Analytics') }}</h3>
-
-
+					
 				</div>
 			</div>
 

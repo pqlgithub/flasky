@@ -247,6 +247,9 @@ class ProductionConfig(Config):
     WXPAY_SSL_KEY_PATH = '/opt/project/fxerp/wxpay_m_cert/apiclient_key.pem'
     WXPAY_ROOT_CA = '/opt/project/fxerp/wxpay_m_cert/rootca.pem'
 
+    # 异步通知url
+    WXPAY_NOTIFY_URL = 'https://fx.taihuoniao.com/open/wx/pay_notify'
+
 
 config = {
     'development': DevelopmentConfig,
