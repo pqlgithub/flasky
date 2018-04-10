@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-
+from flask import current_app
 from app import db
 from app.models import Order, OrderItem, ProductSku, MasterStatistics, StoreStatistics, ProductStatistics
 
@@ -501,15 +501,15 @@ class StoreProductSales(Sales):
         # 订单明细中 sku_id、金额、利润、数量的dict 列表
         self.sku_price_count = []
         for item in self.items_obj_list:
-            sku = ProductSku.query.filter_by(id=item.sku_id).first()
-            data = {}
-            data['sku_id'] = item.sku_id
-            data['sku_serial_no'] = item.sku_serial_no
-            data['income'] = round(float(item.deal_price) * item.quantity, 2)
-            data['profit'] = round(
-                (float(item.deal_price) - float(sku.cost_price)) *
-                item.quantity - float(item.discount_amount), 2)
-            data['count'] = item.quantity
+            sku = ProductSku.query.get(item.sku_id)
+            data = {
+                'sku_id': item.sku_id,
+                'sku_serial_no': item.sku_serial_no,
+                'income': round(float(item.deal_price) * item.quantity, 2),
+                'profit': round(
+                    (float(item.deal_price) - float(sku.cost_price)) * item.quantity - float(item.discount_amount), 2),
+                'count': item.quantity
+            }
             self.sku_price_count.append(data)
 
     def order_pay(self):
@@ -581,13 +581,16 @@ class StoreProductSales(Sales):
 
     def __master_year(self):
         """主账户下sku 按年销售统计"""
+        current_app.logger.debug(self.sku_price_count)
+
         for v in self.sku_price_count:
+
             product_master_year = self.__get_product_master(
                 v['sku_id'], 2, self.year)
             product_master_last_year = self.__get_product_master(
                 v['sku_id'], 2, self.last_year)
 
-            if product_master_year is not None:
+            if product_master_year is None:
                 if product_master_last_year is not None:
                     # 销售同比
                     income_yoy = round(v['income'] / float(

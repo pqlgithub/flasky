@@ -50,15 +50,13 @@
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="copy-actions">
-					<li class="dropdown-header">{{ _('Copy') }}</li>
+					<li class="dropdown-header">{{ _('Actions') }}</li>
 					<li class="divider" role="separator"></li>
-					{% for r in default_regions %}
 					<li>
-						<a href="{{ url_for('main.copy_product') }}" class="ajax-copy" data-toid="{{ r['id'] }}">
-							{{ _('Copy') }} {{ _('to') }} {{ r['name'] }}
+						<a href="{{ url_for('main.import_product') }}" class="ajax-modal" data-modal="import-modal">
+							{{ _('Set In Sale') }}
 						</a>
 					</li>
-					{% endfor %}
 					<li class="divider" role="separator"></li>
 					<li>
 						<a href="{{ url_for('main.import_product') }}" class="ajax-modal" data-modal="import-modal">

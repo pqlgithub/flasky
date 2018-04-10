@@ -10,7 +10,7 @@ from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment, WxMiniApp
 from app.utils import timestamp
-from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock
+from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock, sales_statistics
 
 
 @api.route('/orders')
@@ -155,6 +155,10 @@ def _update_order_status(rid, status):
             return custom_response('Order status is error!', 403, False)
 
         current_order.mark_checked_status()
+
+        # 触发异步任务
+        sales_statistics.delay(current_order.id)
+
     elif status == OrderStatus.SIGNED:  # 已签收
         current_order.mark_finished_status()
 
@@ -343,7 +347,7 @@ def create_order():
                     pay_params = _wxapp_pay_params(order_serial_no, pay_amount, auth_app_id)
                 else:
                     current_app.logger.warn('Pay Order, authAppid is empty!')
-            elif from_client == 5:  # pad收银端-扫码支付
+            elif from_client == 6:  # pad收银端-扫码支付
                 pay_params = _scan_pay_params(order_serial_no, pay_amount, products[0]['rid'])  # 取默认第一个商品SKU
             elif from_client == 3:  # App应用端-App支付
                 pass
