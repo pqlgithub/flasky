@@ -291,7 +291,7 @@
              </li>
 
             <li class="{% if sub_menu == 'statistics'%}active {% endif %} treeview">
-                <a href="#">
+                <a href="{{ url_for('main.stats') }}">
                     <i class="fa fa-pie-chart fa-2x"></i>
                     <span>{{ _('Statistics') }}</span>
                 </a>
@@ -300,7 +300,7 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Sales Report') }}</li>
                          <li>
-                             <a href="" class="pjax">
+                             <a href="{{url_for('main.sales_statistic')}}" class="pjax">
                                  {{ _('Sales Report') }}
                              </a>
                          </li>

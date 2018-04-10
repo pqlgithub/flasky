@@ -1,33 +1,31 @@
 # -*- coding: utf-8 -*-
+import time
 import hashlib
-import datetime, time
+import datetime
+from decimal import Decimal
+from io import BytesIO, StringIO
+import xhtml2pdf.pisa as pisa
+from openpyxl.reader.excel import load_workbook
+from openpyxl.workbook import Workbook
 from flask import render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
 from jinja2 import PackageLoader, Environment
-from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
 from flask_babelex import gettext, lazy_gettext
-from io import BytesIO, StringIO
-import xhtml2pdf.pisa as pisa
 import flask_whooshalchemyplus
-import barcode
-from barcode.writer import ImageWriter
-from openpyxl.reader.excel import load_workbook
-from openpyxl.workbook import Workbook
-import time
-from decimal import Decimal
+
 from . import main
 from .. import db, uploader
 from ..decorators import user_has
-from ..utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
+from app.utils import gen_serial_no, Master, full_response, custom_response, R201_CREATED, R400_BADREQUEST, R200_OK,\
     timestamp, datestr_to_timestamp, split_huazhu_address
-from ..constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, HUAZHU_EXPRESS_FIELDS, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
+from app.constant import ORDER_EXCEL_FIELDS, HUAZHU_ORDER_STATUS, HUAZHU_EXPRESS_FIELDS, ORDER_EXPRESS_FIELDS, MIXPUS_ORDER_FIELDS
 from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store, ProductStock, ProductSku, Express,\
     OutWarehouse, StockHistory, Site, Supplier, Asset, Shipper
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
 from app.helpers import kdniao, MixGenId
-from app import tasks
+from app.tasks import sales_statistics
 
 status_list = (
     (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment')),
@@ -87,18 +85,18 @@ def search_orders(page=1):
         
     if date:
         now = datetime.date.today()
-        if date == 1: # 今天之内
+        if date == 1:  # 今天之内
             start_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
             end_time = time.time()
-        if date == 2: # 昨天之内
+        if date == 2:  # 昨天之内
             dt = now - datetime.timedelta(days=1)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
-        if date == 7: # 7天之内
+        if date == 7:  # 7天之内
             dt = now - datetime.timedelta(days=7)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
-        if date == 30: # 30天之内
+        if date == 30:  # 30天之内
             dt = now - datetime.timedelta(days=30)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
@@ -156,17 +154,17 @@ def order_express_no(rid):
         # 自动生成出库单
         out_serial_no = gen_serial_no('CK')
         out_warehouse = OutWarehouse(
-            master_uid = Master.master_uid(),
-            serial_no = out_serial_no,
-            target_serial_no = order.serial_no,
-            target_type = 1,
-            warehouse_id = order.warehouse_id,
-            total_quantity = order.total_quantity,
-            out_quantity = 0,
+            master_uid=Master.master_uid(),
+            serial_no=out_serial_no,
+            target_serial_no=order.serial_no,
+            target_type=1,
+            warehouse_id=order.warehouse_id,
+            total_quantity=order.total_quantity,
+            out_quantity=0,
             # 出库状态： 1、未出库 2、出库中 3、出库完成
-            out_status = 1,
+            out_status=1,
             # 出库流程状态
-            status = 1
+            status=1
         )
         db.session.add(out_warehouse)
 
@@ -189,27 +187,27 @@ def order_express_no(rid):
             original_quantity = current_quantity + offset_quantity
 
             stock_history = StockHistory(
-                master_uid = Master.master_uid(),
-                warehouse_id = order.warehouse_id,
-                warehouse_shelve_id = default_shelve.id,
-                product_sku_id = sku_id,
-                sku_serial_no = item.sku_serial_no,
+                master_uid=Master.master_uid(),
+                warehouse_id=order.warehouse_id,
+                warehouse_shelve_id=default_shelve.id,
+                product_sku_id=sku_id,
+                sku_serial_no=item.sku_serial_no,
 
                 # 出库单/入库单 编号
-                serial_no = out_serial_no,
+                serial_no=out_serial_no,
                 # 类型：1、入库 2：出库
-                type = 2,
+                type=2,
                 # 操作类型
-                operation_type = 21,
+                operation_type=21,
                 # 原库存数量
-                original_quantity = original_quantity,
+                original_quantity=original_quantity,
                 # 变化数量
-                quantity = offset_quantity,
+                quantity=offset_quantity,
                 # 当前数量
-                current_quantity = current_quantity,
+                current_quantity=current_quantity,
                 # 原价格
-                ori_price = item.deal_price,
-                price = item.deal_price
+                ori_price=item.deal_price,
+                price=item.deal_price
             )
 
             db.session.add(stock_history)
@@ -269,46 +267,48 @@ def shipment_order():
         # 获取发货人
         shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=warehouse_id).first()
 
-        eorder = {}
-        eorder['ShipperCode'] = express.code
-        # 同一电子面单模板可多次调用，无需保存到本地
-        eorder['LogisticCode'] = order.express_no
-        eorder['OrderCode'] = order.outside_target_id if order.outside_target_id else order.rid
-        eorder['PayType'] = 1
-        eorder['ExpType'] = 1
-        # 返回电子面单模板：0-不需要；1-需要
-        eorder['IsReturnPrintTemplate'] = '0'
-        eorder['TemplateSize'] = 180
+        eorder = {
+            'ShipperCode': express.code,
+            # 同一电子面单模板可多次调用，无需保存到本地
+            'LogisticCode': order.express_no,
+            'OrderCode': order.outside_target_id if order.outside_target_id else order.rid,
+            'PayType': 1,
+            'ExpType': 1,
+            # 返回电子面单模板：0-不需要；1-需要
+            'IsReturnPrintTemplate': '0',
+            'TemplateSize': 180,
+            # 电子面单客户账号（与快递网点申请）
+            'CustomerName': express.customer_name,
+            'CustomerPwd': express.customer_pwd,
+            'SendSite': express.send_site
+        }
 
-        # 电子面单客户账号（与快递网点申请）
-        eorder['CustomerName'] = express.customer_name
-        eorder['CustomerPwd'] = express.customer_pwd
-        eorder['SendSite'] = express.send_site
+        sender = {
+            'Name': shipper.name,
+            'Mobile': shipper.mobile,
+            'ProvinceName': shipper.province,
+            'CityName': shipper.city,
+            'ExpAreaName': shipper.area,
+            'Address': shipper.address
+        }
 
-        sender = {}
-        sender['Name'] = shipper.name
-        sender['Mobile'] = shipper.mobile
-        sender['ProvinceName'] = shipper.province
-        sender['CityName'] = shipper.city
-        sender['ExpAreaName'] = shipper.area
-        sender['Address'] = shipper.address
-
-        receiver = {}
-        receiver['Name'] = order.buyer_name
-        receiver['Mobile'] = order.buyer_phone
-        receiver['ProvinceName'] = order.buyer_province
-        receiver['CityName'] = order.buyer_city
-        receiver['ExpAreaName'] = order.buyer_area
-        receiver['Address'] = order.buyer_address
+        receiver = {
+            'Name': order.buyer_name,
+            'Mobile': order.buyer_phone,
+            'ProvinceName': order.buyer_province,
+            'CityName': order.buyer_city,
+            'ExpAreaName': order.buyer_area,
+            'Address': order.buyer_address
+        }
 
         commodity = []
         for item in order.items:
-            commodity_one = {}
-            commodity_one['GoodsName'] = '%s %s' % (item.sku.product_name, item.sku.mode)
-            commodity_one['GoodsCode'] = item.sku_serial_no
-            commodity_one['Goodsquantity'] = item.quantity
-            commodity_one['GoodsWeight'] = 0.0
-            
+            commodity_one = {
+                'GoodsName': '%s %s' % (item.sku.product_name, item.sku.mode),
+                'GoodsCode': item.sku_serial_no,
+                'Goodsquantity': item.quantity,
+                'GoodsWeight': 0.0
+            }
             commodity.append(commodity_one)
 
         eorder['Sender'] = sender
@@ -366,44 +366,46 @@ def print_eorder():
     # 获取发货人
     shipper = Shipper.query.filter_by(master_uid=Master.master_uid(), warehouse_id=current_order.warehouse_id).first()
 
-    eorder = {}
-    eorder['ShipperCode'] = express.code
     # 同一电子面单模板可多次调用，无需保存到本地
-    eorder['LogisticCode'] = current_order.express_no
-    eorder['OrderCode'] = current_order.outside_target_id if current_order.outside_target_id else current_order.rid
-    eorder['PayType'] = 1
-    eorder['ExpType'] = 1
-    eorder['IsReturnPrintTemplate'] = '1'
-    eorder['TemplateSize'] = 180
+    eorder = {
+        'ShipperCode': express.code,
+        'LogisticCode': current_order.express_no,
+        'OrderCode': current_order.outside_target_id if current_order.outside_target_id else current_order.rid,
+        'PayType': 1,
+        'ExpType': 1,
+        'IsReturnPrintTemplate': '1',
+        'TemplateSize': 180,
+        'CustomerName': express.customer_name,
+        'CustomerPwd': express.customer_pwd,
+        'SendSite': express.send_site
+    }
 
-    eorder['CustomerName'] = express.customer_name
-    eorder['CustomerPwd'] = express.customer_pwd
-    eorder['SendSite'] = express.send_site
+    sender = {
+        'Name': shipper.name,
+        'Mobile': shipper.mobile,
+        'ProvinceName': shipper.province,
+        'CityName': shipper.city,
+        'ExpAreaName': shipper.area,
+        'Address': shipper.address
+    }
 
-    sender = {}
-    sender['Name'] = shipper.name
-    sender['Mobile'] = shipper.mobile
-    sender['ProvinceName'] = shipper.province
-    sender['CityName'] = shipper.city
-    sender['ExpAreaName'] = shipper.area
-    sender['Address'] = shipper.address
-
-    receiver = {}
-    receiver['Name'] = current_order.buyer_name
-    receiver['Mobile'] = current_order.buyer_phone
-    receiver['ProvinceName'] = current_order.buyer_province
-    receiver['CityName'] = current_order.buyer_city
-    receiver['ExpAreaName'] = current_order.buyer_area
-    receiver['Address'] = current_order.buyer_address
+    receiver = {
+        'Name': current_order.buyer_name,
+        'Mobile': current_order.buyer_phone,
+        'ProvinceName': current_order.buyer_province,
+        'CityName': current_order.buyer_city,
+        'ExpAreaName': current_order.buyer_area,
+        'Address': current_order.buyer_address
+    }
 
     commodity = []
     for item in current_order.items:
-        commodity_one = {}
-        commodity_one['GoodsName'] = '%s %s' % (item.sku.product_name, item.sku.mode)
-        commodity_one['GoodsCode'] = item.sku_serial_no
-        commodity_one['Goodsquantity'] = item.quantity
-        commodity_one['GoodsWeight'] = 0.0
-    
+        commodity_one = {
+            'GoodsName': '%s %s' % (item.sku.product_name, item.sku.mode),
+            'GoodsCode': item.sku_serial_no,
+            'Goodsquantity': item.quantity,
+            'GoodsWeight': 0.0
+        }
         commodity.append(commodity_one)
 
     eorder['Sender'] = sender
@@ -415,8 +417,6 @@ def print_eorder():
 
     current_app.logger.debug(
         'result code: %s, success: %s' % (eorder_result['ResultCode'], eorder_result['Success']))
-
-    # current_app.logger.debug('%s' % eorder_result)
 
     if eorder_result['ResultCode'] == '105' and eorder_result['Success'] == False:
         return full_response(data=eorder_result['PrintTemplate'])
@@ -1063,7 +1063,9 @@ def ajax_verify_order():
             # 已付款，进入待审核
             if order.status == OrderStatus.PENDING_PAYMENT:
                 order.mark_checked_status()
-                tasks.sales_statistics.delay(order.id)
+
+                # 触发异步任务
+                sales_statistics.delay(order.id)
 
             # 完成审核，待发货状态
             elif order.status == OrderStatus.PENDING_CHECK:
@@ -1076,7 +1078,7 @@ def ajax_verify_order():
                 # 进入待发货
                 order.mark_shipment_status()
             else:
-                pass # nothing to do
+                pass  # nothing to do
             
             success_ids.append(sn)
         
@@ -1089,7 +1091,7 @@ def ajax_verify_order():
     return full_response(True, R200_OK, dict({'selected_sns': success_ids,
                                               'bad_message': bad_message,
                                               'status_count': _recount()}))
-    
+
 
 @main.route('/orders/ajax_shipped', methods=['POST'])
 @user_has('admin_order')

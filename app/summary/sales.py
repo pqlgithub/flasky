@@ -6,6 +6,8 @@ from app.models import Order, OrderItem, ProductSku, MasterStatistics, StoreStat
 
 
 class Sales(object):
+    """销售统计基类"""
+
     def __init__(self, order_id):
         # 订单对象
         self.order_obj = Order.query.filter_by(id=order_id).first()
@@ -31,7 +33,7 @@ class Sales(object):
 
 
 class StoreSales(Sales):
-    """ 订单触发的店铺收入、利润相关数据统计 """
+    """订单触发的店铺收入、利润相关数据统计"""
 
     def __init__(self, order_id):
         super().__init__(order_id)
@@ -52,10 +54,13 @@ class StoreSales(Sales):
         try:
             # 主账户按年统计处理
             self.__master_year()
+
             # 主账户按月统计处理
             self.__master_month()
+
             # 子账户按年统计处理
             self.__store_year()
+
             # 子账户按月统计处理
             self.__store_month()
 
@@ -65,14 +70,18 @@ class StoreSales(Sales):
             raise
 
     def order_refund(self):
-        """ 订单退款时主账户、各店铺  收入、利润、收入同比、利润同比统计"""
+        """订单退款时主账户、各店铺  收入、利润、收入同比、利润同比统计"""
+
         try:
             # 退款时主账户按年统计处理
             self.__refund_master_year()
+
             # 退款时主账户按月统计处理
             self.__refund_master_month()
+
             # 退款时子账户按年统计处理
             self.__refund_store_year()
+
             # 退款时子账户按月统计处理
             self.__refund_store_month()
 
@@ -83,14 +92,17 @@ class StoreSales(Sales):
 
     def __master_year(self):
         """主账户按年统计处理 收入、利润、收入同比、利润同比"""
+
         master_statistics_last_year = MasterStatistics.query.filter_by(
             master_uid=self.master_uid, time=self.last_year, type=2).first()
+
         # 查询加独占锁
         master_statistics_year = MasterStatistics.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.year, type=2).first()
-        if master_statistics_year == None:
+
+        if master_statistics_year is None:
             # 如果有同比数据
-            if master_statistics_last_year != None:
+            if master_statistics_last_year is not None:
                 # 销售同比
                 income_yoy = round(
                     self.income / float(master_statistics_last_year.income) * 100,
@@ -118,7 +130,8 @@ class StoreSales(Sales):
                 master_statistics_year.income) + self.income
             master_statistics_year.profit = float(
                 master_statistics_year.profit) + self.profit
-            if master_statistics_last_year != None:
+
+            if master_statistics_last_year is not None:
                 # 销售同比
                 master_statistics_year.income_yoy = round(
                     master_statistics_year.income / float(
@@ -141,9 +154,9 @@ class StoreSales(Sales):
         master_statistics_month = MasterStatistics.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.month, type=1).first()
 
-        if master_statistics_month == None:
+        if master_statistics_month is None:
             # 如果有同比数据
-            if master_statistics_last_year_month != None:
+            if master_statistics_last_year_month is not None:
                 # 销售同比
                 income_yoy = round(self.income / float(
                     master_statistics_last_year_month.income) * 100, 2)
@@ -155,7 +168,7 @@ class StoreSales(Sales):
                 profit_yoy = None
 
             # 如果有环比数据
-            if master_statistics_last_month != None:
+            if master_statistics_last_month is not None:
                 # 销售环比
                 income_mom = round(
                     self.income / float(master_statistics_last_month.income) * 100,
@@ -183,7 +196,8 @@ class StoreSales(Sales):
                 master_statistics_month.income) + self.income
             master_statistics_month.profit = float(
                 master_statistics_month.profit) + self.profit
-            if master_statistics_last_year_month != None:
+
+            if master_statistics_last_year_month is not None:
                 # 销售同比
                 master_statistics_month.income_yoy = round(
                     master_statistics_month.income / float(
@@ -193,7 +207,7 @@ class StoreSales(Sales):
                     master_statistics_month.profit / float(
                         master_statistics_last_year_month.profit) * 100, 2)
 
-            if master_statistics_last_month != None:
+            if master_statistics_last_month is not None:
                 # 销售环比
                 master_statistics_month.income_mom = round(
                     master_statistics_month.income / float(
@@ -204,20 +218,23 @@ class StoreSales(Sales):
                         master_statistics_last_month.profit) * 100, 2)
 
     def __store_year(self):
-        """ 子账户按年统计处理"""
+        """子账户按年统计处理"""
+
         store_statistics_last_year = StoreStatistics.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year,
             store_id=self.store_id,
             type=2).first()
+
         store_statistics_year = StoreStatistics.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             store_id=self.store_id,
             time=self.year,
             type=2).first()
-        if store_statistics_year == None:
+
+        if store_statistics_year is None:
             # 如果有同比数据
-            if store_statistics_last_year != None:
+            if store_statistics_last_year is not None:
                 # 销售同比
                 income_yoy = round(
                     self.income / float(store_statistics_last_year.income) * 100, 2)
@@ -244,7 +261,7 @@ class StoreSales(Sales):
                 store_statistics_year.income) + self.income
             store_statistics_year.profit = float(
                 store_statistics_year.profit) + self.profit
-            if store_statistics_last_year != None:
+            if store_statistics_last_year is not None:
                 # 销售同比
                 store_statistics_year.income_yoy = round(
                     store_statistics_year.income / float(
@@ -255,7 +272,8 @@ class StoreSales(Sales):
                         store_statistics_last_year.profit) * 100, 2)
 
     def __store_month(self):
-        """ 子账户按月统计处理 """
+        """子账户按月统计处理"""
+
         store_statistics_last_month = StoreStatistics.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_month,
@@ -274,9 +292,9 @@ class StoreSales(Sales):
             store_id=self.store_id,
             type=1).first()
 
-        if store_statistics_month == None:
+        if store_statistics_month is None:
             # 如果有同比数据
-            if store_statistics_last_year_month != None:
+            if store_statistics_last_year_month is not None:
                 # 销售同比
                 income_yoy = round(self.income / float(
                     store_statistics_last_year_month.income) * 100, 2)
@@ -288,7 +306,7 @@ class StoreSales(Sales):
                 profit_yoy = None
 
             # 如果有环比数据
-            if store_statistics_last_month != None:
+            if store_statistics_last_month is not None:
                 # 销售环比
                 income_mom = round(
                     self.income / float(store_statistics_last_month.income) * 100,
@@ -317,7 +335,8 @@ class StoreSales(Sales):
                 store_statistics_month.income) + self.income
             store_statistics_month.profit = float(
                 store_statistics_month.profit) + self.profit
-            if store_statistics_last_year_month != None:
+
+            if store_statistics_last_year_month is not None:
                 # 销售同比
                 store_statistics_month.income_yoy = round(
                     store_statistics_month.income / float(
@@ -327,7 +346,7 @@ class StoreSales(Sales):
                     store_statistics_month.profit / float(
                         store_statistics_last_year_month.profit) * 100, 2)
 
-            if store_statistics_last_month != None:
+            if store_statistics_last_month is not None:
                 # 销售环比
                 store_statistics_month.income_mom = round(
                     store_statistics_month.income / float(
@@ -339,6 +358,7 @@ class StoreSales(Sales):
 
     def __refund_master_year(self):
         """退款时主账户按年统计处理"""
+
         master_statistics_last_year = MasterStatistics.query.filter_by(
             master_uid=self.master_uid, time=self.last_year, type=2).first()
         master_statistics_year = MasterStatistics.query.with_for_update(read=False).filter_by(
@@ -348,7 +368,8 @@ class StoreSales(Sales):
             master_statistics_year.income) - self.income
         master_statistics_year.profit = float(
             master_statistics_year.profit) - self.profit
-        if master_statistics_last_year != None:
+
+        if master_statistics_last_year is not None:
             # 销售同比
             master_statistics_year.income_yoy = round(
                 master_statistics_year.income / float(
@@ -360,6 +381,7 @@ class StoreSales(Sales):
 
     def __refund_master_year(self):
         """退款时主账户按月统计处理"""
+
         master_statistics_last_month = MasterStatistics.query.filter_by(
             master_uid=self.master_uid, time=self.last_month, type=1).first()
 
@@ -375,7 +397,7 @@ class StoreSales(Sales):
         master_statistics_month.profit = float(
             master_statistics_month.profit) - self.profit
 
-        if master_statistics_last_year_month != None:
+        if master_statistics_last_year_month is not None:
             # 销售同比
             master_statistics_month.income_yoy = round(
                 master_statistics_month.income / float(
@@ -385,7 +407,7 @@ class StoreSales(Sales):
                 master_statistics_month.profit / float(
                     master_statistics_last_year_month.profit) * 100, 2)
 
-        if master_statistics_last_month != None:
+        if master_statistics_last_month is not None:
             # 销售环比
             master_statistics_month.income_mom = round(
                 master_statistics_month.income / float(
@@ -397,6 +419,7 @@ class StoreSales(Sales):
 
     def __refund_store_year(self):
         """退款时子账户按年统计处理"""
+
         store_statistics_last_year = StoreStatistics.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year,
@@ -412,7 +435,8 @@ class StoreSales(Sales):
             store_statistics_year.income) - self.income
         store_statistics_year.profit = float(
             store_statistics_year.profit) - self.profit
-        if store_statistics_last_year != None:
+
+        if store_statistics_last_year is not None:
             # 销售同比
             store_statistics_year.income_yoy = round(
                 store_statistics_year.income / float(
@@ -424,6 +448,7 @@ class StoreSales(Sales):
 
     def __refund_store_month(self):
         """退款时子账户按月统计处理"""
+
         store_statistics_last_month = StoreStatistics.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_month,
@@ -446,7 +471,7 @@ class StoreSales(Sales):
             store_statistics_month.income) - self.income
         store_statistics_month.profit = float(
             store_statistics_month.profit) - self.profit
-        if store_statistics_last_year_month != None:
+        if store_statistics_last_year_month is not None:
             # 销售同比
             store_statistics_month.income_yoy = round(
                 store_statistics_month.income / float(
@@ -456,7 +481,7 @@ class StoreSales(Sales):
                 store_statistics_month.profit / float(
                     store_statistics_last_year_month.profit) * 100, 2)
 
-        if store_statistics_last_month != None:
+        if store_statistics_last_month is not None:
             # 销售环比
             store_statistics_month.income_mom = round(
                 store_statistics_month.income / float(
@@ -562,8 +587,8 @@ class StoreProductSales(Sales):
             product_master_last_year = self.__get_product_master(
                 v['sku_id'], 2, self.last_year)
 
-            if product_master_year == None:
-                if product_master_last_year != None:
+            if product_master_year is not None:
+                if product_master_last_year is not None:
                     # 销售同比
                     income_yoy = round(v['income'] / float(
                         product_master_last_year.income) * 100, 2)
@@ -596,7 +621,7 @@ class StoreProductSales(Sales):
                     product_master_year.profit) + v['profit']
                 product_master_year.count = float(
                     product_master_year.count) + v['count']
-                if product_master_last_year != None:
+                if product_master_last_year is not None:
                     # 销售同比
                     product_master_year.income_yoy = round(
                         product_master_year.income / float(
@@ -616,9 +641,9 @@ class StoreProductSales(Sales):
             product_master_last_year_month = self.__get_product_master(
                 v['sku_id'], 1, self.last_year_month)
 
-            if product_master_month == None:
+            if product_master_month is None:
                 # 如果有同比数据
-                if product_master_last_year_month != None:
+                if product_master_last_year_month is not None:
                     # 销售同比
                     income_yoy = round(v['income'] / float(
                         product_master_last_year_month.income) * 100, 2)
@@ -630,7 +655,7 @@ class StoreProductSales(Sales):
                     profit_yoy = None
 
                 # 如果有环比数据
-                if product_master_last_month != None:
+                if product_master_last_month is not None:
                     # 销售环比
                     income_mom = round(v['income'] / float(
                         product_master_last_month.income) * 100, 2)
@@ -665,7 +690,7 @@ class StoreProductSales(Sales):
                 product_master_month.count = float(
                     product_master_month.count) + v['count']
 
-                if product_master_last_year_month != None:
+                if product_master_last_year_month is not None:
                     # 销售同比
                     product_master_month.income_yoy = round(
                         product_master_month.income / float(
@@ -675,7 +700,7 @@ class StoreProductSales(Sales):
                         product_master_month.profit / float(
                             product_master_last_year_month.profit) * 100, 2)
 
-                if product_master_last_month != None:
+                if product_master_last_month is not None:
                     # 销售环比
                     product_master_month.income_mom = round(
                         product_master_month.income / float(
@@ -693,8 +718,8 @@ class StoreProductSales(Sales):
             product_store_last_year = self.__get_product_store(
                 v['sku_id'], 2, self.last_year)
 
-            if product_store_year == None:
-                if product_store_last_year != None:
+            if product_store_year is None:
+                if product_store_last_year is not None:
                     # 销售同比
                     income_yoy = round(
                         v['income'] / float(product_store_last_year.income) * 100,
@@ -731,7 +756,7 @@ class StoreProductSales(Sales):
                 product_store_year.count = float(
                     product_store_year.count) + v['count']
 
-                if product_store_last_year != None:
+                if product_store_last_year is not None:
                     # 销售同比
                     product_store_year.income_yoy = round(
                         product_store_year.income / float(
@@ -751,9 +776,9 @@ class StoreProductSales(Sales):
             product_store_last_year_month = self.__get_product_store(
                 v['sku_id'], 1, self.last_year_month)
 
-            if product_store_month == None:
+            if product_store_month is None:
                 # 如果有同比数据
-                if product_store_last_year_month != None:
+                if product_store_last_year_month is not None:
                     # 销售同比
                     income_yoy = round(v['income'] / float(
                         product_store_last_year_month.income) * 100, 2)
@@ -765,7 +790,7 @@ class StoreProductSales(Sales):
                     profit_yoy = None
 
                 # 如果有环比数据
-                if product_store_last_month != None:
+                if product_store_last_month is not None:
                     # 销售环比
                     income_mom = round(v['income'] / float(
                         product_store_last_month.income) * 100, 2)
@@ -801,7 +826,7 @@ class StoreProductSales(Sales):
                 product_store_month.count = float(
                     product_store_month.count) + v['count']
 
-                if product_store_last_year_month != None:
+                if product_store_last_year_month is not None:
                     # 销售同比
                     product_store_month.income_yoy = round(
                         product_store_month.income / float(
@@ -812,7 +837,7 @@ class StoreProductSales(Sales):
                             product_store_last_year_month.
                             profit) * 100, 2)
 
-                if product_store_last_month != None:
+                if product_store_last_month is not None:
                     # 销售环比
                     product_store_month.income_mom = round(
                         product_store_month.income / float(
@@ -836,7 +861,8 @@ class StoreProductSales(Sales):
                 product_master_year.profit) - v['profit']
             product_master_year.count = float(
                 product_master_year.count) - v['count']
-            if product_master_last_year != None:
+
+            if product_master_last_year is not None:
                 # 销售同比
                 product_master_year.income_yoy = round(
                     product_master_year.income / float(
@@ -863,7 +889,7 @@ class StoreProductSales(Sales):
             product_master_month.count = float(
                 product_master_month.count) - v['count']
 
-            if product_master_last_year_month != None:
+            if product_master_last_year_month is not None:
                 # 销售同比
                 product_master_month.income_yoy = round(
                     product_master_month.income / float(
@@ -873,7 +899,7 @@ class StoreProductSales(Sales):
                     product_master_month.profit / float(
                         product_master_last_year_month.profit) * 100, 2)
 
-            if product_master_last_month != None:
+            if product_master_last_month is not None:
                 # 销售环比
                 product_master_month.income_mom = round(
                     product_master_month.income / float(
@@ -898,7 +924,7 @@ class StoreProductSales(Sales):
             product_store_year.count = float(
                 product_store_year.count) - v['count']
 
-            if product_store_last_year != None:
+            if product_store_last_year is not None:
                 # 销售同比
                 product_store_year.income_yoy = round(
                     product_store_year.income / float(
@@ -925,7 +951,7 @@ class StoreProductSales(Sales):
             product_store_month.count = float(
                 product_store_month.count) - v['count']
 
-            if product_store_last_year_month != None:
+            if product_store_last_year_month is not None:
                 # 销售同比
                 product_store_month.income_yoy = round(
                     product_store_month.income / float(
@@ -936,7 +962,7 @@ class StoreProductSales(Sales):
                         product_store_last_year_month.
                         profit) * 100, 2)
 
-            if product_store_last_month != None:
+            if product_store_last_month is not None:
                 # 销售环比
                 product_store_month.income_mom = round(
                     product_store_month.income / float(
@@ -945,5 +971,3 @@ class StoreProductSales(Sales):
                 product_store_month.profit_mom = round(
                     product_store_month.profit / float(
                         product_store_last_month.profit) * 100, 2)
-
-    

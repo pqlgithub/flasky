@@ -57,7 +57,7 @@ class OrderStatus:
 # 订单状态
 ORDER_STATUS = [
     (OrderStatus.CANCELED, lazy_gettext('Canceled'), 'info'),
-    (OrderStatus.PENDING_PAYMENT, gettext('Pending Payment'), 'danger'),
+    (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment'), 'danger'),
     (OrderStatus.PENDING_CHECK, lazy_gettext('UnApprove'), 'danger'),
     (OrderStatus.PENDING_SHIPMENT, lazy_gettext('Effective'), 'primary'),
     (OrderStatus.DISTRIBUTION, lazy_gettext('Distribution'), 'primary'),

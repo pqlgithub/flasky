@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from app import db
 from app.models import SalesLogStatistics, DaySkuStatistics
-from datetime import datetime
 
 
 class DaySummary(object):
+    """每日汇总结算"""
 
     def __init__(self, order_id):
         self.sales_logs = SalesLogStatistics.query.filter_by(order_id=order_id).all()

@@ -4,7 +4,5 @@ from .weixin import refresh_component_token, refresh_authorizer_token, bind_wxa_
     create_wxapi_appkey, create_banner_spot, reply_wxa_service
 from .product import update_search_history, sync_product_stock, sync_supply_stats, sync_sku_stock
 from .eorder import remove_order_cart, update_coupon_status
+from .stats import sales_statistics, refund_statistics
 from .demo import add_together
-
-
-

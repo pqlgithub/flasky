@@ -4,11 +4,12 @@ from app.models import Order, SalesLogStatistics
 
 
 class SalesLog(object):
+    """销售日志"""
 
     def __init__(self, order_id):
         self.order_id = order_id
         # 订单对象
-        self.order = Order.query.filter_by(id=order_id).first()
+        self.order = Order.query.get(order_id)
         # 主账户ID
         self.master_uid = self.order.master_uid
         # 店铺ID
@@ -18,6 +19,7 @@ class SalesLog(object):
 
     def order_pay(self):
         from .day_summary import DaySummary
+
         try:
             for item in self.order.items:
                 self.__item_log_save(item)
@@ -33,6 +35,7 @@ class SalesLog(object):
 
     def order_refund(self):
         from .day_summary import DaySummary
+
         try:
             sales_logs = SalesLogStatistics.query.filter_by(order_id=self.order_id).all()
             for item in sales_logs:
@@ -49,6 +52,7 @@ class SalesLog(object):
 
     def __item_log_save(self, item):
         sku = item.sku
+
         product = sku.product
         category_ids = product.category_ids
 
