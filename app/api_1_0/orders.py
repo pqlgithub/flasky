@@ -128,6 +128,8 @@ def check_order_paid():
     if not rid:
         abort(400)
 
+    current_app.logger.debug('Order master_uid: %d' % g.master_uid)
+
     current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
     paid = False
     if current_order.status == OrderStatus.PENDING_CHECK:

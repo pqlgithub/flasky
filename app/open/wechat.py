@@ -228,7 +228,7 @@ def wxpay_notify():
 
         if current_order.status == OrderStatus.PENDING_PAYMENT:  # 待支付
             current_order.mark_checked_status()
-            current_order.payed_at = pay_time
+            current_order.payed_at = int(timestamp())
 
             # 触发异步任务
             sales_statistics.delay(current_order.id)
