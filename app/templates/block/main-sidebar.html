@@ -300,6 +300,11 @@
                      <ul class="subtree">
                          <li class="header">{{ _('Sales Report') }}</li>
                          <li>
+                             <a href="{{ url_for('main.stats') }}" class="pjax">
+                                 {{ _('Aggregate Analysis') }}
+                             </a>
+                         </li>
+                         <li>
                              <a href="{{url_for('main.sales_statistic')}}" class="pjax">
                                  {{ _('Sales Report') }}
                              </a>

@@ -12,9 +12,9 @@
 			if (res.success) {
 				var sku_data = [];
 				var income_data = [];
-				for (var key = 0; key < e.data.length; key++){
-					sku_data.unshift(e.data[key].sku_serial_no);
-					income_data.unshift(e.data[key].income);
+				for (var key = 0; key < res.data.length; key++) {
+					sku_data.unshift(res.data[key].name);
+					income_data.unshift(res.data[key].income);
 				}
 
 				option.yAxis.data = sku_data;
@@ -33,44 +33,46 @@
 		},'json');
 	}
 	
+	// 基于准备好的dom，初始化echarts实例
+	var store_product_sales = echarts.init(document.getElementById('store-product-sales'));
+	// 指定图表的配置项和数据
+	var option = {
+		color: ['#00a65a'],
+		title: {
+			text: '{{ _("Store Sales Top10") }}',
+			subtext: ''
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		tooltip: {
+			trigger: 'axis',
+        	axisPointer: {
+            type: 'shadow'
+        	}
+		},
+		legend: {
+			data:['销售金额']
+		},
+		xAxis: {
+		
+		},
+		yAxis: {
+			data: []
+		},
+		series: [{
+			name: '销售金额',
+			type: 'bar',
+			data: []
+		}]
+	};
+	
 	$(function () {
-		// 基于准备好的dom，初始化echarts实例
-		var store_product_sales = echarts.init(document.getElementById('store-product-sales'));
-
-		// 指定图表的配置项和数据
-		var option = {
-			color: ['#3398DB'],
-			title: {
-				text: '{{ _("Store Sales Top10") }}',
-				subtext: ''
-			},
-			grid: {
-				left: '3%',
-				right: '4%',
-				bottom: '3%',
-				containLabel: true
-			},
-			tooltip: {
-				trigger: 'axis',
-	        	axisPointer: {
-	            type: 'shadow'
-	        	}
-			},
-			legend: {
-				data:['销售金额']
-			},
-			xAxis: {
-			
-			},
-			yAxis: {
-				data: []
-			},
-			series: [{
-				name: '销售金额',
-				type: 'bar',
-				data: []
-			}]
-		};
+		mixpus.init_page_layout();
+		
 		store_product_sales.setOption(option);
 		
 		var store_id = $(".store-id").eq(0).attr('value');
@@ -94,60 +96,76 @@
 			</button>
 		</span>
 	</h2>
-
+	
 	<div class="row">
-		<div class="col-md-12">
-			<div class="card m-b-20">
-				<div class="card-block">
-					<h3 class="card-title">{{ _('Master Sales') }}</h3>
-					<div class="col-md-3">{{_('Sales revenue')}}：{{ master_statistics.income or '--' }}</div>
-					<div class="col-md-3">{{_('Sales year on year')}}：{{ master_statistics.income_yoy or '--' }}%</div>
-					<div class="col-md-3">{{_('Profit')}}：{{master_statistics.profit or '--'}}</div>
-					<div class="col-md-3">{{_('Profit year on year')}}：{{ master_statistics.profit_yoy or '--' }}%</div>
-				</div>
-			</div>
-
-			<div class="card m-b-20">
-				<div class="card-block">
-					<h3 class="card-title">{{ _('Store Sales') }}</h3>
-					<table class="table table-hover">
-					<th>
-						<td>Store Name</td>
-						<td>Revenue</td>
-						<td>Revenue year on year</td>
-						<td>Revenue ring</td>
-						<td>Profit</td>
-						<td>Profit year on year</td>
-						<td>Profit ring</td>
-					</th>
+		<div class="col-md-9">
+			<h3 class="page-header">{{ _('Master Sales') }}</h3>
+			<table class="table table-striped m-b-30">
+				<thead>
+					<tr>
+						<th>
+							{{ _('Sales revenue') }}
+						</th>
+						<th>
+							{{ _('Sales year on year') }}
+						</th>
+						<th>
+							{{ _('Profit') }}
+						</th>
+						<th>
+							{{ _('Profit year on year') }}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							{{ master_statistics.income or '--' }}元
+						</td>
+						<td>
+							{{ master_statistics.income_yoy or '--' }}%
+						</td>
+						<td>
+							{{ master_statistics.profit or '--' }}元
+						</td>
+						<td>
+							{{ master_statistics.profit_yoy or '--' }}%
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<h3 class="page-header">{{ _('Store Sales') }}</h3>
+			<table class="table table-striped m-b-30">
+				<thead>
+					<tr>
+						<th>{{ _('Store Name') }}</th>
+						<th>{{ _('Revenue') }}</th>
+						<th>{{ _('Revenue year on year') }}</th>
+						<th>{{ _('Revenue ring') }}</th>
+						<th>{{ _('Profit') }}</th>
+						<th>{{ _('Profit year on year') }}</th>
+						<th>{{ _('Profit ring') }}</th>
+					</tr>
+				</thead>
+				<tbody>
 					{% for store in store_statistics %}
-					<tr class="store-id" value="{{store.store_id}}">
-						<td></td>
+					<tr class="store-id" value="{{ store.store_id }}">
 						<td>{{ store.store.name }}</td>
-						<td>{{store.income}}</td>
+						<td>{{store.income}}元</td>
 						<td>{{store.income_yoy or '--'}}%</td>
 						<td>{{store.income_mom or '--'}}%</td>
-						<td>{{store.profit}}</td>
+						<td>{{store.profit}}元</td>
 						<td>{{store.profit_yoy or '--'}}%</td>
 						<td>{{store.profit_mom or '--'}}%</td>
 					</tr>
 					{% endfor %}
-					</table>
-					
-				</div>
-			</div>
-
-			<div class="card m-b-20">
-				<div class="card-block">
-					<div id="store-product-sales" style="width: 800px;height:400px;"></div>
-				</div>
-			</div>
-
-			<div class="card m-b-20">
-				<div class="card-block">
-					<h3 class="card-title">{{ _('Sales Analytics') }}</h3>
-					
-				</div>
+				</tbody>
+			</table>
+			
+			<h3 class="page-header">{{ _('Sales TOP10') }}</h3>
+			<div class="well">
+				<div id="store-product-sales" style="width: 100%;height:400px;"></div>
 			</div>
 
 		</div>

@@ -8,7 +8,7 @@ from flask import render_template, redirect, url_for, abort, flash, request
 from . import main
 from .. import db
 from ..decorators import user_has
-from app.models import MasterStatistics, StoreStatistics, ProductStatistics, DaySkuStatistics, Store, Supplier
+from app.models import MasterStatistics, StoreStatistics, ProductStatistics, DaySkuStatistics, Store, Supplier, ProductSku
 from ..utils import Master, full_response, R200_OK
 
 
@@ -45,7 +45,9 @@ def store_sku_top():
 
     data = []
     for v in product_top:
+        product_sku = ProductSku.query.get(v.sku_id)
         data.append({
+            'name': product_sku.product_name,
             'sku_serial_no': v.sku_serial_no,
             'income': v.income,
         })
@@ -53,14 +55,14 @@ def store_sku_top():
     return full_response(True, R200_OK, data)
 
 
-@main.route('/sales/statistics', methods=['GET'])
+@main.route('/stats/statistics', methods=['GET'])
 @user_has('admin_reports')
 def sales_statistic():
     """销售统计展示页面"""
     return render_template('stats/sales.html', sub_menu='sales')
 
 
-@main.route('/sales/master', methods=['GET'])
+@main.route('/stats/master', methods=['GET'])
 @user_has('admin_reports')
 def sales_master():
     """主账户销售统计"""
@@ -99,7 +101,7 @@ def sales_master():
     return full_response(True, R200_OK, data)
 
 
-@main.route('/sales/store', methods=['GET'])
+@main.route('/stats/store', methods=['GET'])
 @user_has('admin_reports')
 def sales_store():
     new_start_date = request.args.get("start_time")
@@ -143,7 +145,7 @@ def sales_store():
     return full_response(True, R200_OK, refund_data)
 
 
-@main.route('/sales/supplier', methods=['GET'])
+@main.route('/stats/supplier', methods=['GET'])
 @user_has('admin_reports')
 def sales_supplier():
     new_start_date = request.args.get("start_time")

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-04-10 10:08+0800\n"
-"PO-Revision-Date: 2018-04-10 10:09+0800\n"
+"POT-Creation-Date: 2018-04-10 18:30+0800\n"
+"PO-Revision-Date: 2018-04-10 18:33+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -1635,6 +1635,7 @@ msgid "Shipping Bill"
 msgstr "发货单"
 
 #: app/main/order.py:451 app/main/warehouse.py:328
+#: app/templates/stats/index.html:140
 msgid "Store Name"
 msgstr "店铺名称"
 
@@ -2129,7 +2130,7 @@ msgstr "上传图片，至少大于480*480像素."
 #: app/templates/file_manager.html:17
 #: app/templates/products/show_set_groups.html:33
 #: app/templates/settings/show_assets.html:111
-#: app/templates/stats/index.html:97 app/templates/stats/sales.html:257
+#: app/templates/stats/index.html:92 app/templates/stats/sales.html:257
 #: app/templates/users/child_users.html:46
 #: app/templates/warehouses/show_inout.html:39
 msgid "Refresh"
@@ -2657,7 +2658,7 @@ msgstr "系统设置"
 
 #: app/templates/adminlte/system/_sub_menu.html:3
 #: app/templates/block/distribute-sidebar.html:190
-#: app/templates/block/main-sidebar.html:409
+#: app/templates/block/main-sidebar.html:414
 #: app/templates/settings/_sub_menu.html:6
 msgid "Privilege manage"
 msgstr "权限管理"
@@ -2670,7 +2671,7 @@ msgstr "主账号列表"
 #: app/templates/adminlte/system/_sub_menu.html:9
 #: app/templates/adminlte/system/show_list.html:21
 #: app/templates/block/distribute-sidebar.html:194
-#: app/templates/block/main-sidebar.html:413
+#: app/templates/block/main-sidebar.html:418
 msgid "User List"
 msgstr "用户列表"
 
@@ -3009,122 +3010,122 @@ msgstr "统计"
 #: app/templates/block/distribute-sidebar.html:82
 #: app/templates/block/distribute-sidebar.html:85
 #: app/templates/block/main-sidebar.html:301
-#: app/templates/block/main-sidebar.html:304
+#: app/templates/block/main-sidebar.html:309
 msgid "Sales Report"
 msgstr "销售报表"
 
 #: app/templates/block/distribute-sidebar.html:90
-#: app/templates/block/main-sidebar.html:309
+#: app/templates/block/main-sidebar.html:314
 msgid "Products Report"
 msgstr "商品报表"
 
 #: app/templates/block/distribute-sidebar.html:95
-#: app/templates/block/main-sidebar.html:314
+#: app/templates/block/main-sidebar.html:319
 msgid "Brands Report"
 msgstr "品牌报表"
 
 #: app/templates/block/distribute-sidebar.html:100
-#: app/templates/block/main-sidebar.html:319
+#: app/templates/block/main-sidebar.html:324
 msgid "Category Report"
 msgstr "分类报表"
 
 #: app/templates/block/distribute-sidebar.html:105
-#: app/templates/block/main-sidebar.html:324
+#: app/templates/block/main-sidebar.html:329
 msgid "Customer Report"
 msgstr "客户报表"
 
 #: app/templates/block/distribute-sidebar.html:110
-#: app/templates/block/main-sidebar.html:329
+#: app/templates/block/main-sidebar.html:334
 msgid "Stock Report"
 msgstr "库存报表"
 
 #: app/templates/block/distribute-sidebar.html:113
-#: app/templates/block/main-sidebar.html:332
+#: app/templates/block/main-sidebar.html:337
 msgid "In-Out Report"
 msgstr "出入库报表"
 
 #: app/templates/block/distribute-sidebar.html:118
-#: app/templates/block/main-sidebar.html:337
+#: app/templates/block/main-sidebar.html:342
 msgid "Shipments Stats"
 msgstr "物流统计"
 
 #: app/templates/block/distribute-sidebar.html:123
-#: app/templates/block/main-sidebar.html:342
+#: app/templates/block/main-sidebar.html:347
 msgid "Supplier Stats"
 msgstr "供应商统计"
 
 #: app/templates/block/distribute-sidebar.html:134
-#: app/templates/block/main-sidebar.html:353
+#: app/templates/block/main-sidebar.html:358
 msgid "Finance"
 msgstr "财务"
 
 #: app/templates/block/distribute-sidebar.html:139
-#: app/templates/block/main-sidebar.html:358
+#: app/templates/block/main-sidebar.html:363
 msgid "Funds Manage"
 msgstr "资金管理"
 
 #: app/templates/block/distribute-sidebar.html:142
-#: app/templates/block/main-sidebar.html:361
+#: app/templates/block/main-sidebar.html:366
 msgid "Capital account"
 msgstr "资本账户"
 
 #: app/templates/block/distribute-sidebar.html:147
-#: app/templates/block/main-sidebar.html:366
+#: app/templates/block/main-sidebar.html:371
 msgid "Payment Confirm"
 msgstr "付款确认"
 
 #: app/templates/block/distribute-sidebar.html:152
-#: app/templates/block/main-sidebar.html:371
+#: app/templates/block/main-sidebar.html:376
 msgid "Receivables Confirm"
 msgstr "收款确认"
 
 #: app/templates/block/distribute-sidebar.html:157
-#: app/templates/block/main-sidebar.html:376
+#: app/templates/block/main-sidebar.html:381
 msgid "Capital Detail"
 msgstr "资金明细"
 
 #: app/templates/block/distribute-sidebar.html:162
-#: app/templates/block/main-sidebar.html:381
+#: app/templates/block/main-sidebar.html:386
 msgid "Refund Manage"
 msgstr "退款管理"
 
 #: app/templates/block/distribute-sidebar.html:167
 #: app/templates/block/distribute-sidebar.html:175
-#: app/templates/block/main-sidebar.html:386
-#: app/templates/block/main-sidebar.html:394
+#: app/templates/block/main-sidebar.html:391
+#: app/templates/block/main-sidebar.html:399
 msgid "Account Setting"
 msgstr "账户设置"
 
 #: app/templates/block/distribute-sidebar.html:170
-#: app/templates/block/main-sidebar.html:389
+#: app/templates/block/main-sidebar.html:394
 msgid "Items Setting"
 msgstr "类目设置"
 
 #: app/templates/block/distribute-sidebar.html:185
-#: app/templates/block/main-sidebar.html:404
+#: app/templates/block/main-sidebar.html:409
 msgid "Setting"
 msgstr "配置"
 
 #: app/templates/block/distribute-sidebar.html:200
-#: app/templates/block/main-sidebar.html:419
+#: app/templates/block/main-sidebar.html:424
 #: app/templates/settings/_sub_menu.html:14
 #: app/templates/settings/show_roles.html:38
 msgid "Acl List"
 msgstr "权限列表"
 
 #: app/templates/block/distribute-sidebar.html:205
-#: app/templates/block/main-sidebar.html:424
+#: app/templates/block/main-sidebar.html:429
 msgid "General Settings"
 msgstr "常规设置"
 
 #: app/templates/block/distribute-sidebar.html:208
-#: app/templates/block/main-sidebar.html:427
+#: app/templates/block/main-sidebar.html:432
 #: app/templates/dashboard/index.html:128 app/templates/settings/site.html:6
 msgid "Company Info"
 msgstr "公司信息"
 
 #: app/templates/block/distribute-sidebar.html:213
-#: app/templates/block/main-sidebar.html:432
+#: app/templates/block/main-sidebar.html:437
 #: app/templates/currencies/show_currencies.html:23
 msgid "Currency List"
 msgstr "币种列表"
@@ -3350,7 +3351,11 @@ msgstr "我的应用"
 msgid "App Manage"
 msgstr "应用管理"
 
-#: app/templates/block/main-sidebar.html:442
+#: app/templates/block/main-sidebar.html:304
+msgid "Aggregate Analysis"
+msgstr "综合分析"
+
+#: app/templates/block/main-sidebar.html:447
 msgid "SCRM"
 msgstr ""
 
@@ -4271,7 +4276,7 @@ msgstr "请注意货币单位."
 
 #: app/templates/products/create_and_edit.html:257
 msgid "Batch upload or select pictures"
-msgstr ""
+msgstr "批量上传或选择图片"
 
 #: app/templates/products/create_and_edit.html:314
 msgid "Product Size（LxWxH）"
@@ -4312,7 +4317,7 @@ msgstr "至少选择一个商品"
 
 #: app/templates/products/show_list.html:57
 msgid "Set In Sale"
-msgstr ""
+msgstr "设为在售"
 
 #: app/templates/products/show_list.html:63
 msgid "Import Product"
@@ -4636,41 +4641,57 @@ msgstr ""
 msgid "Logistics Statistic"
 msgstr "物流统计"
 
-#: app/templates/stats/index.html:21
+#: app/templates/stats/index.html:44
 msgid "Store Sales Top10"
 msgstr "销售Top10"
 
-#: app/templates/stats/index.html:95
+#: app/templates/stats/index.html:90
 msgid "Stat charts"
 msgstr "统计报表"
 
-#: app/templates/stats/index.html:107 app/templates/stats/sales.html:39
+#: app/templates/stats/index.html:100 app/templates/stats/sales.html:39
 msgid "Master Sales"
-msgstr ""
+msgstr "总销售"
+
+#: app/templates/stats/index.html:105
+msgid "Sales revenue"
+msgstr "销售收入"
 
 #: app/templates/stats/index.html:108
-msgid "Sales revenue"
-msgstr ""
-
-#: app/templates/stats/index.html:109
 msgid "Sales year on year"
-msgstr ""
+msgstr "销售年同比"
 
-#: app/templates/stats/index.html:110
+#: app/templates/stats/index.html:111 app/templates/stats/index.html:144
 msgid "Profit"
-msgstr ""
+msgstr "利润"
 
-#: app/templates/stats/index.html:111
+#: app/templates/stats/index.html:114 app/templates/stats/index.html:145
 msgid "Profit year on year"
-msgstr ""
+msgstr "年利润"
 
-#: app/templates/stats/index.html:117 app/templates/stats/sales.html:93
+#: app/templates/stats/index.html:136 app/templates/stats/sales.html:93
 msgid "Store Sales"
-msgstr ""
+msgstr "店铺销售"
 
-#: app/templates/stats/index.html:153
-msgid "Sales Analytics"
-msgstr ""
+#: app/templates/stats/index.html:141
+msgid "Revenue"
+msgstr "收入"
+
+#: app/templates/stats/index.html:142
+msgid "Revenue year on year"
+msgstr "收入年同比"
+
+#: app/templates/stats/index.html:143
+msgid "Revenue ring"
+msgstr "收入环比"
+
+#: app/templates/stats/index.html:146
+msgid "Profit ring"
+msgstr "利润环比"
+
+#: app/templates/stats/index.html:164
+msgid "Sales TOP10"
+msgstr "销售TOP10"
 
 #: app/templates/stats/sales.html:40
 msgid " "
@@ -4679,7 +4700,7 @@ msgstr ""
 #: app/templates/stats/sales.html:49 app/templates/stats/sales.html:58
 #: app/templates/stats/sales.html:62
 msgid "income"
-msgstr ""
+msgstr "收入"
 
 #: app/templates/stats/sales.html:158
 msgid "Supplier Sales"
@@ -5096,3 +5117,6 @@ msgstr "小程序版本管理"
 
 #~ msgid "True"
 #~ msgstr "真"
+
+#~ msgid "Sales Analytics"
+#~ msgstr "销售统计"

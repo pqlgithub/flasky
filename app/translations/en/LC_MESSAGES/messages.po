@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-04-10 10:08+0800\n"
+"POT-Creation-Date: 2018-04-10 18:30+0800\n"
 "PO-Revision-Date: 2017-12-27 18:20+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1634,6 +1634,7 @@ msgid "Shipping Bill"
 msgstr ""
 
 #: app/main/order.py:451 app/main/warehouse.py:328
+#: app/templates/stats/index.html:140
 msgid "Store Name"
 msgstr ""
 
@@ -2128,7 +2129,7 @@ msgstr ""
 #: app/templates/file_manager.html:17
 #: app/templates/products/show_set_groups.html:33
 #: app/templates/settings/show_assets.html:111
-#: app/templates/stats/index.html:97 app/templates/stats/sales.html:257
+#: app/templates/stats/index.html:92 app/templates/stats/sales.html:257
 #: app/templates/users/child_users.html:46
 #: app/templates/warehouses/show_inout.html:39
 msgid "Refresh"
@@ -2656,7 +2657,7 @@ msgstr ""
 
 #: app/templates/adminlte/system/_sub_menu.html:3
 #: app/templates/block/distribute-sidebar.html:190
-#: app/templates/block/main-sidebar.html:409
+#: app/templates/block/main-sidebar.html:414
 #: app/templates/settings/_sub_menu.html:6
 msgid "Privilege manage"
 msgstr ""
@@ -2669,7 +2670,7 @@ msgstr ""
 #: app/templates/adminlte/system/_sub_menu.html:9
 #: app/templates/adminlte/system/show_list.html:21
 #: app/templates/block/distribute-sidebar.html:194
-#: app/templates/block/main-sidebar.html:413
+#: app/templates/block/main-sidebar.html:418
 msgid "User List"
 msgstr ""
 
@@ -3008,122 +3009,122 @@ msgstr ""
 #: app/templates/block/distribute-sidebar.html:82
 #: app/templates/block/distribute-sidebar.html:85
 #: app/templates/block/main-sidebar.html:301
-#: app/templates/block/main-sidebar.html:304
+#: app/templates/block/main-sidebar.html:309
 msgid "Sales Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:90
-#: app/templates/block/main-sidebar.html:309
+#: app/templates/block/main-sidebar.html:314
 msgid "Products Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:95
-#: app/templates/block/main-sidebar.html:314
+#: app/templates/block/main-sidebar.html:319
 msgid "Brands Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:100
-#: app/templates/block/main-sidebar.html:319
+#: app/templates/block/main-sidebar.html:324
 msgid "Category Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:105
-#: app/templates/block/main-sidebar.html:324
+#: app/templates/block/main-sidebar.html:329
 msgid "Customer Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:110
-#: app/templates/block/main-sidebar.html:329
+#: app/templates/block/main-sidebar.html:334
 msgid "Stock Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:113
-#: app/templates/block/main-sidebar.html:332
+#: app/templates/block/main-sidebar.html:337
 msgid "In-Out Report"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:118
-#: app/templates/block/main-sidebar.html:337
+#: app/templates/block/main-sidebar.html:342
 msgid "Shipments Stats"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:123
-#: app/templates/block/main-sidebar.html:342
+#: app/templates/block/main-sidebar.html:347
 msgid "Supplier Stats"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:134
-#: app/templates/block/main-sidebar.html:353
+#: app/templates/block/main-sidebar.html:358
 msgid "Finance"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:139
-#: app/templates/block/main-sidebar.html:358
+#: app/templates/block/main-sidebar.html:363
 msgid "Funds Manage"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:142
-#: app/templates/block/main-sidebar.html:361
+#: app/templates/block/main-sidebar.html:366
 msgid "Capital account"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:147
-#: app/templates/block/main-sidebar.html:366
+#: app/templates/block/main-sidebar.html:371
 msgid "Payment Confirm"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:152
-#: app/templates/block/main-sidebar.html:371
+#: app/templates/block/main-sidebar.html:376
 msgid "Receivables Confirm"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:157
-#: app/templates/block/main-sidebar.html:376
+#: app/templates/block/main-sidebar.html:381
 msgid "Capital Detail"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:162
-#: app/templates/block/main-sidebar.html:381
+#: app/templates/block/main-sidebar.html:386
 msgid "Refund Manage"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:167
 #: app/templates/block/distribute-sidebar.html:175
-#: app/templates/block/main-sidebar.html:386
-#: app/templates/block/main-sidebar.html:394
+#: app/templates/block/main-sidebar.html:391
+#: app/templates/block/main-sidebar.html:399
 msgid "Account Setting"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:170
-#: app/templates/block/main-sidebar.html:389
+#: app/templates/block/main-sidebar.html:394
 msgid "Items Setting"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:185
-#: app/templates/block/main-sidebar.html:404
+#: app/templates/block/main-sidebar.html:409
 msgid "Setting"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:200
-#: app/templates/block/main-sidebar.html:419
+#: app/templates/block/main-sidebar.html:424
 #: app/templates/settings/_sub_menu.html:14
 #: app/templates/settings/show_roles.html:38
 msgid "Acl List"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:205
-#: app/templates/block/main-sidebar.html:424
+#: app/templates/block/main-sidebar.html:429
 msgid "General Settings"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:208
-#: app/templates/block/main-sidebar.html:427
+#: app/templates/block/main-sidebar.html:432
 #: app/templates/dashboard/index.html:128 app/templates/settings/site.html:6
 msgid "Company Info"
 msgstr ""
 
 #: app/templates/block/distribute-sidebar.html:213
-#: app/templates/block/main-sidebar.html:432
+#: app/templates/block/main-sidebar.html:437
 #: app/templates/currencies/show_currencies.html:23
 msgid "Currency List"
 msgstr ""
@@ -3349,7 +3350,11 @@ msgstr ""
 msgid "App Manage"
 msgstr ""
 
-#: app/templates/block/main-sidebar.html:442
+#: app/templates/block/main-sidebar.html:304
+msgid "Aggregate Analysis"
+msgstr ""
+
+#: app/templates/block/main-sidebar.html:447
 msgid "SCRM"
 msgstr ""
 
@@ -4635,40 +4640,56 @@ msgstr ""
 msgid "Logistics Statistic"
 msgstr ""
 
-#: app/templates/stats/index.html:21
+#: app/templates/stats/index.html:44
 msgid "Store Sales Top10"
 msgstr ""
 
-#: app/templates/stats/index.html:95
+#: app/templates/stats/index.html:90
 msgid "Stat charts"
 msgstr ""
 
-#: app/templates/stats/index.html:107 app/templates/stats/sales.html:39
+#: app/templates/stats/index.html:100 app/templates/stats/sales.html:39
 msgid "Master Sales"
 msgstr ""
 
-#: app/templates/stats/index.html:108
+#: app/templates/stats/index.html:105
 msgid "Sales revenue"
 msgstr ""
 
-#: app/templates/stats/index.html:109
+#: app/templates/stats/index.html:108
 msgid "Sales year on year"
 msgstr ""
 
-#: app/templates/stats/index.html:110
+#: app/templates/stats/index.html:111 app/templates/stats/index.html:144
 msgid "Profit"
 msgstr ""
 
-#: app/templates/stats/index.html:111
+#: app/templates/stats/index.html:114 app/templates/stats/index.html:145
 msgid "Profit year on year"
 msgstr ""
 
-#: app/templates/stats/index.html:117 app/templates/stats/sales.html:93
+#: app/templates/stats/index.html:136 app/templates/stats/sales.html:93
 msgid "Store Sales"
 msgstr ""
 
-#: app/templates/stats/index.html:153
-msgid "Sales Analytics"
+#: app/templates/stats/index.html:141
+msgid "Revenue"
+msgstr ""
+
+#: app/templates/stats/index.html:142
+msgid "Revenue year on year"
+msgstr ""
+
+#: app/templates/stats/index.html:143
+msgid "Revenue ring"
+msgstr ""
+
+#: app/templates/stats/index.html:146
+msgid "Profit ring"
+msgstr ""
+
+#: app/templates/stats/index.html:164
+msgid "Sales TOP10"
 msgstr ""
 
 #: app/templates/stats/sales.html:40
@@ -5160,5 +5181,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "True"
+#~ msgstr ""
+
+#~ msgid "Sales Analytics"
 #~ msgstr ""
 

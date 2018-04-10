@@ -1,78 +1,17 @@
 {% extends "layout/base.html" %}
 
-{% block sidebar %}
-	{% include 'stats/_sub_menu.html' %}
-{% endblock %}
-
 {% block private_js %}
 <!-- 引入 ECharts 文件 -->
 <script src="{{ url_for('static', filename='js/echarts.min.js') }}" type="text/javascript"></script>
 {% endblock %}
 
-{% block jquery %}
-{#<script type="text/javascript">#}
-    $(".datetimeStart").datetimepicker({
-        format: 'yyyy-mm-dd',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true,
-    }).on("click",function(){
-        $(".datetimeStart").datetimepicker("setEndDate",$(".datetimeEnd").val())
-    });
-    $(".datetimeEnd").datetimepicker({
-        format: 'yyyy-mm-dd',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true,
-        todayBtn: true,
-        endDate:new Date()
-    }).on("click",function(){
-        $(".datetimeEnd").datetimepicker("setStartDate",$(".datetimeStart").val())
-    });
-
-	// 基于准备好的dom，初始化echarts实例
-	var master_sales = echarts.init(document.getElementById('master-sales'));
-
-	// 指定图表的配置项和数据
-    var master_sales_option = {
-        title: {
-            text: '{{ _("Master Sales") }}',
-            subtext: '{{ _(" ") }}'
-        },
-        grid: {
-			left: '3%',
-			right: '4%',
-			bottom: '3%',
-			containLabel: true
-		},
-        legend: {
-			data:['{{ _("income") }}']
-		},
-        tooltip: {
-			trigger: 'axis',
-		},
-        xAxis:  {
-            data: []
-        },
-        yAxis: {
-            name: '{{ _("income") }}'
-        },
-        series: [
-            {
-                name:'{{ _("income") }}',
-                type:'line',
-                data:[],
-            },
-        ]
-    };
-
-	master_sales.setOption(master_sales_option);
-
-	function masterSalesLoadOption(start_time,end_time){
-		$.get("{{ url_for('main.sales_master') }}",{'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token}, function(e){
-			if(e.status.code == 200){
-				var time = e.data.time
-                var income = e.data.income
+{% block after_jquery %}
+<script type="text/javascript">
+	function masterSalesLoadOption(start_time, end_time) {
+		$.get("{{ url_for('main.sales_master') }}", { 'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token }, function(res) {
+			if (res.success) {
+				var time = res.data.time
+                var income = res.data.income
 				master_sales.setOption({
 					xAxis: {
 						data: time
@@ -85,45 +24,11 @@
 			}
 		},'json');
 	}
-
-
-    var store_sales = echarts.init(document.getElementById('store-sales'));
-    sales_store_option = {
-        title: {
-            text: '{{ _("Store Sales") }}'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            data:[]
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: []
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                type:'line',
-            },
-        ]
-    };
-    store_sales.setOption(sales_store_option);
-    function storeSalesLoadOption(start_time, end_time){
-        $.get("{{ url_for('main.sales_store') }}",{'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token}, function(e){
-			if(e.status.code == 200){
-				var data = e.data;
+	
+    function storeSalesLoadOption(start_time, end_time) {
+        $.get("{{ url_for('main.sales_store') }}", { 'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token }, function(res) {
+			if (res.success) {
+				var data = res.data;
                 var legend = [];
                 var xdata = [];
                 var ydata = [];
@@ -151,45 +56,11 @@
 			}
 		},'json');
     }
-
-    var supplier_sales = echarts.init(document.getElementById('supplier-sales'));
-    sales_supplier_option = {
-        title: {
-            text: '{{ _("Supplier Sales") }}'
-        },
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            data:[]
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        
-        xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: []
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                type:'line',
-            },
-        ]
-    };
-    supplier_sales.setOption(sales_supplier_option);
-
-    function supplierSalesLoadOption(start_time, end_time){
-        $.get("{{ url_for('main.sales_supplier') }}",{'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token}, function(e){
-			if(e.status.code == 200){
-				var data = e.data;
+	
+    function supplierSalesLoadOption(start_time, end_time) {
+        $.get("{{ url_for('main.sales_supplier') }}", { 'start_time':start_time, 'end_time':end_time, 'csrf_token': mixpus.csrf_token }, function(res) {
+			if (res.success) {
+				var data = res.data;
                 var legend = [];
                 var xdata = [];
                 var ydata = [];
@@ -217,36 +88,163 @@
 			}
 		},'json');
     }
-
-    (function (){
-		// var store_id = $(".store-id").eq(0).attr('value');
-		masterSalesLoadOption(null,null)
-        storeSalesLoadOption(null,null)
-        supplierSalesLoadOption(null,null)
-	}());
-
-	$("#master-sales-submit").click(function(){
-		var start_time = $("#master-sales-start-time").val();
-        var end_time = $("#master-sales-end-time").val();
-        console.log(start_time,end_time)
-		masterSalesLoadOption(start_time, end_time)
-	});
-
-    $("#store-sales-submit").click(function(){
-		var start_time = $("#store-sales-start-time").val();
-        var end_time = $("#store-sales-end-time").val();
-        console.log(start_time,end_time)
-		storeSalesLoadOption(start_time, end_time)
-	});
-
-    $("#supplier-sales-submit").click(function(){
-		var start_time = $("#supplier-sales-start-time").val();
-        var end_time = $("#supplier-sales-end-time").val();
-        console.log(start_time,end_time)
-		supplierSalesLoadOption(start_time, end_time)
-	});
 	
-{#</script>#}
+	// 基于准备好的dom，初始化echarts实例
+	var master_sales = echarts.init(document.getElementById('master-sales'));
+	var store_sales = echarts.init(document.getElementById('store-sales'));
+	var supplier_sales = echarts.init(document.getElementById('supplier-sales'));
+	
+	$(function () {
+		mixpus.init_page_layout();
+		
+	    $(".datetimeStart").datetimepicker({
+	        format: 'yyyy-mm-dd',
+	        minView:'month',
+	        language: 'zh-CN',
+	        autoclose:true,
+	    }).on("click",function(){
+	        $(".datetimeStart").datetimepicker("setEndDate", $(".datetimeEnd").val())
+	    });
+		
+	    $(".datetimeEnd").datetimepicker({
+	        format: 'yyyy-mm-dd',
+	        minView:'month',
+	        language: 'zh-CN',
+	        autoclose:true,
+	        todayBtn: true,
+	        endDate:new Date()
+	    }).on("click",function(){
+	        $(".datetimeEnd").datetimepicker("setStartDate", $(".datetimeStart").val())
+	    });
+		
+		// 指定图表的配置项和数据
+	    var master_sales_option = {
+	        title: {
+	            text: '{{ _("Master Sales") }}',
+	            subtext: ''
+	        },
+	        grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+	        legend: {
+				data:['{{ _("income") }}']
+			},
+	        tooltip: {
+				trigger: 'axis',
+			},
+	        xAxis:  {
+	            data: []
+	        },
+	        yAxis: {
+	            name: '{{ _("income") }}'
+	        },
+	        series: [
+	            {
+	                name:'{{ _("income") }}',
+	                type:'line',
+	                data:[],
+	            },
+	        ]
+	    };
+		
+		master_sales.setOption(master_sales_option);
+		
+	    sales_store_option = {
+	        title: {
+	            text: '{{ _("Store Sales") }}'
+	        },
+	        tooltip: {
+	            trigger: 'axis'
+	        },
+	        legend: {
+	            data:[]
+	        },
+	        grid: {
+	            left: '3%',
+	            right: '4%',
+	            bottom: '3%',
+	            containLabel: true
+	        },
+        
+	        xAxis: {
+	            type: 'category',
+	            boundaryGap: false,
+	            data: []
+	        },
+	        yAxis: {
+	            type: 'value'
+	        },
+	        series: [
+	            {
+	                type:'line',
+	            },
+	        ]
+	    };
+	    store_sales.setOption(sales_store_option);
+		
+	    sales_supplier_option = {
+	        title: {
+	            text: '{{ _("Supplier Sales") }}'
+	        },
+	        tooltip: {
+	            trigger: 'axis'
+	        },
+	        legend: {
+	            data:[]
+	        },
+	        grid: {
+	            left: '3%',
+	            right: '4%',
+	            bottom: '3%',
+	            containLabel: true
+	        },
+        
+	        xAxis: {
+	            type: 'category',
+	            boundaryGap: false,
+	            data: []
+	        },
+	        yAxis: {
+	            type: 'value'
+	        },
+	        series: [
+	            {
+	                type:'line',
+	            },
+	        ]
+	    };
+	    supplier_sales.setOption(sales_supplier_option);
+		
+		$("#master-sales-submit").click(function() {
+			var start_time = $("#master-sales-start-time").val();
+	        var end_time = $("#master-sales-end-time").val();
+	        console.log(start_time, end_time);
+			masterSalesLoadOption(start_time, end_time);
+		});
+
+	    $("#store-sales-submit").click(function() {
+			var start_time = $("#store-sales-start-time").val();
+	        var end_time = $("#store-sales-end-time").val();
+	        console.log(start_time, end_time);
+			storeSalesLoadOption(start_time, end_time);
+		});
+
+	    $("#supplier-sales-submit").click(function() {
+			var start_time = $("#supplier-sales-start-time").val();
+	        var end_time = $("#supplier-sales-end-time").val();
+	        console.log(start_time, end_time);
+			supplierSalesLoadOption(start_time, end_time);
+		});
+		
+		// 初始化
+		masterSalesLoadOption(null, null);
+        storeSalesLoadOption(null, null);
+        supplierSalesLoadOption(null, null);
+	});	
+</script>
 {% endblock %}
 
 {% block mainbar %}
@@ -261,63 +259,57 @@
 	</h2>
 
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col-md-9">
+			<div class="card-block m-b-30">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <form class="form form-inline">
+                            <div class="form-group">
+                                <input type="text" id="master-sales-start-time" readonly class="form-control datetimeStart" placeholder="开始日期">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="master-sales-end-time" readonly class="form-control datetimeEnd" placeholder="结束日期">
+                            </div>
+                            <button type="button" id="master-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="master-sales" style="width:100%;height:500px;"></div>
+			</div>
 			
-			<div class="card m-b-20">
-				<div class="card-block">
-                    <div class="row">
-                        <div class="col-md-5 col-md-offset-7">
-                            <form class="form-inline">
-                                <div class="form-group">
-                                    <input type="text" id="master-sales-start-time" readonly class="form-control datetimeStart">
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" id="master-sales-end-time" readonly class="form-control datetimeEnd">
-                                </div>
-                                <button type="button" id="master-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
-                            </form>
-                        </div>
+
+			<div class="card-block m-b-30">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text" id="store-sales-start-time" readonly class="form-control datetimeStart" placeholder="开始日期">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="store-sales-end-time" readonly class="form-control datetimeEnd" placeholder="结束日期">
+                            </div>
+                            <button type="button" id="store-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
+                        </form>
                     </div>
-                    <div id="master-sales" style="width: 1000px;height:500px;"></div>
-				</div>
+                </div>
+                <div id="store-sales" style="width:100%;height:500px;"></div>
 			</div>
 
-            <div class="card m-b-20">
-				<div class="card-block">
-                    <div class="row">
-                        <div class="col-md-5 col-md-offset-7">
-                            <form class="form-inline">
-                                <div class="form-group">
-                                    <input type="text" id="store-sales-start-time" readonly class="form-control datetimeStart">
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" id="store-sales-end-time" readonly class="form-control datetimeEnd">
-                                </div>
-                                <button type="button" id="store-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
-                            </form>
-                        </div>
+			<div class="card-block m-b-30">
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <input type="text" id="supplier-sales-start-time" readonly class="form-control datetimeStart" placeholder="开始日期">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="supplier-sales-end-time" readonly class="form-control datetimeEnd" placeholder="结束日期">
+                            </div>
+                            <button type="button" id="supplier-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
+                        </form>
                     </div>
-                    <div id="store-sales" style="width: 1000px;height:500px;"></div>
-				</div>
-			</div>
-
-            <div class="card m-b-20">
-				<div class="card-block">
-                    <div class="row">
-                        <div class="col-md-5 col-md-offset-7">
-                            <form class="form-inline">
-                                <div class="form-group">
-                                    <input type="text" id="supplier-sales-start-time" readonly class="form-control datetimeStart">
-                                </div>
-                                <div class="form-group">
-                                    <input type="text" id="supplier-sales-end-time" readonly class="form-control datetimeEnd">
-                                </div>
-                                <button type="button" id="supplier-sales-submit" class="btn btn-default">{{ _('Submit') }}</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="supplier-sales" style="width: 1000px;height:500px;"></div>
-				</div>
+                </div>
+                <div id="supplier-sales" style="width:100%;height:500px;"></div>
 			</div>
 
 		</div>
