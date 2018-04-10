@@ -303,7 +303,7 @@ class WxaOpen3rd(object):
         """获取小程序码(不限量)"""
         url = '%s/getwxacodeunlimit?access_token=%s' % (self.wxa_host_url, self.access_token)
         payload = {
-            'path': path,
+            'page': path,
             'scene': scene,
             'width': width
         }
@@ -311,7 +311,7 @@ class WxaOpen3rd(object):
         current_app.logger.warn('Get wxacode unlimit data: %s' % payload)
 
         res = requests.post(url, data=json.dumps(payload))
-
+        
         return res
 
     def create_wxaqrcode(self, path, width=430):
