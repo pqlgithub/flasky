@@ -8,7 +8,7 @@ from .. import db, cache
 from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion, Order, OrderStatus
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
 from app.tasks import reply_wxa_service, sales_statistics
-from app.utils import Master, custom_response, timestamp
+from app.utils import Master, custom_response, timestamp, status_response
 
 
 @open.route('/wx/authorize_notify', methods=['GET', 'POST'])
@@ -198,7 +198,12 @@ def wxpay_notify():
     <total_fee>20</total_fee>\n<trade_type><![CDATA[NATIVE]]></trade_type>\n
     <transaction_id><![CDATA[4200000079201804105782996248]]></transaction_id>\n</xml>'
     """
-    current_app.logger.warn(request.data)
+    current_app.logger.debug(request.data)
+    if not request.data:
+        return status_response(False, {
+            'code': 400,
+            'message': '未收到请求参数'
+        })
 
     data = WxPay.to_dict(request.data)
     # 微信支付初始化参数
