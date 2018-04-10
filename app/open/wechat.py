@@ -5,9 +5,9 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion
+from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion, Order, OrderStatus
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
-from app.tasks import reply_wxa_service
+from app.tasks import reply_wxa_service, sales_statistics
 from app.utils import Master, custom_response, timestamp
 
 
@@ -187,7 +187,17 @@ def receive_message(appid):
 
 @open.route('/wx/pay_notify', methods=['GET', 'POST'])
 def wxpay_notify():
-    """微信支付异步通知"""
+    """
+    微信支付异步通知
+    '<xml><appid><![CDATA[wx3cc0ea5d2c601f30]]></appid>\n<bank_type><![CDATA[LQT]]></bank_type>\n
+    <cash_fee><![CDATA[20]]></cash_fee>\n<fee_type><![CDATA[CNY]]></fee_type>\n<is_subscribe><![CDATA[N]]>
+    </is_subscribe>\n<mch_id><![CDATA[1490941762]]></mch_id>\n<nonce_str><![CDATA[Fx65c5WJfNElit1mPBKxCgp99v4Li80u]]>
+    </nonce_str>\n<openid><![CDATA[o_PSJ5UIBFv-24mb06H3HMVZF6pY]]></openid>\n<out_trade_no><![CDATA[D18041049713605]]>
+    </out_trade_no>\n<result_code><![CDATA[SUCCESS]]></result_code>\n<return_code><![CDATA[SUCCESS]]></return_code>\n
+    <sign><![CDATA[936FA2945FD918A96D56848A823953C4]]></sign>\n<time_end><![CDATA[20180410142254]]></time_end>\n
+    <total_fee>20</total_fee>\n<trade_type><![CDATA[NATIVE]]></trade_type>\n
+    <transaction_id><![CDATA[4200000079201804105782996248]]></transaction_id>\n</xml>'
+    """
     current_app.logger.warn(request.data)
 
     data = WxPay.to_dict(request.data)
@@ -200,7 +210,25 @@ def wxpay_notify():
     )
     if not wx_pay.check(data):
         return wx_pay.reply('签名验证失败', False)
-    # TODO:处理业务逻辑
+
+    # 处理业务逻辑
+    if data['result_code'] == 'SUCCESS' and data['return_code'] == 'SUCCESS':
+        rid = data['out_trade_no']
+        pay_time = data['time_end']
+
+        current_order = Order.query.filter_by(serial_no=rid).first()
+        if current_order is None:
+            current_app.logger.warn('订单[%s]不存在' % rid)
+            return wx_pay.reply('订单不存在', False)
+
+        if current_order.status == OrderStatus.PENDING_PAYMENT:  # 待支付
+            current_order.mark_checked_status()
+            current_order.payed_at = pay_time
+
+            # 触发异步任务
+            sales_statistics.delay(current_order.id)
+
+            db.session.commit()
 
     return wx_pay.reply('OK', True)
 

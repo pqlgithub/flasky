@@ -120,6 +120,25 @@ def add_seller_remark(rid):
     return status_response(R200_OK)
 
 
+@api.route('/orders/check_order_paid', methods=['POST'])
+@auth.login_required
+def check_order_paid():
+    """检测订单是否完成支付"""
+    rid = request.json.get('rid')
+    if not rid:
+        abort(400)
+
+    current_order = Order.query.filter_by(master_uid=g.master_uid, serial_no=rid).first_or_404()
+    paid = False
+    if current_order.status == OrderStatus.PENDING_CHECK:
+        paid = True
+
+    return full_response(R200_OK, {
+        'rid': rid,
+        'paid': paid
+    })
+
+
 @api.route('/orders/up_paid_status', methods=['POST'])
 @auth.login_required
 def update_order_paid():
