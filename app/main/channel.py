@@ -36,6 +36,7 @@ def show_stores():
     
     return render_template('stores/show_list.html',
                            sub_menu='stores',
+                           platform=platform,
                            paginated_stores=paginated_stores,
                            **load_common_data())
 

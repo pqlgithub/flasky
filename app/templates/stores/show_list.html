@@ -16,6 +16,27 @@
 	</div>
 	
 	<div class="table-responsive">
+		{% if platform == 1 and paginated_stores.pages == 0 %}
+		<div class="row">
+			<div class="col-md-9">
+		        <div class="well m-b-20">
+		            <h3 class="title">开启小程序店铺</h3>
+		            <p class="summary m-t-25 m-b-25">
+		                一键生成小程序店铺，快速抢占10亿微信流量红利，占据社交电商高地<br>
+		                助您抢鲜一步进行新零售营销。
+		            </p>
+		            <a href="{{ url_for('main.wxapp_authorize') }}" class="btn btn-mixpus btn-lg" target="_blank">
+		                <i class="fa fa-link"></i> 开始小程序授权
+		            </a>
+		        </div>
+			</div>
+			<div class="col-md-3">
+				<div class="alert alert-warning">
+					<i class="fa fa-info-circle"></i> 开通小程序流程
+				</div>
+			</div>
+		</div>
+		{% else %}
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -102,6 +123,7 @@
 	            {% endfor %}
 			</tbody>
 		</table>
+		{% endif %}
 	</div>
 </div>
 {% endblock %}
