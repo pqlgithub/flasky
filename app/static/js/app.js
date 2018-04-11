@@ -29,19 +29,19 @@ var mixpus = {
 	},
 	show_warning_message: function (message) {
 		swal({
-		 	title: 'Warning!',
+		 	title: '警告!',
 			text: message,
 			type: 'info',
-			confirmButtonText: 'Yes, I Got!',
+			confirmButtonText: '好，我知道了!',
 			confirmButtonColor: '#faa937'
 		 });
 	},
 	show_error_message: function (message) {
 		 swal({
-		 	title: 'Error!',
+		 	title: '出错了!',
 			text: message,
 			type: 'error',
-			confirmButtonText: 'Yes, I Got!',
+			confirmButtonText: '好，我知道了!',
 			confirmButtonColor: '#c6322a'
 		 });
 	},

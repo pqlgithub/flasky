@@ -5,14 +5,16 @@ from flask_login import login_required, current_user
 from sqlalchemy.sql import func
 from . import main
 from .. import db
-from app.models import Order, Product, ProductStock, Site
+from app.models import Order, Product, ProductStock, Site, WxMiniApp
 from ..utils import Master
 from ..decorators import user_has, user_is
 
 
 @main.route('/dashboard')
-@user_has('admin_dashboard')
 def index():
+    # 检测是否开通小程序
+    wxapps = WxMiniApp.query.filter_by(master_uid=Master.master_uid()).all()
+
     # 统计数量
     total_product_count = Product.query.filter_by(master_uid=Master.master_uid()).count()
     # 最新的1个产品
@@ -33,6 +35,7 @@ def index():
 
     return render_template('dashboard/index.html',
                            top_menu='dashboard',
+                           wxapps=wxapps,
                            top_orders=top_orders,
                            total_revenue=total_revenue,
                            total_order_count=total_order_count,

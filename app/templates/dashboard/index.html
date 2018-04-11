@@ -7,7 +7,18 @@
 	</div>
 	<div class="row">
 		<div class="col-md-9">
-			
+			{% if not wxapps %}
+            <div class="well m-b-20">
+                <h3 class="title">开启小程序店铺</h3>
+                <p class="summary m-t-25 m-b-25">
+                    一键生成小程序店铺，快速抢占10亿微信流量红利，占据社交电商高地<br>
+                    助您抢鲜一步进行新零售营销。
+                </p>
+                <a href="{{ url_for('main.wxapp_authorize') }}" class="btn btn-mixpus btn-lg" target="_blank">
+                    <i class="fa fa-link"></i> 开始小程序授权
+                </a>
+            </div>
+			{% endif %}
 			<div class="row">
 				<div class="col-md-3">
 					<div class="info-box">
@@ -69,6 +80,35 @@
 				</div>
 			</div>
 			
+			<h3 class="box-title">
+				运营快捷入口
+			</h3>
+			<div class="card-block">
+				<div class="block-body">
+					<div class="row">
+						<div class="col-sm-3">
+                            <a href="{{ url_for('main.show_orders') }}?s=5" class="btn btn-default btn-block btn-lg">
+	                         	<i class="fa fa-shopping-cart"></i> {{ _('Pending Review') }}{{ _('Sales') }} <span class="badge">2</span>
+                         	</a>
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url_for('main.create_product') }}" class="btn btn-default btn-block btn-lg">
+								<i class="fa fa-plus"></i> 新增商品
+							</a>
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url_for('main.show_stores') }}?platform=1" class="btn btn-default btn-block btn-lg">
+								<i class="fa fa-link"></i> 小程序管理
+							</a>
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url_for('main.show_suppliers') }}" class="btn btn-default btn-block btn-lg">
+								供应商管理
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<h3 class="box-title">
 				{{ _('Latest Orders') }}
@@ -122,25 +162,38 @@
 			</div>
 		</div>
 		<div class="col-md-3">
-			
-			<div class="card-block">
-				<div class="block-header">
-					<h4>运营快捷入口</h4>
+			{% for wxapp in wxapps %}
+			<div class="panel panel-default">
+			  <div class="panel-body">
+				<div class="media">
+				  	<div class="media-left">
+				    	<a href="#">
+				      	  <img class="media-object" src="{{ wxapp.cover.view_url }}" alt="{{ wxapp.nick_name }}" width="100px">
+				    	</a>
+				  	</div>
+				  	<div class="media-body">
+				    	<h4 class="media-heading">{{ wxapp.nick_name }}</h4>
+				    	<p class="m-t-10">开通时间：{{ wxapp.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}</p>
+						<p>{{ wxapp.signature }}</p>
+				  	</div>
 				</div>
-				<div class="block-body">
-					<a href="" class="btn btn-default">
-						<i class="fa fa-shopping-cart"></i> 订单列表
-					</a>
-					<a href="" class="btn btn-danger">
-						退款管理
-					</a>
-					<a href="" class="btn btn-default">
-						供应商管理
-					</a>
-				</div>
+			  </div>
+			  <div class="panel-footer">
+                <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ wxapp.auth_app_id }}" class="btn-link">
+                    <i class="fa fa-gear"></i> 基本设置
+                </a>
+                <a href="{{ url_for('main.wxapp_templates') }}?auth_app_id={{ wxapp.auth_app_id }}" class="m-l-10 btn-link">
+					<i class="fa fa-cubes"></i> 选择模板
+				</a>
+                <a href="{{ url_for('main.wxapp_versions') }}?auth_app_id={{ wxapp.auth_app_id }}" class="m-l-10 btn-link">
+					<i class="fa fa-upload"></i> 版本管理
+				</a>
+			  </div>
 			</div>
 			
-			<div class="well m-t-30">
+			{% endfor %}
+			
+			<div class="well">
 				<div class="block-header">
 					<h4>{{ _('Company Info') }}</h4>
 				</div>

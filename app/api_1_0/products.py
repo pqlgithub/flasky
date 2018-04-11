@@ -6,7 +6,7 @@ from .. import db
 from . import api
 from .auth import auth
 from .utils import *
-from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku, Asset
+from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku, Asset, Store
 from app.helpers import MixGenId
 
 
@@ -108,6 +108,47 @@ def get_products_by_brand(rid):
     if pagination.has_next:
         next_url = url_for('api.get_products_by_brand', rid=rid, page=page + 1, _external=True)
         
+    return full_response(R200_OK, {
+        'products': [product.to_json() for product in products],
+        'prev': prev_url,
+        'next': next_url,
+        'count': pagination.total
+    })
+
+
+@api.route('/products/by_store')
+def get_products_by_store():
+    """获取某个店铺下商品列表"""
+    rid = request.values.get('rid')
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 20, type=int)
+    prev_url = None
+    next_url = None
+
+    current_store = Store.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
+    if current_store is None:
+        abort(404)
+
+    distribute_packet_ids = []
+    for dp in current_store.distribute_packets:
+        distribute_packet_ids.append(dp.product_packet_id)
+
+    if not distribute_packet_ids:
+        abort(404)
+
+    # 多对多关联查询
+    builder = db.session.query(Product).join(ProductPacket, Product.product_packets)\
+        .filter(Product.master_uid == g.master_uid).filter(ProductPacket.id.in_(distribute_packet_ids))
+
+    pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
+    products = pagination.items
+
+    if pagination.has_prev:
+        prev_url = url_for('api.get_products_by_store', rid=rid, page=page - 1, _external=True)
+
+    if pagination.has_next:
+        next_url = url_for('api.get_products_by_store', rid=rid, page=page + 1, _external=True)
+
     return full_response(R200_OK, {
         'products': [product.to_json() for product in products],
         'prev': prev_url,

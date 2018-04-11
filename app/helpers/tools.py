@@ -102,7 +102,7 @@ class MixGenId(object):
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
     @staticmethod
-    def gen_store_sn(length=7):
+    def gen_store_sn(length=8):
         """生成渠道sn"""
         prefix = 'Q'
         return ''.join([prefix, MixGenId.gen_digits(length)])

@@ -7,6 +7,7 @@ from app.models import User
 
 __all__ = [
     'Store',
+    'StoreDistributePacket',
     'STORE_STATUS',
     'STORE_TYPE'
 ]
@@ -75,6 +76,11 @@ class Store(db.Model):
         'StoreStatistics', backref='store', lazy='dynamic'
     )
 
+    # store and product_packet => 1 to N
+    distribute_packets = db.relationship(
+        'StoreDistributePacket', backref='store', lazy='dynamic'
+    )
+
     @property
     def platform_name(self):
         for plat in SUPPORT_PLATFORM:
@@ -125,7 +131,7 @@ class StoreDistributePacket(db.Model):
 
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
     product_packet_id = db.Column(db.Integer, db.ForeignKey('product_packets.id'))
-    discount_templet_id = db.Column(db.Integer, db.ForeignKey('discount_templets.id'))
+    discount_templet_id = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<StoreDistributePacket {}>'.format(self.id)

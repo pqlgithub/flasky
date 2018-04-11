@@ -24,6 +24,7 @@
 					</th>
 					<th>{{ _('Platform') }}</th>
 					<th>{{ _('Store Name') }}</th>
+					<th>{{ _('Store Code') }}</th>
 					<th class="text-center">{{ _('Type') }}</th>
 					<th class="text-center">{{ _('Manager') }}</th>
 					<th class="text-right">开通时间</th>
@@ -42,6 +43,9 @@
 					</td>
 					<td>
 						{{ store.name }}
+					</td>
+					<td>
+						{{ store.serial_no }}
 					</td>
 					<td class="text-center">
 						{{ store.type_label[1] }}
@@ -78,7 +82,6 @@
 	                            <a href="{{ url_for('main.wxapp_versions') }}?auth_app_id={{ store.wxapp.auth_app_id }}" class="btn btn-mixpus">
 									<i class="fa fa-upload"></i> 版本管理
 								</a>
-	                            
 							</p>
 						</td>
 					{% else %}
@@ -89,7 +92,7 @@
 		                    <a href="" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 		                        {{ _('Related Orders') }}
 		                    </a>
-		                    <a href="{{ url_for('main.distribute_products', sn=store.serial_no) }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
+		                    <a href="{{ url_for('main.store_distribute_products', rid=store.serial_no) }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
 		                        {{ _('Distribute Products') }}
 		                    </a>
 							<a href="{{ url_for('main.edit_store', id=store.id) }}" class="m-l-10 btn-link">{{ _('Edit') }}</a>

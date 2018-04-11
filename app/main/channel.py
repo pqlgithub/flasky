@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-import re
-import json
-import urllib.request
-from flask import g, render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
-from flask_login import login_required
+from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_babelex import gettext
 from sqlalchemy.exc import DataError
 from . import main
 from .. import db
-from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES
+from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, StoreDistributePacket, \
+    ProductPacket, DiscountTemplet
 from app.forms import StoreForm, BannerForm, BannerImageForm
-from ..utils import full_response, custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST
+from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST
 from ..helpers import MixGenId
 from ..decorators import user_has
 
@@ -141,6 +137,52 @@ def delete_store():
         flash('Delete store is fail!', 'danger')
     
     return redirect(url_for('.show_stores'))
+
+
+@main.route('/stores/<string:rid>/distribute', methods=['GET', 'POST'])
+def store_distribute_products(rid):
+    """为店铺授权商品"""
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+    if request.method == 'POST':
+        selected_ids = request.form.getlist('selected[]')
+
+        for packet_id in selected_ids:
+            discount_templet_id = request.form.get('discount_tpl_%s' % packet_id)
+            if discount_templet_id:
+                # 检测是否设置
+                distribute_packet = StoreDistributePacket.query.filter_by(master_uid=Master.master_uid(),
+                                                                          store_id=store.id,
+                                                                          product_packet_id=packet_id).first()
+                if distribute_packet is None:
+                    # 新增
+                    new_distribute_packet = StoreDistributePacket(
+                        master_uid=Master.master_uid(),
+                        store_id=store.id,
+                        product_packet_id=packet_id,
+                        discount_templet_id=discount_templet_id
+                    )
+                    db.session.add(new_distribute_packet)
+                else:
+                    # 更新
+                    distribute_packet.discount_templet_id = discount_templet_id
+
+        db.session.commit()
+
+        return status_response(True, gettext('Distribute products is ok!'))
+
+    product_packets = ProductPacket.query.filter_by(master_uid=Master.master_uid()).all()
+    discount_templets = DiscountTemplet.query.filter_by(master_uid=Master.master_uid()).all()
+
+    # 已分发商品组
+    distributed_packet = {}
+    for dp in store.distribute_packets.all():
+        distributed_packet[dp.product_packet_id] = dp.discount_templet_id
+
+    return render_template('stores/_modal_distribute.html',
+                           product_packets=product_packets,
+                           discount_templets=discount_templets,
+                           distributed_packet=distributed_packet,
+                           post_url=url_for('main.store_distribute_products', rid=rid))
 
 
 @main.route('/banners', methods=['GET', 'POST'])
