@@ -117,7 +117,7 @@ class WxMiniApp(db.Model):
         for s in WXAPP_STATUS:
             if s[0] == self.status:
                 return s
-
+    
     @property
     def test_list(self):
         """字符串转换为列表"""

@@ -84,7 +84,7 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Wx App') }}
 		<small><i class="fa fa-info-circle"></i> 如使用中发现接口有异常，请点击 <a href="">重新授权</a> 试试。</small>
 		<span class="pull-right">
@@ -92,7 +92,7 @@
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 	
     <ul class="nav nav-tabs" role="tablist">
         <li class="active">
@@ -120,117 +120,120 @@
     <div class="tab-content m-t-30">
 		<!--授权信息-->
         <div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
-		    <form id="wxapp-form" class="form-horizontal" action="{{ url_for('main.update_wxapp_setting') }}" method="post">
-		        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-				<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
+			<div class="row">
+				<div class="col-md-9">
+				    <form id="wxapp-form" class="form-horizontal" action="{{ url_for('main.update_wxapp_setting') }}" method="post">
+				        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+						<input type="hidden" name="auth_app_id" value="{{ auth_app_id }}" >
 				
-                {% if auth_status %}
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序Logo</label>
-                        <div class="col-sm-6">
-							{% if mode == 'create' %}
-							<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
-								<img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" />
-							</a>
-							{% else %}
-							<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
-								<img src="{{ wx_mini_app.cover.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" />
-							</a>
-							{% endif %}
-							<input id="cover_id" name="cover_id" value="{{ wx_mini_app.cover_id|default(0) }}" type="hidden">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序名称</label>
-                        <div class="col-sm-6">
-							<input name="nick_name" class="form-control" value="{{ wx_mini_app.nick_name }}" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序介绍</label>
-                        <div class="col-sm-6">
-							<textarea name="signature" class="form-control">{{ wx_mini_app.signature }}</textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序审核状态</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-static">{{ wx_mini_app.status_label[1] }}</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">小程序原始ID</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-static"><strong class="text-success">{{ wx_mini_app.user_name }}</strong></p>
-                        </div>
-                    </div>
-                    <div class="form-group m-t-30">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-6">
-                            <a href="" class="btn btn-default">重新授权</a>
-							<button class="btn btn-mixpus" type="submit" form="wxapp-form" >更新信息</button>
-                        </div>
-                    </div>
-                {% endif %}
-			</form>
+		                {% if auth_status %}
+		                    <div class="form-group">
+		                        <label class="col-sm-3 control-label">小程序LOGO</label>
+		                        <div class="col-sm-9">
+									{% if mode == 'create' %}
+									<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
+										<img src="{{ url_for('static', filename='img/no_img100x100.png') }}" width="100px" />
+									</a>
+									{% else %}
+									<a href="javascript:void(0);" id="cover_thumb_image" data-target="cover" data-toggle="image" class="img-thumbnail">
+										<img src="{{ wx_mini_app.cover.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" />
+									</a>
+									{% endif %}
+									<input id="cover_id" name="cover_id" value="{{ wx_mini_app.cover_id|default(0) }}" type="hidden">
+		                        </div>
+		                    </div>
+		                    <div class="form-group">
+		                        <label class="col-sm-3 control-label">小程序名称</label>
+		                        <div class="col-sm-9">
+									<input name="nick_name" class="form-control" value="{{ wx_mini_app.nick_name }}" />
+		                        </div>
+		                    </div>
+		                    <div class="form-group">
+		                        <label class="col-sm-3 control-label">小程序介绍</label>
+		                        <div class="col-sm-9">
+									<textarea name="signature" class="form-control">{{ wx_mini_app.signature }}</textarea>
+		                        </div>
+		                    </div>
+		                    <div class="form-group">
+		                        <label class="col-sm-3 control-label">小程序审核状态</label>
+		                        <div class="col-sm-9">
+		                            <p class="form-control-static">{{ wx_mini_app.status_label[1] }}</p>
+		                        </div>
+		                    </div>
+		                    <div class="form-group">
+		                        <label class="col-sm-3 control-label">小程序原始ID</label>
+		                        <div class="col-sm-9">
+		                            <p class="form-control-static"><strong class="text-success">{{ wx_mini_app.user_name }}</strong></p>
+		                        </div>
+		                    </div>
+		                    <div class="form-group m-t-30">
+		                        <div class="col-sm-9 col-sm-offset-3">
+		                            <a href="javascript:;" class="btn btn-default">重新授权</a>
+									<button class="btn btn-mixpus" type="submit" form="wxapp-form" >更新信息</button>
+		                        </div>
+		                    </div>
+		                {% endif %}
+					</form>
+				</div>
+			</div>
         </div>
 		
 		<!--支付设置-->
         <div id="data" class="tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
-			<div class="alert alert-success m-b-30" role="alert">
-				<h4>支付设置提示</h4>
-				<p><i class="fa fa-info-circle"></i> 小程序必须使用自有的微信支付，配置完成后，每笔交易货款都将直接进入您的微信支付对应的财付通账号。</p>
-				<p><i class="fa fa-info-circle"></i> 未申请微信支付的商户，如已有微信商户平台账户，可在授权的小程序微信后台，直接绑定已开通的微信支付，无需重新申请新的支付。</p>
+			<div class="row">
+				<div class="col-md-9">
+				    <form id="payment-form" class="form-horizontal" action="{{ url_for('main.wxapp_payment') }}" method="post" enctype="multipart/form-data">
+				        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+						<input type="hidden" name="auth_app_id" value="{{ wx_mini_app.auth_app_id }}" >
+			
+			            <div class="form-group">
+			                <label class="col-sm-3 control-label">商户号</label>
+			                <div class="col-sm-9">
+			                    {{ payment_form.mch_id(id="mch_id", class="form-control") }}
+			                </div>
+			            </div>
+			            <div class="form-group">
+			                <label class="col-sm-3 control-label">密钥</label>
+			                <div class="col-sm-9">
+			                    {{ payment_form.mch_key(id="mch_key", class="form-control") }}
+			                </div>
+			            </div>
+			            <div class="form-group">
+			                <label class="col-sm-3 control-label">API证书</label>
+			                <div class="col-sm-9">
+								{{ payment_form.ssl_cert(id="ssl_cert") }}
+								<div class="progress m-t-10" style="display: none;">
+								    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+								        0%
+								    </div>
+								</div>
+			                </div>
+			            </div>
+			            <div class="form-group m-t-30">
+			                <div class="col-sm-9 col-md-offset-3">
+			                    <button class="btn btn-mixpus" type="submit" form="payment-form">确认提交</button>
+			                </div>
+			            </div>
+					</form>
+				</div>
+				<div class="col-md-3">
+					<div class="alert alert-success m-b-30" role="alert">
+						<h4>支付设置提示</h4>
+						<p><i class="fa fa-info-circle"></i> 小程序必须使用自有的微信支付，配置完成后，每笔交易货款都将直接进入您的微信支付对应的财付通账号。</p>
+						<p><i class="fa fa-info-circle"></i> 未申请微信支付的商户，如已有微信商户平台账户，可在授权的小程序微信后台，直接绑定已开通的微信支付，无需重新申请新的支付。</p>
+					</div>
+				</div>
 			</div>
-			
-		    <form id="payment-form" class="form-horizontal" action="{{ url_for('main.wxapp_payment') }}" method="post" enctype="multipart/form-data">
-		        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-				<input type="hidden" name="auth_app_id" value="{{ wx_mini_app.auth_app_id }}" >
-			
-	            <div class="form-group">
-	                <label class="col-sm-2 control-label">商户号</label>
-	                <div class="col-sm-6">
-	                    {{ payment_form.mch_id(id="mch_id", class="form-control") }}
-	                </div>
-	            </div>
-	            <div class="form-group">
-	                <label class="col-sm-2 control-label">密钥</label>
-	                <div class="col-sm-6">
-	                    {{ payment_form.mch_key(id="mch_key", class="form-control") }}
-	                </div>
-	            </div>
-	            <div class="form-group">
-	                <label class="col-sm-2 control-label">API证书</label>
-	                <div class="col-sm-6">
-						{{ payment_form.ssl_cert(id="ssl_cert") }}
-						<div class="progress m-t-10" style="display: none;">
-						    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-						        0%
-						    </div>
-						</div>
-	                </div>
-	            </div>
-	            <div class="form-group m-t-30">
-	                <div class="col-sm-6 col-md-offset-2">
-	                    <button class="btn btn-mixpus" type="submit" form="payment-form">确认提交</button>
-	                </div>
-	            </div>
-			</form>
         </div>
     	
 		<!--管理者体验-->
 		<div id="experience" class="tab-pane" role="tabpanel" aria-labelledby="experience-tab">
-			
-			<div class="testers">
-				<div class="form-group">
-					<div class="col-sm-8">
+			<div class="row">
+				<div class="col-md-9">
+					<div class="testers">
 						<a href="{{ url_for('main.wxapp_add_tester') }}?auth_app_id={{ auth_app_id }}" class="btn btn-mixpus ajax-modal" data-modal="tester-modal">
 							<i class="fa fa-plus"></i> 添加体验者
 						</a>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-8">
 						<table class="table table-bordered m-t-20">
 							<thead>
 								<tr>
@@ -244,7 +247,6 @@
 						</table>
 					</div>
 				</div>
-				
 			</div>
 		</div>
 	

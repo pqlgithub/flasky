@@ -12,7 +12,7 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Wx App') }}
 		<small>客服消息</small>
 		
@@ -24,7 +24,7 @@
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
     <form id="wxapp-form" class="form-horizontal" action="{{ url_for('main.wxapp_service_setting') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
