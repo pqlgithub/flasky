@@ -113,7 +113,7 @@ class MixGenId(object):
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
     @staticmethod
-    def gen_customer_sn(length=7):
+    def gen_customer_sn(length=8):
         """生成分销商编号"""
         prefix = 'F'
         return ''.join([prefix, MixGenId.gen_digits(length)])

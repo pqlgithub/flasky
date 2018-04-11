@@ -13,12 +13,14 @@
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
-		{{ _('Wxapp Service') }}
+		{{ _('Wx App') }}
+		<small>客服消息</small>
+		
 		<span class="pull-right">
             <button type="submit" form="wxapp-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+			<a href="{{ url_for('main.show_stores') }}?platform=1" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>

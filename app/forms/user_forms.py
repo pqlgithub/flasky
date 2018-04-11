@@ -22,11 +22,12 @@ class SiteForm(Form):
 
 
 class UserForm(Form):
-    email = StringField(lazy_gettext('Email'), validators=[DataRequired(), Length(1, 64), Email()])
+    email = StringField(lazy_gettext('Account'), validators=[DataRequired(), Length(1, 64)])
     username = StringField(lazy_gettext('Username'), validators=[DataRequired(), Length(1, 64)])
     password = PasswordField(lazy_gettext('Password'),
                              validators=[DataRequired(), EqualTo('password2', message=lazy_gettext('Passwords must match'))])
     password2 = PasswordField(lazy_gettext('Confirm password'), validators=[DataRequired()])
+    store_id = SelectField(lazy_gettext('Belong Store'), choices=[], coerce=int, default=0)
 
     # 中定义了以validate_ 开头且后面跟着字段名的方法
     def validate_username(self, field):
@@ -36,6 +37,11 @@ class UserForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError(lazy_gettext('Email is already exist!'))
+
+
+class UserEditForm(Form):
+    username = StringField(lazy_gettext('Username'), validators=[DataRequired(), Length(1, 64)])
+    store_id = SelectField(lazy_gettext('Belong Store'), choices=[], coerce=int, default=0)
 
 
 class RoleForm(Form):

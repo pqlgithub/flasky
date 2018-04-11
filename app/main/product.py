@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import time, hashlib, re
 from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
-from flask_login import login_required, current_user
 from flask_sqlalchemy import Pagination
 from sqlalchemy.sql import func
 from flask_babelex import gettext
 import flask_whooshalchemyplus
+
 from . import main
 from .. import db, uploader
-from ..utils import gen_serial_no
-from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, SupplyStats,\
-    Currency, Order, OrderItem, Brand, ProductPacket
+from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, \
+    SupplyStats, Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer
 from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
-    custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors
+    custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors, gen_serial_no
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
-from app.helpers import QiniuStorage
+from app.helpers import QiniuStorage, WxaOpen3rd, WxAppError, Fxaim
+from qiniu import Auth, put_data
 
 
 def load_common_data():
@@ -1372,3 +1372,70 @@ def remove_product_from_group(id):
     db.session.commit()
 
     return status_response(True, gettext("Cancel select is ok!"))
+
+
+@main.route('/products/download_wxacode', methods=['GET', 'POST'])
+def download_wxacode():
+    """下载商品小程序码"""
+    rid = request.values.get('rid')
+    size = {
+        '8cm': 576,
+        '12cm': 864,
+        '15cm': 1080,
+        '30cm': 2160,
+        '50cm': 3600
+    }
+    if request.method == 'POST':
+        cm = request.form.get('cm')
+        width = size[cm]
+        path = 'pages/product/product'
+
+        # 商品是否存在
+        product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+        # 小程序名称
+        wxa = WxMiniApp.query.filter_by(master_uid=Master.master_uid()).first_or_404()
+
+        auth_app_id = wxa.auth_app_id
+
+        try:
+            # 获取授权信息
+            authorizer = WxAuthorizer.query.filter_by(master_uid=Master.master_uid(), auth_app_id=auth_app_id).first_or_404()
+            # 获得小程序码
+            open3rd = WxaOpen3rd(access_token=authorizer.access_token)
+            result = open3rd.get_wxacode_unlimit(path, scene=rid, width=width)
+        except WxAppError as err:
+            current_app.logger.warn('Wxapp wxacode is error: %s' % err)
+            return status_response(False, {
+                'code': 500,
+                'message': str(err)
+            })
+
+        # 构建鉴权对象
+        cfg = current_app.config
+        q = Auth(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'])
+
+        # 上传到七牛后保存的文件名
+        key = 'qrcode/wxacode-%s-%s.jpg' % (rid, hashlib.md5(path.encode(encoding='UTF-8')).hexdigest())
+        # 生成上传 Token，可以指定过期时间等
+        token = q.upload_token(cfg['QINIU_BUCKET_NAME'], key, 3600)
+        # 开始上传
+        ret, info = put_data(token, key, result.content)
+
+        current_app.logger.warn('ret: %s' % ret)
+        current_app.logger.warn('info: %s' % info)
+
+        # 生成小程序码
+        wxa_image_url = '%s/%s' % (Asset.host_url(), key)
+
+
+
+    return render_template('products/_modal_wxacode.html')
+
+
+@main.route('/products/make_poster', methods=['GET', 'POST'])
+def make_adv_poster():
+    """生成宣传海报图"""
+    rid = request.values.get('rid')
+
+    return render_template('products/_modal_poster.html')

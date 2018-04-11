@@ -13,13 +13,13 @@
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
-		{{ _('Wxapp Service') }}
-		<small>推送设置保存后，需同步进入小程序后台->消息推送，进行同步设置。</small>
+		{{ _('Wx App') }}
+		<small>客服配置</small>
 		<span class="pull-right">
             <button type="submit" form="wxapp-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+			<a href="{{ url_for('main.show_stores') }}?platform=1" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
@@ -43,42 +43,48 @@
         </ul>
 
         <div class="tab-content m-t-30">
-			<!--支付设置-->
-            <div id="data" class="active tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
+			<div class="row">
+				<div class="col-md-9">
+		            <div id="data" class="active tab-pane fade in" role="tabpanel" aria-labelledby="data-tab">
+		                <div class="form-group">
+		                    <label class="col-sm-3 control-label">URL(服务器地址)</label>
+		                    <div class="col-sm-9">
+		                        <input class="form-control" name="url" value="{{ service_url }}" />
+		                    </div>
+		                </div>
 				
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">URL(服务器地址)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="url" value="{{ service_url }}" />
-                    </div>
-                </div>
-				
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Token(令牌)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="token" value="{{ service_token }}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">EncodingAESKey(加密密钥)</label>
-                    <div class="col-sm-6">
-                        <input class="form-control" name="aes_key" value="{{ service_aes_key }}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">消息加密方式</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">安全模式</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">数据格式</label>
-                    <div class="col-sm-6">
-                        <label class="control-label">JSON</label>
-                    </div>
-                </div>
-            </div>
-			
+		                <div class="form-group">
+		                    <label class="col-sm-3 control-label">Token(令牌)</label>
+		                    <div class="col-sm-9">
+		                        <input class="form-control" name="token" value="{{ service_token }}" />
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-sm-3 control-label">EncodingAESKey(加密密钥)</label>
+		                    <div class="col-sm-9">
+		                        <input class="form-control" name="aes_key" value="{{ service_aes_key }}" />
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-sm-3 control-label">消息加密方式</label>
+		                    <div class="col-sm-9">
+		                        <label class="control-label">安全模式</label>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-sm-3 control-label">数据格式</label>
+		                    <div class="col-sm-9">
+		                        <label class="control-label">JSON</label>
+		                    </div>
+		                </div>
+		            </div>
+				</div>
+				<div class="col-md-3">
+					<div class="alert alert-warning">
+						<p><i class="fa fa-info-circle"></i> 推送设置保存后，需同步进入<strong>小程序后台->消息推送</strong>，进行同步设置。</p>
+					</div>
+				</div>
+			</div>
 		</div>
 
     </form>

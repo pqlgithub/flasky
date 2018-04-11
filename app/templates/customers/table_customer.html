@@ -50,10 +50,13 @@
                     {{ customer.created_at|timestamp2string('%Y-%m-%d %H:%M') }}
                 </td>
                 <td class="text-right">
-                    <a href="{{ url_for('main.distribute_products', sn=customer.sn) }}" class="btn-link ajax-modal m-r-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
+                    <a href="" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                        {{ _('Related Orders') }}
+                    </a>
+                    <a href="{{ url_for('main.distribute_products', sn=customer.sn) }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
                         {{ _('Distribute Products') }}
                     </a>
-                    <a href="{{ url_for('main.edit_customer', sn=customer.sn) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                    <a href="{{ url_for('main.edit_customer', sn=customer.sn) }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
                         {{ _('Edit') }}
                     </a>
                 </td>

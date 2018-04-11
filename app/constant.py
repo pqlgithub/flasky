@@ -71,6 +71,10 @@ SUPPORT_PLATFORM = (
         'name': lazy_gettext('JD')
     },
     {
+        'id': 3,
+        'name': lazy_gettext('TaoBao')
+    },
+    {
         'id': 5,
         'name': lazy_gettext('Amazon')
     },
@@ -79,25 +83,13 @@ SUPPORT_PLATFORM = (
         'name': lazy_gettext('Aliexpress')
     },
     {
-        'id': 3,
-        'name': 'Lazada'
-    },
-    {
-        'id': 7,
-        'name': 'Wish'
-    },
-    {
-        'id': 8,
-        'name': 'eBay'
-    },
-    {
         'id': 10,
-        'name': 'Shopee'
+        'name': lazy_gettext('Physical Store')
     },
     {
         'id': 12,
         'name': lazy_gettext('HuaZhu')
-    },
+    }
 )
 
 # 区域划分

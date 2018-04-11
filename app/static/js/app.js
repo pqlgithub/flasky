@@ -157,6 +157,11 @@ mixpus.trim = function (str) {
 	return str.replace(/^\s+|\s+$/g, "");
 };
 
+// 判断是否为数组
+mixpus.isArray = function(o) {
+	return Object.prototype.toString.call(o) == '[object Array]';
+}
+
 mixpus.check_is_install = function () {
 	try{
 		var LODOP = getLodop();
@@ -213,8 +218,12 @@ mixpus.display_alert = function (messages) {
 	var html = '<div class="alert alert-warning alert-dismissible fade in" role="alert"> ';
 	html += '<button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
 	
-	for (var i=0; i<messages.length; i++) {
-		html += '<p><strong>'+ messages[i]['field'] +':</strong> '+ messages[i]['message'] +'</p>';
+	if (mixpus.isArray(messages)) {
+		for (var i=0; i<messages.length; i++) {
+			html += '<p><strong>'+ messages[i]['field'] +':</strong> '+ messages[i]['message'] +'</p>';
+		}
+	} else {
+		html += '<p>'+ messages +'</p>';
 	}
 	
 	html += '</div>';

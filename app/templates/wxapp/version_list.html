@@ -72,13 +72,13 @@
             <button class="btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Help?') }}">
 				<i class="fa fa-info"></i>
 			</button>
-            <a href="{{ url_for('main.wxapps') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+            <a href="{{ url_for('main.show_stores') }}?platform=1" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
 	</h2>
 	
-	<a class="btn btn-modify-domain btn-default" href="javascript:;">
+	<a class="btn btn-modify-domain btn-warning" href="javascript:;">
 		<i class="fa fa-link"></i> 更新服务域名
 	</a>
 	
@@ -107,16 +107,16 @@
 								审核模板
 							</th>
 							<th>
-								可选类目
-							</th>
-							<th>
-								页面配置
-							</th>
-							<th>
 								说明
 							</th>
 							<th class="text-right">
 								提交时间
+							</th>
+							<th class="text-right">
+								可选类目
+							</th>
+							<th class="text-right">
+								页面配置
 							</th>
 							<th class="text-right">
 								{{ _('Action') }}
@@ -147,35 +147,39 @@
 								{{ version.template_id }}
 							</td>
 							<td>
-								<a href="{{ url_for('main.wxapp_category') }}?auth_app_id={{ version.auth_app_id }}" class="ajax-modal btn-link" data-modal="wxa-modal">设置</a>
-							</td>
-							<td>
-								<a href="{{ url_for('main.wxapp_pages') }}?auth_app_id={{ version.auth_app_id }}" class="ajax-modal btn-link" data-modal="wxa-modal">配置</a>
-							</td>
-							<td>
 								{{ version.user_desc }} - {{ version.user_version }}
 							</td>
 							<td class="text-right">
 								{{ version.audit_at|timestamp2string() }}
 							</td>
 							<td class="text-right">
-								{% if version.status != 0 %}
-								<a class="btn-query-status btn-link m-r-10" href="javascript:;" data-audit_id="{{ version.audit_id }}">
-									<i class="fa fa-clock-o"></i> 查询状态
-								</a>
-								{% endif %}
-								<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}" target="_blank">
-									<i class="fa fa-view"></i> 预览
-								</a>
-								{% if version.status == 0 %}
-								<a class="btn btn-release btn-danger" href="javascript:;">
-									<i class="fa fa-cloud-upload"></i> 发布
-								</a>
-								{% else %}
-								<a class="btn btn-commit-review btn-warning" href="javascript:;">
-									<i class="fa fa-check"></i> 提交审核
-								</a>
-								{% endif %}
+								<a href="{{ url_for('main.wxapp_category') }}?auth_app_id={{ version.auth_app_id }}" class="ajax-modal btn-link" data-modal="wxa-modal">设置</a>
+							</td>
+							<td class="text-right">
+								<a href="{{ url_for('main.wxapp_pages') }}?auth_app_id={{ version.auth_app_id }}" class="ajax-modal btn-link" data-modal="wxa-modal">配置</a>
+							</td>
+							<td class="text-right">
+								<p>
+									<a class="btn-link m-r-10" href="{{ url_for('main.wxapp_qrcode') }}?auth_app_id={{ version.auth_app_id }}" target="_blank">
+										<i class="fa fa-view"></i> 预览
+									</a>
+								</p>
+								<p>
+									{% if version.status != 0 %}
+									<a class="btn-query-status btn-link m-r-10" href="javascript:;" data-audit_id="{{ version.audit_id }}">
+										<i class="fa fa-clock-o"></i> 查询状态
+									</a>
+									{% endif %}
+									{% if version.status == 0 %}
+									<a class="btn btn-release btn-danger" href="javascript:;">
+										<i class="fa fa-cloud-upload"></i> 发布
+									</a>
+									{% else %}
+									<a class="btn btn-commit-review btn-warning" href="javascript:;">
+										<i class="fa fa-check"></i> 提交审核
+									</a>
+									{% endif %}
+								</p>
 							</td>
 						</tr>
 						{% endfor %}

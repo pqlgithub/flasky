@@ -8,6 +8,13 @@ from .auth import auth
 from .utils import *
 
 
+@api.route('/users/clerks')
+def get_clerks():
+    """获取某个店铺的全部店员"""
+    store_rid = request.values.get('store_rid')
+
+
+
 @api.route('/users', methods=['POST'])
 def new_user():
     """创建新用户"""

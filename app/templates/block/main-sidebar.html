@@ -131,31 +131,31 @@
                  </div>
             </li>
             <li class="{% if sub_menu == 'channels'%}active {% endif %} treeview">
-                <a href="{{ url_for('main.show_customers') }}">
+                <a href="{{ url_for('main.show_stores') }}">
                     <i class="fa fa-sitemap fa-2x"></i>
-                    <span>{{ _('Channels') }}</span>
+                    <span>{{ _('Store') }}</span>
                 </a>
                 <div class="treeview-menu tree-3x">
                     <ul class="subtree">
-                        <li class="header">{{ _('Channel Manage') }}</li>
+                        <li class="header">{{ _('Store Manage') }}</li>
                         <li>
                             <a href="{{ url_for('main.show_stores') }}" class="pjax">
-                                {{ _('Channel List') }}
+                                {{ _('All Stores') }}
                             </a>
                         </li>
                         <li>
-                            <a href="{{ url_for('main.wxapps') }}" class="pjax">
+                            <a href="{{ url_for('main.show_stores') }}?platform=1" class="pjax">
                                 {{ _('Wx App') }}
                             </a>
                         </li>
-                        <li>
+                        <li class="hidden">
                             <a href="{{ url_for('main.setting_mall') }}" class="pjax">
                                 {{ _('H5 Mall') }}
                             </a>
                         </li>
                     </ul>
                     <ul class="subtree">
-                        <li class="header">{{ _('Channel Setting') }}</li>
+                        <li class="header">{{ _('Store Setting') }}</li>
                         <li>
                             <a href="{{ url_for('main.show_banners') }}" class="pjax">
                                 {{ _('Banner List') }}
@@ -411,6 +411,19 @@
 
                 <div class="treeview-menu tree-2x">
                     <ul class="subtree">
+                        <li class="header">{{ _('General Settings') }}</li>
+                        <li>
+                            <a href="{{ url_for('main.site') }}" class="pjax">
+                                {{ _('Company Info') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('main.show_currencies') }}" class="pjax">
+                                {{ _('Currency List') }}
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="subtree">
                         <li class="header">{{ _('Privilege manage') }}</li>
                         {% if g.user.is_master %}
                         <li>
@@ -422,19 +435,6 @@
                         <li>
                             <a href="{{ url_for('main.setting_roles') }}" class="pjax">
                                 {{ _('Acl List') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="subtree">
-                        <li class="header">{{ _('General Settings') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.site') }}" class="pjax">
-                                {{ _('Company Info') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.show_currencies') }}" class="pjax">
-                                {{ _('Currency List') }}
                             </a>
                         </li>
                     </ul>

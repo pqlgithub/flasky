@@ -10,7 +10,7 @@ from app.models import Client
 
 
 class StoreForm(Form):
-    name = StringField(lazy_gettext('Channel Name'), validators=[DataRequired(message="Channel name can't empty!"), Length(2, 32)])
+    name = StringField(lazy_gettext('Store Name'), validators=[DataRequired(message="Store name can't empty!"), Length(2, 32)])
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
     operator_id = SelectField(lazy_gettext('Manager'), choices=[], coerce=int)
     type = SelectField(lazy_gettext('Type'), choices=[], coerce=int)

@@ -28,9 +28,15 @@ def load_common_data():
 @main.route('/stores')
 @user_has('admin_setting')
 def show_stores():
+    page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
+    platform = request.args.get('platform', type=int)
+
     builder = Store.query.filter_by(master_uid=Master.master_uid())
-    paginated_stores = builder.order_by(Store.id.asc()).paginate(1, per_page)
+    if platform:
+        builder = builder.filter_by(platform=platform)
+
+    paginated_stores = builder.order_by(Store.id.asc()).paginate(page, per_page)
     
     return render_template('stores/show_list.html',
                            sub_menu='stores',

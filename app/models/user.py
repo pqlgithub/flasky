@@ -87,6 +87,9 @@ class User(UserMixin, db.Model):
 
     # 是否认证公司信息
     is_setting = db.Column(db.Boolean, default=False)
+
+    # 所属在某个店铺下
+    store_id = db.Column(db.Integer, default=0)
     
     # 身份类型：1、供应商、2、分销客户、9、消费者
     id_type = db.Column(db.SmallInteger, default=UserIdType.BUYER)
@@ -112,6 +115,8 @@ class User(UserMixin, db.Model):
     # if online or offline
     online = db.Column(db.Boolean, default=False)
     last_seen = db.Column(db.Integer, default=timestamp)
+    # 状态：1、正常；-1：禁用
+    status = db.Column(db.SmallInteger, default=1)
     
     created_at = db.Column(db.Integer, default=timestamp)
     # update time of last time
@@ -177,6 +182,13 @@ class User(UserMixin, db.Model):
             label = '免费版'
 
         return label
+
+    @property
+    def store(self):
+        """所属店铺"""
+        from .store import Store
+
+        return Store.query.get(self.store_id) if self.store_id else None
 
     @property
     def is_master(self):

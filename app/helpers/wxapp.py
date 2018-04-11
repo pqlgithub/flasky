@@ -311,7 +311,7 @@ class WxaOpen3rd(object):
         current_app.logger.warn('Get wxacode unlimit data: %s' % payload)
 
         res = requests.post(url, data=json.dumps(payload))
-        
+
         return res
 
     def create_wxaqrcode(self, path, width=430):

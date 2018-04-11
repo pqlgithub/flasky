@@ -99,6 +99,13 @@ class Store(db.Model):
         """获取负责人信息"""
         return User.query.get(self.operator_id) if self.operator_id else None
 
+    @property
+    def wxapp(self):
+        """关联小程序信息"""
+        from .weixin import WxMiniApp
+        if self.platform == 1:
+            return WxMiniApp.query.filter_by(serial_no=self.serial_no).first()
+
     @staticmethod
     def validate_unique_name(name, master_uid, platform):
         """验证店铺名称是否唯一"""

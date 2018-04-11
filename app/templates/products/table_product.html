@@ -2,7 +2,7 @@
 	<form id="products-form" action="{{ url_for('main.delete_product') }}" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-		<table class="table table-bordered table-striped table-hover">
+		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
 					<th class="text-center">
@@ -57,16 +57,22 @@
                             <span class="sale-price">{{ product.price|round(precision=2) }}</span>
                         {% endif %}
 					</td>
-					<td class="text-right">
-						{{ product.total_stock }}
+					<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
+						{{ product.total_stock|supress_none }}
 					</td>
 					<td class="text-right">
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
 					</td>
 					<td class="text-right">
-						<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-							{{ _('Edit') }}
-						</a>
+						<p>
+							<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								{{ _('Edit') }}
+							</a>
+						<p>
+						<p>
+							<a href="{{ url_for('main.download_wxacode') }}?rid={{ product.serial_no }}" class="btn-link ajax-modal" data-modal="download-modal">下载小程序码</a> 
+							<a href="{{ url_for('main.make_adv_poster') }}?rid={{ product.serial_no }}" class="btn-link m-l-10 ajax-modal" data-modal="maker-modal">推广图</a>
+						</p>
 					</td>
 				</tr>
 				{% endfor %}
