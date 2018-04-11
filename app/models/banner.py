@@ -94,6 +94,12 @@ class BannerImage(db.Model):
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
 
     @property
+    def type_label(self):
+        for t in LINK_TYPES:
+            if t[0] == self.type:
+                return t
+
+    @property
     def image(self):
         """banner asset info"""
         return Asset.query.get(self.image_id) if self.image_id else Asset.default_banner()

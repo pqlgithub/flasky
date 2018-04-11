@@ -9,8 +9,9 @@ import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, \
-    SupplyStats, Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer
-from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm
+    SupplyStats, Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet
+from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm, \
+    DiscountTempletForm, DiscountTempletEditForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
     custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors, gen_serial_no
 from ..decorators import user_has
@@ -1165,8 +1166,8 @@ def delete_supplier():
     return redirect(url_for('.show_suppliers'))
 
 
-@main.route('/product_groups', methods=['GET', 'POST'])
-@main.route('/product_groups/<int:page>', methods=['GET', 'POST'])
+@main.route('/products/groups', methods=['GET', 'POST'])
+@main.route('/products/groups/<int:page>', methods=['GET', 'POST'])
 @user_has('admin_product')
 def show_product_groups(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -1178,7 +1179,7 @@ def show_product_groups(page=1):
                            **load_common_data())
 
 
-@main.route('/product_groups/create', methods=['GET', 'POST'])
+@main.route('/products/groups/create', methods=['GET', 'POST'])
 @user_has('admin_product')
 def create_product_group():
     form = ProductGroupForm()
@@ -1203,7 +1204,7 @@ def create_product_group():
                            form=form)
 
 
-@main.route('/product_groups/<int:id>/edit', methods=['GET', 'POST'])
+@main.route('/products/groups/<int:id>/edit', methods=['GET', 'POST'])
 @user_has('admin_product')
 def edit_product_group(id):
     group = ProductPacket.query.get_or_404(id)
@@ -1231,7 +1232,7 @@ def edit_product_group(id):
                            form=form)
 
 
-@main.route('/product_groups/delete', methods=['POST'])
+@main.route('/products/groups/delete', methods=['POST'])
 @user_has('admin_product')
 def delete_product_group():
     selected_ids = request.form.getlist('selected[]')
@@ -1258,7 +1259,7 @@ def delete_product_group():
     return redirect(url_for('.show_product_groups'))
 
 
-@main.route('/product_groups/<int:id>/show', methods=['GET', 'POST'])
+@main.route('/products/groups/<int:id>/show', methods=['GET', 'POST'])
 @user_has('admin_product')
 def show_group_products(id):
     """显示组商品列表"""
@@ -1279,7 +1280,7 @@ def show_group_products(id):
                            **load_common_data())
 
 
-@main.route('/product_groups/<int:id>/products', methods=['GET', 'POST'])
+@main.route('/products/groups/<int:id>/products', methods=['GET', 'POST'])
 @user_has('admin_product')
 def ajax_product_for_group(id):
     """为商品组选择商品"""
@@ -1319,7 +1320,7 @@ def ajax_product_for_group(id):
                            cid=cid)
 
 
-@main.route('/product_groups/<int:id>/submit', methods=['POST'])
+@main.route('/products/groups/<int:id>/submit', methods=['POST'])
 @user_has('admin_product')
 def submit_product_for_group(id):
     rid = request.values.get('rid')
@@ -1349,7 +1350,7 @@ def submit_product_for_group(id):
     return status_response(True, gettext("Select product is ok!"))
 
 
-@main.route('/product_groups/<int:id>/remove', methods=['POST'])
+@main.route('/products/groups/<int:id>/remove', methods=['POST'])
 @user_has('admin_product')
 def remove_product_from_group(id):
     rid = request.values.get('rid')
@@ -1372,6 +1373,167 @@ def remove_product_from_group(id):
     db.session.commit()
 
     return status_response(True, gettext("Cancel select is ok!"))
+
+
+@main.route('/products/discount_templets')
+@main.route('/products/discount_templets/<int:page>')
+def show_discount_templets(page=1):
+    """经销折扣等级"""
+    per_page = request.args.get('per_page', 10, type=int)
+
+    paginated_discount_templets = DiscountTemplet.query.filter_by(master_uid=Master.master_uid()) \
+        .order_by(DiscountTemplet.created_at.desc()).paginate(page, per_page)
+
+    return render_template('products/show_discount_templets.html',
+                           paginated_discount_templets=paginated_discount_templets,
+                           **load_common_data())
+
+
+@main.route('/products/discount_templets/create', methods=['GET', 'POST'])
+def create_discount_templet():
+    form = DiscountTempletForm()
+    form.type.choices = [(1, gettext('By Category')), (2, gettext('By Brand'))]
+    if form.validate_on_submit():
+        discount_templet = DiscountTemplet(
+            master_uid=Master.master_uid(),
+            name=form.name.data,
+            default_discount=form.default_discount.data,
+            type=form.type.data,
+            description=form.description.data
+        )
+        db.session.add(discount_templet)
+        db.session.commit()
+
+        flash(gettext('Add Discount Templet is ok!'), 'success')
+
+        return redirect(url_for('main.show_discount_templets'))
+
+    mode = 'create'
+    return render_template('products/create_eidt_templet.html',
+                           mode=mode,
+                           form=form)
+
+
+@main.route('/products/discount_templets/<int:id>/edit', methods=['GET', 'POST'])
+def edit_discount_templet(id):
+    discount_templet = DiscountTemplet.query.get_or_404(id)
+    if not Master.is_can(discount_templet.master_uid):
+        abort(401)
+
+    form = DiscountTempletEditForm()
+    if form.validate_on_submit():
+
+        discount_templet.name = form.name.data
+        discount_templet.default_discount = form.default_discount.data
+        discount_templet.description = form.description.data
+
+        db.session.commit()
+
+        flash(gettext('Update Discount Templet is ok!'), 'success')
+
+        return redirect(url_for('main.show_discount_templets'))
+    else:
+        current_app.logger.warn(form.errors)
+
+    mode = 'edit'
+
+    form.name.data = discount_templet.name
+    form.default_discount.data = discount_templet.default_discount
+    form.description.data = discount_templet.description
+
+    return render_template('products/create_eidt_templet.html',
+                           mode=mode,
+                           form=form)
+
+
+@main.route('/products/discount_templets/delete', methods=['POST'])
+def delete_discount_templet():
+    selected_ids = request.form.getlist('selected[]')
+    if not selected_ids or selected_ids is None:
+        flash('Delete discount template is null!', 'danger')
+        abort(404)
+
+    try:
+        for id in selected_ids:
+            discount_templet = DiscountTemplet.query.get_or_404(int(id))
+            if not Master.is_can(discount_templet.master_uid):
+                abort(401)
+
+            db.session.delete(discount_templet)
+
+        db.session.commit()
+
+        flash('Delete discount template is ok!', 'success')
+    except:
+        db.session.rollback()
+        flash('Delete discount template is fail!', 'danger')
+
+    return redirect(url_for('.show_discount_templets'))
+
+
+@main.route('/products/discount_templets/<int:id>/set_discount', methods=['GET', 'POST'])
+def set_discount(id):
+    """设置折扣值"""
+    discount_templet = DiscountTemplet.query.get_or_404(id)
+    if not Master.is_can(discount_templet.master_uid):
+        abort(401)
+
+    categories = []
+    brands = []
+    selected_items = {}
+
+    if request.method == 'POST':
+        categories = request.form.getlist('categories[]')
+        brands = request.form.getlist('brands[]')
+        valid_discount = []
+        for cid in categories:
+            discount = request.form.get('discount_%s' % cid, type=float)
+            if discount:
+                item = DiscountTempletItem(
+                    master_uid=Master.master_uid(),
+                    category_id=cid,
+                    discount=discount
+                )
+                valid_discount.append(item)
+
+        for bid in brands:
+            discount = request.form.get('discount_%s' % bid, type=float)
+            if discount:
+                item = DiscountTempletItem(
+                    master_uid=Master.master_uid(),
+                    brand_id=bid,
+                    discount=discount
+                )
+                valid_discount.append(item)
+
+        if len(valid_discount):
+            discount_templet.items = valid_discount
+
+        db.session.commit()
+
+        flash(gettext('Set Discount is ok!'), 'success')
+
+        return redirect(url_for('main.show_discount_templets'))
+
+    # 按分类
+    if discount_templet.type == 1:
+        categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+
+        for item in discount_templet.items:
+            selected_items[item.category_id] = item.discount
+
+    # 按品牌
+    if discount_templet.type == 2:
+        brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
+
+        for item in discount_templet.items:
+            selected_items[item.brand_id] = item.discount
+
+    return render_template('products/set_discount.html',
+                           discount_templet=discount_templet,
+                           selected_items=selected_items,
+                           categories=categories,
+                           brands=brands)
 
 
 @main.route('/products/download_wxacode', methods=['GET', 'POST'])

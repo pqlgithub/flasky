@@ -1752,10 +1752,19 @@ table.text-center,table.text-center td,table.text-center th {
   max-width: 100%;
 }
 
-
-.thumbnail.horizontal {
-
+#select-product-box {
+	max-height: 500px;
+	overflow: auto;
+	padding-right: 15px;
 }
+.modal-dialog .pagination,
+.modal-dialog .custom-per-page {
+	margin-bottom: 0px;
+}
+.modal-dialog .pagination {
+	margin-right: 15px;
+}
+
 .thumbnail.horizontal a>img,
 .thumbnail.horizontal>img {
     width: 80px;

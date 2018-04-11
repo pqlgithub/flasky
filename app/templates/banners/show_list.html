@@ -26,7 +26,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Banner List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -37,9 +37,22 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
+	
+	<ul class="nav nav-tabs">
+		<li class="active">
+			<a href="{{ url_for('main.show_banners') }}" aria-controls="banners" aria-expanded="true">
+				{{ _('Banner List') }}
+			</a>
+		</li>
+		<li>
+			<a href="{{ url_for('main.show_spots') }}" aria-controls="banners-spot">
+				{{ _('Banner Spot') }}
+			</a>
+		</li>
+	</ul>
 
-	<form class="form-inline" id="filter-form" method="post">
+	<form class="form-inline m-t-20" id="filter-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
@@ -105,8 +118,9 @@
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th class="text-center">{{ _('Image') }}</th>
-                        <th class="text-center">{{ _('Banner Title') }}</th>
-						<th class="text-center">{{ _('Spot') }}</th>
+                        <th>{{ _('Banner Title') }}</th>
+						<th>{{ _('Link Target') }}</th>
+						<th>{{ _('Spot') }}</th>
                         <th class="text-right">{{ _('Sort By') }}</th>
 						<th class="text-right">{{ _('Status') }}</th>
 						<th class="text-right">{{ _('Action') }}</th>

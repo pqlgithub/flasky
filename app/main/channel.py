@@ -282,7 +282,23 @@ def delete_banner():
     return redirect(url_for('.show_banners'))
 
 
-@main.route('/banner_spot/create', methods=['GET', 'POST'])
+@main.route('/banners/spots', methods=['GET', 'POST'])
+@user_has('admin_setting')
+def show_spots():
+    """banner位置列表"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 20, type=int)
+
+    builder = Banner.query.filter_by(master_uid=Master.master_uid())
+    paginated_spots = builder.order_by(Banner.created_at.desc()).paginate(page, per_page)
+
+    return render_template('banners/show_spots.html',
+                           sub_menu='banners',
+                           paginated_spots=paginated_spots,
+                           **load_common_data())
+
+
+@main.route('/banners/spots/create', methods=['GET', 'POST'])
 @user_has('admin_setting')
 def create_spot():
     """新增banner位置"""
@@ -313,5 +329,38 @@ def create_spot():
     mode = 'create'
     return render_template('banners/_modal_spot_create.html',
                            post_url=url_for('.create_spot'),
+                           mode=mode,
+                           form=form)
+
+
+@main.route('/banners/spots/<string:rid>/edit', methods=['GET', 'POST'])
+@user_has('admin_setting')
+def edit_spot(rid):
+    """更新banner位置"""
+    spot = Banner.query.filter_by(serial_no=rid).first()
+    form = BannerForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            try:
+                form.populate_obj(spot)
+
+                db.session.commit()
+            except DataError as err:
+                current_app.logger.warn('Edit banner spot error: %s!' % repr(err))
+                db.session.rollback()
+                return status_response(False, R400_BADREQUEST)
+
+            return status_response(True, R200_OK)
+        else:
+            current_app.logger.warn(form.errors)
+            return custom_status('error', 400)
+
+    mode = 'mode'
+    form.name.data = spot.name
+    form.serial_no.data = spot.serial_no
+    form.width.data = spot.width
+    form.height.data = spot.height
+    return render_template('banners/_modal_spot_create.html',
+                           post_url=url_for('.edit_spot', rid=rid),
                            mode=mode,
                            form=form)

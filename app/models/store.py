@@ -113,3 +113,19 @@ class Store(db.Model):
 
     def __repr__(self):
         return '<Store %r>' % self.name
+
+
+class StoreDistributePacket(db.Model):
+    """店铺与商品组关系表"""
+
+    __tablename__ = 'store_distribute_packets'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    product_packet_id = db.Column(db.Integer, db.ForeignKey('product_packets.id'))
+    discount_templet_id = db.Column(db.Integer, db.ForeignKey('discount_templets.id'))
+
+    def __repr__(self):
+        return '<StoreDistributePacket {}>'.format(self.id)

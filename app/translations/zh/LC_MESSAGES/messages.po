@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-04-11 16:04+0800\n"
-"PO-Revision-Date: 2018-04-11 16:05+0800\n"
+"PO-Revision-Date: 2018-04-11 17:32+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -3707,7 +3707,7 @@ msgstr "加入时间"
 #: app/templates/customers/table_customer.html:54
 #: app/templates/warehouses/stock_table.html:79
 msgid "Related Orders"
-msgstr "相关订单"
+msgstr "关联订单"
 
 #: app/templates/dashboard/index.html:6
 msgid "Overview"

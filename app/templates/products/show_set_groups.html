@@ -33,7 +33,7 @@
             <a href="{{ url_for('main.show_group_products', id=product_group.id) }}" data-toggle="tooltip" class="pjax btn btn-default" data-original-title="{{ _('Refresh') }}">
 				<i class="fa fa-refresh"></i>
 			</a>
-            <a href="{{ url_for('main.show_product_groups') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+            <a href="{{ url_for('main.show_product_groups') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</div>
@@ -42,15 +42,15 @@
     <div class="well m-t-20">
         {{ _('Product Group') }}: <b>{{ product_group.name }}</b>
         <a href="{{ url_for('main.ajax_product_for_group', id=product_group.id) }}" data-modal="products-modal" class="btn btn-success m-l-30 ajax-modal">
-            <i class="fa fa-search-plus"></i> Select Products
+            <i class="fa fa-search-plus"></i> 选择商品
         </a>
     </div>
 
     <div class="table-responsive m-t-20">
-        <form id="groups-form" action="" method="post">
+        <form id="products-form" action="" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-            <table class="table table-bordered table-striped table-hover">
+            <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
                     <th class="text-center">
@@ -93,11 +93,16 @@
                         {{ product.brand.name }}
                     </td>
                     <td class="text-right">
-                        {{ product.sale_price|round(precision=2) }} {{ product.currency_unit }}
+                        {% if product.sale_price > 0 %}
+                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
+                            <span class="price">{{ product.price|round(precision=2) }}</span>
+                        {% else %}
+                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
+                        {% endif %}
                     </td>
-                    <td class="text-right">
-
-                    </td>
+					<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
+						{{ product.total_stock|supress_none }}
+					</td>
                     <td class="text-right">
                         <span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
                     </td>

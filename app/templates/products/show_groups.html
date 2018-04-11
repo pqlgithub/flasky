@@ -1,6 +1,5 @@
 {% extends pjax("layout/base.html") %}
 
-
 {% block after_jquery %}
 <script type="text/javascript">
 	$(function () {
@@ -11,7 +10,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Product Group List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -23,14 +22,27 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
+	
+	<ul class="nav nav-tabs">
+		<li class="active">
+			<a href="{{ url_for('main.show_product_groups') }}" aria-controls="product_groups" aria-expanded="true">
+				{{ _('Product Group') }}
+			</a>
+		</li>
+        <li>
+			<a href="{{ url_for('main.show_discount_templets') }}" aria-controls="customer-discount-templet">
+				{{ _('Price Templet') }}
+			</a>
+		</li>
+	</ul>
 
     <div class="tab-content m-t-30">
         <div class="table-responsive m-t-20">
             <form id="groups-form" action="{{ url_for('main.delete_product_group') }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-                <table class="table table-bordered table-striped table-hover">
+                <table class="table table-bordered table-striped">
                     <thead>
                     <tr>
                         <th class="text-center">

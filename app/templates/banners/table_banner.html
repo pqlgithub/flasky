@@ -5,10 +5,13 @@
 	<td class="text-center">
 		<img src="{{ banner.image.view_url }}" width="30px">
 	</td>
-	<td class="text-center">
+	<td>
 		{{ banner.title }}
 	</td>
-	<td class="text-center">
+	<td>
+		{{ banner.type_label[1] }}: {{ banner.link }}
+	</td>
+	<td>
 		{{ banner.spot.name }}<span class="text-success"> [ {{ banner.spot.serial_no }} ] </span>
 	</td>
 	<td class="text-right">

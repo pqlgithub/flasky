@@ -1,0 +1,100 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	var submit_filter_form = function () {
+		var data = $('#filter-form').serialize();
+
+		$.post("{{ url_for('main.show_banners') }}", data, function (result) {
+			$('#table-refresh-box').html(result);
+		}, 'html');
+		return false;
+	};
+
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		{{ _('Banner List') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+			<a href="{{ url_for('main.create_spot') }}" class="btn btn-mixpus ajax-modal" data-modal="create-modal" data-toggle="tooltip" data-original-title="{{ _('Add New Position') }}">
+				<i class="fa fa-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="banners-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="fa fa-trash"></i>
+			</button>
+		</span>
+	</div>
+	
+	<ul class="nav nav-tabs">
+		<li>
+			<a href="{{ url_for('main.show_banners') }}" aria-controls="banners" aria-expanded="true">
+				{{ _('Banner List') }}
+			</a>
+		</li>
+		<li class="active">
+			<a href="{{ url_for('main.show_spots') }}" aria-controls="banners-spot">
+				{{ _('Banner Spot') }}
+			</a>
+		</li>
+	</ul>
+
+	<div id="table-refresh-box" class="m-t-20">
+		<div class="table-responsive">
+			<form id="banners-form" action="{{ url_for('main.delete_banner') }}" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+                        <th>{{ _('Banner Spot') }}</th>
+						<th>编号</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
+					</thead>
+					<tbody>
+					{% for spot in paginated_spots.items %}
+						<tr>
+							<td class="text-center">
+								<input name="selected[]" class="check-one" value="{{ spot.serial_no }}" type="checkbox">
+							</td>
+							<td>
+								{{ spot.name }}
+							</td>
+							<td>
+								{{ spot.serial_no }}
+							</td>
+							<td class="text-right">
+								<a href="{{ url_for('main.edit_spot', rid=spot.serial_no) }}" data-modal="create-modal" class="btn-link ajax-modal" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+									{{ _('Edit') }}
+								</a>
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+
+		{% import "block/_macros.html" as macros %}
+		{{ macros.pagination_widget(paginated_spots, '.show_spots') }}
+	</div>
+
+</div>
+{% endblock %}

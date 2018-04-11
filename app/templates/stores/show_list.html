@@ -58,7 +58,13 @@
 						</td>
 						<td class="text-right">
 							<p>
-	                            <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ store.wxapp.auth_app_id }}" class="btn-link">
+			                    <a href="" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			                        {{ _('Related Orders') }}
+			                    </a>
+			                    <a href="{{ url_for('main.distribute_products', sn=store.serial_no) }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
+			                        {{ _('Distribute Products') }}
+			                    </a>
+	                            <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ store.wxapp.auth_app_id }}" class="btn-link m-l-10">
 	                                <i class="fa fa-gear"></i> 基本设置
 	                            </a>
 							</p>
@@ -80,7 +86,13 @@
 							<span class="indicator {{ store.status_label[2] }}">{{ store.status_label[1] }}</span>
 						</td>
 						<td class="text-right">
-							<a href="{{ url_for('main.edit_store', id=store.id) }}" class="btn-link">{{ _('Edit') }}</a>
+		                    <a href="" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+		                        {{ _('Related Orders') }}
+		                    </a>
+		                    <a href="{{ url_for('main.distribute_products', sn=store.serial_no) }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
+		                        {{ _('Distribute Products') }}
+		                    </a>
+							<a href="{{ url_for('main.edit_store', id=store.id) }}" class="m-l-10 btn-link">{{ _('Edit') }}</a>
 						</td>
 					{% endif %}
 				</tr>

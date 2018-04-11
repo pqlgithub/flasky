@@ -11,8 +11,8 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
-		{{ _('Customer Grade Manage') }}
+	<div class="page-header">
+		{{ _('Price Templet') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<a href="{{ url_for('main.create_discount_templet') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
@@ -22,17 +22,12 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<ul class="nav nav-tabs">
 		<li >
-			<a href="{{ url_for('main.show_customers') }}" aria-controls="customers" aria-expanded="true">
-				{{ _('Customers') }}
-			</a>
-		</li>
-		<li>
-			<a href="{{ url_for('main.show_grades') }}" aria-controls="customer-grade">
-				{{ _('Customer Grade') }}
+			<a href="{{ url_for('main.show_product_groups') }}" aria-controls="product_groups" aria-expanded="true">
+				{{ _('Product Group') }}
 			</a>
 		</li>
         <li class="active">
