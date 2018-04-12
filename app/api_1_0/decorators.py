@@ -18,6 +18,12 @@ def api_sign_required(func):
 
         sign_args = request.values if request.values else request.json
 
+        if not sign_args:
+            return status_response({
+                'code': 400,
+                'message': 'Parameters is null'
+            }, False)
+
         app_key = sign_args.get('app_key')
         # 验证请求参数
         for key in ['app_key', 'timestamp', 'nonce_str', 'sign']:
