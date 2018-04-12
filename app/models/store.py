@@ -10,13 +10,20 @@ __all__ = [
     'StoreDistributeProduct',
     'StoreDistributePacket',
     'STORE_STATUS',
-    'STORE_TYPE'
+    'STORE_TYPE',
+    'STORE_MODES'
 ]
 
 # 渠道的状态
 STORE_STATUS = [
     (1, lazy_gettext('Enabled'), 'success'),
     (-1, lazy_gettext('Disabled'), 'danger')
+]
+
+# 选品模式
+STORE_MODES = [
+    (1, lazy_gettext('ALL Mode')),
+    (2, lazy_gettext('Distribute Mode'))
 ]
 
 # 渠道的类型
@@ -59,6 +66,10 @@ class Store(db.Model):
     type = db.Column(db.SmallInteger, default=1)
     # 状态 -1：禁用；1：正常
     status = db.Column(db.SmallInteger, default=1)
+    # 选品模式 1: 全品； 2：授权部分商品
+    distribute_mode = db.Column(db.SmallInteger, default=1)
+    # 是否设置私有库存
+    is_private_stock = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -89,6 +100,12 @@ class Store(db.Model):
             if plat['id'] == self.platform:
                 return plat['name']
         return None
+
+    @property
+    def mode_label(self):
+        for m in STORE_MODES:
+            if m[0] == self.distribute_mode:
+                return m
 
     @property
     def status_label(self):

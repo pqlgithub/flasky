@@ -4,10 +4,10 @@ from flask_babelex import gettext
 from sqlalchemy.exc import DataError
 from . import main
 from .. import db
-from app.models import Store, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, StoreDistributePacket, \
-    ProductPacket, DiscountTemplet
+from app.models import Store, Product, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, Brand,\
+    ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, STORE_MODES
 from app.forms import StoreForm, BannerForm, BannerImageForm
-from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST
+from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response
 from ..helpers import MixGenId
 from ..decorators import user_has
 
@@ -46,6 +46,8 @@ def show_stores():
 def create_store():
     form = StoreForm()
     form.type.choices = STORE_TYPE
+    form.distribute_mode.choices = STORE_MODES
+
     # 设置关联负责人
     user_list = User.query.filter_by(master_uid=Master.master_uid(), id_type=UserIdType.SUPPLIER).all()
     form.operator_id.choices = [(user.id, user.username) for user in user_list]
@@ -54,24 +56,42 @@ def create_store():
         if Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data):
             flash('Store name already exist!', 'danger')
             return redirect(url_for('.create_store'))
-        
-        store = Store(
-            master_uid=Master.master_uid(),
-            name=form.name.data,
-            serial_no=MixGenId.gen_store_sn(),
-            platform=form.platform.data,
-            operator_id=form.operator_id.data,
-            type=form.type.data,
-            description=form.description.data,
-            status=form.status.data
-        )
-        db.session.add(store)
-        
-        db.session.commit()
 
-        flash('Add store is success!', 'success')
-        
-        return redirect(url_for('.show_stores'))
+        try:
+            store = Store(
+                master_uid=Master.master_uid(),
+                name=form.name.data,
+                serial_no=MixGenId.gen_store_sn(),
+                platform=form.platform.data,
+                operator_id=form.operator_id.data,
+                type=form.type.data,
+                description=form.description.data,
+                distribute_mode=form.distribute_mode.data,
+                is_private_stock=form.is_private_stock.data,
+                status=form.status.data
+            )
+            db.session.add(store)
+
+            # 同步设置虚拟私有仓库
+            if form.is_private_stock.data:
+                virtual_warehouse = Warehouse.query.filter_by(master_uid=Master.master_uid(), store_id=store.id).first()
+                if virtual_warehouse is None:
+                    virtual_warehouse = Warehouse(
+                        master_uid=Master.master_uid(),
+                        name=form.name.data,
+                        store_id=store.id,
+                        type=3
+                    )
+                    db.session.add(virtual_warehouse)
+
+            db.session.commit()
+
+            flash('Add store is success!', 'success')
+
+            return redirect(url_for('.show_stores'))
+        except Exception as err:
+            db.session.rollback()
+            current_app.logger.warn('Add store fail: %s' % str(err))
 
     return render_template('stores/create_and_edit.html',
                            form=form,
@@ -88,6 +108,7 @@ def edit_store(id):
     
     form = StoreForm()
     form.type.choices = STORE_TYPE
+    form.distribute_mode.choices = STORE_MODES
     
     user_list = User.query.filter_by(master_uid=Master.master_uid(), id_type=UserIdType.SUPPLIER).all()
     form.operator_id.choices = [(user.id, user.username) for user in user_list]
@@ -98,6 +119,20 @@ def edit_store(id):
             return redirect(url_for('.edit_store', id=id))
 
         form.populate_obj(store)
+
+        # 同步设置虚拟私有仓库
+        if form.is_private_stock.data:
+            virtual_warehouse = Warehouse.query.filter_by(master_uid=Master.master_uid(), store_id=store.id).first()
+            if virtual_warehouse is None:
+                virtual_warehouse = Warehouse(
+                    master_uid=Master.master_uid(),
+                    name=form.name.data,
+                    store_id=store.id,
+                    type=3
+                )
+                db.session.add(virtual_warehouse)
+            else:
+                virtual_warehouse.name = form.name.data
         
         db.session.commit()
 
@@ -110,6 +145,8 @@ def edit_store(id):
     form.operator_id.data = store.operator_id
     form.type.data = store.type
     form.description.data = store.description
+    form.distribute_mode.data = store.distribute_mode
+    form.is_private_stock.data = store.is_private_stock
     form.status.data = store.status
 
     return render_template('stores/create_and_edit.html',
@@ -140,13 +177,134 @@ def delete_store():
     return redirect(url_for('.show_stores'))
 
 
-@main.route('/stores/<string:rid>/distribute', methods=['GET', 'POST'])
-def store_distribute_products(rid):
+@main.route('/stores/product/distribute', methods=['GET', 'POST'])
+def store_distribute_products():
     """单个为店铺授权商品"""
+    rid = request.values.get('rid')
+    _type = request.values.get('type', 'selected')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 50, type=int)
+    cid = request.values.get('cid', type=int)
+    bid = request.values.get('bid', type=int)
+
     store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
 
+    brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
+    categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+
+    # 已选择商品
+    distribute_builder = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id) \
+        .order_by(StoreDistributeProduct.created_at.asc())
+
+    selected_products = []
+    selected_product_ids = []
+    paginated_products = {}
+    if _type == 'all':
+        distributed_products = distribute_builder.all()
+        selected_product_ids = [item.product_id for item in distributed_products]
+
+        # 获取全部商品
+        if cid:
+            category = Category.query.get(cid)
+            if category is None or category.master_uid != g.master_uid:
+                abort(404)
+            product_builder = category.products.filter_by(master_uid=Master.master_uid())
+        else:
+            product_builder = Product.query.filter_by(master_uid=Master.master_uid())
+
+        if bid:
+            product_builder = product_builder.filter_by(brand_id=bid)
+
+        if selected_product_ids:
+            product_builder = product_builder.filter(Product.id.notin_(selected_product_ids))
+
+        paginated_products = product_builder.paginate(page, per_page)
+    else:
+        distributed_products = distribute_builder.paginate(page, per_page)
+        for item in distributed_products.items:
+            item.product = Product.query.get(item.product_id)
+            selected_products.append(item)
+        distributed_products.items = selected_products
+
     return render_template('stores/distribute_products.html',
-                           store=store)
+                           paginated_products=paginated_products,
+                           distributed_products=distributed_products,
+                           selected_product_ids=selected_product_ids,
+                           selected_products=selected_products,
+                           categories=categories,
+                           brands=brands,
+                           store=store,
+                           type=_type,
+                           bid=bid,
+                           cid=cid)
+
+
+@main.route('/stores/product/ajax_distribute', methods=['POST'])
+def ajax_distribute_product():
+    """授权操作"""
+    rid = request.values.get('rid')
+    product_rid = request.values.get('product_rid')
+    # 验证商品是否存在
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+    try:
+        distributed_product = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                                     product_serial_no=product_rid).first()
+        if distributed_product is None:
+            distributed_product = StoreDistributeProduct(
+                master_uid=Master.master_uid(),
+                store_id=store.id,
+                product_id=product.id,
+                product_serial_no=product.serial_no,
+                price=product.price,
+                sale_price=product.sale_price
+            )
+            db.session.add(distributed_product)
+        db.session.commit()
+    except Exception as err:
+        db.session.rollback()
+        current_app.logger.warn('Store add product: %s' % str(err))
+        return custom_response(False, '店铺添加产品失败')
+
+    return custom_response(True, '店铺添加产品成功')
+
+
+@main.route('/stores/product/distribute_stock', methods=['POST'])
+def ajax_distribute_stock():
+    """更新授权商品库存"""
+    rid = request.values.get('rid')
+    pass
+
+
+@main.route('/stores/product/distribute_price', methods=['GET', 'POST'])
+def ajax_distribute_price():
+    """更新授权商品的价格"""
+    rid = request.values.get('rid')
+    
+
+
+
+@main.route('/stores/product/remove', methods=['POST'])
+def remove_product_from_store():
+    rid = request.values.get('rid')
+    product_rid = request.values.get('product_rid')
+    if not product_rid:
+        return custom_response(False, gettext("Product isn't null!"))
+
+    try:
+        store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+        distributed_product = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                                     product_serial_no=product_rid).first()
+        db.session.delete(distributed_product)
+        db.session.commit()
+    except Exception as err:
+        db.session.rollback()
+        current_app.logger.warn('From store delete product: %s' % str(err))
+        return custom_response(False, '从店铺删除产品失败')
+
+    return custom_response(True, gettext("Cancel select is ok!"))
 
 
 @main.route('/stores/<string:rid>/distribute_by_packet', methods=['GET', 'POST'])

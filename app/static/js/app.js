@@ -31,7 +31,7 @@ var mixpus = {
 		swal({
 		 	title: '警告!',
 			text: message,
-			type: 'info',
+			type: 'warning',
 			confirmButtonText: '好，我知道了!',
 			confirmButtonColor: '#faa937'
 		 });

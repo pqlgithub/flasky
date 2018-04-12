@@ -22,14 +22,14 @@
 		<form id="warehouses-form" action="{{ url_for('main.delete_warehouse') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-			<table class="table table-bordered table-striped table-hover">
+			<table class="table table-bordered table-striped">
 				<thead>
 					<tr>
 						<th class="text-center">
 							<input name="check_all" type="checkbox" class="check-all">
 						</th>
 						<th>{{ _('Warehouse Name') }}</th>
-						<th class="text-center">{{ _('Warehouse Type') }}</th>
+						<th>{{ _('Warehouse Type') }}</th>
 						<th class="text-center">{{ _('Default Warehouse') }}</th>
 						<th class="text-center">{{ _('Leader') }}</th>
 						<th>{{ _('Description') }}</th>
@@ -39,15 +39,15 @@
 				</thead>
 				<tbody>
 					{% for warehouse in paginated_warehouses.items %}
-					<tr>
+					<tr {% if warehouse.type == 3 %}class="warning"{% endif %}>
 						<td class="text-center">
 							<input name="selected[]" class="check-one" value="{{ warehouse.id }}" type="checkbox">
 						</td>
 						<td>
 							{{ warehouse.name }}
 						</td>
-						<td class="text-center">
-							{{ warehouse.desc_type[1] }}
+						<td>
+							<strong>{{ warehouse.desc_type[1] }}</strong>
 						</td>
 						<td class="text-center">
 							{% if warehouse.is_default %}
@@ -57,10 +57,10 @@
 							{% endif %}
 						</td>
 						<td class="text-center">
-							{{ warehouse.username }}
+							{{ warehouse.username|supress_none() }}
 						</td>
 						<td>
-							{{ warehouse.description }}
+							{{ warehouse.description|supress_none() }}
 						</td>
 						<td class="text-center">
 							{{ warehouse.shelves.count() }}

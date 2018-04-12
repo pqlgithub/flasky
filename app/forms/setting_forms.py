@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm as Form
 from flask_babelex import lazy_gettext
-from wtforms import StringField, TextAreaField, IntegerField, FloatField, SelectField, RadioField
+from wtforms import StringField, TextAreaField, IntegerField, FloatField, SelectField, RadioField, BooleanField
 from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, optional
 
 from ..constant import SUPPORT_PLATFORM
@@ -14,8 +14,10 @@ class StoreForm(Form):
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
     operator_id = SelectField(lazy_gettext('Manager'), choices=[], coerce=int)
     type = SelectField(lazy_gettext('Type'), choices=[], coerce=int)
+    distribute_mode = RadioField(lazy_gettext('Distribute Products'), choices=[], coerce=int, default=1)
+    is_private_stock = BooleanField(lazy_gettext('Set Private Stock'), default=False)
     status = RadioField(lazy_gettext('Status'),
-                         choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))],
+                         choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disable'))],
                          coerce=int, default=1)
     description = TextAreaField(lazy_gettext('Description'))
 

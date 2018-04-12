@@ -26,10 +26,10 @@ def short_filename(text, length=10):
     return prefix + '*' + file_ext
 
 
-def supress_none(val):
+def supress_none(val, default_value=''):
     """抑制输出None"""
 
-    return val if val is not None else ''
+    return val if val is not None else default_value
 
 
 def break_line(text, length=10):

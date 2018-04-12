@@ -116,28 +116,6 @@
 
 			recount();
 		});
-
-		$('.change-currency').change(function () {
-			var currency = $(this).find('option:selected').data('currency');
-			if (currency != undefined) {
-				$.get("{{ url_for('main.change_currency') }}", {
-					fc: $('input[name=from_currency]').val(),
-					tc: currency
-				}, function (result) {
-					if (result.success) {
-						$('input[name=from_currency]').val(currency);
-						$('.current-currency').text(currency);
-						var rate = result.data.rate;
-						var $freight = $('input[name=freight]'), $extra_charge = $('input[name=extra_charge]');
-						var freight_value = $freight.val(), extra_charge_value = $extra_charge.val();
-						$freight.val((freight_value*rate).toFixed(2));
-						$extra_charge.val((extra_charge_value*rate).toFixed(2));
-					}
-				}, 'json');
-			} else {
-				mixpus.show_warning_message('Currency is error!');
-			}
-		});
 	});
 </script>
 {% endblock %}
@@ -168,10 +146,10 @@
 		<div class="form-group required {% if form.errors.warehouse_id %} has-error{% endif %}">
 			{{ form.warehouse_id.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-4 m-b-10">
-				<select name="warehouse_id" id="warehouse_id" class="form-control change-currency select2">
+				<select name="warehouse_id" id="warehouse_id" class="form-control select2">
 					<option value="0">{{ _('Select warehouses') }}</option>
 					{% for w in warehouse_list %}
-					<option value="{{ w.id }}" data-currency="{{ w.currency_unit|default(current_site.currency) }}" {% if w.id == purchase.warehouse_id %}selected="selected"{% endif %}>{{ w.name }}</option>
+					<option value="{{ w.id }}" {% if w.id == purchase.warehouse_id %}selected="selected"{% endif %}>{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</option>
 					{% endfor  %}
 				</select>
 				{% for error in form.errors.warehouse_id %}

@@ -167,7 +167,12 @@ class Product(db.Model):
     @property
     def cover(self):
         """cover asset info"""
-        return Asset.query.get(self.cover_id) if self.cover_id else Asset.default_banner()
+        if self.cover_id:
+            asset = Asset.query.get(self.cover_id)
+            if asset is not None:
+                return asset
+
+        return Asset.default_logo()
 
     @property
     def category_ids(self):

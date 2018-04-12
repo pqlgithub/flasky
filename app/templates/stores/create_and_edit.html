@@ -10,7 +10,7 @@
 			<button type="submit" form="ability-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.show_stores') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+			<a href="{{ url_for('main.show_stores') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
@@ -52,7 +52,31 @@
 				{{ form.type(class="form-control select2") }}
 			</div>
 		</div>
-
+		
+		<div class="form-group required">
+			{{ form.distribute_mode.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.distribute_mode(id="distribute_mode", class="radio-inline-group") }}
+				<span class="help-block">
+					<i class="fa fa-info-circle"></i> 全品模式为上架所有商品，授权模式为仅可上架部分授权商品
+				</span>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			{{ form.is_private_stock.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				<div class="checkbox">
+					<label>
+						{{ form.is_private_stock() }} 是
+					</label>
+				</div>
+				<span class="help-block">
+					<i class="fa fa-info-circle"></i> 此项适用于多门店之间共享库存，并且每个门店内又设置私有库存。
+				</span>
+			</div>
+		</div>
+		
 		<div class="form-group">
 			{{ form.description.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-6">

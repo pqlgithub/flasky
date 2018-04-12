@@ -43,9 +43,13 @@ status_list = (
 @user_has('admin_order')
 def show_orders(page=1):
     per_page = request.args.get('per_page', 10, type=int)
+    store_id = request.values.get('store_id', type=int)
     status = request.args.get('s', 0, type=int)
 
     query = Order.query.filter_by(master_uid=Master.master_uid())
+    if store_id:
+        query = query.filter_by(store_id=store_id)
+
     if status:
         query = query.filter_by(status=status)
 
@@ -53,6 +57,7 @@ def show_orders(page=1):
 
     return render_template('orders/show_list.html',
                            sub_menu='orders',
+                           store_id=store_id,
                            status=status,
                            paginated_orders=paginated_orders.items,
                            pagination=paginated_orders,
@@ -73,7 +78,9 @@ def search_orders(page=1):
 
     builder = Order.query.filter_by(master_uid=Master.master_uid())
 
-    qk = qk.strip()
+    # 截取空格
+    if qk:
+        qk = qk.strip()
     if qk:
         current_app.logger.warn('Search order [%s]!' % qk)
         builder = builder.whoosh_search(qk, or_=True, like=True)

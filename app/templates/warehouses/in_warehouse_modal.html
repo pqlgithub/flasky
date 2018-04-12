@@ -14,7 +14,7 @@
 						<select name="warehouse_id" id="warehouse_id" class="form-control select2">
 							<option value="0">{{ _('Select warehouses') }}</option>
 							{% for w in warehouses %}
-							<option value="{{ w.id }}">{{ w.name }}</option>
+							<option value="{{ w.id }}">{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</option>
 							{% endfor  %}
 						</select>
 					</div>
@@ -32,7 +32,7 @@
 					</div>
 					<div class="col-sm-6 text-right">
 						<a class="btn btn-warning m-t-10" href="{{ url_for('main.ajax_select_purchase') }}" id="add-purchase-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Purchases') }}">
-							<i class="glyphicon glyphicon-plus" aria-hidden="true"></i> {{ _('Select Purchases') }}
+							<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Select Purchases') }}
 						</a>
 					</div>
 				</div>
@@ -69,10 +69,8 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	$('.select2').select2({
-		'width': '100%'
-	});
-
+	mixpus.hook_select2();
+	
 	$('#inwarehouse-submit-btn').click(function (e) {
 		$.ajax({
 			url: "{{ url_for('main.create_in_warehouse') }}",
@@ -104,16 +102,7 @@
 		var $btn = $(this), post_url=$(this).attr('href');
 		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
 		if (warehouse_id == 0) {
-			swal({
-				title: "Warning",
-				text: "Please first choose the warehouse to storage？",
-				type: "warning",
-				showCancelButton: false,
-				confirmButtonClass: 'btn-warning',
-				confirmButtonText: "Okay, I know!",
-				closeOnConfirm: true
-			});
-			return false;
+			return mixpus.show_warning_message("请先选择一个要入库的仓库");
 		}
 
 		$('#purchase-modal').remove();

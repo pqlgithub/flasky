@@ -14,8 +14,6 @@ class WarehouseForm(Form):
     en_address = TextAreaField(lazy_gettext('En Address'))
     description = TextAreaField(lazy_gettext('Description'))
 
-    currency_id = SelectField(lazy_gettext('Currency'), choices=[], coerce=int)
-
     username = StringField(lazy_gettext('Contact Username'))
     phone = StringField(lazy_gettext('Phone'))
     email = StringField(lazy_gettext('Email'))

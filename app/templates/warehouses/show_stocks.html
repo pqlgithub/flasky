@@ -1,8 +1,5 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'warehouses/_sub_menu.html' %}
-{% endblock %}
 
 {% block after_jquery %}
 <script type="text/javascript">
@@ -55,7 +52,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Stock List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -82,8 +79,8 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
-	{{ data }}
+	</div>
+	
 	<form class="form-inline" method="post" id="filter-stocks-form">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
@@ -146,7 +143,6 @@
 
 		{% import "block/_macros.html" as macros %}
 		{{ macros.pagination_widget(paginated_stocks, '.show_stocks', wh_id=wh_id) }}
-
 	</div>
 
 </div>

@@ -755,9 +755,6 @@ def show_warehouses(page=1):
 @user_has('admin_warehouse')
 def create_warehouse():
     form = WarehouseForm()
-    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
-                                currency_list]
     if form.validate_on_submit():
         try:
             warehouse = Warehouse(
@@ -766,7 +763,6 @@ def create_warehouse():
                 address=form.address.data,
                 en_address=form.en_address.data,
                 description=form.description.data,
-                currency_id=form.currency_id.data,
                 username=form.username.data,
                 phone=form.phone.data,
                 email=form.email.data,
@@ -803,9 +799,6 @@ def create_warehouse():
         current_app.logger.debug(form.errors)
 
     mode = 'create'
-    # 默认站点币种
-    form.currency_id.data = g.current_site.currency_id
-
     return render_template('warehouses/create_and_edit.html',
                            form=form,
                            mode=mode,
@@ -819,9 +812,6 @@ def edit_warehouse(rid):
     warehouse = Warehouse.query.get_or_404(rid)
 
     form = WarehouseForm()
-    currency_list = Currency.query.filter_by(master_uid=Master.master_uid(), status=1).all()
-    form.currency_id.choices = [(currency.id, '%s - %s' % (currency.fx_title, currency.code)) for currency in
-                                currency_list]
     if form.validate_on_submit():
         form.populate_obj(warehouse)
 
@@ -849,7 +839,6 @@ def edit_warehouse(rid):
     form.type.data = warehouse.type
     form.is_default.data = warehouse.is_default
     form.status.data = warehouse.status
-    form.currency_id.data = warehouse.currency_id
 
     return render_template('warehouses/create_and_edit.html',
                            form=form,
@@ -895,9 +884,9 @@ def add_shelve():
         return full_response(False, custom_status("Shelve name already exist!"))
 
     shelve = WarehouseShelve(
-        name = name,
-        type = type,
-        warehouse_id = warehouse_id
+        name=name,
+        type=type,
+        warehouse_id=warehouse_id
     )
     db.session.add(shelve)
     db.session.commit()

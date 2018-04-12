@@ -4,8 +4,8 @@ from flask_babelex import gettext, lazy_gettext
 
 # 开通的国家
 SUPPORT_COUNTRIES = (
-    (1, 'zh', gettext('China')),
-    (2, 'en', gettext('USA')),
+    (1, 'zh', lazy_gettext('China')),
+    (2, 'en', lazy_gettext('USA')),
 )
 
 # 支持的语言 Language

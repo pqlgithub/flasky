@@ -2,7 +2,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="gridSystemModalLabel">{{ _('Ex-warehouse') }}</h4>
+			<h4 class="modal-title">{{ _('Ex-warehouse') }}</h4>
 		</div>
 		<div class="modal-body">
 			<form class="form-horizontal" action="" method="post" id="stock-form">
@@ -14,7 +14,7 @@
 						<select name="warehouse_id" id="warehouse_id" class="form-control select2">
 							<option value="0">{{ _('Select warehouses') }}</option>
 							{% for w in warehouses %}
-							<option value="{{ w.id }}">{{ w.name }}</option>
+							<option value="{{ w.id }}">{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</option>
 							{% endfor  %}
 						</select>
 					</div>
@@ -31,7 +31,7 @@
 					</div>
 					<div class="col-sm-6 text-right">
 						<a class="btn btn-warning m-t-10" href="{{ url_for('main.ajax_select_products') }}" id="add-product-btn" role="button" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
-							<i class="glyphicon glyphicon-plus" aria-hidden="true"></i> {{ _('Select Products') }}
+							<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Select Products') }}
 						</a>
 					</div>
 				</div>
@@ -60,9 +60,7 @@
 </div><!-- /.modal-dialog -->
 
 <script type="text/javascript"><!--
-	$('.select2').select2({
-		'width': '100%'
-	});
+	mixpus.hook_select2();
 
 	$('#stock-submit-btn').click(function (e) {
 		$.ajax({
@@ -81,7 +79,7 @@
 					$('#out-stock-modal').modal('hide');
 					$('.btn-refresh').trigger('click');
 				} else {
-					$('#stock-form').prepend(display_alert(result.status.message))
+					$('#stock-form').prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {
@@ -94,16 +92,7 @@
 		var $btn = $(this), post_url=$(this).attr('href');
 		var warehouse_id = $('#warehouse_id').find(':selected').eq(0).val();
 		if (warehouse_id == 0) {
-			swal({
-				title: "Warning",
-				text: "Please first choose the warehouse to ship？",
-				type: "warning",
-				showCancelButton: false,
-				confirmButtonClass: 'btn-warning',
-				confirmButtonText: "Okay, I know!",
-				closeOnConfirm: true
-			});
-			return false;
+			return mixpus.show_warning_message("请先选择一个出库的仓库");
 		}
 
 		$('#sku-modal').remove();

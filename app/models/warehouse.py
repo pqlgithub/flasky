@@ -20,7 +20,8 @@ __all__ = [
 
 WAREHOUSE_TYPES = [
     (1, lazy_gettext('Private Build')),
-    (2, lazy_gettext('Leased'))
+    (2, lazy_gettext('Leased')),
+    (3, lazy_gettext('Virtual'))
 ]
 
 SHELVE_TYPES = [
@@ -36,8 +37,7 @@ class Warehouse(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-    # 币种
-    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
+
     name = db.Column(db.String(32), nullable=False)
     address = db.Column(db.String(128))
     en_address = db.Column(db.String(128))
@@ -47,24 +47,17 @@ class Warehouse(db.Model):
     phone = db.Column(db.String(32), nullable=True)
     email = db.Column(db.String(64), nullable=True)
     qq = db.Column(db.String(32), nullable=True)
-    # 类型 1: 自建仓库 2：第三方仓库
+    # 类型 1: 自建仓库 2：第三方仓库 3: 虚拟仓库
     type = db.Column(db.SmallInteger, default=1)
     # 状态 -1： 禁用（默认）1：启用
     status = db.Column(db.SmallInteger, default=1)
     # 是否默认仓库
     is_default = db.Column(db.Boolean, default=False)
+    # 所属店铺
+    store_id = db.Column(db.Integer, default=0)
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-
-    @property
-    def currency_unit(self):
-        """当前货币单位"""
-        if self.currency_id:
-            current_currency = Currency.query.get(self.currency_id)
-            return current_currency.code
-        else:
-            return None
 
     @property
     def default_shelve(self):

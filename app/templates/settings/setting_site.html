@@ -2,77 +2,84 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
-		{{ _('Company Setting') }}
+	<div class="page-header">
+		{{ _('Basic Setting') }}
 
 		<span class="pull-right">
 			<button type="submit" form="ability-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
-				<i class="glyphicon glyphicon-floppy-save"></i>
+				<i class="fa fa-save"></i>
 			</button>
-			<a href="{{ url_for('main.site') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
-				<i class="glyphicon glyphicon-share-alt"></i>
+			<a href="{{ url_for('main.site') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Back') }}">
+				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-9">
+			<form id="ability-form" class="form-horizontal" action="" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-	<form id="ability-form" class="form-horizontal" action="" method="post">
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<div class="form-group required {% if form.errors.company_name %} has-error{% endif %}">
+					{{ form.company_name.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.company_name(id="company_name", class="form-control") }}
+						{% for error in form.errors.company_name %}
+						<span class="help-block">{{ error }}</span>
+						{% endfor %}
+					</div>
+				</div>
 
-		<div class="form-group required {% if form.errors.company_name %} has-error{% endif %}">
-			{{ form.company_name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.company_name(id="company_name", class="form-control") }}
-				{% for error in form.errors.company_name %}
-				<span class="help-block">{{ error }}</span>
-				{% endfor %}
-			</div>
+				<div class="form-group">
+					{{ form.company_abbr.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.company_abbr(id="company_abbr", class="form-control", placeholder="Eg: E") }}
+						<span class="help-block">
+							<i class="fa fa-info-circle"></i> 便于导航左上角显示完整.
+						</span>
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.locale.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.locale(id="locale", class="form-control select2") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.country.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.country(id="country", class="form-control select2") }}
+					</div>
+				</div>
+
+				<div class="form-group required">
+					{{ form.currency_id.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.currency_id(id="currency", class="form-control select2") }}
+						<span class="help-block">
+							<i class="fa fa-info-circle"></i> {{ _('Choose currencies carefully, and later changes will affect numeric.') }}
+						</span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.domain.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-5">
+						{{ form.domain(id="domain", class="form-control select2", placeholder="optional") }}
+					</div>
+				</div>
+
+				<div class="form-group">
+					{{ form.description.label(class="col-sm-3 control-label") }}
+					<div class="col-sm-9">
+						{{ form.description(id="description", class="form-control") }}
+					</div>
+				</div>
+
+			</form>
 		</div>
-
-		<div class="form-group">
-			{{ form.company_abbr.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.company_abbr(id="company_abbr", class="form-control", placeholder="Eg: E") }}
-			</div>
-		</div>
-
-		<div class="form-group required">
-			{{ form.locale.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.locale(id="locale", class="form-control select2") }}
-			</div>
-		</div>
-
-		<div class="form-group required">
-			{{ form.country.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.country(id="country", class="form-control select2") }}
-			</div>
-		</div>
-
-		<div class="form-group required">
-			{{ form.currency_id.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.currency_id(id="currency", class="form-control select2") }}
-				<span class="help-block">
-					<small><i class="glyphicon glyphicon-info-sign"></i></small> {{ _('Choose currencies carefully, and later changes will affect numeric.') }}
-				</span>
-			</div>
-		</div>
-
-		<div class="form-group">
-			{{ form.domain.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
-				{{ form.domain(id="domain", class="form-control select2", placeholder="optional") }}
-			</div>
-		</div>
-
-		<div class="form-group">
-			{{ form.description.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-9">
-				{{ form.description(id="description", rows="5", class="form-control") }}
-			</div>
-		</div>
-
-	</form>
+	</div>
 </div>
 {% endblock %}

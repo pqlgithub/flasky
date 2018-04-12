@@ -2,70 +2,68 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
-		{{ _('Company Info') }}
+	<div class="page-header">
+		{{ _('Basic Setting') }}
 
 		<span class="pull-right">
 			<a href="{{ url_for('main.setting_site') }}" class="pjax btn btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-				<i class="glyphicon glyphicon-edit"></i>
+				<i class="fa fa-edit"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
-	<div class="well">
-		<div class="row">
-			<div class="col-md-9">
+	
+	<div class="row">
+		<div class="col-md-9">
+			<div class="well">
 				<form id="ability-form" class="form-horizontal" action="" method="post">
-					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Company Name') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">{{ site.company_name }} <code>{{ site.company_abbr }}</code></p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Company Name') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ site.company_name }} <code>{{ site.company_abbr }}</code></p>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Default Locale') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">{{ site.locale_label[2] }}</p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Default Locale') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ site.locale_label[2] }}</p>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Country') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">{{ site.country_label[2] }}</p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Country') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ site.country_label[2] }}</p>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Default Currency') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">
-								{{ site.default_currency.fx_title }} <span class="text-danger">{{ site.default_currency.code }}</span>
-							</p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Default Currency') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">
+							{{ site.default_currency.fx_title }} <span class="text-danger">{{ site.default_currency.code }}</span>
+						</p>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Domain') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">{{ site.domain_label[1] }}</p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Domain') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ site.domain_label[1] }}</p>
 					</div>
+				</div>
 
-					<div class="form-group">
-						<label class="col-sm-2 control-label">{{ _('Description') }}</label>
-						<div class="col-sm-10">
-							<p class="form-control-static">{{ site.description }}</p>
-						</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Description') }}</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{ site.description }}</p>
 					</div>
+				</div>
 
-				</form>
-			</div>
-			<div class="col-md-3">
-
+			</form>
 			</div>
 		</div>
 	</div>

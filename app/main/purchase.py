@@ -296,19 +296,13 @@ def edit_purchase(rid):
     form.arrival_date.data = purchase.arrival_date
     form.description.data = purchase.description
 
-    # 默认货币
-    currency_unit = g.current_site.currency
-    if purchase.warehouse_id:
-        select_warehouse = Warehouse.query.get(purchase.warehouse_id)
-        currency_unit = select_warehouse.currency_unit
-
     return render_template('purchases/create_and_edit.html',
                            form=form,
                            mode=mode,
                            sub_menu='purchases',
                            purchase=purchase,
                            suppliers=suppliers,
-                           current_currency_unit=currency_unit,
+                           current_currency_unit=g.current_site.currency,
                            **load_common_data())
 
 

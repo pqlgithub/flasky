@@ -4,7 +4,7 @@ from .user import User, Role, Ability, AnonymousUser, Site, UserIdType
 from .product import Product, ProductSku, ProductStock, ProductContent, CustomsDeclaration, Supplier, SupplyStats, Brand, Category, \
     CategoryPath, Wishlist, DANGEROUS_GOODS_TYPES, BUSINESS_MODE
 from .asset import Asset, Directory
-from .store import Store, STORE_STATUS, STORE_TYPE, StoreDistributePacket, StoreDistributeProduct
+from .store import Store, STORE_STATUS, STORE_TYPE, StoreDistributePacket, StoreDistributeProduct, STORE_MODES
 from .warehouse import Warehouse, WarehouseShelve, InWarehouse, OutWarehouse, \
     StockHistory, ExchangeWarehouse, ExchangeWarehouseProduct
 from .purchase import Purchase, PurchaseProduct, PurchaseReturned, PurchaseReturnedProduct
