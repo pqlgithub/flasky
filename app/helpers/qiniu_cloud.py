@@ -16,7 +16,7 @@ class QiniuStorage(object):
         q = Auth(access_key, access_secret)
         # 上传策略示例
         # https://developer.qiniu.com/kodo/manual/1206/put-policy
-        save_key = '$(year)$(mon)$(day)/$(etag)$(ext)'
+        save_key = '$(year)$(mon)$(day)/$(min)$(sec)$(etag)$(ext)'
         policy = {
             'scope': bucket_name,
             'deadline': int(timestamp()) + 3600,
