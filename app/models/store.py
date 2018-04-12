@@ -7,6 +7,7 @@ from app.models import User
 
 __all__ = [
     'Store',
+    'StoreDistributeProduct',
     'StoreDistributePacket',
     'STORE_STATUS',
     'STORE_TYPE'
@@ -53,6 +54,7 @@ class Store(db.Model):
     authorize_expired_at = db.Column(db.Integer, default=0)
     access_token = db.Column(db.String(100), default='')
     refresh_token = db.Column(db.String(100), default='')
+
     # 类型：1、第三方店铺；2、自营；3、社交电商 5、实体店铺 6、分销
     type = db.Column(db.SmallInteger, default=1)
     # 状态 -1：禁用；1：正常
@@ -119,6 +121,31 @@ class Store(db.Model):
 
     def __repr__(self):
         return '<Store %r>' % self.name
+
+
+class StoreDistributeProduct(db.Model):
+    """店铺与商品关系表"""
+
+    __tablename__ = 'store_distribute_products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product_serial_no = db.Column(db.String(12), index=True, nullable=False)
+    # 零售价
+    price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 促销价
+    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 私有库存数
+    private_stock = db.Column(db.Integer, default=0)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    def __repr__(self):
+        return '<StoreDistributeProduct {}>'.format(self.store_id)
 
 
 class StoreDistributePacket(db.Model):

@@ -142,7 +142,16 @@ def delete_store():
 
 @main.route('/stores/<string:rid>/distribute', methods=['GET', 'POST'])
 def store_distribute_products(rid):
-    """为店铺授权商品"""
+    """单个为店铺授权商品"""
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+    return render_template('stores/distribute_products.html',
+                           store=store)
+
+
+@main.route('/stores/<string:rid>/distribute_by_packet', methods=['GET', 'POST'])
+def distribute_products_by_packet(rid):
+    """通过商品组批量为店铺授权商品"""
     store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
     if request.method == 'POST':
         selected_ids = request.form.getlist('selected[]')
