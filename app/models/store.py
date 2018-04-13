@@ -40,6 +40,11 @@ STORE_TYPE = [
     (6, lazy_gettext('Distribution'))
 ]
 
+# store and product => N to N
+store_product_table = db.Table('stores_products',
+                               db.Column('store_id', db.Integer, db.ForeignKey('stores.id')),
+                               db.Column('product_id', db.Integer, db.ForeignKey('products.id')))
+
 
 class Store(db.Model):
     """渠道店铺列表"""
@@ -94,6 +99,11 @@ class Store(db.Model):
         'StoreDistributePacket', backref='store', lazy='dynamic'
     )
 
+    # store and product => N to N
+    products = db.relationship(
+        'Product', secondary=store_product_table, backref=db.backref('stores', lazy='select'), lazy='dynamic'
+    )
+
     @property
     def platform_name(self):
         for plat in SUPPORT_PLATFORM:
@@ -136,25 +146,42 @@ class Store(db.Model):
         """验证店铺名称是否唯一"""
         return Store.query.filter_by(master_uid=master_uid, platform=platform, name=name).first()
 
+    def add_product(self, *products):
+        """添加商品"""
+        self.products.extend([product for product in products if product not in self.products])
+
+    def update_product(self, *products):
+        """更新商品"""
+        self.products = [product for product in products]
+
+    def remove_product(self, *products):
+        """删除商品"""
+        self.products = [product for product in self.products if product not in products]
+
     def __repr__(self):
         return '<Store %r>' % self.name
 
 
 class StoreDistributeProduct(db.Model):
-    """店铺与商品关系表"""
+    """店铺授权或分销商品扩展信息"""
 
-    __tablename__ = 'store_distribute_products'
+    __tablename__ = 'store_product_extend'
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     product_serial_no = db.Column(db.String(12), index=True, nullable=False)
+
+    sku_id = db.Column(db.Integer, default=0)
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=True)
+
     # 零售价
     price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 促销价
     sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+
     # 私有库存数
     private_stock = db.Column(db.Integer, default=0)
 

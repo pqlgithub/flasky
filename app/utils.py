@@ -6,6 +6,7 @@ import random
 import hashlib
 import speaklater
 from datetime import datetime
+from decimal import Decimal
 from string import digits, ascii_letters
 from flask import jsonify, current_app, request, flash
 from flask_login import current_user
@@ -113,6 +114,26 @@ def is_sequence(arg):
 def next_is_valid(next_url):
     """验证next url是否有效"""
     return True
+
+
+def correct_int(param):
+    """整数型类型转换"""
+    if param is None or param == '':
+        param = 0
+    else:
+        param = int(param)
+
+    return param
+
+
+def correct_decimal(param):
+    """类型转换"""
+    if param is None or param == '':
+        param = 0
+    else:
+        param = Decimal(param)
+
+    return param
 
 
 def make_unique_key(length=20):

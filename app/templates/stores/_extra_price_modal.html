@@ -1,0 +1,108 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">
+                设置商品价格 <small>如价格一致，则无需设置</small>
+            </h4>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal" action="" method="post" id="distribute-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="rid" value="{{ rid }}" >
+				<input type="hidden" name="product_rid" value="{{ product_rid }}" >
+				
+				<div class="media">
+					<div class="media-left">
+				    	<a href="#">
+				      	  <img class="media-object" src="{{ product.cover.view_url }}" width="60px">
+				    	</a>
+				  	</div>
+				  	<div class="media-body">
+				    	<h4 class="media-heading">{{ product.name }}</h4>
+						<p class="m-t-10">
+					    	<span>零售价：{{ product.price }}</span>
+							{% if product.sale_price > 0 %}
+							<span class="text-mixpus m-l-10">促销价：{{ product.sale_price }}</span>
+							{% endif %}
+						</p>
+				  	</div>
+				</div>
+				
+				<h5 class="m-t-20">SKU信息</h5>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th class="text-center">
+								封面图
+							</th>
+							<th>
+								规格/颜色
+							</th>
+							<th>
+								零售价
+							</th>
+							<th>
+								促销价
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for sku in product.skus %}
+						<tr>
+							<td class="text-center">
+								<img src="{{ sku.cover.view_url }}" width="60px">
+							</td>
+							<td>
+								{{ sku.s_model }} {{ sku.s_color }}
+							</td>
+							<td>
+								<input type="text" name="sku_price_{{ sku.serial_no }}" class="form-control" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['price'] %}{{ extra_data[sku.serial_no]['price'] }}{% else %}{{ sku.price|supress_none() }}{% endif %}" />
+							</td>
+							<td>
+								<input type="text" name="sku_sale_price_{{ sku.serial_no }}" class="form-control" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['sale_price'] %}{{ extra_data[sku.serial_no]['sale_price'] }}{% else %}{{ sku.sale_price|supress_none() }}{% endif %}" />
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="distribute-submit-btn" class="btn btn-mixpus">{{ _('Submit') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+    mixpus.hook_select2();
+	
+	$('#distribute-submit-btn').click(function (e) {
+		var $form=$('#distribute-form'), data = $form.serialize(), $btn=$('#distribute-submit-btn');
+
+		$.ajax({
+			url: "{{ url_for('main.ajax_distribute_price') }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+				    window.location.reload();
+				} else {
+					$form.prepend(mixpus.display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+//-->
+</script>

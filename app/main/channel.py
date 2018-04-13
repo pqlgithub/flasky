@@ -7,7 +7,8 @@ from .. import db
 from app.models import Store, Product, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, Brand,\
     ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, STORE_MODES
 from app.forms import StoreForm, BannerForm, BannerImageForm
-from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response
+from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response, \
+    correct_decimal, correct_int
 from ..helpers import MixGenId
 from ..decorators import user_has
 
@@ -180,28 +181,28 @@ def delete_store():
 @main.route('/stores/product/distribute', methods=['GET', 'POST'])
 def store_distribute_products():
     """单个为店铺授权商品"""
-    rid = request.values.get('rid')
-    _type = request.values.get('type', 'selected')
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 50, type=int)
+    rid = request.values.get('rid')
+    _type = request.values.get('type', 'selected')
     cid = request.values.get('cid', type=int)
     bid = request.values.get('bid', type=int)
 
     store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
 
+    # 已选择商品
+    distribute_builder = store.products.order_by(Product.updated_at.desc())
+
+    # 搜索筛选
     brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
     categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
-
-    # 已选择商品
-    distribute_builder = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id) \
-        .order_by(StoreDistributeProduct.created_at.asc())
 
     selected_products = []
     selected_product_ids = []
     paginated_products = {}
     if _type == 'all':
         distributed_products = distribute_builder.all()
-        selected_product_ids = [item.product_id for item in distributed_products]
+        selected_product_ids = [item.id for item in distributed_products]
 
         # 获取全部商品
         if cid:
@@ -222,8 +223,20 @@ def store_distribute_products():
     else:
         distributed_products = distribute_builder.paginate(page, per_page)
         for item in distributed_products.items:
-            item.product = Product.query.get(item.product_id)
+            extra_data = StoreDistributeProduct.query.filter_by(product_id=item.id).all()
+            if extra_data:
+                sku_modes = {}
+                for sku in item.skus:
+                    sku_modes[sku.serial_no] = sku.mode
+
+                renew_extra_data = []
+                for extra in extra_data:
+                    extra.mode = sku_modes.get(extra.sku_serial_no)
+                    renew_extra_data.append(extra)
+
+                item.extra_data = renew_extra_data
             selected_products.append(item)
+
         distributed_products.items = selected_products
 
     return render_template('stores/distribute_products.html',
@@ -239,28 +252,141 @@ def store_distribute_products():
                            cid=cid)
 
 
+@main.route('/stores/product/distribute_stock', methods=['GET', 'POST'])
+def ajax_distribute_stock():
+    """更新授权商品库存"""
+    rid = request.values.get('rid')
+    product_rid = request.values.get('product_rid')
+
+    # 验证商品是否存在
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
+
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+    if request.method == 'POST':
+        for sku in product.skus:
+            sku_stock = request.form.get('sku_stock_%s' % sku.serial_no)
+            sku_stock = correct_int(sku_stock)
+            if sku_stock == 0:  # 跳过
+                continue
+
+            distribute_sku = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                                    sku_id=sku.id).first()
+            if not distribute_sku:
+                distribute_sku = StoreDistributeProduct(
+                    master_uid=Master.master_uid(),
+                    store_id=store.id,
+                    product_id=product.id,
+                    product_serial_no=product.serial_no,
+                    sku_id=sku.id,
+                    sku_serial_no=sku.serial_no,
+                    private_stock=sku_stock
+                )
+                
+                db.session.add(distribute_sku)
+            else:  # 更新库存
+                distribute_sku.private_stock = sku_stock
+
+        db.session.commit()
+
+        return status_response()
+
+    extra_data = {}
+    # 获取sku扩展数据
+    extra_skus = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                        product_id=product.id).all()
+    for extra_sku in extra_skus:
+        extra_data[extra_sku.sku_serial_no] = {
+            'private_stock': extra_sku.private_stock
+        }
+
+    return render_template('stores/_extra_stock_modal.html',
+                           extra_data=extra_data,
+                           product=product,
+                           rid=store.serial_no,
+                           product_rid=product_rid)
+
+
+@main.route('/stores/product/distribute_price', methods=['GET', 'POST'])
+def ajax_distribute_price():
+    """更新授权商品的价格"""
+    rid = request.values.get('rid')
+    product_rid = request.values.get('product_rid')
+
+    # 验证商品是否存在
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
+
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+    if request.method == 'POST':
+        for sku in product.skus:
+            sku_price = request.form.get('sku_price_%s' % sku.serial_no)
+            sku_sale_price = request.form.get('sku_sale_price_%s' % sku.serial_no)
+
+            current_app.logger.debug('sku price: %s, sale_price: %s' % (sku_price, sku_sale_price))
+
+            sku_price = correct_decimal(sku_price)
+            sku_sale_price = correct_decimal(sku_sale_price)
+
+            # 跳过
+            if sku_price == 0 and sku_sale_price == 0:
+                continue
+
+            distribute_sku = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                                    sku_id=sku.id).first()
+            if not distribute_sku:
+                distribute_sku = StoreDistributeProduct(
+                    master_uid=Master.master_uid(),
+                    store_id=store.id,
+                    product_id=product.id,
+                    product_serial_no=product.serial_no,
+                    sku_id=sku.id,
+                    sku_serial_no=sku.serial_no,
+                    price=sku_price,
+                    sale_price=sku_sale_price
+                )
+
+                db.session.add(distribute_sku)
+            else:  # 更新价格
+                distribute_sku.price = sku_price
+                distribute_sku.sale_price = sku_sale_price
+
+        db.session.commit()
+
+        return status_response()
+
+    # 获取sku扩展数据
+    extra_skus = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                        product_id=product.id).all()
+    extra_data = {}
+    for extra_sku in extra_skus:
+        extra_data[extra_sku.sku_serial_no] = {
+            'price': extra_sku.price,
+            'sale_price': extra_sku.sale_price
+        }
+
+    current_app.logger.warn(extra_data)
+
+    return render_template('stores/_extra_price_modal.html',
+                           extra_data=extra_data,
+                           product=product,
+                           rid=store.serial_no,
+                           product_rid=product_rid)
+
+
 @main.route('/stores/product/ajax_distribute', methods=['POST'])
 def ajax_distribute_product():
     """授权操作"""
     rid = request.values.get('rid')
     product_rid = request.values.get('product_rid')
-    # 验证商品是否存在
-    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
-    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
-
     try:
-        distributed_product = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
-                                                                     product_serial_no=product_rid).first()
-        if distributed_product is None:
-            distributed_product = StoreDistributeProduct(
-                master_uid=Master.master_uid(),
-                store_id=store.id,
-                product_id=product.id,
-                product_serial_no=product.serial_no,
-                price=product.price,
-                sale_price=product.sale_price
-            )
-            db.session.add(distributed_product)
+        # 验证商品是否存在
+        product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
+        # 可支持批量添加
+        products = [product]
+        store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+        # 添加商品
+        store.add_product(*products)
+
         db.session.commit()
     except Exception as err:
         db.session.rollback()
@@ -268,21 +394,6 @@ def ajax_distribute_product():
         return custom_response(False, '店铺添加产品失败')
 
     return custom_response(True, '店铺添加产品成功')
-
-
-@main.route('/stores/product/distribute_stock', methods=['POST'])
-def ajax_distribute_stock():
-    """更新授权商品库存"""
-    rid = request.values.get('rid')
-    pass
-
-
-@main.route('/stores/product/distribute_price', methods=['GET', 'POST'])
-def ajax_distribute_price():
-    """更新授权商品的价格"""
-    rid = request.values.get('rid')
-    
-
 
 
 @main.route('/stores/product/remove', methods=['POST'])
@@ -293,11 +404,14 @@ def remove_product_from_store():
         return custom_response(False, gettext("Product isn't null!"))
 
     try:
-        store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+        # 验证商品是否存在
+        product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
+        # 可支持批量移除
+        products = [product]
 
-        distributed_product = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
-                                                                     product_serial_no=product_rid).first()
-        db.session.delete(distributed_product)
+        store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+        store.remove_product(*products)
+
         db.session.commit()
     except Exception as err:
         db.session.rollback()
