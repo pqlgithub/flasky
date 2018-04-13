@@ -129,18 +129,18 @@ def show_inout(page=1):
         now = datetime.date.today()
         start_time = None
         end_time = None
-        if date == 1: # 今天之内
+        if date == 1:  # 今天之内
             start_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
             end_time = time.time()
-        if date == 2: # 昨天之内
+        if date == 2:  # 昨天之内
             dt = now - datetime.timedelta(days=1)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
-        if date == 7: # 7天之内
+        if date == 7:  # 7天之内
             dt = now - datetime.timedelta(days=7)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
-        if date == 30: # 30天之内
+        if date == 30:  # 30天之内
             dt = now - datetime.timedelta(days=30)
             start_time = time.mktime((dt.year, dt.month, dt.day, 0, 0, 0, 0, 0, 0))
             end_time = time.mktime((now.year, now.month, now.day, 0, 0, 0, 0, 0, 0))
@@ -149,7 +149,7 @@ def show_inout(page=1):
             builder = builder.filter(StockHistory.created_at > start_time, StockHistory.created_at < end_time)
 
     if qk:
-        qk = qk.strip() # 截取空格
+        qk = qk.strip()  # 截取空格
         builder = builder.filter(or_(StockHistory.serial_no==qk,StockHistory.sku_serial_no==qk))
 
     paginated_inout_list = builder.order_by('created_at desc').paginate(page, per_page)
@@ -160,7 +160,7 @@ def show_inout(page=1):
     
     return render_template(current_tpl,
                            paginated_inout_list=paginated_inout_list,
-                           sub_menu='inout',
+                           sub_menu='stocks',
                            qk=qk,
                            wh_id=wh_id,
                            type=type,
@@ -211,7 +211,7 @@ def create_ex_warehouse():
                 warehouse_shelve_id=warehouse_shelve_id,
                 product_sku_id=sku_id,
                 sku_serial_no=item_product.serial_no,
-                type=2, # 出库
+                type=2,  # 出库
                 operation_type=operation_type,
                 original_quantity=ori_quantity,
                 quantity=quantity,
@@ -295,7 +295,7 @@ def show_in_warehouses(page=1):
 
     return render_template('warehouses/show_inlist.html',
                            paginated_inwarehouses=paginated_inwarehouses,
-                           sub_menu='inlist',
+                           sub_menu='stocks',
                            **load_common_data())
 
 
@@ -438,7 +438,7 @@ def create_in_warehouse():
 
             # 验证库存数量
             stock = ProductStock.query.filter_by(warehouse_id=warehouse_id, product_sku_id=sku_id).first()
-            if not stock: # 添加
+            if not stock:  # 添加
                 new_stock = ProductStock(
                     master_uid = Master.master_uid(),
                     product_sku_id = sku_id,
@@ -451,7 +451,7 @@ def create_in_warehouse():
                 db.session.add(new_stock)
 
                 ori_quantity = 0
-            else: # 更新库存
+            else:  # 更新库存
                 ori_quantity = stock.current_count
 
                 stock.total_count += offset_quantity
@@ -604,7 +604,7 @@ def show_out_warehouses(page=1):
 
     return render_template('warehouses/show_outlist.html',
                            paginated_outwarehouses=paginated_outwarehouses,
-                           sub_menu='outlist',
+                           sub_menu='stocks',
                            status_list=OUTWAREHOUSE_STATUS,
                            **load_common_data())
 
@@ -737,6 +737,62 @@ def edit_in_warehouse(id):
                            sub_menu='inwarehouses',
                            mode=mode,
                            in_warehouse=in_warehouse, **load_common_data())
+
+
+@main.route('/warehouses/stock_products', methods=['POST'])
+@user_has('admin_warehouse')
+def ajax_stock_product():
+    """获取某仓库的库存商品"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 25, type=int)
+    wh_id = request.values.get('wh_id', type=int)
+    qk = request.values.get('qk')
+
+    builder = ProductStock.query.filter_by(master_uid=Master.master_uid())
+    if wh_id:
+        builder = builder.filter_by(warehouse_id=wh_id)
+    if qk:
+        builder = builder.filter_by(sku_serial_no=qk)
+
+    paginated_stocks = builder.order_by(ProductStock.created_at.desc()).paginate(page, per_page)
+
+    return render_template('warehouses/_modal_exchange_stock.html',
+                           paginated_stocks=paginated_stocks,
+                           wh_id=wh_id)
+
+
+@main.route('/warehouses/exchange_stock', methods=['GET', 'POST'])
+@user_has('admin_warehouse')
+def exchange_stock():
+    """库存调拨"""
+    if request.method == 'POST':
+        from_warehouse_id = request.form.get('from_warehouse_id')
+        to_warehouse_id = request.form.get('to_warehouse_id')
+        remark = request.form.get('remark')
+        items = request.form.getlist('items[]')
+
+        if from_warehouse_id and to_warehouse_id and items:
+            # 创建出库单
+            out_serial_no = gen_serial_no('CK')
+            out_warehouse = OutWarehouse(
+                master_uid=Master.master_uid(),
+                serial_no=out_serial_no,
+                target_type=3,
+                warehouse_id=from_warehouse_id,
+                out_status=1,
+                remark=remark
+            )
+            db.session.add(out_warehouse)
+
+            # 创建入库单
+            
+            flash('调拨库存创建成功！', 'success')
+            return redirect(url_for('.exchange_stock'))
+
+    # 获取仓库列表
+    warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
+    return render_template('warehouses/create_exchange_stock.html',
+                           warehouses=warehouse_list)
 
 
 @main.route('/warehouses')
@@ -902,7 +958,7 @@ def ajax_delete_shelve():
         return full_response(False, custom_status('Delete shelve id is null!'))
 
     shelve = WarehouseShelve.query.get(int(shelve_id))
-    if shelve.is_default: # 默认货架
+    if shelve.is_default:  # 默认货架
         return custom_response(False, "Default shelve can't delete!")
 
     db.session.delete(shelve)

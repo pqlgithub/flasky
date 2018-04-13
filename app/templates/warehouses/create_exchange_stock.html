@@ -1,0 +1,119 @@
+{% extends pjax("layout/base.html") %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+		
+		$('#add-product-btn').click(function (e) {
+			e.preventDefault();
+			
+			var $btn = $(this), post_url=$(this).attr('href');
+			var from_warehouse_id = $('#from_warehouse_id').find(':selected').eq(0).val();
+			if (from_warehouse_id == 0) {
+				return mixpus.show_error_message('请先选择一个仓库');
+			}
+			
+			$('#stock-modal').remove();
+
+			$.ajax({
+				url: post_url,
+				type: 'post',
+				dataType: 'html',
+				data: { 'wh_id': from_warehouse_id, 'csrf_token': mixpus.csrf_token },
+				beforeSend: function() {
+					$btn.prop('disabled', true);
+				},
+				complete: function() {
+					$btn.prop('disabled', false);
+				},
+				success: function(html) {
+					$('body').append('<div id="stock-modal" role="dialog" class="modal">' + html + '</div>');
+
+					$('#stock-modal').modal('show');
+				}
+			});
+			
+			return false;
+		});
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<div class="page-header">
+		{% if mode == 'create' %}
+		创建调拨单
+		{% else %}
+		编辑调拨单
+		{% endif %}
+
+		<span class="pull-right">
+			<button type="submit" form="warehouse-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_warehouses') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-9">
+			<form id="warehouse-form" class="form-horizontal" action="" method="post">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		
+				<div class="form-group required">
+					<label class="col-sm-2 control-label">{{ _('From Warehouse') }}</label>
+					<div class="col-sm-4 m-b-10">
+						<select name="from_warehouse_id" id="from_warehouse_id" class="form-control select2">
+							<option value="0">{{ _('Select warehouses') }}</option>
+							{% for w in warehouses %}
+							<option value="{{ w.id }}">{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</option>
+							{% endfor  %}
+						</select>
+					</div>
+				</div>
+				
+				<div class="form-group required">
+					<label class="col-sm-2 control-label">至{{ _('Warehouse') }}</label>
+					<div class="col-sm-4 m-b-10">
+						<select name="to_warehouse_id" id="to_warehouse_id" class="form-control select2">
+							<option value="0">{{ _('Select warehouses') }}</option>
+							{% for w in warehouses %}
+							<option value="{{ w.id }}">{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</option>
+							{% endfor  %}
+						</select>
+					</div>
+				</div>
+		
+				<div class="form-group">
+					<label class="col-sm-2 control-label">{{ _('Remark') }}</label>
+					<div class="col-sm-10 m-b-10">
+						<textarea class="form-control" name="remark"></textarea>
+					</div>
+				</div>
+				
+				<a href="{{ url_for('main.ajax_stock_product') }}" class="btn btn-warning" id="add-product-btn" data-toggle="tooltip" data-original-title="{{ _('Select Products') }}">
+					<i class="fa fa-plus"></i> {{ _('Select Products') }}
+				</a>
+				
+				<table class="table table-bordered m-t-20 m-b-30">
+					<thead>
+						<tr>
+							<th>{{ _('Product Info') }}</th>
+							<th class="text-center">{{ _('Stock') }}</th>
+							<th>调出数量</th>
+							<th class="text-right">{{ _('Action') }}</th>
+						</tr>
+					</thead>
+					<tbody id="stock-products">
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

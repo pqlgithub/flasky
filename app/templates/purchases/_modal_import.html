@@ -14,7 +14,7 @@
 						<select name="wh_id" class="form-control select2">
 							<option value="0">{{ _('Select Warehouse') }}</option>
 							{% for wh in warehouse_list %}
-							<option value="{{ wh.id }}">{{ wh.name }}</option>
+							<option value="{{ wh.id }}">{{ wh.name }}{% if wh.type == 3 %} ({{ wh.desc_type[1] }}){%endif%}</option>
 							{% endfor %}
 						</select>
 					</div>

@@ -90,7 +90,7 @@
 					</li>
 					{% for w in warehouse_list %}
 					<li>
-						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}</a>
+						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}{% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</a>
 					</li>
 					{% endfor %}
 				</ul>

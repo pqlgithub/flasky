@@ -59,16 +59,19 @@
 			<button class="btn btn-default" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="fa fa-print"></i>
 			</button>
+            <a href="{{ url_for('main.exchange_stock') }}" class="btn btn-default">
+                <i class="fa fa-exchange"></i> 调拨库存
+            </a>
 			<div class="btn-group">
 				<button class="btn btn-default dropdown-toggle" type="button" id="storage-actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 					{{ _('Actions') }}
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="storage-actions">
-					<li><a href="#" class="ajax-modal" data-modal="in-stock-modal">{{ _('Print') }}</a></li>
+					<li><a href="javascript:;" class="ajax-modal" data-modal="in-stock-modal">{{ _('Print') }}</a></li>
 					<li class="divider" role="separator"></li>
 					<li>
-						<a href="#" class="ajax-modal" data-modal="in-stock-modal">
+						<a href="javascript:;" class="ajax-modal" data-modal="in-stock-modal">
 							{{ _('Export Stock') }}
 						</a>
 					</li>
@@ -103,7 +106,7 @@
 					</li>
 					{% for w in warehouse_list %}
 					<li>
-						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}</a>
+						<a href="javascript:void(0);" data-id="{{ w.id }}" class="option">{{ w.name }}){% if w.type == 3 %} ({{ w.desc_type[1] }}){%endif%}</a>
 					</li>
 					{% endfor %}
 				</ul>

@@ -1,0 +1,97 @@
+<div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">调拨库存</h4>
+		</div>
+		<div class="modal-body">
+			<form class="form form-inline" action="" method="post" id="stock-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				
+				<div class="form-group">
+					<input type="text" name="qk" size="40" class="form-control searcher" placeholder="{{ _('Search sku...') }}" >
+				</div>
+				
+				<div id="select-product-box" class="scrollable-shadow">
+					<table class="table table-bordered m-t-20">
+						<thead>
+							<tr>
+								<th>{{ _('Product Info') }}</th>
+								<th class="text-center">{{ _('Stock') }}</th>
+								<th>调出数量</th>
+								<th class="text-right">{{ _('Action') }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for stock in paginated_stocks.items %}
+								{% if stock.product_sku %}
+								<tr id="sku_{{ stock.sku_serial_no }}">
+									<td>
+										<img src="{{ stock.cover.view_url }}" width="60px" class="pull-left">
+										<div class="product-info">
+											<span class="text-mixpus">{{ stock.sku_serial_no }}</span><br>
+											{{ stock.product_sku.product.name }}<br>
+											<small>{{ stock.product_sku.mode }}</small>
+										</div>
+									</td>
+									<td class="text-center">
+										{{ stock.total_count }}
+									</td>
+									<td>
+										<input type="hidden" name="items[]" value="{{ stock.sku_serial_no }}" />
+										<input type="text" name="out_quantity_{{ stock.sku_serial_no }}" class="form-control" placeholder="最大值: {{ stock.total_count }}" />
+									</td>
+									<td class="text-right">
+										<a href="javascript:;" class="btn-link btn-select" data-rid="{{ stock.sku_serial_no }}">
+											<i class="fa fa-plus"></i> 选定
+										</a>
+									</td>
+								</tr>
+								{% endif %}
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				{% import "block/_macros.html" as macros %}
+				<div class="pages-box pages-mini">
+					<nav aria-label="Page navigation">
+						{{ macros.pagination_widget(paginated_stocks, '.ajax_stock_product', wh_id=wh_id, qk=qk) }}
+					</nav>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript"><!--
+	mixpus.hook_select2();
+	
+	var submit_search_handler = function () {
+		var qk = $('input[name=qk]').val();
+		var wh_id = $('input[name=wh_id]').val();
+
+		$.post("{{ url_for('main.ajax_stock_product') }}", {'qk': qk, 'wh_id': wh_id, 'csrf_token': mixpus.csrf_token}, function (result) {
+			$('#stock-modal').html(result);
+		}, 'html');
+	};
+
+	$('input.searcher').on('keydown', function (e) {
+		var ev = window.event||e;
+		if (ev.keyCode == 13) {
+			submit_search_handler();
+			return false;
+		}
+	});
+	
+	$('.btn-select').click(function (e) {
+		var rid = $(this).data('rid');
+		$(this)
+			.addClass('btn-remove-select').removeClass('btn-select')
+			.html('<i class="fa fa-remove"></i> 移除');
+		$('#sku_' + rid).appendTo($('#stock-products'));
+	});
+//-->
+</script>

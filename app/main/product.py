@@ -1014,7 +1014,7 @@ def supply_list():
     paginated_supply = SupplyStats.query.filter_by(master_uid=Master.master_uid()).order_by(SupplyStats.created_at.desc()).paginate(
         page, per_page)
     return render_template('suppliers/supply_list.html',
-                           sub_menu='supply',
+                           sub_menu='purchases',
                            paginated_supply=paginated_supply.items,
                            pagination=paginated_supply,
                            **load_common_data())
@@ -1075,7 +1075,7 @@ def show_suppliers(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by(Supplier.created_at.desc()).paginate(page, per_page)
     return render_template('suppliers/show_list.html',
-                           sub_menu='suppliers',
+                           sub_menu='purchases',
                            paginated_suppliers=paginated_suppliers,
                            **load_common_data())
 

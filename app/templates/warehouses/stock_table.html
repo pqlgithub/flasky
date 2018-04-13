@@ -19,7 +19,7 @@
 				<th>{{ _('Purchasing') }}</th>
 				<th class="text-center">{{ _('Available') }}</th>
 				<th class="text-center">{{ _('Saled Quantity') }}</th>
-				<th class="text-center">{{ _('Warehouse') }}<br>{{ _('Shelve') }}</th>
+				<th class="text-center">{{ _('Warehouse') }}/{{ _('Shelve') }}</th>
 				<th class="text-right">{{ _('Price') }}</th>
 				<th class="text-right">{{ _('Total Amount') }}</th>
 				<th class="text-right">{{ _('Update Date') }}</th>
@@ -37,9 +37,9 @@
 				<td>
 					<img src="{{ stock.cover.view_url }}" width="60px" class="pull-left">
 					<div class="product-info">
-						<b>{{ stock.product_sku.serial_no }}</b><br>
+						<span class="text-mixpus">{{ stock.product_sku.serial_no }}</span><br>
 						{{ stock.product_sku.product.name }}<br>
-						<small>({{ stock.product_sku.mode }})</small>
+						<small>{{ stock.product_sku.mode }}</small>
 					</div>
 				</td>
 				<td class="text-center">

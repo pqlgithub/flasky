@@ -196,13 +196,8 @@
                              </a>
                          </li>
                          <li>
-                             <a href="{{ url_for('main.show_in_warehouses') }}" class="pjax">
-                                 {{ _('In List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_out_warehouses') }}" class="pjax">
-                                 {{ _('Out List') }}
+                             <a href="{{ url_for('main.create_purchase') }}" class="pjax">
+                                 新增采购单
                              </a>
                          </li>
                      </ul>
@@ -216,11 +211,6 @@
                          <li>
                              <a href="{{ url_for('main.supply_list') }}" class="pjax">
                                  {{ _('Supply Relation') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax">
-                                 {{ _('Warehouse List') }}
                              </a>
                          </li>
                      </ul>
@@ -239,6 +229,16 @@
                          <li>
                              <a href="{{ url_for('main.show_stocks') }}" class="pjax">
                                  {{ _('Stock List') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('main.show_in_warehouses') }}" class="pjax">
+                                 {{ _('In List') }}
+                             </a>
+                         </li>
+                         <li>
+                             <a href="{{ url_for('main.show_out_warehouses') }}" class="pjax">
+                                 {{ _('Out List') }}
                              </a>
                          </li>
                          <li>

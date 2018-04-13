@@ -75,18 +75,21 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('InWarehouse List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
 			<button class="btn btn-default ajax-print" data-form-id="inwarehouse-form" data-href="{{ url_for('main.print_in_warehouses') }}" type="button" data-toggle="tooltip" data-original-title="{{ _('Print') }}">
 				<i class="fa fa-print"></i>
 			</button>
+			<a href="{{ url_for('main.create_in_warehouse') }}" class="btn btn-mixpus ajax-modal" data-modal="in-stock-modal">
+				<i class="fa fa-plus"></i>
+			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="purchases-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}" disabled>
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<form class="form-inline" method="post" id="filter-stocks-form">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
