@@ -81,11 +81,12 @@
 					<td class="text-right">
 						{{ store.created_at|timestamp2string(format='%Y-%m-%d %H:%M') }}
 					</td>
+					<td class="text-right">
+						<span class="indicator {{ store.status_label[2] }}">{{ store.status_label[1] }}</span>
+					</td>
 					{% if store.platform == 1 %}
 						<td class="text-right">
-							<span class="indicator {{ store.wxapp.status_label[2] }}">{{ store.wxapp.status_label[1] }}</span>
-						</td>
-						<td class="text-right">
+							{% if store.wxapp %}
 							<p>
 			                    <a href="{{ url_for('main.show_orders') }}?store_id={{ store.id }}" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 			                        {{ _('Related Orders') }}
@@ -105,11 +106,13 @@
 									<i class="fa fa-upload"></i> 版本管理
 								</a>
 							</p>
+							{% else %}
+			                <a href="{{ url_for('main.wxapp_authorize') }}" class="btn btn-mixpus" target="_blank">
+			                    <i class="fa fa-link"></i> 开始小程序授权
+			                </a>
+							{% endif %}
 						</td>
 					{% else %}
-						<td class="text-right">
-							<span class="indicator {{ store.status_label[2] }}">{{ store.status_label[1] }}</span>
-						</td>
 						<td class="text-right">
 							{% if store.distribute_mode == 2 %}
 		                    <a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
