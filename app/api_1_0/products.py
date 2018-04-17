@@ -298,8 +298,19 @@ def get_product_skus():
     """获取商品的Skus"""
     rid = request.values.get('rid')
     store_rid = request.values.get('store_rid')
-    product = Product.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
-    if product is None:
+    if not rid:
+        abort(404)
+
+    rids = rid.split(',')
+    is_one = True if len(rids) == 1 else False
+
+    builder = Product.query.filter_by(master_uid=g.master_uid)
+    if is_one:
+        products = builder.filter_by(serial_no=rids[0]).all()
+    else:
+        products = builder.filter(Product.serial_no.in_(rids)).all()
+
+    if products is None:
         abort(404)
 
     # 检测店铺是否有私有设置
@@ -308,55 +319,64 @@ def get_product_skus():
         current_store = Store.query.filter_by(master_uid=g.master_uid, serial_no=store_rid).first()
         if current_store and current_store.distribute_mode == 2:
             distribute_mode = current_store.distribute_mode
-        
-    modes = []
-    colors = []
-    items = []
-    for sku in product.skus:
-        if sku.s_model and sku.s_model not in modes:
-            modes.append(sku.s_model)
-            
-        if sku.s_color and sku.s_color not in colors:
-            colors.append(sku.s_color)
 
-        price = sku.price
-        sale_price = sku.sale_price
-        stock_count = sku.stock_count
+    # 重组商品sku
+    more_skus = {}
+    for product in products:
+        modes = []
+        colors = []
+        items = []
+        for sku in product.skus:
+            if sku.s_model and sku.s_model not in modes:
+                modes.append(sku.s_model)
 
-        # 店铺为授权模式时，则获取私有设置
-        if distribute_mode == 2:
-            private_sku = StoreDistributeProduct.query.filter_by(master_uid=g.master_uid, store_id=current_store.id,
-                                                                 sku_serial_no=sku.serial_no).first()
-            if private_sku:
-                price = private_sku.price if private_sku.price > 0 else price
-                sale_price = private_sku.sale_price if private_sku.sale_price > 0 else sale_price
-                # 店铺授权必须为私有库存
-                stock_count = private_sku.private_stock
+            if sku.s_color and sku.s_color not in colors:
+                colors.append(sku.s_color)
 
-        items.append({
-            'rid': sku.serial_no,
-            'mode': sku.mode,
-            'product_name': product.name,
-            's_model': sku.s_model,
-            's_color': sku.s_color,
-            'cover': sku.cover.view_url,
-            'price': str(price),
-            'sale_price': str(sale_price),
-            's_weight': str(sku.s_weight),
-            'stock_count': stock_count
-        })
+            price = sku.price
+            sale_price = sku.sale_price
+            stock_count = sku.stock_count
 
-    # 去除重复元素
-    modes = [{'name': m, 'valid': True} for m in modes]
-    colors = [{'name': c, 'valid': True} for c in colors]
-    product_skus = {
-        'modes': modes,
-        'colors': colors,
-        'items': items
-    }
+            # 店铺为授权模式时，则获取私有设置
+            if distribute_mode == 2:
+                private_sku = StoreDistributeProduct.query.filter_by(master_uid=g.master_uid, store_id=current_store.id,
+                                                                     sku_serial_no=sku.serial_no).first()
+                if private_sku:
+                    price = private_sku.price if private_sku.price > 0 else price
+                    sale_price = private_sku.sale_price if private_sku.sale_price > 0 else sale_price
+                    # 店铺授权必须为私有库存
+                    stock_count = private_sku.private_stock
+
+            items.append({
+                'rid': sku.serial_no,
+                'mode': sku.mode,
+                'product_name': product.name,
+                's_model': sku.s_model,
+                's_color': sku.s_color,
+                'cover': sku.cover.view_url,
+                'price': str(price),
+                'sale_price': str(sale_price),
+                's_weight': str(sku.s_weight),
+                'stock_count': stock_count
+            })
+
+        # 去除重复元素
+        modes = [{'name': m, 'valid': True} for m in modes]
+        colors = [{'name': c, 'valid': True} for c in colors]
+        product_skus = {
+            'modes': modes,
+            'colors': colors,
+            'items': items
+        }
+
+        more_skus[product.serial_no] = product_skus
+
+    # 如果单一则直接返回单个
+    if is_one:
+        return full_response(R200_OK, more_skus[rid])
     
-    return full_response(R200_OK, product_skus)
-    
+    return full_response(R200_OK, more_skus)
+
 
 @api.route('/products', methods=['POST'])
 @auth.login_required
