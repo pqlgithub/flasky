@@ -50,7 +50,8 @@ def sync_product_stock(product_id):
 
     total_stock = 0
     for sku in product.skus:
-        total_stock += sku.stock_quantity
+        current_app.logger.warn('sku: %s, %d' % (sku.serial_no, sku.stock_quantity))
+        total_stock += sku.stock_quantity if sku.stock_quantity else 0
 
     current_app.logger.warn('total stock: %d' % total_stock)
 
