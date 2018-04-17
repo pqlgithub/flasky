@@ -5,7 +5,8 @@ from sqlalchemy.exc import DataError
 from . import main
 from .. import db
 from app.models import Store, Product, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, Brand,\
-    ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, STORE_MODES
+    ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, STORE_MODES, \
+    StoreProduct
 from app.forms import StoreForm, BannerForm, BannerImageForm
 from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response, \
     correct_decimal, correct_int
@@ -191,7 +192,7 @@ def store_distribute_products():
     store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
 
     # 已选择商品
-    distribute_builder = store.products.order_by(Product.updated_at.desc())
+    distribute_builder = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id)
 
     # 搜索筛选
     brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
@@ -223,10 +224,13 @@ def store_distribute_products():
     else:
         distributed_products = distribute_builder.paginate(page, per_page)
         for item in distributed_products.items:
-            extra_data = StoreDistributeProduct.query.filter_by(product_id=item.id).all()
+            product = Product.query.get(item.product_id)
+            if product is None:
+                continue
+            extra_data = StoreDistributeProduct.query.filter_by(product_id=item.product_id).all()
             if extra_data:
                 sku_modes = {}
-                for sku in item.skus:
+                for sku in product.skus:
                     sku_modes[sku.serial_no] = sku.mode
 
                 renew_extra_data = []
@@ -234,8 +238,8 @@ def store_distribute_products():
                     extra.mode = sku_modes.get(extra.sku_serial_no)
                     renew_extra_data.append(extra)
 
-                item.extra_data = renew_extra_data
-            selected_products.append(item)
+                product.extra_data = renew_extra_data
+            selected_products.append(product)
 
         distributed_products.items = selected_products
 
@@ -381,11 +385,17 @@ def ajax_distribute_product():
     try:
         # 验证商品是否存在
         product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
-        # 可支持批量添加
-        products = [product]
         store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
-        # 添加商品
-        store.add_product(*products)
+
+        store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                     product_id=product.id).first()
+        if store_product is None:
+            store_product = StoreProduct(
+                master_uid=Master.master_uid(),
+                store_id=store.id,
+                product_id=product.id
+            )
+            db.session.add(store_product)
 
         db.session.commit()
     except Exception as err:
@@ -406,13 +416,20 @@ def remove_product_from_store():
     try:
         # 验证商品是否存在
         product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
-        # 可支持批量移除
-        products = [product]
-
         store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
-        store.remove_product(*products)
 
-        db.session.commit()
+        store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                     product_id=product.id).first()
+        if store_product:
+            db.session.delete(store_product)
+
+            # 同步删除私有信息
+            product_list = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                                  product_id=product.id).all()
+            for pp in product_list:
+                db.session.delete(pp)
+
+            db.session.commit()
     except Exception as err:
         db.session.rollback()
         current_app.logger.warn('From store delete product: %s' % str(err))

@@ -243,9 +243,7 @@
 												{% if extra.price > 0 %}
 												<span class="m-r-10">零售价：{{ extra.price|round(precision=2) }}</span>
 												{% endif %}
-												{% if extra.private_stock > 0 %}
 												<span class="text-danger m-r-10">店铺库存：{{ extra.private_stock }}</span>
-												{% endif %}
 											</p>
 										</div>
 									{% endfor %}

@@ -7,6 +7,7 @@ from app.models import User
 
 __all__ = [
     'Store',
+    'StoreProduct',
     'StoreDistributeProduct',
     'StoreDistributePacket',
     'STORE_STATUS',
@@ -39,11 +40,6 @@ STORE_TYPE = [
     # 分销商
     (6, lazy_gettext('Distribution'))
 ]
-
-# store and product => N to N
-store_product_table = db.Table('stores_products',
-                               db.Column('store_id', db.Integer, db.ForeignKey('stores.id')),
-                               db.Column('product_id', db.Integer, db.ForeignKey('products.id')))
 
 
 class Store(db.Model):
@@ -97,11 +93,6 @@ class Store(db.Model):
     # store and product_packet => 1 to N
     distribute_packets = db.relationship(
         'StoreDistributePacket', backref='store', lazy='dynamic'
-    )
-
-    # store and product => N to N
-    products = db.relationship(
-        'Product', secondary=store_product_table, backref=db.backref('stores', lazy='select'), lazy='dynamic'
     )
 
     @property
@@ -171,6 +162,20 @@ class Store(db.Model):
 
     def __repr__(self):
         return '<Store %r>' % self.name
+
+
+class StoreProduct(db.Model):
+    """店铺与商品关系表"""
+
+    __tablename__ = 'store_products'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, default=0)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+
+    def __repr__(self):
+        return '<StoreProduct {}>'.format(self.id)
 
 
 class StoreDistributeProduct(db.Model):
