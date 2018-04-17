@@ -3,22 +3,13 @@ import time
 from flask import g, request, abort, current_app
 from flask_httpauth import HTTPBasicAuth
 from sqlalchemy.exc import IntegrityError
-from app.models import User, AnonymousUser, Client, UserIdType
-from .errors import forbidden, unauthorized
-from .decorators import api_sign_required
+from app.models import User, AnonymousUser, Client, UserIdType, Store
 
 from .. import db
 from . import api
 from .utils import *
 
 auth = HTTPBasicAuth()
-
-
-@api.before_request
-@api_sign_required  # 拦截所有请求，进行签名验证
-def before_request():
-    if not g.master_uid:
-        forbidden('App Key is dangerous!')
 
 
 @auth.error_handler
@@ -95,10 +86,76 @@ def login():
     # 默认： 30天, 30*24*60*60 = 2592000 秒
     expired_time = 2592000
 
-    return full_response(R200_OK, {
+    data = {
         'token': g.current_user.generate_auth_token(expiration=expired_time),
         'expiration': expired_time,
         'created_at': int(time.time())
+    }
+
+    return full_response(R200_OK, data)
+
+
+@api.route('/auth/business_login', methods=['POST'])
+@auth.login_required
+def business_login():
+    """商家登录"""
+    if g.token_used:
+        return custom_response('Email or Password is error!', 400, False)
+
+    # 默认： 30天, 30*24*60*60 = 2592000 秒
+    expired_time = 2592000
+
+    data = {
+        'token': g.current_user.generate_auth_token(expiration=expired_time),
+        'expiration': expired_time,
+        'created_at': int(time.time())
+    }
+
+    # 返回店铺信息
+    if g.current_user.id_type != UserIdType.SUPPLIER:
+        return custom_response('该账号不是商家登录账号', 403, False)
+
+    # 1、登录账号为主账号
+    if g.current_user.master_uid == 0:
+        # 返回该账号下所有店铺, 如果只有一个店铺，则直接返回该店铺
+        stores = Store.query.filter_by(master_uid=g.master_uid).all()
+        if len(stores) == 1:
+            data['store_rid'] = stores[0].serial_no
+        else:
+            data['stores'] = [store.to_json() for store in stores]
+
+    # 2、登录账号为子账号
+    if g.current_user.master_uid != 0:
+        if not g.current_user.store_id:
+            return custom_response('该账号没有关联的店铺', 403, False)
+
+        store = Store.query.get(g.current_user.store_id)
+        if store is None:
+            return custom_response('该账号没有关联的店铺', 403, False)
+        data['store_rid'] = store.serial_no
+
+    return full_response(R200_OK, data)
+
+
+@api.route('/auth/exchange_token', methods=['POST'])
+@auth.login_required
+def exchange_token():
+    """换取商家授权Token"""
+    store_rid = request.json.get('store_rid')
+    if not store_rid:
+        return custom_response('参数不足', 400, False)
+
+    store = Store.query.filter_by(master_uid=g.master_uid, serial_no=store_rid).first()
+    if store is None:
+        return custom_response('店铺不存在', 404, False)
+
+    client = Client.query.filter_by(master_uid=g.master_uid, store_id=store.id).first()
+    if client is None:
+        return custom_response('店铺未设置授权信息', 404, False)
+
+    return full_response(R200_OK, {
+        'app_key': client.app_key,
+        'access_token': client.app_secret
     })
 
 

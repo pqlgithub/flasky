@@ -5,7 +5,16 @@ from app.models import User, Product, Country, Banner, BannerImage
 from .. import db
 from . import api
 from .auth import auth
+from .errors import forbidden, unauthorized
+from .decorators import api_sign_required
 from .utils import *
+
+
+@api.before_request
+@api_sign_required  # 拦截所有请求，进行签名验证
+def before_request():
+    if not g.master_uid:
+        forbidden('App Key is dangerous!')
 
 
 @api.route('/countries')

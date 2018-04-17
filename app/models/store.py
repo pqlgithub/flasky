@@ -158,6 +158,17 @@ class Store(db.Model):
         """删除商品"""
         self.products = [product for product in self.products if product not in products]
 
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.serial_no,
+            'name': self.name,
+            'description': self.description,
+            'type': self.type,
+            'status': self.status
+        }
+        return json_obj
+
     def __repr__(self):
         return '<Store %r>' % self.name
 

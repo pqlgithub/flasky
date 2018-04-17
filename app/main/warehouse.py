@@ -785,7 +785,7 @@ def exchange_stock():
             db.session.add(out_warehouse)
 
             # 创建入库单
-            
+
             flash('调拨库存创建成功！', 'success')
             return redirect(url_for('.exchange_stock'))
 

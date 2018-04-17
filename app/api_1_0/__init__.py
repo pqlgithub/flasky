@@ -7,5 +7,5 @@ api = Blueprint('api', __name__)
 # 存在跨域的问题
 CORS(api)
 
-from . import auth, tokens, users, errors, categories, products, orders, brands, \
-    customers, shop, views, cart, address, accounts, search, market, wishlist, assets
+from . import views, auth, tokens, users, errors, categories, products, orders, brands, \
+    customers, shop, cart, address, accounts, search, market, wishlist, assets

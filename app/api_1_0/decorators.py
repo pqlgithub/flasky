@@ -16,12 +16,20 @@ def api_sign_required(func):
             g.store_id = 2
             return func(*args, **kwargs)
 
+        exempt = ['business_login', 'exchange_token']
+
+        # 排除某些请求的签名验证
+        paths = request.path.split('/')
+        endpoint = paths.pop()
+        if endpoint in exempt:
+            return func(*args, **kwargs)
+
         sign_args = request.values if request.values else request.json
 
         if not sign_args:
             return status_response({
-                'code': 400,
-                'message': 'Parameters is null'
+                'code': 601,
+                'message': 'Sign parameters is null'
             }, False)
 
         app_key = sign_args.get('app_key')
@@ -30,7 +38,7 @@ def api_sign_required(func):
             if key not in sign_args.keys():
                 return status_response({
                     'code': 601,
-                    'message': 'Parameters missing'
+                    'message': 'Sign parameters missing'
                 }, False)
 
         # 验证是否有app_key
