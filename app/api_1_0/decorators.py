@@ -22,6 +22,8 @@ def api_sign_required(func):
         paths = request.path.split('/')
         endpoint = paths.pop()
         if endpoint in exempt:
+            g.master_uid = 0
+            g.store_id = 0
             return func(*args, **kwargs)
 
         sign_args = request.values if request.values else request.json
