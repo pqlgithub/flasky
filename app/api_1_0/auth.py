@@ -32,6 +32,9 @@ def verify_password(email_or_token, password):
 
     g.current_user = user
 
+    # 设置全局变量
+    g.master_uid = user.id if user.master_uid == 0 else user.master_uid
+
     return True
 
 
