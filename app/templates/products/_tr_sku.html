@@ -1,0 +1,54 @@
+<tr id="tr_sku_{{ sku.serial_no }}">
+	<td class="text-center">
+		<img src="{{ sku.cover.view_url }}" width="60px">
+	</td>
+	<td class="text-center">
+		{{ sku.serial_no }}
+	</td>
+	<td class="text-center">
+		{% if sku.s_model %}
+		<label class="label label-warning">
+			{{ sku.s_model }}
+		</label>
+		{% endif %}
+		{% if sku.s_color %}
+		<label class="label label-default">
+			{{ sku.s_color }}
+		</label>
+		{% endif %}
+	</td>
+	<td class="text-center">
+        {% if sku.sale_price > 0 %}
+            <span class="sale-price">{{ sku.sale_price|round(precision=2) }}</span>
+			{% if sku.price %}
+            <span class="price">
+				{{ sku.price|round(precision=2) }}
+			</span>
+			{% endif %}
+        {% else %}
+			{% if sku.price %}
+            <span class="sale-price">{{ sku.price|round(precision=2) }}</span>
+			{% endif %}
+        {% endif %}
+	</td>
+	<td class="text-center">
+		{{ sku.stock_quantity }}
+	</td>
+	<td class="text-center">
+		<span class="text-mixpus">{{ sku.id_code|supress_none }}</span>
+	</td>
+	<td class="text-center">
+		{{ sku.s_weight}}
+	</td>
+	<td>
+		{{ sku.remark|supress_none }}
+	</td>
+	<td class="text-right">
+		<a href="{{ url_for('main.edit_sku', rid=product.serial_no, s_id=sku.id) }}" class="btn-link ajax-sku m-r-10">
+			{{ _('Edit') }}
+		</a>
+		<a href="{{ url_for('main.delete_sku', rid=sku.serial_no) }}" class="ajax-delete-sku btn-link">
+			{{ _('Remove') }}
+		</a>
+	</td>
+</tr>
