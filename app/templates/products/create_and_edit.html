@@ -8,18 +8,9 @@
 
 {% block after_jquery %}
 <script type="text/javascript">
-	$(function () {
-		mixpus.init_page_layout();
-
-		mixpus.upload_file_manager();
+	var hook_sku_action = function() {
 		
-		mixpus.hook_summer_editor();
-		
-		$('.img-thumbnail > i.fa-close').on('click', function() {
-			$(this).parent().remove();
-		});
-
-		$('.ajax-sku').click(function (e) {
+		$('.ajax-sku').unbind('click').bind('click', function(e) {
 			var $btn = $(this), post_url=$(this).attr('href');
 
 			$('#sku-modal').remove();
@@ -39,26 +30,39 @@
 					$('#sku-modal').modal('show');
 				}
 			});
-
+			
 			return false;
 		});
 
-		$('.ajax-delete-sku').click(function () {
+		$('.ajax-delete-sku').unbind('click').bind('click', function () {
 			var post_url = $(this).attr('href');
 			$.post(post_url, {'csrf_token': mixpus.csrf_token}, function (result) {
 				if (result.success) {
 					$('#tr_sku_'+ result.data.id).remove();
 				}
 			}, 'json');
+			
 			return false;
 		});
+	}
+	
+	$(function () {
+		mixpus.init_page_layout();
 
+		mixpus.upload_file_manager();
+		
+		mixpus.hook_summer_editor();
+		
+		$('.img-thumbnail > i.fa-close').on('click', function() {
+			$(this).parent().remove();
+		});
+		
 		$('.btn-save-continue').click(function () {
 			$('input[name=next_action]').val('continue_save');
 			$('#products-form').submit();
 		});
 		
-		
+		hook_sku_action();
 	});
 </script>
 {% endblock %}

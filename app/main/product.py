@@ -747,7 +747,13 @@ def edit_sku(rid, s_id):
 
         _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
 
-        return full_response(True, R201_CREATED, sku.to_json())
+        tr_html = render_template('products/_tr_sku.html',
+                                  product=product,
+                                  sku=sku)
+
+        return full_response(True, R200_OK, {
+            'tr_html': tr_html
+        })
 
     mode = 'edit'
 
