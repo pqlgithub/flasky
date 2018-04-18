@@ -808,9 +808,9 @@ def delete_sku(rid):
 def _dispatch_sku_task(master_uid, product_id, supplier_id):
     from app.tasks import sync_supply_stats, sync_product_stock
 
-    sync_product_stock.apply_async(args=[product_id], countdown=5)
+    sync_product_stock.apply_async(args=[product_id])
     if supplier_id:
-        sync_supply_stats.apply_async(args=[master_uid, supplier_id], countdown=5)
+        sync_supply_stats.apply_async(args=[master_uid, supplier_id])
 
 
 @main.route('/products/<string:rid>/orders')
