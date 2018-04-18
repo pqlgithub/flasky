@@ -124,25 +124,6 @@ def get_products_by_store():
         abort(404)
 
     products = []
-
-    # 全品模式
-    if current_store.distribute_mode == 1:
-        if cid:
-            category = Category.query.get(cid)
-            if category is None or category.master_uid != g.master_uid:
-                abort(404)
-            builder = category.products.filter_by(master_uid=g.master_uid)
-        else:
-            builder = Product.query.filter_by(master_uid=g.master_uid)
-
-        # 上架 或 下架 状态
-        if status:
-            builder = builder.filter_by(status=status)
-
-        pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
-
-        products = [product.to_json() for product in pagination.items]
-
     # 部分授权
     if current_store.distribute_mode == 2:
         # 多对多关联查询
@@ -163,6 +144,22 @@ def get_products_by_store():
                 product = Product.query.get(item.product_id)
                 if product:
                     products.append(product.to_json())
+    else:  # 全品模式
+        if cid:
+            category = Category.query.get(cid)
+            if category is None or category.master_uid != g.master_uid:
+                abort(404)
+            builder = category.products.filter_by(master_uid=g.master_uid)
+        else:
+            builder = Product.query.filter_by(master_uid=g.master_uid)
+
+        # 上架 或 下架 状态
+        if status:
+            builder = builder.filter_by(status=status)
+
+        pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
+
+        products = [product.to_json() for product in pagination.items]
 
     return full_response(R200_OK, {
         'products': products,
