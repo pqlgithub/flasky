@@ -131,7 +131,7 @@ def edit_store(id):
         user_choices.append((user.id, user.username))
 
     form.operator_id.choices = user_choices
-    
+
     if form.validate_on_submit():
         old_store = Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data)
         if old_store and old_store.id != id:

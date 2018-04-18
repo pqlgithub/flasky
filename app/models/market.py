@@ -9,8 +9,8 @@ from app.helpers import MixGenId
 
 __all__ = [
     'AppService',
+    'EditionService',
     'SubscribeService',
-    'SubscribeRecord',
     'ApplicationStatus',
     'Invitation',
     'Coupon',
@@ -56,8 +56,11 @@ class AppService(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     serial_no = db.Column(db.String(10), unique=True, index=True)
-    
-    name = db.Column(db.String(30), index=True)
+
+    # 应用标识
+    name = db.Column(db.String(30), unique=True, index=True)
+    # 应用标题
+    title = db.Column(db.String(50), nullable=False)
     # app icon
     icon_id = db.Column(db.Integer, db.ForeignKey('assets.id'))
     # 服务摘要(亮点)
@@ -69,7 +72,7 @@ class AppService(db.Model):
     # 应用类型：营销插件、渠道应用、供销管理、主题皮肤
     type = db.Column(db.SmallInteger, default=1)
     # 是否免费
-    is_free= db.Column(db.Boolean, default=True)
+    is_free = db.Column(db.Boolean, default=True)
     # 收费价格
     sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 月付费/包年费则优惠2个月
@@ -129,10 +132,10 @@ class AppService(db.Model):
 
     def __repr__(self):
         return '<AppService %r>' % self.name
-    
+
 
 class SubscribeService(db.Model):
-    """已订购的服务"""
+    """已订购的服务记录"""
 
     __tablename__ = 'subscribe_services'
 
@@ -141,39 +144,46 @@ class SubscribeService(db.Model):
     master_uid = db.Column(db.Integer, default=0)
     service_id = db.Column(db.Integer, db.ForeignKey('app_services.id'))
 
-    # 订购时间
-    ordered_at = db.Column(db.Integer, default=timestamp)
-    # 过期时间,-1为永久不过期
-    expired_at = db.Column(db.Integer, default=-1)
-    # 状态 -1：未过期；1：已过期
-    status = db.Column(db.SmallInteger, default=1)
-
-    created_at = db.Column(db.Integer, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-    
-    def __repr__(self):
-        return '<SubscribeService %r>' % self.id
-        
-
-class SubscribeRecord(db.Model):
-    """应用服务订购记录"""
-
-    __tablename__ = 'service_transactions'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    master_uid = db.Column(db.Integer, default=0)
-    service_id = db.Column(db.Integer, db.ForeignKey('app_services.id'))
-    
-    sale_price = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 交易编号
+    trade_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
+    # 支付金额
+    pay_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 总金额
+    total_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     pay_mode = db.Column(db.SmallInteger, default=1)
-    # 根据订阅方式，折扣价格
-    discount_money = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 根据订阅方式，折扣金额
+    discount_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 订购时间
     ordered_at = db.Column(db.Integer, default=timestamp)
     # 订购天数, 15天试用期
     ordered_days = db.Column(db.Integer, default=15)
-    
+    # 优惠券码
+    coupon_code = db.Column(db.String(16), nullable=True)
+    # 状态 -1：已过期；1：正常
+    status = db.Column(db.SmallInteger, default=1)
+
+    created_at = db.Column(db.Integer, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    def __repr__(self):
+        return '<SubscribeService %r>' % self.id
+
+
+class EditionService(db.Model):
+    """某版本下包含的服务列表"""
+
+    __tablename__ = 'edition_services'
+
+    id = db.Column(db.Integer, primary_key=True)
+    # 默认: 免费版
+    edition_id = db.Column(db.SmallInteger, default=1)
+    service_id = db.Column(db.Integer, db.ForeignKey('app_services.id'))
+
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    def __repr__(self):
+        return '<EditionService %r>' % self.id
+
 
 class Invitation(db.Model):
     """邀请注册好礼"""

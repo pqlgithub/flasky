@@ -43,11 +43,12 @@ def sync_product_stock(product_id):
     """同步商品库存数"""
     current_app.logger.warn('Task: sync product[%s] stock' % product_id)
 
-    product = session.query(Product).get(int(product_id))
+    product = session.query(Product).get(product_id)
     if product is None:
         current_app.logger.warn('Task: sync product[%s] stock, not exist!' % product_id)
         return FAIL
 
+    current_app.logger.warn('Task: sync product[%s] stock!' % product.name)
     total_stock = 0
     for sku in product.skus:
         current_app.logger.warn('sku: %s, %d' % (sku.serial_no, sku.stock_quantity))
