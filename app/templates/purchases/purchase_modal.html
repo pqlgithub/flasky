@@ -13,28 +13,6 @@
 					<input type="text" name="qk" class="form-control searcher" size="80" value="{{ qk|supress_none }}" placeholder="{{ _('Search sku or name...') }}" >
 				</div>
 
-				<div class="form-group m-l-10">
-					<div class="dropdown">
-						<input type="hidden" name="reg_id" value="{{ reg_id|supress_none }}">
-						<button class="btn btn-default dropdown-toggle" id="filter-region" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							{{ _('Region') }}: <b>{{ _('All') }}</b>
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-select-menu" data-target="reg_id" aria-labelledby="filter-region">
-							<li class="dropdown-header">{{ _('Search Region')}}</li>
-							<li class="divider" role="separator"></li>
-							<li>
-								<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
-							</li>
-							{% for r in default_regions %}
-							<li>
-								<a href="javascript:void(0);" data-id="{{ r['id'] }}" class="option">{{ r['name'] }}</a>
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</div>
-
 				<div id="table-refresh-box">
 					<table class="table table-bordered m-t-20">
 						<thead>
@@ -85,7 +63,6 @@
 	var submit_search_handler = function (url) {
 		var supplier_id = $('input[name=supplier_id]').val();
 		var qk = $('input[name=qk]').val();
-		var reg_id = $('input[name=reg_id]').val();
 
 		// 检测是否选中
 		var selected = [];
@@ -96,7 +73,7 @@
 		var post_url = url || "{{ url_for('main.ajax_search_products') }}";
 
 		$.post(post_url, {
-			'supplier_id': supplier_id, 'qk': qk, 'reg_id': reg_id, 'selected':selected, 'csrf_token': mixpus.csrf_token
+			'supplier_id': supplier_id, 'qk': qk, 'selected':selected, 'csrf_token': mixpus.csrf_token
 		}, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');

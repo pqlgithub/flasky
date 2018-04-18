@@ -10,13 +10,6 @@
     </td>
     <td>
         {{ sku.product.name }}<br>
-        {% if sku.product.region_id == 1 %}
-        <span class="text-mixpus">{{ sku.product.region_label.get('name') }}</span>
-        {% endif %}
-
-        {% if sku.product.region_id == 2 %}
-        <span class="text-warning">{{ sku.product.region_label.get('name') }}</span>
-        {% endif %}
     </td>
     <td>
         {% if sku.s_model %}

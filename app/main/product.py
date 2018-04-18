@@ -634,7 +634,7 @@ def download_product_tpl():
 @main.route('/products/<string:rid>/skus')
 @user_has('admin_product')
 def show_skus(rid):
-    product = Product.query.filter_by(serial_no=rid).first()
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
     if product is None:
         abort(404)
 
@@ -681,17 +681,19 @@ def add_sku(rid):
             remark=form.remark.data
         )
         db.session.add(sku)
-
-        # 新增索引
-        flask_whooshalchemyplus.index_one_model(Product)
-        flask_whooshalchemyplus.index_one_model(ProductSku)
         
         db.session.commit()
 
         # run the task
         _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
 
-        return full_response(True, R201_CREATED, sku.to_json())
+        tr_html = render_template('products/_tr_sku.html',
+                                  product=product,
+                                  sku=sku)
+
+        return full_response(True, R201_CREATED, {
+            'tr_html': tr_html
+        })
 
     mode = 'create'
     form.serial_no.data = ProductSku.make_unique_serial_no(gen_serial_no())

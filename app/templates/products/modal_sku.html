@@ -142,7 +142,7 @@
 			success: function (result) {
 				if (result.success) {
 					$('#sku-modal').modal('hide');
-					$('#product-skus').load('{{ url_for("main.show_skus", rid=product.serial_no) }}');
+					$('#product-skus-body').prepend(result.data.tr_html);
 				} else {
 					$('#sku-form').prepend(mixpus.display_alert(result.status.errors))
 				}

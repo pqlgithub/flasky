@@ -432,7 +432,7 @@
 								<th class="text-right">{{ _('Action') }}</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="product-skus-body">
 							{% for sku in product.skus %}
 							<tr id="tr_sku_{{ sku.serial_no }}">
 								<td class="text-center">
