@@ -22,5 +22,10 @@
 - 注册后确认，You have not confirmed your account yet.
 
 - 收货地址API有改动，需更新文档；is_from_wx;
+- 通知提醒
+- 营销工具（拼团、促销）
+- 定制下单
+
+
 
 /opt/project/fxerp/venv/lib/python3.6/site-packages/sqlalchemy/sql/compiler.py:624: SAWarning: Can't resolve label reference 'created_at desc'; converting to text() (this warning may be suppressed after 10 occurrences)

@@ -51,8 +51,16 @@ def create_store():
     form.distribute_mode.choices = STORE_MODES
 
     # 设置关联负责人
+    user_choices = []
+    # 主账号
+    master = User.query.get(Master.master_uid())
+    user_choices.append((master.id, master.username))
+
     user_list = User.query.filter_by(master_uid=Master.master_uid(), id_type=UserIdType.SUPPLIER).all()
-    form.operator_id.choices = [(user.id, user.username) for user in user_list]
+    for user in user_list:
+        user_choices.append((user.id, user.username))
+
+    form.operator_id.choices = user_choices
     
     if form.validate_on_submit():
         if Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data):
@@ -111,9 +119,19 @@ def edit_store(id):
     form = StoreForm()
     form.type.choices = STORE_TYPE
     form.distribute_mode.choices = STORE_MODES
-    
+
+    # 设置关联负责人
+    user_choices = []
+    # 主账号
+    master = User.query.get(Master.master_uid())
+    user_choices.append((master.id, master.username))
+
     user_list = User.query.filter_by(master_uid=Master.master_uid(), id_type=UserIdType.SUPPLIER).all()
-    form.operator_id.choices = [(user.id, user.username) for user in user_list]
+    for user in user_list:
+        user_choices.append((user.id, user.username))
+
+    form.operator_id.choices = user_choices
+    
     if form.validate_on_submit():
         old_store = Store.validate_unique_name(form.name.data, Master.master_uid(), form.platform.data)
         if old_store and old_store.id != id:
