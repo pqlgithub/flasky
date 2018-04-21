@@ -1,34 +1,55 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Purchases List') }}
-	</div>
-	{% for s in purchase_status %}
-		<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}" class="pjax list-group-item {% if status == s[0] %} active{% endif %}">
-			{{ s[2] }}
-			{% if s[0] == 1 and pending_review_count > 0 %}
-			<span class="badge">{{ pending_review_count }}</span>
-			{% endif %}
-			{% if s[0] == 5 and pending_arrival_count > 0 %}
-			<span class="badge">{{ pending_arrival_count }}</span>
-			{% endif %}
-			{% if s[0] == 10 and pending_storage_count > 0 %}
-			<span class="badge">{{ pending_storage_count }}</span>
-			{% endif %}
-		</a>
-	{% endfor %}
-
-	<div class="list-group-header">
-		{{ _('Purchases Payment') }}
-	</div>
-	{% for pay in purchase_payed %}
-		<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}" class="pjax list-group-item {% if f == pay[0] %} active{% endif %}">
-			{{ pay[2] }}
-			{% if pay[0] == 1 and applyable_count > 0 %}
-			<span class="badge">{{ applyable_count }}</span>
-			{% endif %}
-			{% if pay[0] == 2 and unpaid_count > 0 %}
-			<span class="badge">{{ unpaid_count }}</span>
-			{% endif %}
-		</a>
-	{% endfor %}
-</div>
+<div class="treeview-menu">
+     <ul class="subtree">
+         <li class="header">{{ _('Purchase Manage') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_purchases') }}" class="{% if sub_menu == 'purchase' %}active{% endif %}">
+                 {{ _('Purchase List') }}
+             </a>
+         </li>
+	 	{% for s in purchase_status %}
+		<li>
+	 		<a href="{{ url_for('main.show_purchases') }}?s={{ s[0] }}" class="{% if status == s[0] %} active{% endif %}">
+	 			{{ s[2] }}
+	 			{% if s[0] == 1 and pending_review_count and pending_review_count > 0 %}
+	 			<span class="badge">{{ pending_review_count }}</span>
+	 			{% endif %}
+	 			{% if s[0] == 5 and pending_arrival_count and pending_arrival_count > 0 %}
+	 			<span class="badge">{{ pending_arrival_count }}</span>
+	 			{% endif %}
+	 			{% if s[0] == 10 and pending_storage_count and pending_storage_count > 0 %}
+	 			<span class="badge">{{ pending_storage_count }}</span>
+	 			{% endif %}
+	 		</a>
+		</li>
+	 	{% endfor %}
+     </ul>
+     <ul class="subtree">
+         <li class="header">{{ _('Purchases Payment') }}</li>
+	 	{% for pay in purchase_payed %}
+		<li>
+	 		<a href="{{ url_for('main.payments') }}?f={{ pay[0] }}" class="{% if f == pay[0] %} active{% endif %}">
+	 			{{ pay[2] }}
+	 			{% if pay[0] == 1 and applyable_count and applyable_count > 0 %}
+	 			<span class="badge">{{ applyable_count }}</span>
+	 			{% endif %}
+	 			{% if pay[0] == 2 and unpaid_count and unpaid_count > 0 %}
+	 			<span class="badge">{{ unpaid_count }}</span>
+	 			{% endif %}
+	 		</a>
+		</li>
+	 	{% endfor %}
+     </ul>
+     <ul class="subtree">
+         <li class="header">{{ _('Warehouse Setting') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_suppliers') }}" class="{% if sub_menu == 'supplier' %}active{% endif %}">
+                 {{ _('Supplier List') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.supply_list') }}" class="{% if sub_menu == 'supply' %}active{% endif %}">
+                 {{ _('Supply Relation') }}
+             </a>
+         </li>
+     </ul>
+ </div>

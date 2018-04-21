@@ -1,6 +1,6 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include 'warehouses/_sub_menu.html' %}
 {% endblock %}
 
@@ -12,8 +12,8 @@
 			<a href="{{ url_for('main.create_warehouse') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
-			<button class="btn btn-danger delete-all hidden" data-form-id="warehouses-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+			<button class="btn btn-danger delete-all hidden" data-form-id="warehouses-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Back') }}">
+				<i class="fa fa-reply"></i>
 			</button>
 		</span>
 	</h2>

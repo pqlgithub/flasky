@@ -1,6 +1,6 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include "settings/_sub_menu.html" %}
 {% endblock %}
 
@@ -39,7 +39,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Add User') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -53,11 +53,11 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 
 	<div class="table-responsive">
-		<table class="table table-bordered table-striped table-hover">
+		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
 					<th class="text-center">

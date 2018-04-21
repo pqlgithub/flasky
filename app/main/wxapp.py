@@ -16,13 +16,23 @@ from ..utils import Master, timestamp, status_response, full_response, R200_OK, 
 from qiniu import Auth, put_data, etag, urlsafe_base64_encode
 
 
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'stores'
+    }
+
+
 @main.route('/wxapps')
 def wxapps():
     """小程序列表"""
     mini_apps = WxMiniApp.query.filter_by(master_uid=Master.master_uid()).all()
 
     return render_template('wxapp/index.html',
-                           mini_apps=mini_apps)
+                           mini_apps=mini_apps,
+                           **load_common_data())
 
 
 @main.route('/wxapps/setting', methods=['GET', 'POST'])
@@ -98,7 +108,9 @@ def wxapp_setting():
                            auth_status=is_auth,
                            auth_app_id=auth_app_id,
                            payment_form=payment_form,
-                           wx_mini_app=wx_mini_app)
+                           wx_mini_app=wx_mini_app,
+                           sub_menu='wxapp',
+                           **load_common_data())
 
 
 @main.route('/wxapps/setting/update', methods=['POST'])
@@ -160,8 +172,10 @@ def wxapp_templates():
     paginated_templates = builder.order_by(WxTemplate.created_at.desc()).paginate(page, per_page)
 
     return render_template('wxapp/wxtemplates.html',
+                           sub_menu='wxapp',
                            auth_app_id=auth_app_id,
-                           paginated_templates=paginated_templates)
+                           paginated_templates=paginated_templates,
+                           **load_common_data())
 
 
 @main.route('/wxapps/templates/choosed', methods=['POST'])
@@ -235,8 +249,10 @@ def wxapp_service():
     paginated_messages = builder.order_by(WxServiceMessage.create_time.desc()).paginate(page, per_page)
 
     return render_template('wxapp/service.html',
+                           sub_menu='wxapp',
                            paginated_messages=paginated_messages,
-                           auth_app_id=auth_app_id)
+                           auth_app_id=auth_app_id,
+                           **load_common_data())
 
 
 @main.route('/wxapps/service/setting', methods=['GET', 'POST'])
@@ -270,10 +286,12 @@ def wxapp_service_setting():
     service_aes_key = mini_app.service_aes_key if mini_app.service_aes_key else make_unique_key(43)
 
     return render_template('wxapp/service_setting.html',
+                           sub_menu='wxapp',
                            service_url='https://fx.taihuonio.com/open/wx/service_message',
                            service_token=service_token,
                            service_aes_key=service_aes_key,
-                           auth_app_id=auth_app_id)
+                           auth_app_id=auth_app_id,
+                           **load_common_data())
 
 
 @main.route('/wxapps/service/reply', methods=['GET', 'POST'])
@@ -325,8 +343,10 @@ def wxapp_versions():
         .order_by(WxVersion.created_at.desc()).all()
 
     return render_template('wxapp/version_list.html',
+                           sub_menu='wxapp',
                            versions=versions,
-                           auth_app_id=auth_app_id)
+                           auth_app_id=auth_app_id,
+                           **load_common_data())
 
 
 @main.route('/wxapps/qrcode')

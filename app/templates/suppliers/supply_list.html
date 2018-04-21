@@ -1,7 +1,7 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'products/_sub_menu.html' %}
+{% block submenu %}
+	{% include 'purchases/_sub_menu.html' %}
 {% endblock %}
 
 {% block after_jquery %}
@@ -83,7 +83,7 @@
 			<form id="suppliers-form" action="" method="post">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<table class="table table-bordered table-striped table-hover">
+				<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
 							<th class="text-center">

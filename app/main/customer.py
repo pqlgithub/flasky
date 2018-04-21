@@ -22,7 +22,7 @@ def load_common_data():
     私有方法，装载共用数据
     """
     return {
-        'sub_menu': 'customers',
+        'top_menu': 'stores',
         'customer_status': CUSTOMER_STATUS
     }
 
@@ -112,6 +112,7 @@ def show_customers(page=1):
                            paginated_customers=paginated_customers.items,
                            pagination=paginated_customers,
                            grade_list=grade_list,
+                           sub_menu='customer',
                            **load_common_data())
 
 
@@ -163,6 +164,7 @@ def create_customer():
     mode = 'create'
     form.sn.data = MixGenId.gen_customer_sn()
     return render_template('customers/create_and_edit.html',
+                           sub_menu='customer',
                            mode=mode,
                            form=form,
                            **load_common_data())
@@ -202,6 +204,7 @@ def edit_customer(sn):
     return render_template('customers/create_and_edit.html',
                            mode=mode,
                            form=form,
+                           sub_menu='customer',
                            **load_common_data())
 
 
@@ -310,6 +313,7 @@ def show_grades(page=1):
     
     return render_template('customers/show_grades.html',
                            paginated_grades=paginated_grades,
+                           sub_menu='grade',
                            **load_common_data())
 
 

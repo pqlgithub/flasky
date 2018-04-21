@@ -1,38 +1,53 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Information') }}
-	</div>
-	<a href="{{ url_for('main.stats') }}" class="list-group-item {% if sub_menu == 'stats'%} active{% endif %}">
-		{{ _('All Aggregation') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Product Statistics') }}
-	</div>
-	<a href="#" class="list-group-item">
-		{{ _('New Products') }}
-	</a>
-	<a href="{{url_for('main.sales_statistic')}}" class="list-group-item {% if sub_menu == 'sales'%} active{% endif %}">
-		{{ _('Sales Statistics') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Order Analytics') }}
-	</div>
-	<a href="#" class="list-group-item">
-		{{ _('Performance Collection') }}
-	</a>
-	<a href="#" class="list-group-item">
-		{{ _('Customer Distribution') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Operation Statistics') }}
-	</div>
-	<a href="#" class="list-group-item">
-		{{ _('Profit Calculation') }}
-	</a>
-	<a href="#" class="list-group-item">
-		{{ _('Logistics Statistic') }}
-	</a>
-</div>
+<div class="treeview-menu tree-2x">
+     <ul class="subtree">
+         <li class="header">{{ _('Sales Report') }}</li>
+         <li>
+             <a href="{{ url_for('main.stats') }}" class="{% if sub_menu == 'stats' %}active{% endif %}">
+                 {{ _('Aggregate Analysis') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{url_for('main.sales_statistic')}}" class="{% if sub_menu == 'sales' %}active{% endif %}">
+                 {{ _('Sales Report') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Products Report') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Brands Report') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Category Report') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Customer Report') }}
+             </a>
+         </li>
+     </ul>
+     <ul class="subtree">
+         <li class="header">{{ _('Stock Report') }}</li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('In-Out Report') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Shipments Stats') }}
+             </a>
+         </li>
+         <li>
+             <a href="" class="pjax">
+                 {{ _('Supplier Stats') }}
+             </a>
+         </li>
+     </ul>
+ </div>

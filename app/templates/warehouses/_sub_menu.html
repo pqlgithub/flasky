@@ -1,38 +1,33 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Stock manage') }}
-	</div>
-	<a href="{{ url_for('main.show_stocks') }}" class="pjax list-group-item {% if sub_menu == 'stocks'%} active{% endif %}">
-		{{ _('Stock List') }}
-	</a>
-
-	<a href="{{ url_for('main.show_inout') }}" class="pjax list-group-item {% if sub_menu == 'inout'%} active{% endif %}">
-		{{ _('In-out Stock') }}
-	</a>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'inlist'%} active{% endif %}">
-		{{ _('In List') }}
-	</a>
-	<a href="{{ url_for('main.show_out_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'outlist'%} active{% endif %}">
-		{{ _('Out List') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Inventory Allocation') }}
-	</div>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item">
-		{{ _('Inventory Allocation') }}
-		<span class="badge">0</span>
-	</a>
-	<a href="{{ url_for('main.show_in_warehouses') }}" class="pjax list-group-item">
-		{{ _('Inventory Verification') }}
-		<span class="badge">0</span>
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Warehouse settings') }}
-	</div>
-	<a href="{{ url_for('main.show_warehouses') }}" class="pjax list-group-item {% if sub_menu == 'warehouses'%} active{% endif %}">
-		{{ _('Warehouse List') }}
-	</a>
-
-</div>
+<div class="treeview-menu tree-2x">
+     <ul class="subtree">
+         <li class="header">{{ _('Stock Manage') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_stocks') }}" class="{% if sub_menu == 'stocks'%} active{% endif %}">
+                 {{ _('Stock List') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.show_in_warehouses') }}" class="{% if sub_menu == 'inlist'%} active{% endif %}">
+                 {{ _('In List') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.show_out_warehouses') }}" class="{% if sub_menu == 'outlist'%} active{% endif %}">
+                 {{ _('Out List') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.show_inout') }}" class="{% if sub_menu == 'inout'%} active{% endif %}">
+                 {{ _('In-out Stock') }}
+             </a>
+         </li>
+     </ul>
+     <ul class="subtree">
+         <li class="header">{{ _('Stock Setting') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_warehouses') }}" class="{% if sub_menu == 'warehouses'%} active{% endif %}">
+                 {{ _('Warehouse List') }}
+             </a>
+         </li>
+     </ul>
+ </div>

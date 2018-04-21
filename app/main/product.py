@@ -9,8 +9,8 @@ import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, \
-    SupplyStats, Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet
-from app.forms import ProductForm, SupplierForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm, \
+    Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet
+from app.forms import ProductForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm, \
     DiscountTempletForm, DiscountTempletEditForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
     custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors, gen_serial_no
@@ -1007,56 +1007,6 @@ def delete_category():
     return redirect(url_for('.show_categories'))
 
 
-@main.route('/suppliers/search_supply', methods=['GET', 'POST'])
-@user_has('admin_product')
-def search_supply():
-    per_page = request.values.get('per_page', 10, type=int)
-    page = request.values.get('page', 1, type=int)
-    qk = request.values.get('qk')
-    sk = request.values.get('sk', type=str, default='ad')
-
-    builder = SupplyStats.query.filter_by(master_uid=Master.master_uid())
-    qk = qk.strip()
-    if qk:
-        builder = builder.whoosh_search(qk, like=True)
-
-    supply = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
-
-    # 构造分页
-    total_count = builder.count()
-    if page == 1:
-        start = 0
-    else:
-        start = (page - 1) * per_page
-    end = start + per_page
-
-    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
-
-    paginated_supply = supply[start:end]
-
-    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
-
-    return render_template('suppliers/search_supply.html',
-                           qk=qk,
-                           sk=sk,
-                           paginated_supply=paginated_supply,
-                           pagination=pagination)
-
-
-@main.route('/suppliers/supply_list', methods=['GET', 'POST'])
-@user_has('admin_product')
-def supply_list():
-    per_page = request.values.get('per_page', 10, type=int)
-    page = request.values.get('page', 1, type=int)
-    paginated_supply = SupplyStats.query.filter_by(master_uid=Master.master_uid()).order_by(SupplyStats.created_at.desc()).paginate(
-        page, per_page)
-    return render_template('suppliers/supply_list.html',
-                           sub_menu='purchases',
-                           paginated_supply=paginated_supply.items,
-                           pagination=paginated_supply,
-                           **load_common_data())
-
-
 def get_order_key(key):
     switch_dict = {
         'ad': Supplier.created_at.desc,
@@ -1064,143 +1014,6 @@ def get_order_key(key):
         'ed': Supplier.end_date.desc
     }
     return switch_dict.get(key)() if switch_dict.get(key) else Supplier.created_at.desc()
-
-
-@main.route('/suppliers/search', methods=['GET', 'POST'])
-@user_has('admin_product')
-def search_suppliers():
-    """搜索供应商"""
-    per_page = request.values.get('per_page', 10, type=int)
-    page = request.values.get('page', 1, type=int)
-    qk = request.values.get('qk')
-    sk = request.values.get('sk', type=str, default='ad')
-
-    current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
-
-    builder = Supplier.query.filter_by(master_uid=Master.master_uid())
-    qk = qk.strip()
-    if qk:
-        builder = builder.whoosh_search(qk, like=True)
-
-    suppliers = builder.order_by(get_order_key(sk)).all()
-
-    # 构造分页
-    total_count = builder.count()
-    if page == 1:
-        start = 0
-    else:
-        start = (page - 1) * per_page
-    end = start + per_page
-
-    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
-
-    paginated_suppliers = suppliers[start:end]
-
-    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
-
-    return render_template('suppliers/search_result.html',
-                           qk=qk,
-                           sk=sk,
-                           paginated_suppliers=paginated_suppliers,
-                           pagination=pagination)
-
-
-@main.route('/suppliers', methods=['GET', 'POST'])
-@main.route('/suppliers/<int:page>', methods=['GET', 'POST'])
-@user_has('admin_product')
-def show_suppliers(page=1):
-    per_page = request.args.get('per_page', 10, type=int)
-    paginated_suppliers = Supplier.query.filter_by(master_uid=Master.master_uid()).order_by(Supplier.created_at.desc()).paginate(page, per_page)
-    return render_template('suppliers/show_list.html',
-                           sub_menu='purchases',
-                           paginated_suppliers=paginated_suppliers,
-                           **load_common_data())
-
-
-@main.route('/suppliers/create', methods=['GET', 'POST'])
-@user_has('admin_supplier')
-def create_supplier():
-    form = SupplierForm()
-    if form.validate_on_submit():
-        supplier = Supplier(
-            master_uid=Master.master_uid(),
-            type=form.type.data,
-            short_name=form.short_name.data,
-            full_name=form.full_name.data,
-            start_date=form.start_date.data,
-            end_date=form.end_date.data,
-            contact_name=form.contact_name.data,
-            phone=form.phone.data,
-            address=form.address.data,
-            remark=form.remark.data
-        )
-        db.session.add(supplier)
-        db.session.commit()
-
-        flash('Add supplier is ok!', 'success')
-
-        return redirect(url_for('.show_suppliers'))
-
-    mode = 'create'
-    return render_template('suppliers/create_and_edit.html',
-                           form=form,
-                           mode=mode,
-                           supplier=None,
-                           sub_menu='suppliers',
-                           **load_common_data())
-
-
-@main.route('/suppliers/<int:id>/edit', methods=['GET', 'POST'])
-@user_has('admin_supplier')
-def edit_supplier(id):
-    supplier = Supplier.query.get_or_404(id)
-    form = SupplierForm()
-    if form.validate_on_submit():
-        form.populate_obj(supplier)
-        db.session.commit()
-
-        flash('Edit supplier is ok!', 'success')
-
-        return redirect(url_for('.show_suppliers'))
-
-    mode = 'edit'
-    form.type.data = supplier.type
-    form.short_name.data = supplier.short_name
-    form.full_name.data = supplier.full_name
-    form.start_date.data = supplier.start_date
-    form.end_date.data = supplier.end_date
-    form.contact_name.data = supplier.contact_name
-    form.phone.data = supplier.phone
-    form.address.data = supplier.address
-    form.remark.data = supplier.remark
-    return render_template('suppliers/create_and_edit.html',
-                           form=form,
-                           mode=mode,
-                           supplier=supplier,
-                           sub_menu='suppliers',
-                           **load_common_data())
-
-
-@main.route('/suppliers/delete', methods=['POST'])
-@user_has('admin_supplier')
-def delete_supplier():
-    selected_ids = request.form.getlist('selected[]')
-    if not selected_ids or selected_ids is None:
-        flash('Delete supplier is null!', 'danger')
-        abort(404)
-
-    try:
-        for id in selected_ids:
-            supplier = Supplier.query.get_or_404(int(id))
-            db.session.delete(supplier)
-        db.session.commit()
-
-        flash('Delete supplier is ok!', 'success')
-    except:
-        db.session.rollback()
-        flash('Delete supplier is fail!', 'danger')
-
-    return redirect(url_for('.show_suppliers'))
 
 
 @main.route('/products/groups', methods=['GET', 'POST'])

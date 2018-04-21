@@ -27,7 +27,7 @@ def load_common_data():
     warehouse_list = Warehouse.query.filter_by(master_uid=Master.master_uid(), status=1).all()
     
     return {
-        'top_menu': 'warehouses',
+        'top_menu': 'stocks',
         'warehouse_list': warehouse_list
     }
 
@@ -160,7 +160,7 @@ def show_inout(page=1):
     
     return render_template(current_tpl,
                            paginated_inout_list=paginated_inout_list,
-                           sub_menu='stocks',
+                           sub_menu='inout',
                            qk=qk,
                            wh_id=wh_id,
                            type=type,
@@ -295,7 +295,7 @@ def show_in_warehouses(page=1):
 
     return render_template('warehouses/show_inlist.html',
                            paginated_inwarehouses=paginated_inwarehouses,
-                           sub_menu='stocks',
+                           sub_menu='inlist',
                            **load_common_data())
 
 
@@ -604,7 +604,7 @@ def show_out_warehouses(page=1):
 
     return render_template('warehouses/show_outlist.html',
                            paginated_outwarehouses=paginated_outwarehouses,
-                           sub_menu='stocks',
+                           sub_menu='outlist',
                            status_list=OUTWAREHOUSE_STATUS,
                            **load_common_data())
 

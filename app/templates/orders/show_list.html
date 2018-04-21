@@ -226,6 +226,10 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'orders/_sub_menu.html' %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="list-page">
 	<div class="alert alert-danger hide" role="alert" id="clodop-alert"></div>
@@ -285,7 +289,7 @@
 				<i class="fa fa-print"></i>
 			</button>
 			{% endif %}
-			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="orders-form" type="button" data-toggle="tooltip" title="" data-original-title="{{ _('Delete') }}">

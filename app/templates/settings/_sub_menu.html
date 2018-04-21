@@ -1,19 +1,35 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('settings') }}
-	</div>
-	<div class="list-group-header">
-		{{ _('Privilege manage') }}
-	</div>
-	{% if g.user.is_master %}
-	<a href="{{ url_for('main.child_users') }}" class="pjax list-group-item {% if sub_menu == 'child_users'%} active{% endif %}">
-		{{ _('Child User') }}
-	</a>
-	{% endif %}
-	<a href="{{ url_for('main.setting_roles') }}" class="pjax list-group-item {% if sub_menu == 'roles'%} active{% endif %}">
-		{{ _('Acl List') }}
-	</a>
-	<a href="{{ url_for('main.passwd') }}" class="pjax list-group-item {% if sub_menu == 'passwd'%} active{% endif %}">
-		{{ _('Update Password') }}
-	</a>
+<div class="treeview-menu">
+    <ul class="subtree">
+        <li class="header">{{ _('General Settings') }}</li>
+        <li>
+            <a href="{{ url_for('main.site') }}" class="{% if sub_menu == 'sites' %}active{% endif %}">
+                {{ _('Basic Setting') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('main.show_currencies') }}" class="{% if sub_menu == 'currencies' %}active{% endif %}">
+                {{ _('Currency List') }}
+            </a>
+        </li>
+    </ul>
+    <ul class="subtree">
+        <li class="header">{{ _('Privilege manage') }}</li>
+        {% if g.user.is_master %}
+        <li>
+            <a href="{{ url_for('main.child_users') }}" class="{% if sub_menu == 'child_users'%}active{% endif %}">
+                {{ _('User List') }}
+            </a>
+        </li>
+        {% endif %}
+        <li>
+            <a href="{{ url_for('main.setting_roles') }}" class="{% if sub_menu == 'roles'%}active{% endif %}">
+                {{ _('Acl List') }}
+            </a>
+        </li>
+		<li>
+			<a href="{{ url_for('main.passwd') }}" class="{% if sub_menu == 'passwd'%}active{% endif %}">
+				{{ _('Update Password') }}
+			</a>
+		</li>
+    </ul>
 </div>

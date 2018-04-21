@@ -1,11 +1,11 @@
 {% extends "layout/base.html" %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include 'settings/_sub_menu.html' %}
 {% endblock %}
 
 {% block mainbar %}
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Shop List') }}
 		<span class="pull-right">
 			<a href="{{ url_for('main.create_order') }}" data-toggle="tooltip" title="" class="btn btn-mixpus" data-original-title="{{ _('Add New') }}">
@@ -15,7 +15,7 @@
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<div class="table-responsive">
 

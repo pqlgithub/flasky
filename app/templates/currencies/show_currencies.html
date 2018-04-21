@@ -18,8 +18,14 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'settings/_sub_menu.html' %}
+{% endblock %}
+
+
 {% block mainbar %}
-	<h2 class="page-header">
+<div class="list-page">
+	<div class="page-header">
 		{{ _('Currency List') }}
 
 		<div class="pull-right">
@@ -34,13 +40,13 @@
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</div>
-	</h2>
+	</div>
 
 	<div class="table-responsive">
 		<form id="form-currencies" action="{{ url_for('main.delete_currency') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-			<table class="table table-bordered table-hover" role="grid">
+			<table class="table table-bordered table-striped" role="grid">
 				<thead>
 				<tr role="row">
 					<th class="text-center">
@@ -97,4 +103,5 @@
 		</div>
 
 	</div>
+</div>
 {% endblock %}

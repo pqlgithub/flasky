@@ -24,6 +24,9 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'purchases/_sub_menu.html' %}
+{% endblock %}
 
 {% block mainbar %}
 <div class="list-page">
@@ -83,7 +86,7 @@
 			<form id="suppliers-form" action="{{ url_for('main.delete_supplier') }}" method="post">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<table class="table table-bordered table-striped table-hover">
+				<table class="table table-bordered table-striped">
 					<thead>
 					<tr>
 						<th class="text-center">

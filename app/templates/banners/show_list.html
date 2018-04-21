@@ -24,13 +24,18 @@
 {% endblock %}
 
 
+{% block submenu %}
+	{% include 'stores/_sub_menu.html' %}
+{% endblock %}
+
+
 {% block mainbar %}
 <div class="list-page">
 	<div class="page-header">
 		{{ _('Banner List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_banner') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_banner') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="banners-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">

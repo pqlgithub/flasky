@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 
-{% block sidebar %}
-	{% include 'settings/_sub_menu.html' %}
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
 {% endblock %}
 
 {% block after_jquery %}
@@ -29,7 +29,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('My Apps') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -40,7 +40,7 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<div class="table-responsive m-t-20">
 		<table class="table table-bordered table-striped table-hover">

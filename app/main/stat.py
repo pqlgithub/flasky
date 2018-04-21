@@ -12,6 +12,15 @@ from app.models import MasterStatistics, StoreStatistics, ProductStatistics, Day
 from ..utils import Master, full_response, R200_OK
 
 
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'stats'
+    }
+
+
 @main.route('/stats')
 @user_has('admin_reports')
 def stats():
@@ -26,7 +35,8 @@ def stats():
     return render_template('stats/index.html',
                            master_statistics=master_statistics,
                            store_statistics=store_statistics,
-                           sub_menu='stats')
+                           sub_menu='stats',
+                           **load_common_data())
 
 
 @main.route('/stats/store_sku_top', methods=['POST'])
@@ -59,7 +69,7 @@ def store_sku_top():
 @user_has('admin_reports')
 def sales_statistic():
     """销售统计展示页面"""
-    return render_template('stats/sales.html', sub_menu='sales')
+    return render_template('stats/sales.html', sub_menu='sales', **load_common_data())
 
 
 @main.route('/stats/master', methods=['GET'])

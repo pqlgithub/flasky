@@ -1,6 +1,6 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include "orders/_sub_menu.html" %}
 {% endblock %}
 
@@ -86,7 +86,7 @@
 		{% endif %}
 
 		<span class="pull-right">
-			<button role="button" data-form-id="order-form" class="btn btn-icon btn-success btn-save" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+			<button role="button" data-form-id="order-form" class="btn btn-icon btn-mixpus btn-save" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_orders') }}" class="pjax btn btn-icon btn-default btn-back" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">

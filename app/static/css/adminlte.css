@@ -1680,6 +1680,10 @@ a:focus,
 	background-color: #fbfbfb;
 	color: #02a65a;
 }
+.treeview-menu > ul > li > a > .badge {
+	float: right;
+	margin-right: 10px;
+}
 .treeview-menu + .main {
 	margin-left: 160px;
 }

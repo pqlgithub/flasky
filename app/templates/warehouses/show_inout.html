@@ -1,6 +1,6 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include 'warehouses/_sub_menu.html' %}
 {% endblock %}
 
@@ -32,7 +32,7 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('In-out Stock') }}
 		<div class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -66,7 +66,7 @@
 				<i class="fa fa-trash"></i>
 			</button>
 		</div>
-	</h2>
+	</div>
 
 	<form class="form-inline" id="filter-stocks-form" method="post" action="{{ url_for('main.show_inout') }}">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

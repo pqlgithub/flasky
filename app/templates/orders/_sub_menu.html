@@ -1,47 +1,80 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Order Search') }}
-	</div>
-	<a href="{{ url_for('main.show_orders') }}" class="pjax list-group-item {% if status == 0 %} active{% endif %}">
-		{{ _('Order List') }}
-	</a>
-</div>
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Order manage') }}
-	</div>
-	<a href="{{ url_for('main.show_orders') }}?s=1" class="pjax list-group-item {% if status == 1 %} active{% endif %}">
-		{{ _('Pending Payment') }}
-		<span class="badge" id="pending_pay_count">{% if status_count.pending_pay_count %}{{ status_count.pending_pay_count }}{% endif %}</span>
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=5" class="pjax list-group-item {% if status == 5 %} active{% endif %}">
-		{{ _('Pending Review') }}
-		<span class="badge" id="pending_review_count">{% if status_count.pending_review_count %}{{ status_count.pending_review_count }}{% endif %}</span>
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=10" class="pjax list-group-item {% if status == 10 %} active{% endif %}">
-		{{ _('Pending Shipment') }}
-		<span class="badge" id="pending_ship_count">{% if status_count.pending_ship_count %}{{ status_count.pending_ship_count }}{% endif %}</span>
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=13" class="pjax list-group-item {% if status == 13 %} active{% endif %}">
-		{{ _('UnPrinting') }}
-		<span class="badge" id="unprinting_count">{% if status_count.unprinting_count %}{{ status_count.unprinting_count }}{% endif %}</span>
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=16" class="pjax list-group-item {% if status == 16 %} active{% endif %}">
-		{{ _('Shipped') }}
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=20" class="pjax list-group-item {% if status == 20 %} active{% endif %}">
-		{{ _('Finished') }}
-	</a>
-	<a href="{{ url_for('main.show_orders') }}?s=-1" class="pjax list-group-item {% if status == -1 %} active{% endif %}">
-		{{ _('Canceled') }}
-	</a>
-</div>
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Returns Manage') }}
-	</div>
-	<a href="#" class="list-group-item">
-		{{ _('Returns List') }}
-		<span class="badge">0</span>
-	</a>
+<div class="treeview-menu">
+ <ul class="subtree">
+     <li class="header">{{ _('Order Manage') }}</li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}" class="{% if status == 0 %} active{% endif %}">
+             {{ _('Order List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}?s=1" class="{% if status == 1 %} active{% endif %}">
+             {{ _('Pending Payment') }}
+			 {% if status_count and status_count.pending_pay_count %}
+			 <span class="badge" id="pending_pay_count">{{ status_count.pending_pay_count }}</span>
+			 {% endif %}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}?s=5" class="{% if status == 5 %} active{% endif %}">
+             {{ _('Pending Review') }}
+			 {% if status_count and status_count.pending_review_count %}
+			 <span class="badge" id="pending_review_count">{{ status_count.pending_review_count }}</span>
+			 {% endif %}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}?s=10" class="{% if status == 10 %} active{% endif %}">
+             {{ _('Pending Shipment') }}
+			 {% if status_count and status_count.pending_ship_count %}
+			 <span class="badge" id="pending_ship_count">
+				 {{ status_count.pending_ship_count }}
+			 </span>
+			 {% endif %}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}?s=13" class="{% if status == 13 %} active{% endif %}">
+             {{ _('UnPrinting') }}
+			 {% if status_count and status_count.unprinting_count %}
+			 <span class="badge" id="unprinting_count">{{ status_count.unprinting_count }}</span>
+			 {% endif %}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}?s=16" class="{% if status == 16 %} active{% endif %}">
+             {{ _('Shipped') }}
+         </a>
+     </li>
+ </ul>
+ <ul class="subtree">
+     <li class="header">{{ _('Order Monitoring') }}</li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}" class="pjax">
+             {{ _('Abnormal Order') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_orders') }}" class="pjax">
+             {{ _('Return Reason') }}
+         </a>
+    </li>
+ </ul>
+ <ul class="subtree">
+     <li class="header">{{ _('Logistics Setting') }}</li>
+     <li>
+         <a href="{{ url_for('main.show_expresses') }}" class="{% if sub_menu == 'express' %} active{% endif %}">
+            {{ _('Express List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_shippers') }}" class="{% if sub_menu == 'shipper' %} active{% endif %}">
+             {{ _('Shipper List') }}
+         </a>
+     </li>
+     <li>
+         <a href="" class="pjax">
+             {{ _('Freight Formwork') }}
+         </a>
+     </li>
+ </ul>
 </div>

@@ -11,11 +11,15 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('App List') }}
-	</h2>
+	</div>
 
 	<form class="form-inline" id="filter-supplier-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

@@ -15,72 +15,6 @@
                      <i class="fa fa-shopping-cart fa-2x"></i>
                      <span>{{ _('Sales') }}</span>
                  </a>
-                 <div class="treeview-menu tree-3x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Order Manage') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}" class="pjax">
-		                         {{ _('Order List') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}?s=1" class="pjax">
-		                         {{ _('Pending Payment') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}?s=5" class="pjax">
-		                         {{ _('Pending Review') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}?s=10" class="pjax">
-		                         {{ _('Pending Shipment') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}?s=13" class="pjax">
-		                         {{ _('UnPrinting') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}?s=16" class="pjax">
-		                         {{ _('Shipped') }}
-	                         </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Logistics Setting') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_expresses') }}" class="pjax">
-		                        {{ _('Express List') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_shippers') }}" class="pjax">
-		                         {{ _('Shipper List') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-		                         {{ _('Freight Formwork') }}
-	                         </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Order Monitoring') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}" class="pjax">
-		                         {{ _('Abnormal Order') }}
-	                         </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_orders') }}" class="pjax">
-		                         {{ _('Return Reason') }}
-	                         </a>
-                        </li>
-                     </ul>
-                 </div>
              </li>
             <li class="{% if top_menu == 'products'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_products') }}">
@@ -88,313 +22,57 @@
                     <span>{{ _('Products') }}</span>
                 </a>
             </li>
-            <li class="{% if sub_menu == 'channels'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'stores' %}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_stores') }}">
                     <i class="fa fa-sitemap fa-2x"></i>
                     <span>{{ _('Store') }}</span>
                 </a>
-                <div class="treeview-menu tree-3x">
-                    <ul class="subtree">
-                        <li class="header">{{ _('Store Manage') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.show_stores') }}" class="pjax">
-                                {{ _('All Stores') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.show_stores') }}?platform=1" class="pjax">
-                                {{ _('Wx App') }}
-                            </a>
-                        </li>
-                        <li class="hidden">
-                            <a href="{{ url_for('main.setting_mall') }}" class="pjax">
-                                {{ _('H5 Mall') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="subtree">
-                        <li class="header">店铺装修</li>
-                        <li>
-                            <a href="{{ url_for('main.show_banners') }}" class="pjax">
-                                {{ _('Banner List') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="subtree">
-                        <li class="header">{{ _('Customer Manage') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.show_customers') }}" class="pjax">
-                                {{ _('Customer List') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.show_grades') }}" class="pjax">
-                                {{ _('Customer Grade') }}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
-            <li class="{% if sub_menu == 'purchases'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'purchases'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_purchases') }}">
                     <i class="fa fa-file-text fa-2x"></i>
                     <span>{{ _('Purchase') }}</span>
                 </a>
-                <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Purchase Manage') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_purchases') }}" class="pjax">
-                                 {{ _('Purchase List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.create_purchase') }}" class="pjax">
-                                 新增采购单
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Warehouse Setting') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_suppliers') }}" class="pjax">
-                                 {{ _('Supplier List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.supply_list') }}" class="pjax">
-                                 {{ _('Supply Relation') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
              </li>
 
-            <li class="{% if sub_menu == 'stocks'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'stocks'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_stocks') }}">
                     <i class="fa fa-truck fa-2x"></i>
                     <span>{{ _('Stock') }}</span>
                 </a>
-
-                <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Stock Manage') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_stocks') }}" class="pjax">
-                                 {{ _('Stock List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_in_warehouses') }}" class="pjax">
-                                 {{ _('In List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_out_warehouses') }}" class="pjax">
-                                 {{ _('Out List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_inout') }}" class="pjax">
-                                 {{ _('In-out Stock') }}
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Stock Setting') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_warehouses') }}" class="pjax">
-                                 {{ _('Warehouse List') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
              </li>
 			 
-             <li class="{% if sub_menu == 'app_store'%}active {% endif %} treeview">
+             <li class="{% if top_menu == 'market' %}active {% endif %} treeview">
                  <a href="{{ url_for('main.show_apps') }}">
                      <i class="fa fa-shopping-bag fa-2x"></i>
                      <span>{{ _('Marketing') }}</span>
                  </a>
-
-                 <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Subscribe App') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_coupons') }}" class="pjax">
-                                 {{ _('Coupon Tools') }}
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('App Manage') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_apps') }}" class="pjax">
-                                 {{ _('All List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_clients') }}" class="pjax">
-                                 {{ _('My Apps') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
              </li>
 
-            <li class="{% if sub_menu == 'statistics'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'stats' %}active {% endif %} treeview">
                 <a href="{{ url_for('main.stats') }}">
                     <i class="fa fa-pie-chart fa-2x"></i>
                     <span>{{ _('Statistics') }}</span>
                 </a>
-
-                <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Sales Report') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.stats') }}" class="pjax">
-                                 {{ _('Aggregate Analysis') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{url_for('main.sales_statistic')}}" class="pjax">
-                                 {{ _('Sales Report') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Products Report') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Brands Report') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Category Report') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Customer Report') }}
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Stock Report') }}</li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('In-Out Report') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Shipments Stats') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Supplier Stats') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
              </li>
              
 
-            <li class="{% if sub_menu == 'finance'%}active {% endif %} treeview">
-                <a href="#">
+            <li class="{% if top_menu == 'finances'%}active {% endif %} treeview">
+                <a href="{{ url_for('main.show_payments') }}">
                     <i class="fa fa-yen fa-2x"></i>
                     <span>{{ _('Finance') }}</span>
                 </a>
-
-                <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Funds Manage') }}</li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Capital account') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_payments') }}?s=1" class="pjax">
-                                 {{  _('Payment Confirm') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_receives') }}" class="pjax">
-                                 {{ _('Receivables Confirm') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Capital Detail') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Refund Manage') }}
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Account Setting') }}</li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Items Setting') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Account Setting') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
             </li>
 			
-            <li class="{% if sub_menu == 'settings'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'settings' %}active {% endif %} treeview">
                 <a href="{{ url_for('main.site') }}">
                     <i class="fa fa-gears fa-2x"></i>
                     <span>{{ _('Setting') }}</span>
                 </a>
-
-                <div class="treeview-menu tree-2x">
-                    <ul class="subtree">
-                        <li class="header">{{ _('General Settings') }}</li>
-                        <li>
-                            <a href="{{ url_for('main.site') }}" class="pjax">
-                                {{ _('Basic Setting') }}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('main.show_currencies') }}" class="pjax">
-                                {{ _('Currency List') }}
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="subtree">
-                        <li class="header">{{ _('Privilege manage') }}</li>
-                        {% if g.user.is_master %}
-                        <li>
-                            <a href="{{ url_for('main.child_users') }}" class="pjax">
-                                {{ _('User List') }}
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <a href="{{ url_for('main.setting_roles') }}" class="pjax">
-                                {{ _('Acl List') }}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
-            <li class="hidden {% if sub_menu == 'scrm'%}active {% endif %} treeview">
+            <li class="hidden {% if top_menu == 'scrm'%}active {% endif %} treeview">
                 <a href="#">
                     <i class="fa fa-users fa-2x"></i>
                     <span>{{ _('SCRM') }}</span>

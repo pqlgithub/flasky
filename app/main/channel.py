@@ -19,7 +19,7 @@ def load_common_data():
     私有方法，装载共用数据
     """
     return {
-        'top_menu': 'channels'
+        'top_menu': 'stores'
     }
 
 
@@ -523,9 +523,11 @@ def show_banners(page=1):
         
         return render_template('banners/search_result.html',
                                paginated_banners=paginated_banners,
+                               sub_menu='banner',
                                p=p,
                                qk=qk,
-                               sk=sk)
+                               sk=sk,
+                               **load_common_data())
     
     # 正常列表
     builder = BannerImage.query.filter_by(master_uid=Master.master_uid())
@@ -534,7 +536,7 @@ def show_banners(page=1):
     spot_list = Banner.query.filter_by(master_uid=Master.master_uid()).all()
     
     return render_template('banners/show_list.html',
-                           sub_menu='banners',
+                           sub_menu='banner',
                            spot_list=spot_list,
                            paginated_banners=paginated_banners,
                            **load_common_data())
@@ -574,7 +576,7 @@ def create_banner():
     return render_template('banners/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='banners',
+                           sub_menu='banner',
                            **load_common_data())
 
 
@@ -614,7 +616,7 @@ def edit_banner(id):
                            form=form,
                            mode=mode,
                            banner=banner_image,
-                           sub_menu='banners',
+                           sub_menu='banner',
                            **load_common_data())
     
 

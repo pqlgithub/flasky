@@ -1,7 +1,7 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
-	{% include 'logistics/_sub_menu.html' %}
+{% block submenu %}
+	{% include 'orders/_sub_menu.html' %}
 {% endblock %}
 
 {% block mainbar %}
@@ -27,7 +27,7 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="row">
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 					{{ form.name.label(class="col-sm-3 control-label") }}
 					<div class="col-sm-9">
@@ -110,32 +110,34 @@
 				</div>
 
 			</div>
-			<div class="col-sm-4">
-				<p><strong>目前接口支持了：</strong></p>
-				<ul class="list-group">
-					<li class="list-group-item">顺丰（SF）</li>
-					<li class="list-group-item">EMS（EMS）</li>
-					<li class="list-group-item">宅急送（ZJS）</li>
-					<li class="list-group-item">圆通（YTO）</li>
-					<li class="list-group-item">百世快递（HTKY）</li>
-					<li class="list-group-item">中通（ZTO）</li>
-					<li class="list-group-item">韵达（YD）</li>
-					<li class="list-group-item">申通（STO）</li>
-					<li class="list-group-item">德邦（DBL）</li>
-					<li class="list-group-item">优速（UC）</li>
-					<li class="list-group-item">京东（JD）</li>
-					<li class="list-group-item">信丰（XFEX）</li>
-					<li class="list-group-item">全峰（QFKD）</li>
-					<li class="list-group-item">跨越速运（KYSY）</li>
-					<li class="list-group-item">安能小包（ANE）</li>
-					<li class="list-group-item">快捷快递（FAST）</li>
-					<li class="list-group-item">国通（GTO）</li>
-					<li class="list-group-item">天天快递（HHTT）</li>
-					<li class="list-group-item">邮政快递包裹（YZPY）</li>
-					<li class="list-group-item">中铁快运（ZTKY）</li>
-					<li class="list-group-item"></li>
-				</ul>
-				<p>后续更多的快递公司正在对接中。</p>
+			<div class="col-sm-3">
+				<div class="well">
+					<p><strong>目前接口支持了：</strong></p>
+					<ul class="list-group">
+						<li class="list-group-item">顺丰（SF）</li>
+						<li class="list-group-item">EMS（EMS）</li>
+						<li class="list-group-item">宅急送（ZJS）</li>
+						<li class="list-group-item">圆通（YTO）</li>
+						<li class="list-group-item">百世快递（HTKY）</li>
+						<li class="list-group-item">中通（ZTO）</li>
+						<li class="list-group-item">韵达（YD）</li>
+						<li class="list-group-item">申通（STO）</li>
+						<li class="list-group-item">德邦（DBL）</li>
+						<li class="list-group-item">优速（UC）</li>
+						<li class="list-group-item">京东（JD）</li>
+						<li class="list-group-item">信丰（XFEX）</li>
+						<li class="list-group-item">全峰（QFKD）</li>
+						<li class="list-group-item">跨越速运（KYSY）</li>
+						<li class="list-group-item">安能小包（ANE）</li>
+						<li class="list-group-item">快捷快递（FAST）</li>
+						<li class="list-group-item">国通（GTO）</li>
+						<li class="list-group-item">天天快递（HHTT）</li>
+						<li class="list-group-item">邮政快递包裹（YZPY）</li>
+						<li class="list-group-item">中铁快运（ZTKY）</li>
+						<li class="list-group-item"></li>
+					</ul>
+					<p>后续更多的快递公司正在对接中。</p>
+				</div>
 			</div>
 		</div>
 

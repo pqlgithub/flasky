@@ -33,21 +33,24 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Coupon List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
-			<a href="{{ url_for('main.create_coupon') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_coupon') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="bonus-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
 				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<form class="form-inline" id="filter-coupon-form" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

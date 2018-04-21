@@ -8,6 +8,10 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
@@ -31,22 +35,22 @@
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
         <div class="form-group required m-b-25">
-			{{ form.type.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.type.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-6">
 				{{ form.type(id="type", class="radio-inline-group") }}
 			</div>
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.name.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-6">
 				{{ form.name(id="name", class="form-control") }}
 			</div>
 		</div>
 
 		<div class="form-group required {% if form.errors.amount %} has-error{% endif %}">
-			{{ form.amount.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.amount.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-4">
                 <div class="input-group">
                     {{ form.amount(id="amount", class="form-control") }}
                     <span class="input-group-addon current-currency">
@@ -61,8 +65,8 @@
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.start_date.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-3">
+			{{ form.start_date.label(class="col-sm-3 control-label text-right") }}
+			<div class="col-sm-2">
                 <div class="input-group form-date">
 					{{ form.start_date(id="start_date", class="form-control form-datetime") }}
 					<span class="input-group-addon">
@@ -72,7 +76,7 @@
 			</div>
 
             {{ form.end_date.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-3">
+			<div class="col-sm-2">
                 <div class="input-group form-date">
 					{{ form.end_date(id="end_date", class="form-control form-datetime") }}
 					<span class="input-group-addon">
@@ -83,16 +87,16 @@
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.min_amount.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.min_amount.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-4">
 				{{ form.min_amount(id="min_amount", class="form-control") }}
                 <span class="help-block">若不设置最低金额，则不限制使用</span>
 			</div>
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.reach_amount.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.reach_amount.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-4">
                 <div class="input-group">
                     {{ form.reach_amount(id="reach_amount", class="form-control") }}
                     <span class="input-group-addon current-currency">
@@ -104,16 +108,16 @@
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.product_rid.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.product_rid.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-6">
 				{{ form.product_rid(id="product_rid", class="form-control") }}
                 <span class="help-block">红包可限制仅使用在某个商品上（可选）</span>
 			</div>
 		</div>
 
         <div class="form-group m-b-25">
-			{{ form.status.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-5">
+			{{ form.status.label(class="col-sm-3 control-label") }}
+			<div class="col-sm-6">
 				{{ form.status(id="status", class="radio-inline-group") }}
 			</div>
 		</div>

@@ -15,7 +15,7 @@ def load_common_data():
     私有方法，装载共用数据
     """
     return {
-        'top_menu': 'logistics'
+        'top_menu': 'orders'
     }
 
 

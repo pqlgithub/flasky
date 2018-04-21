@@ -11,6 +11,15 @@ from app.models import AppService, SubscribeService, Coupon
 from app.forms import CouponForm
 
 
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'market'
+    }
+
+
 @main.route('/market/apps')
 @main.route('/market/apps/<int:page>')
 @user_has('admin_app_store')
@@ -24,7 +33,8 @@ def show_apps(page=1):
     return render_template('app_store/show_list.html',
                            sub_menu='app_store',
                            app_types=SERVICE_TYPES,
-                           paginated_apps=paginated_apps)
+                           paginated_apps=paginated_apps,
+                           **load_common_data())
 
 
 @main.route('/market/apps/<string:sn>/subscribe', methods=['GET', 'POST'])
@@ -81,7 +91,9 @@ def search_coupons():
                            qk=qk,
                            sk=sk,
                            paginated_coupons=paginated_coupons,
-                           pagination=pagination)
+                           pagination=pagination,
+                           sub_menu='coupon',
+                           **load_common_data())
 
 
 @main.route('/market/coupons')
@@ -96,8 +108,9 @@ def show_coupons():
 
     return render_template('coupon/show_list.html',
                            paginated_coupons=paginated_coupons.items,
-                           pagination=paginated_coupons
-                           )
+                           pagination=paginated_coupons,
+                           sub_menu='coupon',
+                           **load_common_data())
 
 
 @main.route('/market/coupons/create', methods=['GET', 'POST'])
@@ -129,7 +142,9 @@ def create_coupon():
     mode = 'create'
     return render_template('coupon/create_and_edit.html',
                            mode=mode,
-                           form=form)
+                           form=form,
+                           sub_menu='coupon',
+                           **load_common_data())
 
 
 @main.route('/market/coupons/<string:rid>/disabled', methods=['POST'])

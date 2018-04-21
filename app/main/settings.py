@@ -35,7 +35,8 @@ def site():
 
     return render_template('settings/site.html',
                            site=company,
-                           sub_menu='sites')
+                           sub_menu='sites',
+                           **load_common_data())
 
 
 @main.route('/site/setting', methods=['GET', 'POST'])
@@ -109,7 +110,8 @@ def show_currencies(page=1):
 
     return render_template('currencies/show_currencies.html',
                            paginated_currencies=paginated_currencies,
-                           sub_menu='currencies', **load_common_data())
+                           sub_menu='currencies',
+                           **load_common_data())
 
 
 @main.route('/currencies/sync', methods=['POST'])
@@ -183,7 +185,8 @@ def create_currency():
     return render_template('currencies/create_and_edit.html',
                            mode=mode,
                            form=form,
-                           sub_menu='currencies', **load_common_data())
+                           sub_menu='currencies',
+                           **load_common_data())
 
 
 @main.route('/currencies/<int:id>/edit', methods=['GET', 'POST'])
@@ -211,7 +214,8 @@ def edit_currency(id):
     return render_template('currencies/create_and_edit.html',
                            mode=mode,
                            form=form,
-                           sub_menu='currencies', **load_common_data())
+                           sub_menu='currencies',
+                           **load_common_data())
 
 
 @main.route('/currencies/delete', methods=['POST'])

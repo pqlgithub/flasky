@@ -25,10 +25,13 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include "stores/_sub_menu.html" %}
+{% endblock %}
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Wxapp Templates') }}
 		<span class="pull-right">
             <button class="btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Help?') }}">
@@ -38,7 +41,7 @@
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
     <div class="tab-content m-t-30">
         <div class="row">

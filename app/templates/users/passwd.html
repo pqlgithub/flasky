@@ -1,12 +1,12 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include "settings/_sub_menu.html" %}
 {% endblock %}
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Update Password') }}
 
 		<span class="pull-right">
@@ -14,21 +14,21 @@
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<form id="passwd-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
 		<div class="form-group">
 			<label class="col-sm-2 control-label">{{ _('Username') }}</label>
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				<p class="form-control-static">{{ g.user.username }}</p>
 			</div>
 		</div>
 
 		<div class="form-group required {% if form.errors.password %} has-error{% endif %}">
 			{{ form.password.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				{{ form.password(id="password", class="form-control") }}
 				{% for error in form.errors.password %}
 				<span class="help-block">{{ error }}</span><br>
@@ -38,7 +38,7 @@
 
 		<div class="form-group required {% if form.errors.password2 %} has-error{% endif %}">
 			{{ form.password2.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				{{ form.password2(id="password2", class="form-control") }}
 				{% for error in form.errors.password2 %}
 				<span class="help-block">{{ error }}</span><br>

@@ -10,7 +10,14 @@ from ..decorators import user_has, user_is
 from app.models import PayAccount, TransactDetail, Invoice, Purchase, InWarehouse
 from app.forms import PurchaseForm
 
-top_menu = 'finances'
+
+def load_common_data():
+    """
+    私有方法，装载共用数据
+    """
+    return {
+        'top_menu': 'finances'
+    }
 
 
 @main.route('/receives')
@@ -21,10 +28,10 @@ def show_receives(page=1):
     type = request.args.get('t', 1, type=int)
     paginated_transactions = TransactDetail.query.filter_by(type=type).order_by('created_at asc').paginate(page, per_page)
     return render_template('finances/show_receives.html',
-                           top_menu=top_menu,
                            sub_menu='receives',
                            type=type,
-                           paginated_transactions=paginated_transactions)
+                           paginated_transactions=paginated_transactions,
+                           **load_common_data())
 
 
 @main.route('/payments')
@@ -36,10 +43,10 @@ def show_payments(page=1):
     paginated_payments = TransactDetail.query.filter_by(status=status, type=2).order_by('created_at asc').paginate(page,
                                                                                                            per_page, error_out=False)
     return render_template('finances/show_payments.html',
-                           top_menu=top_menu,
                            sub_menu='payments',
                            status=status,
-                           paginated_payments=paginated_payments)
+                           paginated_payments=paginated_payments,
+                           **load_common_data())
 
 
 @main.route('/payments/<int:id>/ajax_payed', methods=['POST'])

@@ -189,4 +189,6 @@ def passwd():
         return redirect(url_for('auth.login'))
 
     return render_template('users/passwd.html',
-                           form=form)
+                           sub_menu='passwd',
+                           form=form,
+                           **load_common_data())
