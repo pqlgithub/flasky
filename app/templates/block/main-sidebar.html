@@ -65,6 +65,8 @@
                 </a>
             </li>
 			
+        </ul>
+		<ul class="sidebar-menu tree fix-bottom" data-widget="tree">
             <li class="{% if top_menu == 'settings' %}active {% endif %} treeview">
                 <a href="{{ url_for('main.site') }}">
                     <i class="fa fa-gears fa-2x"></i>
@@ -78,7 +80,7 @@
                     <span>{{ _('SCRM') }}</span>
                 </a>
             </li>
-
-        </ul>
+		</ul>
+		
     </section>
 </aside>

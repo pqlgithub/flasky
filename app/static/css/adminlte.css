@@ -1640,7 +1640,12 @@ a:focus,
 .sidebar-menu li > a {
     position:relative;
 }
-
+.sidebar-menu.fix-bottom {
+	position: fixed;
+	bottom: 50px;
+	left: 0px;
+	width: 70px;
+}
 
 .content {
 	position: relative;
