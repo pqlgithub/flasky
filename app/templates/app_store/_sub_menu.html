@@ -1,0 +1,23 @@
+ <div class="treeview-menu">
+     <ul class="subtree">
+         <li class="header">{{ _('Subscribe App') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_coupons') }}" class="{% if sub_menu == 'coupon' %}active{% endif %}">
+                 {{ _('Coupon Tools') }}
+             </a>
+         </li>
+     </ul>
+     <ul class="subtree">
+         <li class="header">{{ _('App Manage') }}</li>
+         <li>
+             <a href="{{ url_for('main.show_apps') }}" class="{% if sub_menu == 'app_store' %}active{% endif %}">
+                 {{ _('All List') }}
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.show_clients') }}" class="{% if sub_menu == 'my_app' %}active{% endif %}">
+                 {{ _('My Apps') }}
+             </a>
+         </li>
+     </ul>
+ </div>

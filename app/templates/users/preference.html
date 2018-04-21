@@ -1,8 +1,12 @@
 {% extends "layout/base.html" %}
 
+{% block submenu %}
+	{% include "settings/_sub_menu.html" %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Preference Setting') }}
 
 		<span class="pull-right">
@@ -10,7 +14,7 @@
 				<i class="glyphicon glyphicon-floppy-save"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<form id="ability-form" class="form-horizontal m-t-20" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

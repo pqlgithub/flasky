@@ -12,8 +12,8 @@
 .skin-green-light .main-header .navbar .nav .open>a:hover,
 .skin-green-light .main-header .navbar .nav .open>a:focus,
 .skin-green-light .main-header .navbar .nav>.active>a {
-    background: rgba(0,0,0,0.1);
-    color: #f6f6f6;
+    background: rgba(0,0,0,0);
+    color: #47B972;
 }
 .skin-green-light .main-header .navbar .sidebar-toggle {
     color: #02a65a;

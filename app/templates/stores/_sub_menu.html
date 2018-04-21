@@ -1,0 +1,41 @@
+<div class="treeview-menu tree-3x">
+    <ul class="subtree">
+        <li class="header">{{ _('Store Manage') }}</li>
+        <li>
+            <a href="{{ url_for('main.show_stores') }}" class="{% if sub_menu == 'stores' and platform != 1  %}active{% endif %}">
+                {{ _('All Stores') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('main.show_stores') }}?platform=1" class="{% if platform == 1 or sub_menu == 'wxapp' %}active{% endif %}">
+                {{ _('Wx App') }}
+            </a>
+        </li>
+        <li class="hidden">
+            <a href="{{ url_for('main.setting_mall') }}" class="pjax">
+                {{ _('H5 Mall') }}
+            </a>
+        </li>
+    </ul>
+    <ul class="subtree">
+        <li class="header">店铺装修</li>
+        <li>
+            <a href="{{ url_for('main.show_banners') }}" class="{% if sub_menu == 'banner' %} active{% endif %}">
+                {{ _('Banner List') }}
+            </a>
+        </li>
+    </ul>
+    <ul class="subtree">
+        <li class="header">{{ _('Customer Manage') }}</li>
+        <li>
+            <a href="{{ url_for('main.show_customers') }}" class="{% if sub_menu == 'customer' %} active{% endif %}">
+                {{ _('Customer List') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('main.show_grades') }}" class="{% if sub_menu == 'grade' %} active{% endif %}">
+                {{ _('Customer Grade') }}
+            </a>
+        </li>
+    </ul>
+</div>

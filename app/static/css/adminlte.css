@@ -1408,7 +1408,7 @@ a:focus,
 }
 
 .dropdown-menu {
-    box-shadow:none;
+    box-shadow:0 2px 3px rgba(0, 0, 0, 0.15);
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
 }
@@ -1588,6 +1588,9 @@ a:focus,
     }
 }
 
+.modal-content {
+	border: 1px solid #aaa;
+}
 .sidebar {
     padding-bottom: 10px
 }
