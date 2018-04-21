@@ -142,6 +142,7 @@
 			success: function (result) {
 				if (result.success) {
 					$('#sku-modal').modal('hide');
+					
 					{% if mode == 'create' %}
 					$('#product-skus-body').append(result.data.tr_html);
 					{% else %}
@@ -150,7 +151,7 @@
 					
 					hook_sku_action();
 				} else {
-					$('#sku-form').prepend(mixpus.display_alert(result.status.errors))
+					$('#sku-form').prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

@@ -171,8 +171,11 @@ class StoreProduct(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     master_uid = db.Column(db.Integer, default=0)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    # 是否为分销商品
+    is_distributed = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<StoreProduct {}>'.format(self.id)

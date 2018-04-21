@@ -111,12 +111,12 @@ class ProductSkuForm(Form):
     sku_cover_id = IntegerField(lazy_gettext('Cover'), default=0)
     id_code = StringField(lazy_gettext('69 Codes'))
     cost_price = FloatField(lazy_gettext('Cost Price'))
-    price = FloatField(lazy_gettext('Price'))
+    price = FloatField(lazy_gettext('Price'), validators=[DataRequired()])
     sale_price = StringField(lazy_gettext('Sale Price'))
     s_model = StringField(lazy_gettext('Mode'))
     s_color = StringField(lazy_gettext('Color'))
-    s_weight = FloatField(lazy_gettext('Weight'), default=0)
-    stock_quantity = IntegerField(lazy_gettext('Stock Quantity'), default=0)
+    s_weight = FloatField(lazy_gettext('Weight'))
+    stock_quantity = StringField(lazy_gettext('Stock Quantity'))
     remark = TextAreaField(lazy_gettext('Remark'))
 
 

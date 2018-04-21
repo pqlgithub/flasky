@@ -323,7 +323,7 @@ def create_product():
     return render_template('products/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='products',
+                           sub_menu='create_product',
                            up_endpoint=up_endpoint,
                            up_token=up_token,
                            current_currency_unit=g.current_site.currency,
@@ -651,11 +651,25 @@ def add_sku(rid):
         abort(404)
 
     form = ProductSkuForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            errors = form_errors_list(form)
+            return form_errors_response(errors)
+
+        # 规格或颜色至少选一个
+        if not form.s_model.data and not form.s_color.data:
+            return custom_response(False, '型号与颜色至少设置一个')
+
         # 设置默认值
         if not form.sku_cover_id.data:
             default_cover = Asset.query.filter_by(is_default=True).first()
             form.sku_cover_id.data = default_cover.id
+
+        # 转换库存类型
+        if not form.stock_quantity.data:
+            form.stock_quantity.data = 0
+        else:
+            form.stock_quantity.data = int(form.stock_quantity.data)
 
         new_serial_no = form.serial_no.data
         current_app.logger.warn('Sku new serial_no [%s] -----!!!' % new_serial_no)
@@ -681,7 +695,7 @@ def add_sku(rid):
             remark=form.remark.data
         )
         db.session.add(sku)
-        
+
         db.session.commit()
 
         # run the task
@@ -721,8 +735,23 @@ def edit_sku(rid, s_id):
     form = ProductSkuForm()
     if request.method == 'POST':
         if not form.validate_on_submit():
-            error_list = form_errors_list(form)
-            return form_errors_response(error_list)
+            errors = form_errors_list(form)
+            return form_errors_response(errors)
+
+        # 规格或颜色至少选一个
+        if not form.s_model.data and not form.s_color.data:
+            return custom_response(False, '型号与颜色至少设置一个')
+
+        # 设置默认值
+        if not form.sku_cover_id.data:
+            default_cover = Asset.query.filter_by(is_default=True).first()
+            form.sku_cover_id.data = default_cover.id
+
+        # 转换库存类型
+        if not form.stock_quantity.data:
+            form.stock_quantity.data = 0
+        else:
+            form.stock_quantity.data = int(form.stock_quantity.data)
 
         # 验证69码是否重复
         id_code = form.id_code.data
@@ -864,7 +893,7 @@ def show_categories(page=1):
     return render_template('categories/show_list.html',
                            paginated_categories=paginated_categories,
                            pagination=pagination,
-                           sub_menu='categories',
+                           sub_menu='category',
                            **load_common_data())
 
 
@@ -906,7 +935,7 @@ def create_category():
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='categories',
+                           sub_menu='category',
                            category=None,
                            paginated_categories=paginated_categories,
                            **load_common_data())
@@ -946,7 +975,7 @@ def edit_category(id):
     return render_template('categories/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='categories',
+                           sub_menu='category',
                            category=category,
                            paginated_categories=paginated_categories,
                            **load_common_data())
@@ -1184,6 +1213,7 @@ def show_product_groups(page=1):
     
     return render_template('products/show_groups.html',
                            paginated_groups=paginated_groups,
+                           sub_menu='product_group',
                            **load_common_data())
 
 
@@ -1207,6 +1237,7 @@ def create_product_group():
     
     mode = 'create'
     return render_template('products/_modal_create_group.html',
+                           sub_menu='product_group',
                            mode=mode,
                            post_url=url_for('main.create_product_group'),
                            form=form)
@@ -1236,6 +1267,7 @@ def edit_product_group(id):
     form.name.data = group.name
     return render_template('products/_modal_create_group.html',
                            mode=mode,
+                           sub_menu='product_group',
                            post_url=url_for('main.edit_product_group', id=id),
                            form=form)
 
@@ -1285,6 +1317,7 @@ def show_group_products(id):
     return render_template('products/show_set_groups.html',
                            product_group=product_packet,
                            selected_products=selected_products,
+                           sub_menu='product_group',
                            **load_common_data())
 
 
@@ -1394,6 +1427,7 @@ def show_discount_templets(page=1):
 
     return render_template('products/show_discount_templets.html',
                            paginated_discount_templets=paginated_discount_templets,
+                           sub_menu='price_templet',
                            **load_common_data())
 
 
@@ -1418,6 +1452,7 @@ def create_discount_templet():
 
     mode = 'create'
     return render_template('products/create_edit_templet.html',
+                           sub_menu='price_templet',
                            mode=mode,
                            form=form)
 
@@ -1450,6 +1485,7 @@ def edit_discount_templet(id):
     form.description.data = discount_templet.description
 
     return render_template('products/create_edit_templet.html',
+                           sub_menu='price_templet',
                            mode=mode,
                            form=form)
 

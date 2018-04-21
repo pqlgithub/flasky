@@ -1,25 +1,48 @@
-<div class="list-group">
-	<div class="list-group-header">
-		{{ _('Product manage') }}
-	</div>
-	<a href="{{ url_for('main.show_products') }}" class="pjax list-group-item {% if sub_menu == 'products'%} active{% endif %}">
-		{{ _('Product List') }}
-	</a>
-
-	<div class="list-group-header">
-
-	</div>
-	<a href="{{ url_for('main.show_brands') }}" class="pjax list-group-item {% if sub_menu == 'brands'%} active{% endif %}">
-		{{ _('Brands List') }}
-	</a>
-	<a href="{{ url_for('main.show_suppliers') }}" class="pjax list-group-item {% if sub_menu == 'suppliers'%} active{% endif %}">
-		{{ _('Supplier List') }}
-	</a>
-
-	<div class="list-group-header">
-		{{ _('Category manage') }}
-	</div>
-	<a href="{{ url_for('main.show_categories') }}" class="pjax list-group-item {% if sub_menu == 'categories'%} active{% endif %}">
-		{{ _('Category List') }}
-	</a>
+<div class="treeview-menu tree-2x">
+ <ul class="subtree">
+     <li class="header">{{ _('Product Manage') }}</li>
+     <li>
+         <a href="{{ url_for('main.show_products') }}" class="{% if sub_menu == 'products'%}active {% endif %}">
+             {{ _('Product List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_product_groups') }}" class="{% if sub_menu == 'product_group'%}active {% endif %}">
+             {{ _('Product Group') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.create_product') }}" class="{% if sub_menu == 'create_product'%}active {% endif %}">
+             {{ _('New Product') }}
+         </a>
+     </li>
+ </ul>
+ <ul class="subtree">
+     <li class="header">{{ _('Product Setting') }}</li>
+     <li>
+         <a href="{{ url_for('main.show_categories') }}" class="{% if sub_menu == 'category'%}active {% endif %}">
+             {{ _('Category List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_brands') }}" class="{% if sub_menu == 'brand'%}active {% endif %}">
+             {{ _('Brand List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_assets') }}" class="{% if sub_menu == 'asset'%}active {% endif %}">
+             {{ _('Picture Space') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_discount_templets') }}" class="{% if sub_menu == 'price_templet'%}active {% endif %}">
+             {{ _('Price Templet') }}
+         </a>
+     </li>
+     <li>
+         <a href="" class="pjax">
+             {{ _('Units Setting') }}
+         </a>
+     </li>
+ </ul>
 </div>

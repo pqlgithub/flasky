@@ -1,5 +1,9 @@
 {% extends pjax("layout/base.html") %}
 
+{% block submenu %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
 {% block after_jquery %}
 <script type="text/javascript">
 	$(function () {
@@ -144,7 +148,7 @@
 						<i class="fa fa-folder fa-5x"></i>
 					</a>
 				</div>
-				<label>
+				<label class="m-b-10">
 					<input name="path[]" value="{{ d.name }}" data-rid="{{ d.id }}" data-name="folder" type="checkbox">
 					{{ d.fx_name|safe }}
 					<a href="{{ url_for('main.modify_directory', id=d.id) }}" class="ajax-modal" data-modal="directory-modal"  data-toggle="tooltip" data-original-title="{{ _('Edit Directory') }}">{{ _('Edit') }}</a>
@@ -154,12 +158,15 @@
 
 			{% for a in paginated_assets.items %}
 			<div class="col-sm-2 col-xs-6 text-center">
-				<a href="javascript:void(0);" class="thumbnail" data-target="{{ a.id }}">
-					<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
-				</a>
-				<label>
+				<div class="text-center">
+					<a href="javascript:void(0);" class="thumbnail" data-target="{{ a.id }}">
+						<img src="{{ a.view_url }}" alt="{{ a.filename }}" title="{{ a.filename }}">
+					</a>
+				</div>
+				<label class="m-b-10">
 					<input name="path[]" value="{{ a.filepath }}" data-rid="{{ a.id }}" data-name="file" type="checkbox">
-					{{ a.filename|short_filename }} <a href="javascript:void(0);" data-clipboard-text="{{ a.view_url }}" class="zclip" data-toggle="tooltip" data-original-title="{{ _('Copy Link') }}">{{ _('Copy Link') }}</a>
+					{{ a.filename|short_filename }} <br>
+					<a href="javascript:void(0);" data-clipboard-text="{{ a.view_url }}" class="zclip" data-toggle="tooltip" data-original-title="{{ _('Copy Link') }}">{{ _('Copy Link') }}</a>
 				</label>
 			</div>
 			{% endfor %}

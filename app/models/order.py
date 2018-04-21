@@ -137,6 +137,7 @@ class Order(db.Model):
     
     # 分销商编号
     customer_code = db.Column(db.String(20), nullable=True)
+
     # 所属销售人员
     saler_uid = db.Column(db.Integer, default=0)
     # 来源终端, 1、WX 2、H5 3、App 4、TV 5、POS 6、PAD
@@ -170,6 +171,8 @@ class Order(db.Model):
     related_rid = db.Column(db.String(20), nullable=True)
     # 售后客服
     service_uid = db.Column(db.Integer, default=0)
+    # 是否为分销订单
+    is_distributed = db.Column(db.Boolean, default=False)
     
     # order and items => 1 to N
     items = db.relationship(

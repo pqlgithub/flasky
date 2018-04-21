@@ -223,7 +223,7 @@ mixpus.display_alert = function (messages) {
 			html += '<p><strong>'+ messages[i]['field'] +':</strong> '+ messages[i]['message'] +'</p>';
 		}
 	} else {
-		html += '<p>'+ messages +'</p>';
+		html += '<p><i class="fa fa-info-circle"></i> '+ messages +'</p>';
 	}
 	
 	html += '</div>';

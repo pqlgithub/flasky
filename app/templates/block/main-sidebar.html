@@ -1,7 +1,9 @@
 <aside class="main-sidebar">
+    <a class="sidebar-logo" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='img/moebeast-logo-40.png') }}" />
+    </a>
     <section class="sidebar">
         <ul class="sidebar-menu tree" data-widget="tree">
-            <li class="header">NAVIGATION</li>
             <li class="{% if sub_menu == 'dashboard'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.index') }}">
                     <i class="fa fa-dashboard fa-2x"></i>
@@ -80,59 +82,11 @@
                      </ul>
                  </div>
              </li>
-            <li class="{% if sub_menu == 'products'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'products'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_products') }}">
                     <i class="fa fa-cubes fa-2x"></i>
                     <span>{{ _('Products') }}</span>
                 </a>
-                <div class="treeview-menu tree-2x">
-                     <ul class="subtree">
-                         <li class="header">{{ _('Product Manage') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_products') }}" class="pjax">
-                                 {{ _('Product List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_product_groups') }}" class="pjax">
-                                 {{ _('Product Group') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.create_product') }}" class="pjax">
-                                 {{ _('New Product') }}
-                             </a>
-                         </li>
-                     </ul>
-                     <ul class="subtree">
-                         <li class="header">{{ _('Product Setting') }}</li>
-                         <li>
-                             <a href="{{ url_for('main.show_categories') }}" class="pjax">
-                                 {{ _('Category List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_brands') }}" class="pjax">
-                                 {{ _('Brand List') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_assets') }}" class="pjax">
-                                 {{ _('Picture Space') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="{{ url_for('main.show_discount_templets') }}" class="pjax">
-                                 {{ _('Price Templet') }}
-                             </a>
-                         </li>
-                         <li>
-                             <a href="" class="pjax">
-                                 {{ _('Units Setting') }}
-                             </a>
-                         </li>
-                     </ul>
-                 </div>
             </li>
             <li class="{% if sub_menu == 'channels'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_stores') }}">

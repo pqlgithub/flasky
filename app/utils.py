@@ -199,7 +199,7 @@ def form_errors_response(errors, code=500):
         'success': False,
         'status': {
             'code': code,
-            'errors': errors
+            'message': errors
         }
     })
 

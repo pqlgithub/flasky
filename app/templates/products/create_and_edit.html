@@ -67,6 +67,10 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="form-page">
 	<h2 class="page-header">
@@ -112,9 +116,14 @@
 					{{ _('Image & Text') }}
 				</a>
 			</li>
-			<li>
+			<li class="hidden">
 				<a href="#customs-declaration" role="tab" id="customs-tab" data-toggle="tab" aria-controls="customs-declaration">
 					{{ _('Customs Declaration') }}
+				</a>
+			</li>
+			<li>
+				<a href="#distribution-setting" role="tab" id="distribution-tab" data-toggle="tab" aria-controls="distribution-setting">
+					{{ _('Distribution Setting') }}
 				</a>
 			</li>
 		</ul>
@@ -499,6 +508,17 @@
 
 			</div>
 			{% endif %}
+			
+			
+			<div id="distribution-setting" class="tab-pane fade in" role="tabpanel" aria-labelledby="distribution-tab">
+				<div class="form-group m-b-25">
+					{{ form.category_id.label(class="col-sm-2 control-label") }}
+					<div class="col-sm-4">
+						
+					</div>
+				</div>	
+			</div>
+			
 		</div>
 
 

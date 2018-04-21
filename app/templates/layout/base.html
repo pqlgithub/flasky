@@ -52,16 +52,16 @@
 	</head>
 
 	<body class="skin-green-light" style="height: auto; min-height: 100%">
-		<div class="wrapper">
-			{% block header %}
-				{% include 'block/main-header.html' %}
-			{% endblock %}
-
+		<div class="wrapper page__wrap">
+			{% include 'block/main-sidebar.html' %}
+			
 			{% block content %}
-				{% include 'block/main-sidebar.html' %}
-
 				<div class="content-wrapper">
+					{% include 'block/main-header.html' %}
+					
 					<section class="content">
+						{% block submenu %}{% endblock %}
+						
 						<div class="main" id="pjax-container">
 							{% with messages = get_flashed_messages(with_categories=true) %}
 							{% if messages %}
@@ -80,10 +80,6 @@
 						</div>
 					</section>
 				</div>
-			{% endblock %}
-
-			{% block footer %}
-				{% include  'block/main-footer.html' %}
 			{% endblock %}
 
 			<aside class="control-sidebar control-sidebar-dark">

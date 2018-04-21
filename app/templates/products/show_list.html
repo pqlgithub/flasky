@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
@@ -65,7 +65,7 @@
 					</li>
 				</ul>
 			</div>
-			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-success" data-original-title="{{ _('Add New') }}">
+			<a href="{{ url_for('main.create_product') }}" data-toggle="tooltip" class="pjax btn btn-mixpus" data-original-title="{{ _('Add New') }}">
 				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="products-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">

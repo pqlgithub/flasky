@@ -1,6 +1,6 @@
 {% extends pjax("layout/base.html") %}
 
-{% block sidebar %}
+{% block submenu %}
 	{% include 'products/_sub_menu.html' %}
 {% endblock %}
 
@@ -81,7 +81,7 @@
 			<form id="brands-form" action="{{ url_for('main.delete_brand') }}" method="post">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 
-				<table class="table table-bordered table-striped table-hover">
+				<table class="table table-bordered table-striped">
 					<thead>
 					<tr>
 						<th class="text-center">

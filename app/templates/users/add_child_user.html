@@ -91,12 +91,7 @@
 					$('#user-modal').modal('hide');
 					$('.btn-refresh').trigger('click');
 				} else {
-					if (result.status.message) {
-						$('#user-form').prepend(mixpus.display_alert(result.status.message))
-					}
-					if (result.status.errors) {
-						$('#user-form').prepend(mixpus.display_alert(result.status.errors))
-					}
+					$('#user-form').prepend(mixpus.display_alert(result.status.message))
 				}
 			},
 			error: function (xhr, ajaxOptions, thrownError) {

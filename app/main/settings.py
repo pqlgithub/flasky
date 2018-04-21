@@ -291,7 +291,7 @@ def show_assets(page=1):
         .order_by(Asset.created_at.asc()).paginate(page, per_page)
 
     return render_template('settings/show_assets.html',
-                           sub_menu='assets',
+                           sub_menu='asset',
                            pid=pid,
                            current_directory=current_directory,
                            paginated_directory=paginated_directory,

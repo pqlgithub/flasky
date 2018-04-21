@@ -225,9 +225,10 @@ select {
 	color: #bfbfbf;
 }
 a.thumbnail {
-    width: 100px;
-    height: 100px;
-    overflow: hidden;
+	width: 100px;
+	height: 100px;
+	overflow: hidden;
+	margin: 0 auto 10px;
 }
 .img-thumbnail {
   position: relative;
@@ -411,11 +412,12 @@ a.thumbnail {
     background-color:#367fa9
 }
 .btn-success {
-    background-color:#00a65a;
-    border-color:#008d4c
+    background-color:#47B972;
+    border-color:#249c57;
+    color: #fff;
 }
 .btn-success:hover,.btn-success:active,.btn-success.hover {
-    background-color:#008d4c
+    background-color:#249c57;
 }
 .btn-info {
     background-color:#00c0ef;
@@ -502,6 +504,7 @@ a.thumbnail {
 .nav-tabs > li.active > a {
     border-radius: 0;
     border-top: 2px solid #00a65a;
+	background-color: #fafafa;
 }
 
 .box {
@@ -1108,7 +1111,8 @@ a.thumbnail {
 }
 
 html,body {
-    height:100%
+    height: 100%;
+	background: #fafafa;
 }
 .layout-boxed html,.layout-boxed body {
     height:100%
@@ -1148,7 +1152,7 @@ body {
     -moz-transition:-moz-transform .3s ease-in-out,margin .3s ease-in-out;
     -o-transition:-o-transform .3s ease-in-out,margin .3s ease-in-out;
     transition:transform .3s ease-in-out,margin .3s ease-in-out;
-    margin-left: 80px;
+    margin-left: 70px;
     z-index:820;
 }
 .layout-top-nav .content-wrapper,.layout-top-nav .main-footer {
@@ -1174,7 +1178,6 @@ body {
 }
 .content-wrapper {
     min-height:100%;
-    background-color: #fff;
     z-index:800
 }
 .main-footer {
@@ -1217,9 +1220,11 @@ body {
     -o-transition:none;
     transition:none
 }
+.content .treeview-menu {
+	display: block;
+}
 .content {
     min-height:250px;
-    padding:20px;
     margin-right:auto;
     margin-left:auto;
 }
@@ -1250,7 +1255,9 @@ a:focus,
     text-decoration: none;
     color:#00a65a;
 }
-
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #ffffff;
+}
 .vertical-middle.table>tbody>tr>td,
 .vertical-middle.table>tbody>tr>th,
 .vertical-middle.table>tfoot>tr>td,
@@ -1270,7 +1277,6 @@ a:focus,
     -o-transition: margin-left .3s ease-in-out;
     transition: margin-left .3s ease-in-out;
     margin-bottom: 0;
-    margin-left: 80px;
     border: none;
     min-height: 50px;
     border-radius: 0;
@@ -1538,14 +1544,19 @@ a:focus,
     position:absolute;
     top:0;
     left:0;
-    padding-top:50px;
+    padding-top:0px;
     min-height:100%;
-    width:80px;
+    width: 70px;
     z-index:810;
     -webkit-transition:-webkit-transform .3s ease-in-out,width .3s ease-in-out;
     -moz-transition:-moz-transform .3s ease-in-out,width .3s ease-in-out;
     -o-transition:-o-transform .3s ease-in-out,width .3s ease-in-out;
     transition:transform .3s ease-in-out,width .3s ease-in-out
+}
+.main-sidebar .sidebar-logo {
+	display: block;
+	margin: 5px auto;
+	text-align: center;
 }
 @media (max-width:767px) {
     .main-sidebar {
@@ -1598,6 +1609,7 @@ a:focus,
 }
 .sidebar-menu > li > a > i {
     display: block;
+	margin-bottom: 3px;
 }
 .sidebar-menu > li .label,
 .sidebar-menu > li .badge {
@@ -1626,54 +1638,59 @@ a:focus,
     position:relative;
 }
 
+
+.content {
+	position: relative;
+}
 .treeview-menu {
     display:none;
-    padding:0;
+    padding:10px 0 0;
     margin:0;
-    position: absolute;
-    left: 79px;
-    top: 0;
-    z-index: 90;
-    border-bottom-right-radius: 3px;
-    border-top-right-radius: 3px;
-}
-.treeview-menu.tree-2x {
-    width: 320px;
-}
-.treeview-menu.tree-3x {
-    width: 480px;
-}
-.treeview-menu .treeview-menu {
-    padding-left: 20px
+	width: 160px;
+	position: absolute;
+	left: 0;
+	top: 0px;
+	height: 100%;
+	background-color: #ffffff;
 }
 .treeview-menu >  ul.subtree {
-    margin: 10px auto 20px;
+    margin: 0px auto;
     padding: 0;
-    float: left;
-    width: 160px;
     list-style:none;
     text-align: left;
-}
-.treeview-menu > ul > li {
-    margin: 0 0 0 25px;
-    padding: 10px 5px;
 }
 .treeview-menu > ul > li.header {
     color: #c9ccce;
     text-align: left;
-    font-size: 16px;
+    font-size: 14px;
+	padding: 10px 5px 10px 0px;
+	margin: 0 0 0 20px;
 }
 .treeview-menu > ul > li > a {
-    display: inline-block;
-    font-size: 14px
+    display: block;
+    font-size: 14px;
+	padding: 10px 5px 10px 20px;
+	color: #666666;
 }
 .treeview-menu > ul > li > a > i {
     width:20px
 }
+.treeview-menu > ul > li > a:hover,
+.treeview-menu > ul > li > a.active {
+	background-color: #fbfbfb;
+	color: #02a65a;
+}
+.treeview-menu + .main {
+	margin-left: 160px;
+}
 .sidebar-menu > .treeview:hover > .treeview-menu {
     display:block;
+	padding: 10px 20px;
 }
 
+.main {
+	padding: 10px 20px;
+}
 .main .page-header {
     position: relative;
 	margin-top: 5px;

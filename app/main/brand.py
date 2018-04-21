@@ -73,7 +73,7 @@ def show_brands(page=1):
     per_page = request.args.get('per_page', 10, type=int)
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by(Brand.created_at.desc()).paginate(page, per_page)
     return render_template('brands/show_list.html',
-                           sub_menu='brands',
+                           sub_menu='brand',
                            paginated_brands=paginated_brands,
                            **load_common_data())
 
@@ -111,7 +111,7 @@ def create_brand():
     return render_template('brands/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='brands',
+                           sub_menu='brand',
                            paginated_suppliers=paginated_suppliers,
                            **load_common_data())
     
@@ -150,7 +150,7 @@ def edit_brand(id):
     return render_template('brands/create_and_edit.html',
                            form=form,
                            mode=mode,
-                           sub_menu='brands',
+                           sub_menu='brand',
                            brand=brand,
                            paginated_suppliers=paginated_suppliers,
                            **load_common_data())

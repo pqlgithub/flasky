@@ -18,6 +18,7 @@ __all__ = [
     'ProductSku',
     'ProductStock',
     'ProductContent',
+    'ProductDistribution',
     'CustomsDeclaration',
     'Brand',
     'Supplier',
@@ -105,6 +106,12 @@ class Product(db.Model):
     sticked = db.Column(db.Boolean, default=False)
     # 推荐语或优势亮点
     features = db.Column(db.String(100))
+    # 销售总数量
+    sale_count = db.Column(db.Integer, default=0)
+    # 是否为分销商品
+    is_distributed = db.Column(db.Boolean, default=False)
+    # 分销商数量
+    distributer_count = db.Column(db.Integer, default=0)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -287,6 +294,8 @@ class ProductContent(db.Model):
     asset_ids = db.Column(db.String(200))
     content = db.Column(db.Text, nullable=True)
     tags = db.Column(db.String(200), nullable=True)
+    # 分销说明
+    description = db.Column(db.Text, nullable=True)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
@@ -500,6 +509,31 @@ class ProductSku(db.Model):
 
     def __repr__(self):
         return '<ProductSku %r>' % self.serial_no
+
+
+class ProductDistribution(db.Model):
+    """商品分销信息"""
+
+    __tablename__ = 'product_distribution'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product_serial_no = db.Column(db.String(12), index=True, nullable=False)
+
+    product_sku_id = db.Column(db.Integer, db.ForeignKey('product_skus.id'), index=True)
+    sku_serial_no = db.Column(db.String(12), index=True, nullable=False)
+    # 分销价
+    distribute_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    # 建议零售价
+    suggested_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+
+    created_at = db.Column(db.Integer, index=True, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    def __repr__(self):
+        return '<ProductDistribution %r>' % self.id
 
 
 class ProductStock(db.Model):

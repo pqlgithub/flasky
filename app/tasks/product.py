@@ -2,9 +2,8 @@
 from sqlalchemy import text, event
 from sqlalchemy.sql import func
 from flask import current_app
-from app.extensions import fsk_celery
+from app.extensions import fsk_celery, db
 
-from app import db
 from app.models import Product, SearchHistory, ProductSku, Purchase, SupplyStats, ProductStock
 from .conn import session
 
@@ -43,22 +42,21 @@ def sync_product_stock(product_id):
     """同步商品库存数"""
     current_app.logger.warn('Task: sync product[%s] stock' % product_id)
 
+    total_stock = 0
+    skus = ProductSku.query.filter_by(product_id=product_id).all()
+    for sku in skus:
+        current_app.logger.warn('sku: %s, %d' % (sku.serial_no, sku.stock_quantity))
+        total_stock += sku.stock_quantity if sku.stock_quantity else 0
+
     product = session.query(Product).get(product_id)
     if product is None:
         current_app.logger.warn('Task: sync product[%s] stock, not exist!' % product_id)
         return FAIL
 
-    current_app.logger.warn('Task: sync product[%s] stock!' % product.name)
-    total_stock = 0
-    for sku in product.skus:
-        current_app.logger.warn('sku: %s, %d' % (sku.serial_no, sku.stock_quantity))
-        total_stock += sku.stock_quantity if sku.stock_quantity else 0
-
-    current_app.logger.warn('total stock: %d' % total_stock)
+    current_app.logger.warn('Task: sync product stock[%d]!' % total_stock)
 
     # 更新库存
-    if product.total_stock != total_stock:
-        product.total_stock = total_stock
+    product.total_stock = total_stock
 
     session.commit()
 
@@ -93,7 +91,7 @@ def sync_sku_stock(sku_id):
     if product.total_stock != total_stock:
         product.total_stock = total_stock
 
-    session.commit()
+    # db.session.commit()
 
     return SUCCESS
 
