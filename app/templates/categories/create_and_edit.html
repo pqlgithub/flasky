@@ -15,7 +15,7 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{% if mode == 'create' %}
 		{{ _('Add Category') }}
 		{% else %}
@@ -23,14 +23,14 @@
 		{% endif %}
 
 		<span class="pull-right">
-			<button type="submit" form="category-form" class="btn btn-icon btn-success" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+			<button type="submit" form="category-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
 				<i class="fa fa-save"></i>
 			</button>
 			<a href="{{ url_for('main.show_categories') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
 	<form id="category-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

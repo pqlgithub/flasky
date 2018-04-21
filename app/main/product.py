@@ -1264,7 +1264,7 @@ def create_discount_templet():
         return redirect(url_for('main.show_discount_templets'))
 
     mode = 'create'
-    return render_template('products/create_edit_templet.html',
+    return render_template('products/create_eidt_templet.html',
                            sub_menu='price_templet',
                            mode=mode,
                            form=form)
@@ -1297,7 +1297,7 @@ def edit_discount_templet(id):
     form.default_discount.data = discount_templet.default_discount
     form.description.data = discount_templet.description
 
-    return render_template('products/create_edit_templet.html',
+    return render_template('products/create_eidt_templet.html',
                            sub_menu='price_templet',
                            mode=mode,
                            form=form)
