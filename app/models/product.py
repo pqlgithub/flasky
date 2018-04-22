@@ -527,7 +527,8 @@ class ProductDistribution(db.Model):
     # 分销价
     distribute_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
     # 建议零售价
-    suggested_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    suggested_min_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
+    suggested_max_price = db.Column(db.Numeric(precision=10, scale=2), default=0)
 
     created_at = db.Column(db.Integer, index=True, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)

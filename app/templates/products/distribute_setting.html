@@ -1,0 +1,174 @@
+{% extends "layout/base.html" %}
+
+{% block private_js %}
+    {% assets "editor_js" %}
+  		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.upload_file_manager();
+		
+		mixpus.hook_summer_editor();
+		
+		$('.btn-save-continue').click(function () {
+			$('input[name=next_action]').val('continue_save');
+			$('#products-form').submit();
+		});
+		
+		$('input.change-price').change(function () {
+			var rid = $(this).data('rid');
+			var distribute_price = $('input[name=distribute_price_'+ rid +']').val(), suggested_min_price = $('input[name=suggested_min_price_'+ rid +']').val(), suggested_max_price = $('input[name=suggested_max_price_'+ rid +']').val();
+			
+			var profit = [];
+			if (distribute_price && distribute_price > 0) {
+				if (suggested_min_price) {
+					if (suggested_min_price < distribute_price) {
+						return mixpus.show_error_message('最低零售价不能低于分销价格！');
+					}
+					profit.push(suggested_min_price - distribute_price);
+				}
+				if (suggested_max_price) {
+					if (suggested_max_price < suggested_min_price) {
+						return mixpus.show_error_message('最高零售价必须大于最低零售价！');
+					}
+					profit.push(suggested_max_price - distribute_price);
+				}
+			}
+			
+			$('#profit_'+ rid).text(profit.join(' -- ')+'元');
+		});
+	});
+</script>
+{% endblock %}
+
+{% block submenu %}
+	{% include 'products/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<div class="page-header">
+		{{ _('Product') }}{{ _('Distribution Setting') }}
+
+		<span class="pull-right">
+			<button type="submit" form="products-form" class="btn btn-icon btn-warning" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<button type="button" class="btn btn-icon btn-save-continue btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save And Continue') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<a href="{{ url_for('main.show_products') }}" class="pjax btn btn-icon btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</div>
+
+	<form id="products-form" class="form-horizontal" action="" method="post">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="rid" value="{{ product.serial_no }}" >
+		
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="active">
+				<a href="{{ url_for('main.distribute_setting') }}?rid={{ product.serial_no }}">
+					{{ _('Distribution Setting') }}
+				</a>
+			</li>
+		</ul>
+		
+		<div class="tab-content m-t-30">
+			<div class="row">
+				<div class="col-md-9">
+					<p>商品名称：<b>{{ product.name|safe }}</b></p>
+					<div id="distribution-setting" class="active tab-pane fade in" role="tabpanel" aria-labelledby="distribution-tab">
+						
+						<table class="table table-bordered table-striped m-t-20">
+							<thead>
+								<tr>
+									<th class="text-center">{{ _('Image') }}</th>
+									<th>{{ _('Serial No.') }}</th>
+									<th class="text-right">{{ _('Price') }}</th>
+									<th class="text-right">{{ _('Stock Quantity') }}</th>
+									<th>分销价格</th>
+									<th>最低零售价</th>
+									<th>最高零售价</th>
+									<th class="text-right">利润空间</th>
+								</tr>
+							</thead>
+							<tbody id="product-skus-body">
+								{% for sku in product.skus %}
+								<tr id="tr_sku_{{ sku.serial_no }}">
+									<td class="text-center">
+										<img src="{{ sku.cover.view_url }}" width="60px">
+									</td>
+									<td>
+										{{ sku.serial_no }}<br>
+										{% if sku.s_model %}
+										<label class="label label-warning">
+											{{ sku.s_model }}
+										</label>
+										{% endif %}
+										{% if sku.s_color %}
+										<label class="label label-default">
+											{{ sku.s_color }}
+										</label>
+										{% endif %}
+									</td>
+									<td class="text-right">
+				                        {% if sku.sale_price > 0 %}
+				                            <span class="sale-price">{{ sku.sale_price|round(precision=2) }}</span>
+											{% if sku.price %}
+				                            <span class="price">
+												{{ sku.price|round(precision=2) }}
+											</span>
+											{% endif %}
+				                        {% else %}
+											{% if sku.price %}
+				                            <span class="sale-price">{{ sku.price|round(precision=2) }}</span>
+											{% endif %}
+				                        {% endif %}
+									</td>
+									<td class="text-right">
+										{{ sku.stock_quantity }}
+									</td>
+									<td>
+										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['distribute_price'] %}{{ extra_data[sku.serial_no]['distribute_price'] }}{% endif %}" name="distribute_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
+									</td>
+									<td>
+										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_min_price'] %}{{ extra_data[sku.serial_no]['suggested_min_price'] }}{% else %}{{ sku.price }}{% endif %}" name="suggested_min_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
+									</td>
+									<td>
+										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_max_price'] %}{{ extra_data[sku.serial_no]['suggested_max_price'] }}{% endif %}" name="suggested_max_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
+									</td>
+									<td class="text-right">
+										<label class="text-mixpus" id="profit_{{ sku.serial_no }}">{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['profit'] %}{{ extra_data[sku.serial_no]['profit'] }}{% endif %}元</label>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+						
+						<div class="form-group m-t-20">
+							<label class="col-sm-2 control-label">分销说明</label>
+							<div class="col-sm-10">
+								<textarea id="editor" name="description" class="form-control summernote">
+									{{ description }}
+								</textarea>
+							</div>
+						</div>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+
+	</form>
+
+</div>
+{% endblock %}

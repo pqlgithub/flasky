@@ -1685,7 +1685,7 @@ a:focus,
 }
 .treeview-menu > ul > li > a:hover,
 .treeview-menu > ul > li > a.active {
-	background-color: #fbfbfb;
+	background-color: #fafafa;
 	color: #02a65a;
 }
 .treeview-menu > ul > li > a > .badge {

@@ -10,11 +10,10 @@
 					</th>
 					<th class="text-center">{{ _('Image') }}</th>
 					<th>{{ _('Product Info') }}</th>
-					<th>{{ _('Mode/Color') }}</th>
-					<th class="text-center">{{ _('Brand') }}</th>
-					<th class="text-right">{{ _('Cost Price') }}</th>
+					<th class="text-center">{{ _('Category') }}/{{ _('Brand') }}</th>
 					<th class="text-right">{{ _('Sale Price') }} / {{ _('Price') }}</th>
 					<th class="text-right">{{ _('Stock Quantity') }}</th>
+					<th>分销设置</th>
 					<th class="text-right">{{ _('Status') }}</th>
 					<th class="text-right">{{ _('Action') }}</th>
 				</tr>
@@ -38,27 +37,31 @@
 						<br>
 						{{ product.name|safe }}
 					</td>
-					<td>
-						{{ _('sku') }}: {{ product.skus.count() }}<br>
-						<a href="#" rel="popover" data-content="{% for sku in product.skus %}<label class='text-success m-r-10'>{{ sku.serial_no }} <small class='text-warning'>(
-				{% if sku.s_model %}{{ sku.s_model|supress_none }}{% endif %} {% if sku.s_color %}{{ sku.s_color|supress_none }}{% endif %} )</small></label>{% endfor %}" data-original-title="{{ _('Product Sku') }}">{{ _('Show') }}</a>
-					</td>
 					<td class="text-center">
 						{{ product.brand.name }}
 					</td>
 					<td class="text-right">
-						{{ product.cost_price|round(precision=2) }}
-					</td>
-					<td class="text-right">
                         {% if product.sale_price > 0 %}
-                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
-                            <span class="price">{{ product.price|round(precision=2) }}</span>
+                            <span class="sale-price">￥{{ product.sale_price|round(precision=2) }}</span>
+                            <span class="price">￥{{ product.price|round(precision=2) }}</span>
                         {% else %}
-                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
+                            <span class="sale-price">￥{{ product.price|round(precision=2) }}</span>
                         {% endif %}
 					</td>
 					<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
 						{{ product.total_stock|supress_none }}
+					</td>
+					<td>
+						{% for sku in product.skus %}
+						<p>
+							<span class='m-r-10'>{{ sku.serial_no }} </span>
+							<span class='m-r-10'>
+								{% if sku.s_model %}{{ sku.s_model|supress_none }}{% endif %} {% if sku.s_color %}{{ sku.s_color|supress_none }}{% endif %} 
+							</span><br>
+							分销价格：<span class="text-success m-r-10">￥23</span>
+							销售价格：<span class="text-success m-r-10">￥28 ~ 38</span>
+						</p>
+						{% endfor %}
 					</td>
 					<td class="text-right">
 						<span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>

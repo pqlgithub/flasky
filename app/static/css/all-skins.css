@@ -1,3 +1,6 @@
+.skin-green-light .text-success {
+	color: #47B972;
+}
 .skin-green-light .main-header .navbar {
     background-color:#ffffff;
 	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);

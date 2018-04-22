@@ -28,6 +28,13 @@
                     <span>{{ _('Store') }}</span>
                 </a>
             </li>
+			
+            <li class="{% if top_menu == 'market' %}active {% endif %} treeview">
+                <a href="{{ url_for('main.show_apps') }}">
+                    <i class="fa fa-shopping-bag fa-2x"></i>
+                    <span>{{ _('Marketing') }}</span>
+                </a>
+            </li>
 
             <li class="{% if top_menu == 'purchases'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_purchases') }}">
@@ -41,13 +48,6 @@
                     <i class="fa fa-truck fa-2x"></i>
                     <span>{{ _('Stock') }}</span>
                 </a>
-             </li>
-			 
-             <li class="{% if top_menu == 'market' %}active {% endif %} treeview">
-                 <a href="{{ url_for('main.show_apps') }}">
-                     <i class="fa fa-shopping-bag fa-2x"></i>
-                     <span>{{ _('Marketing') }}</span>
-                 </a>
              </li>
 
             <li class="{% if top_menu == 'stats' %}active {% endif %} treeview">

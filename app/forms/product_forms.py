@@ -91,7 +91,7 @@ class ProductForm(Form):
     ], coerce=bool, default=False)
     sticked = BooleanField(lazy_gettext('Yes'), default=False)
     description = TextAreaField(lazy_gettext('Description'))
-    features = StringField(lazy_gettext('Recommendation'))
+    features = TextAreaField(lazy_gettext('Recommendation'))
     
     # 详情信息
     tags = StringField(lazy_gettext('Tags'))

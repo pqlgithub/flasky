@@ -9,11 +9,13 @@ import flask_whooshalchemyplus
 from . import main
 from .. import db, uploader
 from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, \
-    Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet
+    Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet, \
+    ProductDistribution
 from app.forms import ProductForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm, \
     DiscountTempletForm, DiscountTempletEditForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
-    custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors, gen_serial_no
+    custom_response, import_product_from_excel, form_errors_list, form_errors_response, flash_errors, gen_serial_no, \
+    correct_decimal
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
 from app.helpers import QiniuStorage, WxaOpen3rd, WxAppError, Fxaim
@@ -336,7 +338,7 @@ def create_product():
 @main.route('/products/<string:rid>/edit', methods=['GET', 'POST'])
 @user_has('admin_product')
 def edit_product(rid):
-    product = Product.query.filter_by(serial_no=rid).first()
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
     if product is None:
         abort(404)
 
@@ -1391,6 +1393,193 @@ def set_discount(id):
                            selected_items=selected_items,
                            categories=categories,
                            brands=brands)
+
+
+@main.route('/products/distribute_list')
+def distribute_product_list():
+    """分销商品列表"""
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    builder = Product.query.filter_by(master_uid=Master.master_uid(), is_distributed=True)
+
+    paginated_result = builder.order_by(Product.created_at.desc()).paginate(page, per_page)
+
+    # 品牌列表
+    paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by(Brand.created_at.asc()).paginate(
+        1, 1000)
+    paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
+
+    return render_template('products/distribute_product_list.html',
+                           sub_menu='distribute',
+                           paginated_products=paginated_result.items,
+                           pagination=paginated_result,
+                           paginated_brands=paginated_brands,
+                           paginated_categories=paginated_categories,
+                           **load_common_data())
+
+
+@main.route('/products/search_distribute', methods=['GET', 'POST'])
+@user_has('admin_product')
+def search_distribute_products():
+    """支持全文索引搜索产品"""
+    page = request.values.get('page', 1, type=int)
+    per_page = request.values.get('per_page', 10, type=int)
+    qk = request.values.get('qk')
+    cate_id = request.values.get('cate_id', type=int)
+    bra_id = request.values.get('bra_id', type=int)
+    sk = request.values.get('sk', type=str, default='ad')
+
+    current_app.logger.debug('qk[%s], sk[%s]' % (qk, sk))
+
+    if cate_id:
+        category = Category.query.get(cate_id)
+        builder = category.products.filter_by(master_uid=Master.master_uid())
+    else:
+        builder = Product.query.filter_by(master_uid=Master.master_uid())
+
+    if bra_id:
+        builder = builder.filter_by(brand_id=bra_id)
+
+    # 筛选分销设置
+    builder = builder.filter_by(is_distributed=True)
+
+    qk = qk.strip()
+    if qk:
+        builder = builder.whoosh_search(qk, like=True)
+
+    products = builder.order_by('%s desc' % SORT_TYPE_CODE[sk]).all()
+
+    # 构造分页
+    total_count = builder.count()
+    if page == 1:
+        start = 0
+    else:
+        start = (page - 1) * per_page
+    end = start + per_page
+
+    current_app.logger.debug('total count [%d], start [%d], per_page [%d]' % (total_count, start, per_page))
+
+    paginated_products = products[start:end]
+
+    pagination = Pagination(query=None, page=page, per_page=per_page, total=total_count, items=None)
+
+    return render_template('products/search_distribute_product.html',
+                           qk=qk,
+                           sk=sk,
+                           cate_id=cate_id,
+                           bra_id=bra_id,
+                           paginated_products=paginated_products,
+                           pagination=pagination)
+
+
+@main.route('/products/distribute_setting', methods=['GET', 'POST'])
+def distribute_setting():
+    """商品分销设置"""
+    rid = request.values.get('rid')
+
+    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
+    if product is None:
+        abort(404)
+
+    if request.method == 'POST':
+        next_action = request.form.get('next_action', 'finish_save')
+        description = request.form.get('description')
+
+        try:
+            for sku in product.skus:
+                distribute_price = request.form.get('distribute_price_%s' % sku.serial_no)
+                suggested_min_price = request.form.get('suggested_min_price_%s' % sku.serial_no)
+                suggested_max_price = request.form.get('suggested_max_price_%s' % sku.serial_no)
+
+                distribute_price = correct_decimal(distribute_price)
+                suggested_min_price = correct_decimal(suggested_min_price)
+                suggested_max_price = correct_decimal(suggested_max_price)
+
+                if not distribute_price or distribute_price <= 0:
+                    flash('分销价格设置有误！', 'danger')
+                    return redirect('%s?rid=%s' % (url_for('.distribute_setting'), rid))
+
+                if suggested_min_price <= 0 or suggested_max_price <= 0 or suggested_max_price < suggested_min_price:
+                    flash('最低零售价或最高零售价设置有误！', 'danger')
+                    return redirect('%s?rid=%s' % (url_for('.distribute_setting'), rid))
+
+                distribution_info = ProductDistribution.query.filter_by(master_uid=Master.master_uid(),
+                                                                        product_id=product.id,
+                                                                        product_sku_id=sku.id).first()
+                if not distribution_info:
+                    distribution_info = ProductDistribution(
+                        master_uid=Master.master_uid(),
+                        product_id=product.id,
+                        product_serial_no=product.serial_no,
+                        product_sku_id=sku.id,
+                        sku_serial_no=sku.serial_no,
+                        distribute_price=distribute_price,
+                        suggested_min_price=suggested_min_price,
+                        suggested_max_price=suggested_max_price
+                    )
+                    db.session.add(distribution_info)
+                else:
+                    distribution_info.distribute_price = distribute_price
+                    distribution_info.suggested_min_price = suggested_min_price
+                    distribution_info.suggested_max_price = suggested_max_price
+
+            # 更新商品分销标识
+            product.is_distributed = True
+
+            # 更新分销说明
+            if description:
+                if product.details:  # 已存在，则更新
+                    product.details.description = description
+                else:
+                    detail = ProductContent(
+                        master_uid=Master.master_uid(),
+                        description=description
+                    )
+                    detail.product = product
+
+                    db.session.add(detail)
+
+            db.session.commit()
+        except Exception as err:
+            current_app.logger.warn('Distribute setting err: %s' % str(err))
+            db.session.rollback()
+            return redirect('%s?rid=%s' % (url_for('.distribute_setting'), rid))
+
+        if next_action == 'continue_save':
+            flash('分销设置完成！', 'success')
+            return redirect(url_for('.distribute_setting', rid=product.serial_no))
+
+        flash('分销设置完成！', 'success')
+
+        return redirect(url_for('.show_products'))
+
+    # 获取sku分销数据
+    distribution_skus = ProductDistribution.query.filter_by(master_uid=Master.master_uid(), product_id=product.id).all()
+    extra_data = {}
+    for extra_sku in distribution_skus:
+        profit = []
+        if extra_sku.suggested_min_price:
+            profit.append(str(extra_sku.suggested_min_price - extra_sku.distribute_price))
+
+        if extra_sku.suggested_max_price:
+            profit.append(str(extra_sku.suggested_max_price - extra_sku.distribute_price))
+
+        extra_data[extra_sku.sku_serial_no] = {
+            'distribute_price': extra_sku.distribute_price,
+            'suggested_min_price': extra_sku.suggested_min_price,
+            'suggested_max_price': extra_sku.suggested_max_price,
+            'profit': ' -- '.join(profit)
+        }
+
+    # 分销说明
+    details = product.details
+    description = details.description if details else ''
+
+    return render_template('products/distribute_setting.html',
+                           product=product,
+                           description=description,
+                           extra_data=extra_data,
+                           **load_common_data())
 
 
 @main.route('/products/download_wxacode', methods=['GET', 'POST'])

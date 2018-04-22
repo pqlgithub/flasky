@@ -7,6 +7,11 @@
          </a>
      </li>
      <li>
+         <a href="{{ url_for('main.distribute_product_list') }}" class="{% if sub_menu == 'distribute'%}active {% endif %}">
+             {{ _('Distribution Products') }}
+         </a>
+     </li>
+     <li>
          <a href="{{ url_for('main.show_product_groups') }}" class="{% if sub_menu == 'product_group'%}active {% endif %}">
              {{ _('Product Group') }}
          </a>
