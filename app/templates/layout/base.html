@@ -53,7 +53,9 @@
 
 	<body class="skin-green-light" style="height: auto; min-height: 100%">
 		<div class="wrapper page__wrap">
-			{% include 'block/main-sidebar.html' %}
+			{% block sidebar %}
+				{% include 'block/main-sidebar.html' %}
+			{% endblock %}
 			
 			{% block content %}
 				<div class="content-wrapper">

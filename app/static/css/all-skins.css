@@ -36,17 +36,6 @@
         background:#249c57;
     }
 }
-.skin-green-light .main-header .logo {
-    background-color: #249c57;
-    color:#fff;
-    border-bottom:0 solid transparent
-}
-.adminlte.skin-green-light .main-header .logo {
-    background-color: #47B972;
-}
-.skin-green-light .main-header .logo:hover {
-    background-color: #008749;
-}
 .skin-green-light .main-header li.user-header {
     background-color:#47B972;
 }

@@ -55,11 +55,11 @@
 	<body class="adminlte skin-green-light">
 		{% block header %}
 		<header class="main-header navbar-fixed-top">
-			<a class="logo" href="{{ url_for('adminlte.admin_index') }}">
-				{{ _('moebeast') }}
-			</a>
 			<nav class="navbar navbar-static-top">
 				<ul class="nav navbar-nav navbar-menu">
+					<li>
+						<img src="{{ url_for('static', filename='img/moebeast-logo-40.png') }}" width="40px" class="m-t-5 m-l-10 m-r-10 m-b-5" />
+					</li>
 					<li {% if top_menu == 'system' %}class="active"{% endif %}>
 						<a href="{{ url_for('adminlte.show_users') }}">{{ _('Users') }}</a>
 					</li>
