@@ -19,7 +19,14 @@
 				    	</a>
 				  	</div>
 				  	<div class="media-body">
-				    	<h4 class="media-heading">{{ product.name }}</h4>
+				    	<h4 class="media-heading">
+							{{ product.name }}
+							{% if is_distributed %}
+							<span class="badge" data-toggle="tooltip" data-original-title="{{ _('Distribution') }}{{ _('Products') }}">
+								<i class="fa fa-star"></i>
+							</span>
+							{% endif %}
+						</h4>
 						<p class="m-t-10">
 					    	<span>零售价：{{ product.price }}</span>
 							{% if product.sale_price > 0 %}
@@ -58,9 +65,19 @@
 							</td>
 							<td>
 								<input type="text" name="sku_price_{{ sku.serial_no }}" class="form-control" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['price'] %}{{ extra_data[sku.serial_no]['price'] }}{% else %}{{ sku.price|supress_none() }}{% endif %}" />
+								{% if is_distributed %}
+								<span class="help-block">
+									可设置范围：￥{{ extra_data[sku.serial_no]['suggested_min_price'] }}~￥{{ extra_data[sku.serial_no]['suggested_max_price'] }}
+								</span>
+								{% endif %}
 							</td>
 							<td>
 								<input type="text" name="sku_sale_price_{{ sku.serial_no }}" class="form-control" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['sale_price'] %}{{ extra_data[sku.serial_no]['sale_price'] }}{% else %}{{ sku.sale_price|supress_none() }}{% endif %}" />
+								{% if is_distributed %}
+								<span class="help-block">
+									可设置范围：￥{{ extra_data[sku.serial_no]['suggested_min_price'] }}~￥{{ extra_data[sku.serial_no]['suggested_max_price'] }}
+								</span>
+								{% endif %}
 							</td>
 						</tr>
 						{% endfor %}

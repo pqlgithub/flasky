@@ -1,0 +1,163 @@
+<div class="table-responsive">
+	<form id="products-form" action="" method="post">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        <input name="check_all" type="checkbox" class="check-all">
+                    </th>
+                    <th class="text-center">{{ _('Image') }}</th>
+                    <th>{{ _('Product Info') }}</th>
+                    <th class="text-right">{{ _('Price') }}</th>
+                    <th class="text-right">{{ _('Total Stock') }}</th>
+                    <th class="text-right">{{ _('Status') }}</th>
+					{% if tab == 'selected' %}
+					<th>分销自定义设置</th>
+					{% endif %}
+                    <th class="text-right">{{ _('Action') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+				{% if tab == 'all' %}
+	                {% for product in paginated_products.items %}
+	                <tr id="product-{{ product.serial_no }}">
+	                    <td class="text-center">
+	                        <input name="selected[]" class="check-one" value="{{ product.serial_no }}" type="checkbox">
+	                    </td>
+	                    <td class="text-center">
+	                        <img src="{{ product.cover.view_url }}" width="60px">
+	                    </td>
+	                    <td>
+	                        <span class="text-mixpus">{{ product.serial_no }}</span>
+	                        <br>
+	                        {{ product.name|safe }}
+	                    </td>
+	                    <td class="text-right">
+	                        {% if product.sale_price > 0 %}
+	                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
+	                            <span class="price">{{ product.price|round(precision=2) }}</span>
+	                        {% else %}
+	                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
+	                        {% endif %}
+							
+	                    </td>
+						<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
+							{{ product.total_stock|supress_none }}
+						</td>
+	                    <td class="text-right">
+	                        <span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
+	                    </td>
+	                    <td class="text-right">
+	                        <a href="{{ url_for('main.ajax_distribute_product') }}" data-rid="{{ product.serial_no }}" class="btn-link btn-select">
+	                            <i class="fa fa-plus"></i> {{ _('Selected') }}
+	                        </a>
+	                    </td>
+	                </tr>
+	                {% endfor %}
+				{% endif %}
+				
+				{% if tab == 'selected' %}
+	                {% for product in distributed_products.items %}
+	                <tr id="product-{{ product.rid }}">
+	                    <td class="text-center">
+	                        <input name="selected[]" class="check-one" value="{{ product.rid }}" type="checkbox">
+	                    </td>
+	                    <td class="text-center">
+	                        <img src="{{ product.cover }}" width="60px">
+	                    </td>
+	                    <td>
+	                        <span class="text-mixpus">{{ product.rid }}</span>
+							{% if product.is_distributed %}
+							<span class="badge" data-toggle="tooltip" data-original-title="{{ _('Distribution') }}{{ _('Products') }}">
+								<i class="fa fa-star"></i>
+							</span>
+							{% endif %}
+	                        <br>
+	                        {{ product.name|safe }}
+							{% if product.is_distributed %}
+								<p class="m-t-10 text-danger">分销成本: ￥{{ product.distribute_price }}起</p>
+							{% endif %}
+	                    </td>
+	                    <td class="text-right">
+	                        {% if product.sale_price > 0 %}
+	                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
+	                            <span class="price">{{ product.price|round(precision=2) }}</span>
+	                        {% else %}
+	                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
+	                        {% endif %}
+	                    </td>
+						<td class="text-right {% if not product.stock_count %} danger{% endif %}{% if product.stock_count and product.stock_count < 5 %} warning{% endif %}">
+							{{ product.stock_count|supress_none(0) }}
+						</td>
+	                    <td class="text-right" id="product-status-{{ product.rid }}">
+							{% if product.status %}
+	                        <span class="indicator success">在售</span>
+							{% else %}
+							<span class="indicator danger">已下架</span>
+							{% endif %}
+	                    </td>
+						<td>
+							{% for extra in product.extra_data %}
+								<div class="extra-data m-b-10">
+									<span>规格/颜色：<span class="text-mixpus">{{ extra.mode }}</span></span>
+			                        <p class="sale-price">
+										{% if extra.sale_price > 0 %}
+										<span class="m-r-10">促销价：{{ extra.sale_price|round(precision=2) }}</span>
+										{% endif %}
+										{% if extra.price > 0 %}
+										<span class="m-r-10">零售价：{{ extra.price|round(precision=2) }}</span>
+										{% endif %}
+										{% if store.is_private_stock %}
+										<span class="text-danger m-r-10">店铺库存：{{ extra.private_stock }}</span>
+										{% endif %}
+									</p>
+								</div>
+							{% endfor %}
+						</td>
+	                    <td class="text-right">
+							<p>
+								{% if product.status %}
+		                        <a href="javascript:;" data-status="0" data-rid="{{ product.rid }}" class="btn-link btn-sale-action">
+		                            下架
+		                        </a>
+								{% else %}
+		                        <a href="javascript:;" data-status="1" data-rid="{{ product.rid }}" class="btn-link btn-sale-action">
+		                            上架
+		                        </a>
+								{% endif %}
+		                        <a href="{{ url_for('main.remove_product_from_store') }}" data-rid="{{ product.rid }}" class="btn-link btn-cancel-select m-l-10">
+		                            <i class="fa fa-remove"></i> {{ _('Delete') }}
+		                        </a>
+							</p>
+							<p>
+		                        <a href="{{ url_for('main.ajax_distribute_price') }}?rid={{ store.serial_no }}&product_rid={{ product.rid }}" class="btn-link ajax-modal" data-modal="distribute-modal">
+		                            更新价格
+		                        </a>
+		                        <a href="{{ url_for('main.ajax_distribute_stock') }}?rid={{ store.serial_no }}&product_rid={{ product.rid }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal">
+		                            配置库存
+		                        </a>
+							</p>
+	                    </td>
+	                </tr>
+	                {% endfor %}
+				{% endif %}
+			</tbody>
+        </table>
+	</form>
+</div>
+
+{% import "block/_macros.html" as macros %}
+
+{% if tab == 'all' %}
+{{ macros.pagination_widget(paginated_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, t=t, status=status, tab=tab) }}
+{% else %}
+{{ macros.pagination_widget(distributed_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, t=t, status=status, tab=tab) }}
+{% endif %}
+
+<script type="text/javascript">
+	$(function () {
+		mixpus.hook_select2();
+		mixpus.hook_per_page_select();
+		hook_page_link();
+	});
+</script>

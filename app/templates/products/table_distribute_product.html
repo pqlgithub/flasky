@@ -10,7 +10,6 @@
 					</th>
 					<th class="text-center">{{ _('Image') }}</th>
 					<th>{{ _('Product Info') }}</th>
-					<th class="text-center">{{ _('Category') }}/{{ _('Brand') }}</th>
 					<th class="text-right">{{ _('Sale Price') }} / {{ _('Price') }}</th>
 					<th class="text-right">{{ _('Stock Quantity') }}</th>
 					<th>分销设置</th>
@@ -36,9 +35,6 @@
                         {% endif %}
 						<br>
 						{{ product.name|safe }}
-					</td>
-					<td class="text-center">
-						{{ product.brand.name }}
 					</td>
 					<td class="text-right">
                         {% if product.sale_price > 0 %}

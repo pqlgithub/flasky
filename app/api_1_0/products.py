@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from flask import request, abort, g, url_for, current_app
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import func
 
 from .. import db
 from . import api
 from .auth import auth
 from .utils import *
 from app.models import Brand, Product, Category, Customer, ProductPacket, ProductSku, Asset, Store, StoreProduct, \
-    StoreDistributeProduct
+    StoreDistributeProduct, ProductDistribution
 from app.helpers import MixGenId
 
 
@@ -117,55 +118,71 @@ def get_products_by_store():
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 20, type=int)
     # 默认上架状态
-    status = request.values.get('status', type=bool)
+    status = request.values.get('status', type=int)
+    _type = request.values.get('type', type=int)
 
     current_store = Store.query.filter_by(master_uid=g.master_uid, serial_no=rid).first()
     if current_store is None:
         abort(404)
 
-    products = []
-    # 部分授权
-    if current_store.distribute_mode == 2:
-        # 多对多关联查询
-        if cid:
-            builder = db.session.query(Product).filter(Product.master_uid == g.master_uid)
-            # 店铺
-            builder = builder.join(StoreProduct, StoreProduct.store_id == current_store.id)
-            # 分类
-            builder = builder.join(Category, Product.categories).filter(Category.id == cid)
+    # 多对多关联查询
+    builder = db.session.query(Product, StoreProduct).select_from(Product, StoreProduct)
+    # 上架 或 下架 状态
+    if status == 1:
+        builder = builder.filter(StoreProduct.status == 1)
+    elif status == -1:
+        builder = builder.filter(StoreProduct.status == 0)
+    else:
+        pass
 
-            pagination = builder.order_by(StoreProduct.id.desc()).paginate(page, per_page, error_out=False)
-            products = [product.to_json() for product in pagination.items]
-        else:
-            builder = StoreProduct.query.filter_by(master_uid=g.master_uid, store_id=current_store.id)
+    if _type == 2:
+        builder = builder.filter(StoreProduct.is_distributed == 1)
+    elif _type == 1:
+        builder = builder.filter(StoreProduct.is_distributed == 0)
+    else:
+        pass
 
-            pagination = builder.order_by(StoreProduct.id.desc()).paginate(page, per_page, error_out=False)
-            for item in pagination.items:
-                product = Product.query.get(item.product_id)
-                if product:
-                    products.append(product.to_json())
-    else:  # 全品模式
-        if cid:
-            category = Category.query.get(cid)
-            if category is None or category.master_uid != g.master_uid:
-                abort(404)
-            builder = category.products.filter_by(master_uid=g.master_uid)
-        else:
-            builder = Product.query.filter_by(master_uid=g.master_uid)
+    builder = builder.filter(StoreProduct.product_id == Product.id) \
+        .filter(StoreProduct.master_uid == g.master_uid).filter(StoreProduct.store_id == current_store.id)
 
-        # 上架 或 下架 状态
-        if status:
-            builder = builder.filter_by(status=status)
+    # 分类
+    if cid:
+        builder = builder.join(Category, Product.categories).filter(Category.id == cid)
 
-        pagination = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
+    distributed_products = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
 
-        products = [product.to_json() for product in pagination.items]
+    # 重组商品数据
+    selected_products = []
+    for item in distributed_products.items:
+        extra_skus = StoreDistributeProduct.query.filter_by(
+            master_uid=g.master_uid, store_id=current_store.id, product_id=item[0].id) \
+            .order_by(StoreDistributeProduct.price.asc()).all()
+
+        filter_fields = ['cost_price']
+        product = item[0].to_json(filter_fields=filter_fields)
+        if extra_skus:
+            price_list = []
+            sale_price_list = []
+            for extra_sku in extra_skus:
+                price_list.append(extra_sku.price)
+                sale_price_list.append(extra_sku.sale_price)
+
+            product['price'] = min(price_list)
+            product['sale_price'] = min(sale_price_list)
+
+        # 是否为分销商品
+        if item[1].is_distributed:
+            product_distribution = ProductDistribution.query.filter_by(product_id=item[0].id)\
+                .order_by(ProductDistribution.distribute_price.asc()).first()
+            product['distribute_price'] = product_distribution.distribute_price if product_distribution else 0
+        print(item[1].to_json())
+        selected_products.append(dict(product, **item[1].to_json()))
 
     return full_response(R200_OK, {
-        'products': products,
-        'prev': pagination.has_prev,
-        'next': pagination.has_next,
-        'count': pagination.total
+        'products': selected_products,
+        'prev': distributed_products.has_prev,
+        'next': distributed_products.has_next,
+        'count': distributed_products.total
     })
 
 
@@ -290,39 +307,64 @@ def get_product_detail(rid):
     return full_response(R200_OK, product_details)
 
 
-@api.route('/products/skus')
-def get_product_skus():
+def _find_product_skus(product, store_rid):
     """获取商品的Skus"""
-    rid = request.values.get('rid')
-    store_rid = request.values.get('store_rid')
-    if not rid:
-        abort(404)
-
-    rids = rid.split(',')
-    is_one = True if len(rids) == 1 else False
-
-    builder = Product.query.filter_by(master_uid=g.master_uid)
-    if is_one:
-        products = builder.filter_by(serial_no=rids[0]).all()
-    else:
-        products = builder.filter(Product.serial_no.in_(rids)).all()
-
-    if products is None:
-        abort(404)
-
+    modes = []
+    colors = []
+    items = []
     # 检测店铺是否有私有设置
-    distribute_mode = 1
     if store_rid:
-        current_store = Store.query.filter_by(master_uid=g.master_uid, serial_no=store_rid).first()
-        if current_store and current_store.distribute_mode == 2:
-            distribute_mode = current_store.distribute_mode
+        # 验证是否存在此店铺
+        current_store = Store.query.filter_by(master_uid=g.master_uid, serial_no=store_rid).first_or_404()
 
-    # 重组商品sku
-    more_skus = {}
-    for product in products:
-        modes = []
-        colors = []
-        items = []
+        # 验证商品与店铺关系
+        store_product = StoreProduct.query.filter_by(master_uid=g.master_uid, store_id=current_store.id) \
+            .filter(StoreProduct.product_id == product.id).first_or_404()
+
+        for sku in product.skus:
+            if sku.s_model and sku.s_model not in modes:
+                modes.append(sku.s_model)
+
+            if sku.s_color and sku.s_color not in colors:
+                colors.append(sku.s_color)
+
+            sku_json = {
+                'rid': sku.serial_no,
+                'mode': sku.mode,
+                'product_name': product.name,
+                's_model': sku.s_model,
+                's_color': sku.s_color,
+                'cover': sku.cover.view_url,
+                'price': str(sku.price),
+                'sale_price': str(sku.sale_price),
+                's_weight': str(sku.s_weight),
+                'stock_count': sku.stock_count
+            }
+
+            # 分销商品
+            if store_product.is_distributed:
+                product_distribution = ProductDistribution.query.filter_by(product_id=product.id) \
+                    .with_entities(func.min(ProductDistribution.distribute_price).label('distribute_price')).one()
+                sku_json['distribute_price'] = product_distribution[0] if product_distribution else 0
+
+            # 获取自主分销设置
+            extra_sku = StoreDistributeProduct.query.filter_by(
+                master_uid=g.master_uid, store_id=current_store.id, sku_id=sku.id) \
+                .order_by(StoreDistributeProduct.sku_id.asc()).first()
+
+            if extra_sku:
+                sku_json['price'] = extra_sku.price
+                sku_json['sale_price'] = extra_sku.sale_price
+                # 店铺设置有自主虚拟仓
+                if current_store.is_private_stock:
+                    sku_json['stock_count'] = extra_sku.private_stock
+
+            items.append(sku_json)
+    else:
+        # 验证是否属于自己的商品
+        if product.master_uid != g.master_uid:
+            abort(403)
+
         for sku in product.skus:
             if sku.s_model and sku.s_model not in modes:
                 modes.append(sku.s_model)
@@ -333,16 +375,6 @@ def get_product_skus():
             price = sku.price
             sale_price = sku.sale_price
             stock_count = sku.stock_count
-
-            # 店铺为授权模式时，则获取私有设置
-            if distribute_mode == 2:
-                private_sku = StoreDistributeProduct.query.filter_by(master_uid=g.master_uid, store_id=current_store.id,
-                                                                     sku_serial_no=sku.serial_no).first()
-                if private_sku:
-                    price = private_sku.price if private_sku.price > 0 else price
-                    sale_price = private_sku.sale_price if private_sku.sale_price > 0 else sale_price
-                    # 店铺授权必须为私有库存
-                    stock_count = private_sku.private_stock
 
             items.append({
                 'rid': sku.serial_no,
@@ -357,21 +389,61 @@ def get_product_skus():
                 'stock_count': stock_count
             })
 
-        # 去除重复元素
-        modes = [{'name': m, 'valid': True} for m in modes]
-        colors = [{'name': c, 'valid': True} for c in colors]
-        product_skus = {
-            'modes': modes,
-            'colors': colors,
-            'items': items
-        }
+    modes = [{'name': m, 'valid': True} for m in modes]
+    colors = [{'name': c, 'valid': True} for c in colors]
+    product_skus = {
+        'modes': modes,
+        'colors': colors,
+        'items': items
+    }
 
-        more_skus[product.serial_no] = product_skus
+    return product_skus
+
+
+@api.route('/products/skus')
+def get_product_skus():
+    """获取商品的Skus"""
+    rid = request.values.get('rid')
+    store_rid = request.values.get('store_rid')
+    if not rid:
+        abort(404)
+
+    product = Product.query.filter_by(serial_no=rid).first_or_404()
+
+    product_skus = _find_product_skus(product, store_rid=store_rid)
+    
+    return full_response(R200_OK, product_skus)
+
+
+@api.route('/products/many_skus')
+def get_many_product_skus():
+    """获取商品的Skus"""
+    rid = request.values.get('rid')
+    store_rid = request.values.get('store_rid')
+    if not rid:
+        abort(404)
+
+    rids = rid.split(',')
+    is_one = True if len(rids) == 1 else False
+
+    builder = Product.query
+    if is_one:
+        products = builder.filter_by(serial_no=rids[0]).all()
+    else:
+        products = builder.filter(Product.serial_no.in_(rids)).all()
+
+    if products is None:
+        abort(404)
+
+    # 重组商品sku
+    more_skus = {}
+    for product in products:
+        more_skus[product.serial_no] = _find_product_skus(product, store_rid=store_rid)
 
     # 如果单一则直接返回单个
     if is_one:
         return full_response(R200_OK, more_skus[rid])
-    
+
     return full_response(R200_OK, more_skus)
 
 

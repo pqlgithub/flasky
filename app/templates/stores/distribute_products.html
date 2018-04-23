@@ -5,21 +5,14 @@
 	var submit_filter_form = function () {
 		var data = $('.filter-form').serialize();
 
-		$.post("{{ url_for('main.search_products') }}", data, function (result) {
+		$.post("{{ url_for('main.store_distribute_products') }}", data, function (result) {
 			$('#table-refresh-box').html(result);
 		}, 'html');
+		
 		return false;
 	};
-
-	$(function () {
-		mixpus.init_page_layout();
-
-		mixpus.hook_filter_search(submit_filter_form);
-
-		mixpus.hook_dropdown_menu(submit_filter_form);
-
-		mixpus.hook_per_page_select();
-
+	
+	var hook_page_link = function() {
 		$('a.btn-select').click(function (e) {
 		    e.preventDefault();
 
@@ -47,6 +40,40 @@
 	                }
 	            }, 'json');
 		});
+		
+		$('a.btn-sale-action').click(function (e) {
+		    e.preventDefault();
+			
+			var product_rid = $(this).data('rid'), status = $(this).data('status'), $that = $(this);
+			$.post("{{ url_for('main.ajax_store_product_status') }}",
+	            {'csrf_token': mixpus.csrf_token, 'product_rid': product_rid, 'rid': '{{ store.serial_no }}', 'status': status }, function (result) {
+	                if (result.success) {
+						if (status == 1) {
+							var status_html = '<span class="indicator success">在售</span>';
+							$that.data('status', 0).text('下架');
+						} else {
+							var status_html = '<span class="indicator danger">已下架</span>';
+							$that.data('status', 1).text('上架');
+						}
+						$('#product-status-'+ product_rid).html(status_html);
+	                } else {
+	                    return mixpus.show_error_message(result.status.message);
+	                }
+	            }, 'json');
+		});
+	}
+
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_filter_search(submit_filter_form);
+
+		mixpus.hook_dropdown_menu(submit_filter_form);
+
+		mixpus.hook_per_page_select();
+
+		hook_page_link();
+		
 	});
 </script>
 {% endblock %}
@@ -82,8 +109,10 @@
 		</li>
 	</ul>
 	
-	<form class="form form-inline m-t-20" action="" method="post">
+	<form class="form form-inline filter-form m-t-20" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		<input type="hidden" name="rid" value="{{ store.serial_no }}" >
+		<input type="hidden" name="tab" value="{{ tab }}" >
 
 		<div class="form-group">
 			<input type="text" name="qk" size="60" class="form-control searcher" placeholder="{{ _('Search sku or name...') }}" >
@@ -96,7 +125,7 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-select-menu" data-target="cid" aria-labelledby="filter-cid">
-                    <li class="dropdown-header">{{ _('Search Brand')}}</li>
+                    <li class="dropdown-header">{{ _('Search Category')}}</li>
                     <li class="divider" role="separator"></li>
                     <li>
                         <a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
@@ -111,22 +140,42 @@
         </div>
         <div class="form-group">
             <div class="dropdown">
-                <input type="hidden" name="bid">
-                <button class="btn btn-default dropdown-toggle" id="filter-bid" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    {{ _('Brand') }}: <b>{{ _('All') }}</b>
+                <input type="hidden" name="t">
+                <button class="btn btn-default dropdown-toggle" id="filter-t" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    {{ _('Type') }}: <b>{{ _('All') }}</b>
                     <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-select-menu" data-target="bid" aria-labelledby="filter-bid">
-                    <li class="dropdown-header">{{ _('Search Brand')}}</li>
+                <ul class="dropdown-menu dropdown-select-menu" data-target="t" aria-labelledby="filter-t">
+                    <li class="dropdown-header">{{ _('Search Type')}}</li>
                     <li class="divider" role="separator"></li>
                     <li>
-                        <a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
+                        <a href="javascript:void(0);" data-id="0" class="option">全部商品</a>
                     </li>
-                    {% for r in brands %}
                     <li>
-                        <a href="javascript:void(0);" data-id="{{ r.id }}" class="option">{{ r.name|safe }}</a>
+                        <a href="javascript:void(0);" data-id="1" class="option">自营商品</a>
                     </li>
-                    {% endfor %}
+                    <li>
+                        <a href="javascript:void(0);" data-id="2" class="option">分销商品</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="dropdown">
+                <input type="hidden" name="status">
+                <button class="btn btn-default dropdown-toggle" id="filter-status" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    {{ _('Status') }}: <b>{{ _('All') }}</b>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-select-menu" data-target="status" aria-labelledby="filter-status">
+                    <li class="dropdown-header">{{ _('Search Status')}}</li>
+                    <li class="divider" role="separator"></li>
+                    <li>
+                        <a href="javascript:void(0);" data-id="1" class="option">在售</a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-id="-1" class="option">已下架</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -143,12 +192,11 @@
 		                    </th>
 		                    <th class="text-center">{{ _('Image') }}</th>
 		                    <th>{{ _('Product Info') }}</th>
-		                    <th>{{ _('Category') }}/{{ _('Brand') }}</th>
 		                    <th class="text-right">{{ _('Price') }}</th>
 		                    <th class="text-right">{{ _('Total Stock') }}</th>
 		                    <th class="text-right">{{ _('Status') }}</th>
 							{% if tab == 'selected' %}
-							<th>扩展数据</th>
+							<th>分销自定义设置</th>
 							{% endif %}
 		                    <th class="text-right">{{ _('Action') }}</th>
 		                </tr>
@@ -168,13 +216,6 @@
 			                        <br>
 			                        {{ product.name|safe }}
 			                    </td>
-			                    <td>
-			                        {% for c in product.categories %}
-			                        <span>{{ c.name }}</span>{% if not loop.last %},{% endif %}
-			                        {% endfor %}
-									<br>
-									{{ product.brand.name }}
-			                    </td>
 			                    <td class="text-right">
 			                        {% if product.sale_price > 0 %}
 			                            <span class="sale-price">{{ product.sale_price|round(precision=2) }}</span>
@@ -182,6 +223,7 @@
 			                        {% else %}
 			                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
 			                        {% endif %}
+									
 			                    </td>
 								<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
 									{{ product.total_stock|supress_none }}
@@ -200,24 +242,25 @@
 						
 						{% if tab == 'selected' %}
 			                {% for product in distributed_products.items %}
-			                <tr id="product-{{ product.serial_no }}">
+			                <tr id="product-{{ product.rid }}">
 			                    <td class="text-center">
-			                        <input name="selected[]" class="check-one" value="{{ product.serial_no }}" type="checkbox">
+			                        <input name="selected[]" class="check-one" value="{{ product.rid }}" type="checkbox">
 			                    </td>
 			                    <td class="text-center">
-			                        <img src="{{ product.cover.view_url }}" width="60px">
+			                        <img src="{{ product.cover }}" width="60px">
 			                    </td>
 			                    <td>
-			                        <span class="text-mixpus">{{ product.serial_no }}</span>
+			                        <span class="text-mixpus">{{ product.rid }}</span>
+									{% if product.is_distributed %}
+									<span class="badge" data-toggle="tooltip" data-original-title="{{ _('Distribution') }}{{ _('Products') }}">
+										<i class="fa fa-star"></i>
+									</span>
+									{% endif %}
 			                        <br>
 			                        {{ product.name|safe }}
-			                    </td>
-			                    <td>
-			                        {% for c in product.categories %}
-			                        <span>{{ c.name }}</span>{% if not loop.last %},{% endif %}
-			                        {% endfor %}
-									<br>
-									{{ product.brand.name }}
+									{% if product.is_distributed %}
+										<p class="m-t-10 text-danger">分销成本: ￥{{ product.distribute_price }}起</p>
+									{% endif %}
 			                    </td>
 			                    <td class="text-right">
 			                        {% if product.sale_price > 0 %}
@@ -227,11 +270,15 @@
 			                            <span class="sale-price">{{ product.price|round(precision=2) }}</span>
 			                        {% endif %}
 			                    </td>
-								<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
-									{{ product.total_stock|supress_none(0) }}
+								<td class="text-right {% if not product.stock_count %} danger{% endif %}{% if product.stock_count and product.stock_count < 5 %} warning{% endif %}">
+									{{ product.stock_count|supress_none(0) }}
 								</td>
-			                    <td class="text-right">
-			                        <span class="indicator {{ product.status_label[2] }}">{{ product.status_label[1] }}</span>
+			                    <td class="text-right" id="product-status-{{ product.rid }}">
+									{% if product.status %}
+			                        <span class="indicator success">在售</span>
+									{% else %}
+									<span class="indicator danger">已下架</span>
+									{% endif %}
 			                    </td>
 								<td>
 									{% for extra in product.extra_data %}
@@ -253,15 +300,24 @@
 								</td>
 			                    <td class="text-right">
 									<p>
-				                        <a href="{{ url_for('main.remove_product_from_store') }}" data-rid="{{ product.serial_no }}" class="btn-link btn-cancel-select">
-				                            <i class="fa fa-remove"></i> {{ _('Cancel Selected') }}
+										{% if product.status %}
+				                        <a href="javascript:;" data-status="0" data-rid="{{ product.rid }}" class="btn-link btn-sale-action">
+				                            下架
+				                        </a>
+										{% else %}
+				                        <a href="javascript:;" data-status="1" data-rid="{{ product.rid }}" class="btn-link btn-sale-action">
+				                            上架
+				                        </a>
+										{% endif %}
+				                        <a href="{{ url_for('main.remove_product_from_store') }}" data-rid="{{ product.rid }}" class="btn-link btn-cancel-select m-l-10">
+				                            <i class="fa fa-remove"></i> {{ _('Delete') }}
 				                        </a>
 									</p>
 									<p>
-				                        <a href="{{ url_for('main.ajax_distribute_price') }}?rid={{ store.serial_no}}&product_rid={{ product.serial_no }}" class="btn-link ajax-modal" data-modal="distribute-modal">
+				                        <a href="{{ url_for('main.ajax_distribute_price') }}?rid={{ store.serial_no }}&product_rid={{ product.rid }}" class="btn-link ajax-modal" data-modal="distribute-modal">
 				                            更新价格
 				                        </a>
-				                        <a href="{{ url_for('main.ajax_distribute_stock') }}?rid={{ store.serial_no}}&product_rid={{ product.serial_no }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal">
+				                        <a href="{{ url_for('main.ajax_distribute_stock') }}?rid={{ store.serial_no }}&product_rid={{ product.rid }}" class="btn-link ajax-modal m-l-10" data-modal="distribute-modal">
 				                            配置库存
 				                        </a>
 									</p>
@@ -277,9 +333,9 @@
 		{% import "block/_macros.html" as macros %}
 		
 		{% if tab == 'all' %}
-		{{ macros.pagination_widget(paginated_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, tab=tab) }}
+		{{ macros.pagination_widget(paginated_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, t=t, status=status, tab=tab) }}
 		{% else %}
-		{{ macros.pagination_widget(distributed_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, tab=tab) }}
+		{{ macros.pagination_widget(distributed_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, t=t, status=status, tab=tab) }}
 		{% endif %}
 	</div>
 	

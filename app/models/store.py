@@ -159,6 +159,17 @@ class StoreProduct(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     # 是否为分销商品
     is_distributed = db.Column(db.Boolean, default=False)
+    # 上架 或 下架 状态
+    status = db.Column(db.Boolean, default=False)
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'store_id': self.store_id,
+            'is_distributed': self.is_distributed,
+            'status': self.status
+        }
+        return json_obj
 
     def __repr__(self):
         return '<StoreProduct {}>'.format(self.id)

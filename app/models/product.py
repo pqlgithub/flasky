@@ -263,7 +263,7 @@ class Product(db.Model):
                 if not partial_update:
                     abort(400)
     
-    def to_json(self):
+    def to_json(self, filter_fields=[]):
         """资源和JSON的序列化转换"""
         json_product = {
             'rid': self.serial_no,
@@ -279,92 +279,19 @@ class Product(db.Model):
             's_weight': self.s_weight,
             's_length': self.s_length,
             's_width': self.s_width,
-            's_height': self.s_height
+            's_height': self.s_height,
+            'stock_count': self.stock_count
         }
+
+        # 过滤数据
+        if filter_fields:
+            json_product = FxFilter.product_data(json_product, filter_fields)
+
         return json_product
 
     def __repr__(self):
         return '<Product %r>' % self.name
 
-
-class ProductContent(db.Model):
-    """产品内容详情"""
-    
-    __tablename__ = 'product_contents'
-
-    id = db.Column(db.Integer, primary_key=True)
-    master_uid = db.Column(db.Integer, index=True, default=0)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
-
-    # 附件图片列表，多个图片逗号隔开
-    asset_ids = db.Column(db.String(200))
-    content = db.Column(db.Text, nullable=True)
-    tags = db.Column(db.String(200), nullable=True)
-    # 分销说明
-    description = db.Column(db.Text, nullable=True)
-
-    created_at = db.Column(db.Integer, index=True, default=timestamp)
-    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
-
-    @property
-    def images(self):
-        imgs = []
-        if not self.asset_ids:
-            return imgs
-
-        asset_ids = self.asset_ids.split(',')
-        assets = Asset.query.filter(Asset.id.in_(asset_ids)).all()
-
-        return [asset.to_json() for asset in assets]
-
-    @property
-    def split_content(self):
-        """将移动应用拆分内容为列表"""
-        content_list = []
-        if not self.content:
-            return content_list
-        rex = re.compile('\W+')  # 匹配任意不是字母，数字，下划线，汉字的字符
-        html = BeautifulSoup(self.content, 'html.parser')
-        for node in html.select('p'):
-            if type(node) == element.NavigableString:
-                c = rex.sub('', node.string)
-                if c:
-                    content_list.append({
-                        'rid': MixGenId.gen_digits(),
-                        'type': 'text',
-                        'content': c
-                    })
-            else:
-                for child in node.children:
-                    if type(child) == element.NavigableString:
-                        c = rex.sub('', child.string)
-                        if c:
-                            content_list.append({
-                                'rid': MixGenId.gen_digits(),
-                                'type': 'text',
-                                'content': c
-                            })
-                    elif type(child) == element.Tag and child.name == 'img':
-                        content_list.append({
-                            'rid': MixGenId.gen_digits(),
-                            'type': 'image',
-                            'content': child['src']
-                        })
-
-        return content_list
-
-    def to_json(self):
-        """资源和JSON的序列化转换"""
-        json_obj = {
-            'images': self.images,
-            'tags': self.tags,
-            'content': self.split_content
-        }
-        return json_obj
-
-    def __repr__(self):
-        return '<ProductContent {}>'.format(self.product_id)
-    
 
 class ProductSku(db.Model):
     """产品的SKU"""
@@ -515,6 +442,85 @@ class ProductSku(db.Model):
 
     def __repr__(self):
         return '<ProductSku %r>' % self.serial_no
+
+
+class ProductContent(db.Model):
+    """产品内容详情"""
+
+    __tablename__ = 'product_contents'
+
+    id = db.Column(db.Integer, primary_key=True)
+    master_uid = db.Column(db.Integer, index=True, default=0)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+
+    # 附件图片列表，多个图片逗号隔开
+    asset_ids = db.Column(db.String(200))
+    content = db.Column(db.Text, nullable=True)
+    tags = db.Column(db.String(200), nullable=True)
+    # 分销说明
+    description = db.Column(db.Text, nullable=True)
+
+    created_at = db.Column(db.Integer, index=True, default=timestamp)
+    updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @property
+    def images(self):
+        imgs = []
+        if not self.asset_ids:
+            return imgs
+
+        asset_ids = self.asset_ids.split(',')
+        assets = Asset.query.filter(Asset.id.in_(asset_ids)).all()
+
+        return [asset.to_json() for asset in assets]
+
+    @property
+    def split_content(self):
+        """将移动应用拆分内容为列表"""
+        content_list = []
+        if not self.content:
+            return content_list
+        rex = re.compile('\W+')  # 匹配任意不是字母，数字，下划线，汉字的字符
+        html = BeautifulSoup(self.content, 'html.parser')
+        for node in html.select('p'):
+            if type(node) == element.NavigableString:
+                c = rex.sub('', node.string)
+                if c:
+                    content_list.append({
+                        'rid': MixGenId.gen_digits(),
+                        'type': 'text',
+                        'content': c
+                    })
+            else:
+                for child in node.children:
+                    if type(child) == element.NavigableString:
+                        c = rex.sub('', child.string)
+                        if c:
+                            content_list.append({
+                                'rid': MixGenId.gen_digits(),
+                                'type': 'text',
+                                'content': c
+                            })
+                    elif type(child) == element.Tag and child.name == 'img':
+                        content_list.append({
+                            'rid': MixGenId.gen_digits(),
+                            'type': 'image',
+                            'content': child['src']
+                        })
+
+        return content_list
+
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'images': self.images,
+            'tags': self.tags,
+            'content': self.split_content
+        }
+        return json_obj
+
+    def __repr__(self):
+        return '<ProductContent {}>'.format(self.product_id)
 
 
 class ProductDistribution(db.Model):

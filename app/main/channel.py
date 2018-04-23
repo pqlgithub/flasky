@@ -2,11 +2,12 @@
 from flask import g, render_template, redirect, url_for, abort, flash, request, current_app
 from flask_babelex import gettext
 from sqlalchemy.exc import DataError
+from sqlalchemy.sql import func
 from . import main
 from .. import db
 from app.models import Store, Product, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, Brand,\
     ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, \
-    StoreProduct
+    StoreProduct, ProductSku, ProductDistribution
 from app.forms import StoreForm, BannerForm, BannerImageForm
 from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response, \
     correct_decimal, correct_int
@@ -201,21 +202,20 @@ def store_distribute_products():
     rid = request.values.get('rid')
     tab = request.values.get('tab', 'selected')
     cid = request.values.get('cid', type=int)
-    bid = request.values.get('bid', type=int)
+    t = request.values.get('t', type=int)
+    status = request.values.get('status', type=int)
 
-    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
-
-    # 已选择商品
-    distribute_builder = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id)
+    current_store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
 
     # 搜索筛选
-    brands = Brand.query.filter_by(master_uid=Master.master_uid()).all()
     categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
 
     selected_products = []
     selected_product_ids = []
     paginated_products = {}
     if tab == 'all':
+        # 已选择商品
+        distribute_builder = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=current_store.id)
         distributed_products = distribute_builder.all()
         selected_product_ids = [item.id for item in distributed_products]
 
@@ -228,47 +228,95 @@ def store_distribute_products():
         else:
             product_builder = Product.query.filter_by(master_uid=Master.master_uid())
 
-        if bid:
-            product_builder = product_builder.filter_by(brand_id=bid)
+        if status:
+            product_builder = product_builder.filter(Product.status == status)
 
         if selected_product_ids:
             product_builder = product_builder.filter(Product.id.notin_(selected_product_ids))
 
         paginated_products = product_builder.paginate(page, per_page)
     else:
-        distributed_products = distribute_builder.paginate(page, per_page)
+        # 多对多关联查询
+        builder = db.session.query(Product, StoreProduct).select_from(Product, StoreProduct)
+        # 上架 或 下架 状态
+        if status == 1:
+            builder = builder.filter(StoreProduct.status == 1)
+        elif status == -1:
+            builder = builder.filter(StoreProduct.status == 0)
+        else:
+            pass
+
+        if t == 2:
+            builder = builder.filter(StoreProduct.is_distributed == 1)
+        elif t == 1:
+            builder = builder.filter(StoreProduct.is_distributed == 0)
+        else:
+            pass
+
+        builder = builder.filter(StoreProduct.product_id == Product.id) \
+            .filter(StoreProduct.master_uid == Master.master_uid()).filter(StoreProduct.store_id == current_store.id)
+
+        # 分类
+        if cid:
+            builder = builder.join(Category, Product.categories).filter(Category.id == cid)
+
+        distributed_products = builder.order_by(Product.updated_at.desc()).paginate(page, per_page, error_out=False)
+
+        # 重组商品数据
         for item in distributed_products.items:
-            product = Product.query.get(item.product_id)
-            if product is None:
-                continue
-            extra_data = StoreDistributeProduct.query.filter_by(product_id=item.product_id).all()
-            if extra_data:
-                sku_modes = {}
-                for sku in product.skus:
-                    sku_modes[sku.serial_no] = sku.mode
+            extra_skus = StoreDistributeProduct.query.filter_by(
+                master_uid=Master.master_uid(), store_id=current_store.id, product_id=item[0].id)\
+                .order_by(StoreDistributeProduct.sku_id.asc()).all()
 
-                renew_extra_data = []
-                for extra in extra_data:
-                    extra.mode = sku_modes.get(extra.sku_serial_no)
-                    renew_extra_data.append(extra)
+            product = item[0].to_json()
+            if extra_skus:
+                extra_data = []
+                price_list = []
+                sale_price_list = []
+                for extra_sku in extra_skus:
+                    price_list.append(extra_sku.price)
+                    sale_price_list.append(extra_sku.sale_price)
+                    # 获取sku参数
+                    sku = ProductSku.query.get(extra_sku.sku_id)
+                    extra_data.append({
+                        'rid': extra_sku.sku_serial_no,
+                        'mode': sku.mode,
+                        'price': extra_sku.price,
+                        'sale_price': extra_sku.sale_price,
+                        'private_stock': extra_sku.private_stock
+                    })
 
-                product.extra_data = renew_extra_data
-            selected_products.append(product)
+                product['price'] = min(price_list)
+                product['sale_price'] = min(sale_price_list)
+                product['extra_data'] = extra_data
+
+            # 是否为分销商品
+            if item[1].is_distributed:
+                product_distribution = ProductDistribution.query.filter_by(product_id=item[0].id)\
+                    .with_entities(func.min(ProductDistribution.distribute_price).label('distribute_price')).one()
+                product['distribute_price'] = product_distribution[0] if product_distribution else 0
+
+            selected_products.append(dict(product, **item[1].to_json()))
 
         distributed_products.items = selected_products
 
-    return render_template('stores/distribute_products.html',
+    tpl = 'stores/distribute_products.html'
+    if request.method == 'POST':
+        tpl = 'stores/search_distribute_products.html'
+
+    return render_template(tpl,
+                           top_menu='stores',
                            sub_menu='stores',
                            paginated_products=paginated_products,
                            distributed_products=distributed_products,
                            selected_product_ids=selected_product_ids,
                            selected_products=selected_products,
                            categories=categories,
-                           brands=brands,
-                           store=store,
-                           type=store.type,
+                           store=current_store,
+                           type=current_store.type,
+                           status=status,
                            tab=tab,
-                           bid=bid,
+                           t=t,
                            cid=cid)
 
 
@@ -333,10 +381,40 @@ def ajax_distribute_price():
     rid = request.values.get('rid')
     product_rid = request.values.get('product_rid')
 
-    # 验证商品是否存在
-    product = Product.query.filter_by(master_uid=Master.master_uid(), serial_no=product_rid).first_or_404()
-
+    # 验证店铺是否存在
     store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+    # 验证商品是否存在
+    product = Product.query.filter_by(serial_no=product_rid).first_or_404()
+
+    # 商品与店铺关系
+    store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                 product_id=product.id).first()
+    if store_product is None:
+        abort(404)
+
+    if product.master_uid != Master.master_uid() and not store_product.is_distributed:
+        abort(403)
+
+    # 获取sku扩展数据
+    extra_skus = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                        product_id=product.id).all()
+    extra_data = {}
+    for extra_sku in extra_skus:
+        _sku = {
+            'price': extra_sku.price,
+            'sale_price': extra_sku.sale_price
+        }
+        # 分销商品，获取分销设置
+        if store_product.is_distributed:
+            distribute_sku = ProductDistribution.query.filter_by(product_sku_id=extra_sku.sku_id).first_or_404()
+            _sku['distribute_price'] = distribute_sku.distribute_price
+            _sku['suggested_min_price'] = distribute_sku.suggested_min_price
+            _sku['suggested_max_price'] = distribute_sku.suggested_max_price
+
+        extra_data[extra_sku.sku_serial_no] = _sku
+
+    # 更新数据
     if request.method == 'POST':
         for sku in product.skus:
             sku_price = request.form.get('sku_price_%s' % sku.serial_no)
@@ -349,7 +427,17 @@ def ajax_distribute_price():
 
             # 跳过
             if sku_price == 0 and sku_sale_price == 0:
-                continue
+                return custom_response(False, '售价未设置')
+
+            if store_product.is_distributed:
+                if sku_price < extra_data[sku.serial_no]['suggested_min_price'] or \
+                        sku_price > extra_data[sku.serial_no]['suggested_max_price']:
+                    return custom_response(False, '售价设置不能超过分销范围')
+
+                if sku_sale_price > 0:
+                    if sku_sale_price < extra_data[sku.serial_no]['suggested_min_price'] or \
+                            sku_sale_price > extra_data[sku.serial_no]['suggested_max_price']:
+                        return custom_response(False, '促销价设置不能超过分销范围')
 
             distribute_sku = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
                                                                     sku_id=sku.id).first()
@@ -374,19 +462,8 @@ def ajax_distribute_price():
 
         return status_response()
 
-    # 获取sku扩展数据
-    extra_skus = StoreDistributeProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
-                                                        product_id=product.id).all()
-    extra_data = {}
-    for extra_sku in extra_skus:
-        extra_data[extra_sku.sku_serial_no] = {
-            'price': extra_sku.price,
-            'sale_price': extra_sku.sale_price
-        }
-
-    current_app.logger.warn(extra_data)
-
     return render_template('stores/_extra_price_modal.html',
+                           is_distributed=store_product.is_distributed,
                            extra_data=extra_data,
                            product=product,
                            rid=store.serial_no,
@@ -452,6 +529,37 @@ def remove_product_from_store():
         return custom_response(False, '从店铺删除产品失败')
 
     return custom_response(True, gettext("Cancel select is ok!"))
+
+
+@main.route('/stores/product/ajax_update_status', methods=['POST'])
+def ajax_store_product_status():
+    """更新店铺商品的上架或下架状态"""
+    rid = request.values.get('rid')
+    product_rid = request.values.get('product_rid')
+    status = request.values.get('status', type=int)
+
+    store = Store.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first_or_404()
+
+    # 验证商品是否存在
+    product = Product.query.filter_by(serial_no=product_rid).first_or_404()
+    # 不是自营商品，并不是分销商品
+    if product.master_uid != Master.master_uid() and not product.is_distributed:
+        return custom_response(False, '此商品你无权操作')
+
+    store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store.id,
+                                                 product_id=product.id).first()
+
+    if store_product is None:
+        return custom_response(False, '店铺不存在此商品')
+
+    if status == 1:
+        store_product.status = True
+    else:
+        store_product.status = False
+
+    db.session.commit()
+
+    return status_response()
 
 
 @main.route('/stores/<string:rid>/distribute_by_packet', methods=['GET', 'POST'])
