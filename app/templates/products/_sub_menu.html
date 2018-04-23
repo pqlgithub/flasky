@@ -12,11 +12,6 @@
          </a>
      </li>
      <li>
-         <a href="{{ url_for('main.show_product_groups') }}" class="{% if sub_menu == 'product_group'%}active {% endif %}">
-             {{ _('Product Group') }}
-         </a>
-     </li>
-     <li>
          <a href="{{ url_for('main.create_product') }}" class="{% if sub_menu == 'create_product'%}active {% endif %}">
              {{ _('New Product') }}
          </a>
@@ -32,6 +27,11 @@
      <li>
          <a href="{{ url_for('main.show_brands') }}" class="{% if sub_menu == 'brand'%}active {% endif %}">
              {{ _('Brand List') }}
+         </a>
+     </li>
+     <li>
+         <a href="{{ url_for('main.show_product_groups') }}" class="{% if sub_menu == 'product_group'%}active {% endif %}">
+             {{ _('Product Group') }}
          </a>
      </li>
      <li>

@@ -13,8 +13,7 @@ class StoreForm(Form):
     name = StringField(lazy_gettext('Store Name'), validators=[DataRequired(message="Store name can't empty!"), Length(2, 32)])
     platform = SelectField(lazy_gettext('Platform'), choices=[(pf['id'], pf['name']) for pf in SUPPORT_PLATFORM], coerce=int)
     operator_id = SelectField(lazy_gettext('Manager'), choices=[], coerce=int)
-    type = SelectField(lazy_gettext('Type'), choices=[], coerce=int)
-    distribute_mode = RadioField(lazy_gettext('Distribute Products'), choices=[], coerce=int, default=1)
+    type = RadioField(lazy_gettext('Type'), choices=[], coerce=int)
     is_private_stock = BooleanField(lazy_gettext('Set Private Stock'), default=False)
     status = RadioField(lazy_gettext('Status'),
                          choices=[(1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disable'))],

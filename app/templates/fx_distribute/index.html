@@ -1,0 +1,47 @@
+{% extends pjax("layout/base.html") %}
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		{{ _('Distribution') }}广场
+	</div>
+	
+	<div class="distribute-list">
+		<div class="row">
+			<div class="col-md-9">
+				<div class="distribute-list">
+					{% for product in distribute_products %}
+					<div class="col-sm-4 col-md-3">
+						<div class="thumbnail">
+							<img src="{{ product.cover }}" width="220px">
+							<div class="caption">
+								<h3>{{ product.name|safe }}</h3>
+								<p>成本: ￥{{ product.distribute_price }}</p>
+								<p>利润: <span class="text-success">￥{{ product.profit }}</span></p>
+								<p class="text-right">
+									<a href="#" class="btn btn-default" data-toggle="tooltip" data-original-title="预览详情" role="button">
+										<i class="fa fa-qrcode"></i>
+									</a>
+									<a href="{{ url_for('main.fx_distribute_ajax_add') }}?rid={{ product.rid }}" class="btn btn-mixpus ajax-modal" data-modal="distribute-modal"  data-toggle="tooltip" data-original-title="添加分销" role="button">
+										<i class="fa fa-plus"></i>
+									</a>
+								</p>
+				      	  	</div>
+				    	</div>
+				  	</div>
+					{% endfor %}
+				</div>
+				
+			</div>
+			<div class="col-md-3">
+				<div class="distribute-slides">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% import "block/_macros.html" as macros %}
+	{{ macros.pagination_widget(pagination, '.fx_distribute_index', status=status) }}
+</div>
+{% endblock %}

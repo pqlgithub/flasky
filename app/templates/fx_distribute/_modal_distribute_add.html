@@ -1,0 +1,144 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">
+                分销管理
+            </h4>
+		</div>
+		<div class="modal-body">
+			<form class="form" action="" method="post" id="add-distribute-form">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+				<input type="hidden" name="rid" value="{{ product.serial_no }}" >
+				
+				<div class="well">
+					<div class="media">
+					  <div class="media-left">
+					    <a href="#">
+					      <img class="media-object" src="{{ product.cover.view_url }}" width="60px">
+					    </a>
+					  </div>
+					  <div class="media-body">
+					    <h4 class="media-heading">{{ product.name|safe }}</h4>
+					    <b class="text-success">{{ product.distributer_count|supress_none(0) }}</b> 人正在分销
+					  </div>
+					</div>
+				</div>
+				
+                <div class="form-group">
+					<label class="control-label">商品分类</label>
+					<select name="category_id" id="category_id" class="form-control select2">
+						<option value="0">{{ _('Select category...') }}</option>
+						{% for cate in paginated_categories %}
+						<option value="{{ cate.id }}" {% if cate.id in product.category_ids %}selected="selected"{% endif %}>{{ cate.name|safe }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				
+				<div class="form-group">
+					<label class="control-label">设置售价</label>
+					<table class="table table-bordered table-striped m-t-5">
+						<thead>
+							<tr>
+								<th>规格</th>
+								<th class="text-right">{{ _('Stock Quantity') }}</th>
+								<th class="text-right">成本</th>
+								<th class="text-right">建议售价</th>
+								<th>设置售价</th>
+								<th class="text-right">利润</th>
+							</tr>
+						</thead>
+						<tbody id="product-skus-body">
+							{% for sku in product.skus %}
+							<tr id="tr_sku_{{ sku.serial_no }}">
+								<td>
+									{% if sku.s_model %}
+									<label class="label label-warning">
+										{{ sku.s_model }}
+									</label>
+									{% endif %}
+									{% if sku.s_color %}
+									<label class="label label-default">
+										{{ sku.s_color }}
+									</label>
+									{% endif %}
+								</td>
+								<td class="text-right">
+									{{ sku.stock_quantity }}
+								</td>
+								<td class="text-right">
+									￥{{ extra_data[sku.serial_no]['distribute_price'] }}
+									<input type="hidden" name="distribute_price_{{ sku.serial_no }}" value="{{ extra_data[sku.serial_no]['distribute_price'] }}" >
+								</td>
+								<td class="text-right">
+									￥{{ extra_data[sku.serial_no]['suggested_min_price'] }} ~ {{ extra_data[sku.serial_no]['suggested_max_price'] }}
+								</td>
+								<td>
+									<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_min_price'] %}{{ extra_data[sku.serial_no]['suggested_min_price'] }}{% else %}{{ sku.price }}{% endif %}" name="price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" data-min="{{ extra_data[sku.serial_no]['suggested_min_price'] }}" data-max="{{ extra_data[sku.serial_no]['suggested_max_price'] }}" />
+								</td>
+								<td class="text-right">
+									<label class="text-mixpus" id="profit_{{ sku.serial_no }}">{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['profit'] %}￥{{ extra_data[sku.serial_no]['profit'] }}{% endif %}</label>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Close') }}</button>
+			<button type="button" id="add-submit-btn" class="btn btn-mixpus">上架到我的小程序</button>
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script type="text/javascript">
+	mixpus.hook_select2();
+	
+	$('input.change-price').bind('blur', function (e){
+		var price = parseFloat($(this).val()), rid = $(this).data('rid'), 
+		max_price = parseFloat($(this).data('max')),
+		min_price = parseFloat($(this).data('min')),
+		distribute_price = parseFloat($('input[name=distribute_price_'+ rid +']').val());
+		
+		if (price > max_price) {
+			return mixpus.show_error_message('售价不能超过￥'+ max_price);
+		}
+		if (price < min_price) {
+			return mixpus.show_error_message('售价不能低于￥'+ min_price);
+		}
+		
+		$('#profit_' + rid).text('￥' + (price - distribute_price).toFixed(2));
+		
+		return true;
+	});
+	
+	$('#add-submit-btn').click(function (e) {
+		var $form=$('#add-distribute-form'), data = $form.serialize(), $btn=$('#add-submit-btn');
+		
+		$.ajax({
+			url: "{{ url_for('main.fx_distribute_ajax_add') }}",
+			type: 'post',
+			data: data,
+			dataType: 'json',
+			beforeSend: function () {
+				$btn.prop('disabled', true);
+			},
+			complete: function() {
+				$btn.prop('disabled', false);
+			},
+			success: function (result) {
+				if (result.success) {
+					$('#distribute-modal').modal('hide');
+					return mixpus.show_ok_message('分销设置成功!');
+				} else {
+					$form.prepend(mixpus.display_alert(result.status.message))
+				}
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+</script>

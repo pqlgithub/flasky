@@ -5,7 +5,7 @@ from sqlalchemy.exc import DataError
 from . import main
 from .. import db
 from app.models import Store, Product, User, UserIdType, STORE_TYPE, Banner, BannerImage, LINK_TYPES, Brand,\
-    ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, STORE_MODES, \
+    ProductPacket, DiscountTemplet, StoreDistributeProduct, StoreDistributePacket, Category, Warehouse, \
     StoreProduct
 from app.forms import StoreForm, BannerForm, BannerImageForm
 from ..utils import custom_status, R200_OK, R201_CREATED, Master, status_response, R400_BADREQUEST, custom_response, \
@@ -28,17 +28,17 @@ def load_common_data():
 def show_stores():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
-    platform = request.args.get('platform', type=int)
+    _type = request.args.get('type', type=int)
 
     builder = Store.query.filter_by(master_uid=Master.master_uid())
-    if platform:
-        builder = builder.filter_by(platform=platform)
+    if _type:
+        builder = builder.filter_by(type=_type)
 
     paginated_stores = builder.order_by(Store.id.asc()).paginate(page, per_page)
     
     return render_template('stores/show_list.html',
                            sub_menu='stores',
-                           platform=platform,
+                           type=_type,
                            paginated_stores=paginated_stores,
                            **load_common_data())
 
@@ -48,7 +48,6 @@ def show_stores():
 def create_store():
     form = StoreForm()
     form.type.choices = STORE_TYPE
-    form.distribute_mode.choices = STORE_MODES
 
     # 设置关联负责人
     user_choices = []
@@ -76,7 +75,6 @@ def create_store():
                 operator_id=form.operator_id.data,
                 type=form.type.data,
                 description=form.description.data,
-                distribute_mode=form.distribute_mode.data,
                 is_private_stock=form.is_private_stock.data,
                 status=form.status.data
             )
@@ -118,7 +116,6 @@ def edit_store(id):
     
     form = StoreForm()
     form.type.choices = STORE_TYPE
-    form.distribute_mode.choices = STORE_MODES
 
     # 设置关联负责人
     user_choices = []
@@ -165,7 +162,6 @@ def edit_store(id):
     form.operator_id.data = store.operator_id
     form.type.data = store.type
     form.description.data = store.description
-    form.distribute_mode.data = store.distribute_mode
     form.is_private_stock.data = store.is_private_stock
     form.status.data = store.status
 
@@ -203,7 +199,7 @@ def store_distribute_products():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 50, type=int)
     rid = request.values.get('rid')
-    _type = request.values.get('type', 'selected')
+    tab = request.values.get('tab', 'selected')
     cid = request.values.get('cid', type=int)
     bid = request.values.get('bid', type=int)
 
@@ -219,7 +215,7 @@ def store_distribute_products():
     selected_products = []
     selected_product_ids = []
     paginated_products = {}
-    if _type == 'all':
+    if tab == 'all':
         distributed_products = distribute_builder.all()
         selected_product_ids = [item.id for item in distributed_products]
 
@@ -262,6 +258,7 @@ def store_distribute_products():
         distributed_products.items = selected_products
 
     return render_template('stores/distribute_products.html',
+                           sub_menu='stores',
                            paginated_products=paginated_products,
                            distributed_products=distributed_products,
                            selected_product_ids=selected_product_ids,
@@ -269,7 +266,8 @@ def store_distribute_products():
                            categories=categories,
                            brands=brands,
                            store=store,
-                           type=_type,
+                           type=store.type,
+                           tab=tab,
                            bid=bid,
                            cid=cid)
 

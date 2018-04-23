@@ -58,8 +58,8 @@
 							<span class='m-r-10'>
 								{% if sku.s_model %}{{ sku.s_model|supress_none }}{% endif %} {% if sku.s_color %}{{ sku.s_color|supress_none }}{% endif %} 
 							</span><br>
-							分销价格：<span class="text-success m-r-10">￥23</span>
-							销售价格：<span class="text-success m-r-10">￥28 ~ 38</span>
+							分销价格：<span class="text-success m-r-10">{% if extra_data[sku.serial_no] and  extra_data[sku.serial_no]['distribute_price'] %}￥{{ extra_data[sku.serial_no]['distribute_price'] }}{% endif %}</span>
+							销售价格：<span class="text-success m-r-10">{% if extra_data[sku.serial_no] and  extra_data[sku.serial_no]['suggested_min_price'] %}￥{{ extra_data[sku.serial_no]['suggested_min_price'] }}{% endif %}~{% if extra_data[sku.serial_no] and  extra_data[sku.serial_no]['suggested_max_price'] %}￥{{ extra_data[sku.serial_no]['suggested_max_price'] }}{% endif %}</span>
 						</p>
 						{% endfor %}
 					</td>
@@ -71,13 +71,9 @@
 							<a href="{{ url_for('main.distribute_setting') }}?rid={{ product.serial_no }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Distribution Setting') }}">
 								{{ _('Distribution Setting') }}
 							</a>
-							
-							<a href="{{ url_for('main.edit_product', rid=product.serial_no) }}" class="m-l-10 btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-								{{ _('Edit') }}
-							</a>
 						<p>
 						<p>
-							<a href="{{ url_for('main.download_wxacode') }}?rid={{ product.serial_no }}" class="btn-link ajax-modal" data-modal="download-modal">下载小程序码</a> 
+							<a href="{{ url_for('main.download_wxacode') }}?rid={{ product.serial_no }}" class="btn-link ajax-modal" data-modal="download-modal">小程序码</a> 
 							<a href="{{ url_for('main.make_adv_poster') }}?rid={{ product.serial_no }}" class="btn-link m-l-10 ajax-modal" data-modal="maker-modal">推广图</a>
 						</p>
 					</td>

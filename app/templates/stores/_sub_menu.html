@@ -2,12 +2,12 @@
     <ul class="subtree">
         <li class="header">{{ _('Store Manage') }}</li>
         <li>
-            <a href="{{ url_for('main.show_stores') }}" class="{% if sub_menu == 'stores' and platform != 1  %}active{% endif %}">
+            <a href="{{ url_for('main.show_stores') }}" class="{% if sub_menu == 'stores' and type != 3  %}active{% endif %}">
                 {{ _('All Stores') }}
             </a>
         </li>
         <li>
-            <a href="{{ url_for('main.show_stores') }}?platform=1" class="{% if platform == 1 or sub_menu == 'wxapp' %}active{% endif %}">
+            <a href="{{ url_for('main.show_stores') }}?type=3" class="{% if type == 3 or sub_menu == 'wxapp' %}active{% endif %}">
                 {{ _('Wx App') }}
             </a>
         </li>

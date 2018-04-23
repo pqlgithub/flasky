@@ -51,6 +51,10 @@
 </script>
 {% endblock %}
 
+{% block submenu %}
+	{% include 'stores/_sub_menu.html' %}
+{% endblock %}
+
 {% block mainbar %}
 <div class="form-page">
 	<div class="page-header">
@@ -66,13 +70,13 @@
 	</div>
 	
 	<ul class="nav nav-tabs">
-		<li {% if type == 'selected' %}class="active"{% endif %}>
+		<li {% if tab == 'selected' %}class="active"{% endif %}>
 			<a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" aria-controls="selected" aria-expanded="true">
 				已选定
 			</a>
 		</li>
-		<li {% if type == 'all' %}class="active"{% endif %}>
-			<a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}&type=all" aria-controls="all-products">
+		<li {% if tab == 'all' %}class="active"{% endif %}>
+			<a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}&tab=all" aria-controls="all-products">
 				全部商品
 			</a>
 		</li>
@@ -139,19 +143,18 @@
 		                    </th>
 		                    <th class="text-center">{{ _('Image') }}</th>
 		                    <th>{{ _('Product Info') }}</th>
-		                    <th>{{ _('Category') }}</th>
-		                    <th>{{ _('Brand') }}</th>
+		                    <th>{{ _('Category') }}/{{ _('Brand') }}</th>
 		                    <th class="text-right">{{ _('Price') }}</th>
 		                    <th class="text-right">{{ _('Total Stock') }}</th>
 		                    <th class="text-right">{{ _('Status') }}</th>
-							{% if type == 'selected' %}
+							{% if tab == 'selected' %}
 							<th>扩展数据</th>
 							{% endif %}
 		                    <th class="text-right">{{ _('Action') }}</th>
 		                </tr>
 	                </thead>
 	                <tbody>
-						{% if type == 'all' %}
+						{% if tab == 'all' %}
 			                {% for product in paginated_products.items %}
 			                <tr id="product-{{ product.serial_no }}">
 			                    <td class="text-center">
@@ -169,9 +172,8 @@
 			                        {% for c in product.categories %}
 			                        <span>{{ c.name }}</span>{% if not loop.last %},{% endif %}
 			                        {% endfor %}
-			                    </td>
-			                    <td>
-			                        {{ product.brand.name }}
+									<br>
+									{{ product.brand.name }}
 			                    </td>
 			                    <td class="text-right">
 			                        {% if product.sale_price > 0 %}
@@ -196,7 +198,7 @@
 			                {% endfor %}
 						{% endif %}
 						
-						{% if type == 'selected' %}
+						{% if tab == 'selected' %}
 			                {% for product in distributed_products.items %}
 			                <tr id="product-{{ product.serial_no }}">
 			                    <td class="text-center">
@@ -214,9 +216,8 @@
 			                        {% for c in product.categories %}
 			                        <span>{{ c.name }}</span>{% if not loop.last %},{% endif %}
 			                        {% endfor %}
-			                    </td>
-			                    <td>
-			                        {{ product.brand.name }}
+									<br>
+									{{ product.brand.name }}
 			                    </td>
 			                    <td class="text-right">
 			                        {% if product.sale_price > 0 %}
@@ -243,7 +244,9 @@
 												{% if extra.price > 0 %}
 												<span class="m-r-10">零售价：{{ extra.price|round(precision=2) }}</span>
 												{% endif %}
+												{% if store.is_private_stock %}
 												<span class="text-danger m-r-10">店铺库存：{{ extra.private_stock }}</span>
+												{% endif %}
 											</p>
 										</div>
 									{% endfor %}
@@ -273,10 +276,10 @@
 		
 		{% import "block/_macros.html" as macros %}
 		
-		{% if type == 'all' %}
-		{{ macros.pagination_widget(paginated_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, type=type) }}
+		{% if tab == 'all' %}
+		{{ macros.pagination_widget(paginated_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, tab=tab) }}
 		{% else %}
-		{{ macros.pagination_widget(distributed_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, type=type) }}
+		{{ macros.pagination_widget(distributed_products, '.store_distribute_products', rid=store.serial_no, cid=cid, qk=qk, bid=bid, tab=tab) }}
 		{% endif %}
 	</div>
 	

@@ -49,9 +49,8 @@
 					</th>
 					<th>{{ _('Platform') }}</th>
 					<th>{{ _('Store Name') }}</th>
-					<th>店铺编号</th>
+					<th>编号</th>
 					<th class="text-center">{{ _('Type') }}</th>
-					<th class="text-center">{{ _('Distribute Products') }}</th>
 					<th class="text-center">{{ _('Manager') }}</th>
 					<th class="text-right">开通时间</th>
 					<th class="text-right">{{ _('Status') }}</th>
@@ -77,9 +76,6 @@
 						{{ store.type_label[1] }}
 					</td>
 					<td class="text-center">
-						{{ store.mode_label[1] }}
-					</td>
-					<td class="text-center">
 						{{ store.operator.username }}
 					</td>
 					<td class="text-right">
@@ -88,11 +84,14 @@
 					<td class="text-right">
 						<span class="indicator {{ store.status_label[2] }}">{{ store.status_label[1] }}</span>
 					</td>
-					{% if store.platform == 1 %}
+					{% if store.type == 3 %}
 						<td class="text-right">
 							{% if store.wxapp %}
 							<p>
-			                    <a href="{{ url_for('main.show_orders') }}?store_id={{ store.id }}" class="btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+			                    <a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="{{ _('Store') }}{{ _('Products') }}">
+			                        {{ _('Store') }}{{ _('Products') }}
+			                    </a>
+			                    <a href="{{ url_for('main.show_orders') }}?store_id={{ store.id }}" class="m-l-10 btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
 			                        {{ _('Related Orders') }}
 			                    </a>
 	                            <a href="{{ url_for('main.wxapp_setting') }}?auth_app_id={{ store.wxapp.auth_app_id }}" class="btn-link m-l-10">
@@ -114,14 +113,15 @@
 			                <a href="{{ url_for('main.wxapp_authorize') }}" class="btn btn-mixpus" target="_blank">
 			                    <i class="fa fa-link"></i> 开始小程序授权
 			                </a>
+							<a href="{{ url_for('main.edit_store', id=store.id) }}" class="m-l-10 btn-link">{{ _('Edit') }}</a>
 							{% endif %}
 						</td>
 					{% else %}
 						<td class="text-right">
-							{% if store.distribute_mode == 2 %}
-		                    <a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="{{ _('Distribute Products') }}">
-		                        {{ _('Distribute Products') }}
+		                    <a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="{{ _('Store') }}{{ _('Products') }}">
+		                        {{ _('Store') }}{{ _('Products') }}
 		                    </a>
+							{% if store.is_private_stock %}
 		                    <a href="{{ url_for('main.store_distribute_products') }}?rid={{ store.serial_no }}" class="btn-link m-l-10" data-toggle="tooltip" data-original-title="调拨库存">
 		                        调拨库存
 		                    </a>

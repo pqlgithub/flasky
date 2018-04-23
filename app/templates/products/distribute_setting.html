@@ -22,7 +22,7 @@
 		
 		$('input.change-price').change(function () {
 			var rid = $(this).data('rid');
-			var distribute_price = $('input[name=distribute_price_'+ rid +']').val(), suggested_min_price = $('input[name=suggested_min_price_'+ rid +']').val(), suggested_max_price = $('input[name=suggested_max_price_'+ rid +']').val();
+			var distribute_price = parseFloat($('input[name=distribute_price_'+ rid +']').val()), suggested_min_price = parseFloat($('input[name=suggested_min_price_'+ rid +']').val()), suggested_max_price = parseFloat($('input[name=suggested_max_price_'+ rid +']').val());
 			
 			var profit = [];
 			if (distribute_price && distribute_price > 0) {
@@ -30,17 +30,19 @@
 					if (suggested_min_price < distribute_price) {
 						return mixpus.show_error_message('最低零售价不能低于分销价格！');
 					}
-					profit.push(suggested_min_price - distribute_price);
+					profit.push((suggested_min_price - distribute_price).toFixed(2));
 				}
 				if (suggested_max_price) {
 					if (suggested_max_price < suggested_min_price) {
 						return mixpus.show_error_message('最高零售价必须大于最低零售价！');
 					}
-					profit.push(suggested_max_price - distribute_price);
+					profit.push((suggested_max_price - distribute_price).toFixed(2));
+				}
+				
+				if (profit.length > 0) {
+					$('#profit_'+ rid).text('￥' + profit.join('~'));
 				}
 			}
-			
-			$('#profit_'+ rid).text(profit.join(' -- ')+'元');
 		});
 	});
 </script>
@@ -71,6 +73,7 @@
 	<form id="products-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
 		<input type="hidden" name="rid" value="{{ product.serial_no }}" >
+		<input type="hidden" name="next_action" value="finish_save" >
 		
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="active">
@@ -96,7 +99,7 @@
 									<th>分销价格</th>
 									<th>最低零售价</th>
 									<th>最高零售价</th>
-									<th class="text-right">利润空间</th>
+									<th class="text-right">利润</th>
 								</tr>
 							</thead>
 							<tbody id="product-skus-body">
@@ -120,15 +123,15 @@
 									</td>
 									<td class="text-right">
 				                        {% if sku.sale_price > 0 %}
-				                            <span class="sale-price">{{ sku.sale_price|round(precision=2) }}</span>
+				                            <span class="sale-price">￥{{ sku.sale_price|round(precision=2) }}</span>
 											{% if sku.price %}
 				                            <span class="price">
-												{{ sku.price|round(precision=2) }}
+												￥{{ sku.price|round(precision=2) }}
 											</span>
 											{% endif %}
 				                        {% else %}
 											{% if sku.price %}
-				                            <span class="sale-price">{{ sku.price|round(precision=2) }}</span>
+				                            <span class="sale-price">￥{{ sku.price|round(precision=2) }}</span>
 											{% endif %}
 				                        {% endif %}
 									</td>
@@ -139,13 +142,13 @@
 										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['distribute_price'] %}{{ extra_data[sku.serial_no]['distribute_price'] }}{% endif %}" name="distribute_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
 									</td>
 									<td>
-										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_min_price'] %}{{ extra_data[sku.serial_no]['suggested_min_price'] }}{% else %}{{ sku.price }}{% endif %}" name="suggested_min_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
+										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_min_price'] %}{{ extra_data[sku.serial_no]['suggested_min_price'] }}{% endif %}" name="suggested_min_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
 									</td>
 									<td>
 										<input type="text" value="{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['suggested_max_price'] %}{{ extra_data[sku.serial_no]['suggested_max_price'] }}{% endif %}" name="suggested_max_price_{{ sku.serial_no }}" size="6" class="form-control change-price" data-rid="{{ sku.serial_no }}" />
 									</td>
 									<td class="text-right">
-										<label class="text-mixpus" id="profit_{{ sku.serial_no }}">{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['profit'] %}{{ extra_data[sku.serial_no]['profit'] }}{% endif %}元</label>
+										<label class="text-mixpus" id="profit_{{ sku.serial_no }}">{% if extra_data[sku.serial_no] and extra_data[sku.serial_no]['profit'] %}￥{{ extra_data[sku.serial_no]['profit'] }}{% endif %}</label>
 									</td>
 								</tr>
 								{% endfor %}

@@ -1076,6 +1076,7 @@ a.thumbnail {
 .no-shadow {
  box-shadow:none !important
 }
+
 .form-group.has-success label {
     color:#00a65a
 }
@@ -1108,6 +1109,9 @@ a.thumbnail {
 }
 .form-group.has-error .help-block {
     color:#dd4b39
+}
+.form-horizontal .checkbox-inline {
+	padding-top: 0px;
 }
 
 html,body {

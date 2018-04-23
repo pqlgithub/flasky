@@ -10,7 +10,7 @@ from . import main
 from .. import db, uploader
 from app.models import Product, Supplier, Category, ProductSku, ProductContent, ProductStock, WarehouseShelve, Asset, \
     Order, OrderItem, Brand, ProductPacket, WxMiniApp, WxAuthorizer, DiscountTempletItem, DiscountTemplet, \
-    ProductDistribution
+    ProductDistribution, Store, StoreProduct
 from app.forms import ProductForm, CategoryForm, EditCategoryForm, ProductSkuForm, ProductGroupForm, \
     DiscountTempletForm, DiscountTempletEditForm
 from ..utils import Master, full_response, status_response, custom_status, R200_OK, R201_CREATED, R204_NOCONTENT,\
@@ -289,11 +289,23 @@ def create_product():
             categories = []
             categories.append(Category.query.get(form.category_id.data))
             product.update_categories(*categories)
-        
-        db.session.commit()
 
-        # 新增索引
-        # flask_whooshalchemyplus.index_one_model(Product)
+        # 更新上架的店铺
+        store_ids = request.form.getlist('store_ids[]')
+        if store_ids:
+            for store_id in store_ids:
+                store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store_id,
+                                                             product_id=product.id).first()
+                if not store_product:
+                    store_product = StoreProduct(
+                        master_uid=Master.master_uid(),
+                        store_id=store_id,
+                        product_id=product.id,
+                        is_distributed=False
+                    )
+                    db.session.add(store_product)
+
+        db.session.commit()
 
         if next_action == 'continue_save':
             flash(gettext('The basic information is complete and continue editing'), 'success')
@@ -313,6 +325,9 @@ def create_product():
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid())\
         .order_by(Brand.created_at.desc()).paginate(1, 1000)
 
+    # 获取所有店铺
+    stores = Store.query.filter_by(master_uid=Master.master_uid()).all()
+
     # 生成上传token
     cfg = current_app.config
     up_token = QiniuStorage.up_token(cfg['QINIU_ACCESS_KEY'], cfg['QINIU_ACCESS_SECRET'], cfg['QINIU_BUCKET_NAME'],
@@ -323,6 +338,9 @@ def create_product():
         up_endpoint = url_for('main.flupload')
 
     return render_template('products/create_and_edit.html',
+                           stores=stores,
+                           store_count=len(stores),
+                           checked_store_ids=[],
                            form=form,
                            mode=mode,
                            sub_menu='create_product',
@@ -343,56 +361,83 @@ def edit_product(rid):
         abort(404)
 
     form = ProductForm()
-    if form.validate_on_submit():
-        # 根据品牌获取供应商
-        if form.brand_id.data:
-            brand = Brand.query.filter_by(master_uid=Master.master_uid(), id=form.brand_id.data).first()
-            form.supplier_id.data = brand.supplier_id if brand else 0
-        
-        form.populate_obj(product)
+    # 获取已上架店铺
+    checked_stores = StoreProduct.query.filter_by(master_uid=Master.master_uid(), product_id=product.id).all()
+    checked_store_ids = [store.store_id for store in checked_stores]
 
-        # 同步sku销售价及促销价
-        price = form.price.data if form.price.data else 0.0
-        sale_price = form.sale_price.data if form.sale_price.data else 0.0
-        for sku in product.skus:
-            sku.price = price
-            sku.sale_price = sale_price
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # 根据品牌获取供应商
+            if form.brand_id.data:
+                brand = Brand.query.filter_by(master_uid=Master.master_uid(), id=form.brand_id.data).first()
+                form.supplier_id.data = brand.supplier_id if brand else 0
 
-        # 更新内容详情
-        asset_ids = request.form.getlist('asset_ids[]')
-        if form.tags.data or form.content.data or asset_ids:
-            if product.details:  # 已存在，则更新
-                product.details.asset_ids = ','.join(asset_ids)
-                product.details.tags = form.tags.data
-                product.details.content = form.content.data
-            else:
-                detail = ProductContent(
-                    master_uid=Master.master_uid(),
-                    asset_ids=','.join(asset_ids),
-                    tags=form.tags.data,
-                    content=form.content.data
-                )
-                detail.product = product
-                db.session.add(detail)
-        
-        # 更新所属分类
-        if form.category_id.data:
-            categories = []
-            categories.append(Category.query.get(form.category_id.data))
+            form.populate_obj(product)
 
-            product.update_categories(*categories)
-        
-        db.session.commit()
+            # 同步sku销售价及促销价
+            price = form.price.data if form.price.data else 0.0
+            sale_price = form.sale_price.data if form.sale_price.data else 0.0
+            for sku in product.skus:
+                sku.price = price
+                sku.sale_price = sale_price
 
-        next_action = request.form.get('next_action', 'finish_save')
-        if next_action == 'continue_save':
-            flash(gettext('Basic information is complete and continue editing'), 'success')
-            return redirect(url_for('.edit_product', rid=product.serial_no))
+            # 更新内容详情
+            asset_ids = request.form.getlist('asset_ids[]')
+            if form.tags.data or form.content.data or asset_ids:
+                if product.details:  # 已存在，则更新
+                    product.details.asset_ids = ','.join(asset_ids)
+                    product.details.tags = form.tags.data
+                    product.details.content = form.content.data
+                else:
+                    detail = ProductContent(
+                        master_uid=Master.master_uid(),
+                        asset_ids=','.join(asset_ids),
+                        tags=form.tags.data,
+                        content=form.content.data
+                    )
+                    detail.product = product
+                    db.session.add(detail)
 
-        flash(gettext('Basic information is complete'), 'success')
-        return redirect(url_for('.show_products'))
-    else:
-        current_app.logger.debug(form.errors)
+            # 更新所属分类
+            if form.category_id.data:
+                categories = []
+                categories.append(Category.query.get(form.category_id.data))
+
+                product.update_categories(*categories)
+
+            # 更新上架的店铺
+            store_ids = request.form.getlist('store_ids[]')
+            if store_ids:
+                # 删除取消的店铺
+                for checked_store in checked_stores:
+                    current_app.logger.warn('check store: %d' % checked_store.store_id)
+                    if checked_store.store_id not in store_ids:
+                        db.session.delete(checked_store)
+
+                # 添加新增的店铺
+                for store_id in store_ids:
+                    store_product = StoreProduct.query.filter_by(master_uid=Master.master_uid(), store_id=store_id,
+                                                                 product_id=product.id).first()
+                    if not store_product:
+                        store_product = StoreProduct(
+                            master_uid=Master.master_uid(),
+                            store_id=store_id,
+                            product_id=product.id,
+                            is_distributed=False
+                        )
+                    db.session.add(store_product)
+
+            db.session.commit()
+
+            next_action = request.form.get('next_action', 'finish_save')
+            if next_action == 'continue_save':
+                flash(gettext('Basic information is complete and continue editing'), 'success')
+                return redirect(url_for('.edit_product', rid=product.serial_no))
+
+            flash(gettext('Basic information is complete'), 'success')
+            return redirect(url_for('.show_products'))
+        else:
+            current_app.logger.debug(form.errors)
 
     mode = 'edit'
 
@@ -414,6 +459,7 @@ def edit_product(rid):
     form.sticked.data = product.sticked
     form.features.data = product.features
     form.description.data = product.description
+
     # 内容详情
     if product.details:
         form.tags.data = product.details.tags
@@ -421,6 +467,9 @@ def edit_product(rid):
     
     # 当前货币类型
     current_currency_unit = g.current_site.currency
+
+    # 获取所有店铺
+    stores = Store.query.filter_by(master_uid=Master.master_uid()).all()
 
     paginated_categories = Category.always_category(path=0, page=1, per_page=1000, uid=Master.master_uid())
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by('created_at desc').paginate(1,
@@ -435,6 +484,9 @@ def edit_product(rid):
         up_endpoint = url_for('main.flupload')
 
     return render_template('products/create_and_edit.html',
+                           stores=stores,
+                           store_count=len(stores),
+                           checked_store_ids=checked_store_ids,
                            form=form,
                            mode=mode,
                            sub_menu='products',
@@ -1404,6 +1456,17 @@ def distribute_product_list():
 
     paginated_result = builder.order_by(Product.created_at.desc()).paginate(page, per_page)
 
+    extra_data = {}
+    for product in paginated_result.items:
+        distribution_skus = ProductDistribution.query.filter_by(product_id=product.id).all()
+        for extra_sku in distribution_skus:
+            extra_data[extra_sku.sku_serial_no] = {
+                'distribute_price': extra_sku.distribute_price,
+                'suggested_min_price': extra_sku.suggested_min_price,
+                'suggested_max_price': extra_sku.suggested_max_price,
+                'profit': str(extra_sku.suggested_min_price - extra_sku.distribute_price)
+            }
+
     # 品牌列表
     paginated_brands = Brand.query.filter_by(master_uid=Master.master_uid()).order_by(Brand.created_at.asc()).paginate(
         1, 1000)
@@ -1411,6 +1474,7 @@ def distribute_product_list():
 
     return render_template('products/distribute_product_list.html',
                            sub_menu='distribute',
+                           extra_data=extra_data,
                            paginated_products=paginated_result.items,
                            pagination=paginated_result,
                            paginated_brands=paginated_brands,
@@ -1568,7 +1632,7 @@ def distribute_setting():
             'distribute_price': extra_sku.distribute_price,
             'suggested_min_price': extra_sku.suggested_min_price,
             'suggested_max_price': extra_sku.suggested_max_price,
-            'profit': ' -- '.join(profit)
+            'profit': '~'.join(profit)
         }
 
     # 分销说明
@@ -1576,6 +1640,7 @@ def distribute_setting():
     description = details.description if details else ''
 
     return render_template('products/distribute_setting.html',
+                           sub_menu='distribute',
                            product=product,
                            description=description,
                            extra_data=extra_data,

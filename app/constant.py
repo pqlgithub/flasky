@@ -64,31 +64,19 @@ DEPARTMENT = (
 SUPPORT_PLATFORM = (
     {
         'id': 1,
-        'name': lazy_gettext('Wx App')
-    },
-    {
-        'id': 2,
-        'name': lazy_gettext('JD')
-    },
-    {
-        'id': 3,
-        'name': lazy_gettext('TaoBao')
-    },
-    {
-        'id': 5,
-        'name': lazy_gettext('Amazon')
-    },
-    {
-        'id': 6,
-        'name': lazy_gettext('Aliexpress')
+        'name': '微信小程序'
     },
     {
         'id': 10,
-        'name': lazy_gettext('Physical Store')
+        'name': '自营实体店'
     },
     {
-        'id': 12,
-        'name': lazy_gettext('HuaZhu')
+        'id': 31,
+        'name': '京东'
+    },
+    {
+        'id': 31,
+        'name': '淘宝'
     }
 )
 

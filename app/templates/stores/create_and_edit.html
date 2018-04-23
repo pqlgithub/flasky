@@ -21,10 +21,17 @@
 
 	<form id="ability-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+		
+		<div class="form-group required">
+			{{ form.type.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.type(class="radio-inline-group") }}
+			</div>
+		</div>
 
 		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
 			{{ form.name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				{{ form.name(id="name", class="form-control") }}
 				{% for error in form.errors.name %}
 				<span class="help-block">{{ error }}</span><br>
@@ -34,7 +41,7 @@
 
 		<div class="form-group required {% if form.errors.platform %} has-error{% endif %}">
 			{{ form.platform.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				{{ form.platform(id="platform", class="form-control select2") }}
 				{% for error in form.errors.platform %}
 				<span class="help-block">{{ error }}</span><br>
@@ -44,25 +51,8 @@
 
 		<div class="form-group required">
 			{{ form.operator_id.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
+			<div class="col-sm-4">
 				{{ form.operator_id(class="form-control select2") }}
-			</div>
-		</div>
-
-		<div class="form-group">
-			{{ form.type.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
-				{{ form.type(class="form-control select2") }}
-			</div>
-		</div>
-		
-		<div class="form-group required">
-			{{ form.distribute_mode.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
-				{{ form.distribute_mode(id="distribute_mode", class="radio-inline-group") }}
-				<span class="help-block">
-					<i class="fa fa-info-circle"></i> 全品模式为上架所有商品，授权模式为仅可上架部分授权商品
-				</span>
 			</div>
 		</div>
 		

@@ -123,9 +123,42 @@
 			</li>
 		</ul>
 
-		<div class="tab-content m-t-30">
+		<div class="tab-content m-t-20 m-b-30">
 			<div id="general" class="active tab-pane fade in" role="tabpanel" aria-labelledby="general-tab">
-
+				
+				{% if store_count == 1 %}
+				<!--新增或编辑默认选中-->
+				<div class="form-group hidden">
+					<label class="col-sm-2 control-label">上架店铺</label>
+					<div class="col-sm-6">
+						<ul class="radio-inline-group">
+						{% for store in stores %}
+						<li>
+							<label class="checkbox-inline">
+							  <input type="checkbox" name="store_ids[]" value="{{ store.id }}" checked="checked"> {{ store.name }}({{ store.platform_name }})
+							</label>
+						</li>
+						{% endfor %}
+						</ul>
+					</div>
+				</div>
+				{% else %}
+				<div class="form-group">
+					<label class="col-sm-2 control-label">上架店铺</label>
+					<div class="col-sm-6">
+						<ul class="radio-inline-group">
+						{% for store in stores %}
+						<li>
+							<label class="checkbox-inline">
+							  <input type="checkbox" name="store_ids[]" value="{{ store.id }}" {% if store.id in checked_store_ids %}checked="checked"{% endif %}> {{ store.name }}({{ store.platform_name }})
+							</label>
+						</li>
+						{% endfor %}
+						</ul>
+					</div>
+				</div>
+				{% endif %}
+				
 				<div class="form-group m-b-25">
 					{{ form.category_id.label(class="col-sm-2 control-label") }}
 					<div class="col-sm-4">

@@ -11,8 +11,7 @@ __all__ = [
     'StoreDistributeProduct',
     'StoreDistributePacket',
     'STORE_STATUS',
-    'STORE_TYPE',
-    'STORE_MODES'
+    'STORE_TYPE'
 ]
 
 # 渠道的状态
@@ -21,24 +20,16 @@ STORE_STATUS = [
     (-1, lazy_gettext('Disabled'), 'danger')
 ]
 
-# 选品模式
-STORE_MODES = [
-    (1, lazy_gettext('ALL Mode')),
-    (2, lazy_gettext('Distribute Mode'))
-]
-
 # 渠道的类型
 STORE_TYPE = [
-    # 第三方电商
-    (1, lazy_gettext('Authorized Store')),
-    # 自营电商
-    (2, lazy_gettext('B2C E-commerce')),
-    # 社交电商，如：小程序
-    (3, lazy_gettext('Social E-commerce')),
+    # 小程序
+    (3, lazy_gettext('Wx App')),
     # 线下店铺
     (5, lazy_gettext('Offline Store')),
     # 分销商
-    (6, lazy_gettext('Distribution'))
+    (6, lazy_gettext('Distribution')),
+    # 第三方电商
+    (7, lazy_gettext('Third party E-commerce'))
 ]
 
 
@@ -63,12 +54,10 @@ class Store(db.Model):
     access_token = db.Column(db.String(100), default='')
     refresh_token = db.Column(db.String(100), default='')
 
-    # 类型：1、第三方店铺；2、自营；3、社交电商 5、实体店铺 6、分销
+    # 类型：3、小程序 5、实体店铺 6、分销 7、第三方店铺；10、自营；
     type = db.Column(db.SmallInteger, default=1)
     # 状态 -1：禁用；1：正常
     status = db.Column(db.SmallInteger, default=1)
-    # 选品模式 1: 全品； 2：授权部分商品
-    distribute_mode = db.Column(db.SmallInteger, default=1)
     # 是否设置私有库存
     is_private_stock = db.Column(db.Boolean, default=False)
 
@@ -101,12 +90,6 @@ class Store(db.Model):
             if plat['id'] == self.platform:
                 return plat['name']
         return None
-
-    @property
-    def mode_label(self):
-        for m in STORE_MODES:
-            if m[0] == self.distribute_mode:
-                return m
 
     @property
     def status_label(self):
