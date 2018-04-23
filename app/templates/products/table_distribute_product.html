@@ -48,8 +48,8 @@
                             <span class="sale-price">￥{{ product.price|round(precision=2) }}</span>
                         {% endif %}
 					</td>
-					<td class="text-right {% if not product.total_stock %} danger{% endif %}{% if product.total_stock and product.total_stock < 5 %} warning{% endif %}">
-						{{ product.total_stock|supress_none }}
+					<td class="text-right {% if not product.stock_count %} danger{% endif %}{% if product.stock_count and product.stock_count < 5 %} warning{% endif %}">
+						{{ product.stock_count|supress_none }}
 					</td>
 					<td>
 						{% for sku in product.skus %}

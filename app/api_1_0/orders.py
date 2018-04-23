@@ -10,7 +10,7 @@ from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment, WxMiniApp
 from app.utils import timestamp
-from app.tasks import remove_order_cart, update_coupon_status, sync_product_stock, sales_statistics
+from app.tasks import remove_order_cart, update_coupon_status, sales_statistics
 
 
 @api.route('/orders')
@@ -344,9 +344,6 @@ def create_order():
         db.session.rollback()
         return custom_response('Create order failed: %s' % str(err), 400, False)
 
-    # 触发任务
-    _dispatch_sku_task(products)
-
     # 订单提交成功后，需删除本次购物车商品
     remove_order_cart.apply_async(args=[g.master_uid, order_serial_no])
 
@@ -640,10 +637,3 @@ def _js_wxpay_params(rid):
     )
     
     return js_api_params
-
-
-def _dispatch_sku_task(skus):
-    """下单后同步更新商品库存数"""
-    for sku in skus:
-        product_sku = ProductSku.query.filter_by(serial_no=sku['rid']).first()
-        sync_product_stock.apply_async(args=[product_sku.product_id])

@@ -4,18 +4,20 @@
 <div class="list-page">
 	<div class="page-header">
 		{{ _('Distribution') }}广场
+		<small>100000+个SKU创新商品，一键分销至小程序。</small>
 	</div>
 	
 	<div class="distribute-list">
 		<div class="row">
 			<div class="col-md-9">
+				<h4>最新商品</h4>
 				<div class="distribute-list">
 					{% for product in distribute_products %}
 					<div class="col-sm-4 col-md-3">
 						<div class="thumbnail">
 							<img src="{{ product.cover }}" width="220px">
 							<div class="caption">
-								<h3>{{ product.name|safe }}</h3>
+								<h4>{{ product.name|safe }}</h4>
 								<p>成本: ￥{{ product.distribute_price }}</p>
 								<p>利润: <span class="text-success">￥{{ product.profit }}</span></p>
 								<p class="text-right">
@@ -32,16 +34,16 @@
 					{% endfor %}
 				</div>
 				
+				{% import "block/_macros.html" as macros %}
+				{{ macros.pagination_widget(pagination, '.fx_distribute_index', status=status) }}
 			</div>
 			<div class="col-md-3">
 				<div class="distribute-slides">
+					<h4>智能推荐</h4>
 					
 				</div>
 			</div>
 		</div>
 	</div>
-	
-	{% import "block/_macros.html" as macros %}
-	{{ macros.pagination_widget(pagination, '.fx_distribute_index', status=status) }}
 </div>
 {% endblock %}

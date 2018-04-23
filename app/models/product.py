@@ -182,6 +182,12 @@ class Product(db.Model):
         return Asset.default_logo()
 
     @property
+    def stock_count(self):
+        """product stock count"""
+        row = self.skus.with_entities(func.sum(ProductSku.stock_quantity).label('total_stock')).one()
+        return row[0] if row else 0
+
+    @property
     def category_ids(self):
         """获取所属的分类ID"""
         return [category.id for category in self.categories]

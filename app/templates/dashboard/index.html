@@ -214,13 +214,28 @@
 						<label>专属客服：</label> 小灵儿
 					</p>
 					<p>
-						<a href="{{ url_for('site.pricing') }}" target="_blank" class="btn-link">帮助中心？</a>
+						<a href="{{ url_for('site.pricing') }}" target="_blank" class="btn-link">
+							<i class="fa fa-info-circle"></i> 帮助中心？
+						</a>
 					</p>
 				</div>
 			</div>
 			
 			<div class="well">
-				<a href="{{ url_for('main.fx_distribute_index') }}" class="btn-link">分销广场</a>
+				<div class="block-header">
+					<h4>分销广场</h4>
+				</div>
+				<div class="block-body">
+					<p>
+						100000+个SKU创新商品，一键分销至小程序，智能推荐预测爆款商品。
+					</p>
+					<p>
+						<a href="{{ url_for('main.fx_distribute_index') }}" class="btn-link">
+							<i class="fa fa-sitemap"></i> 进入分销
+						</a>
+					</p>
+				</div>
+				
 			</div>
 
 		</div>

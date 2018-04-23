@@ -4,7 +4,6 @@ from flask import g, render_template, redirect, url_for, abort, flash, request, 
 from flask_sqlalchemy import Pagination
 from sqlalchemy.sql import func
 from flask_babelex import gettext
-import flask_whooshalchemyplus
 
 from . import main
 from .. import db, uploader
@@ -18,7 +17,7 @@ from ..utils import Master, full_response, status_response, custom_status, R200_
     correct_decimal
 from ..decorators import user_has
 from ..constant import SORT_TYPE_CODE, DEFAULT_REGIONS
-from app.helpers import QiniuStorage, WxaOpen3rd, WxAppError, Fxaim
+from app.helpers import QiniuStorage, WxaOpen3rd, WxAppError
 from qiniu import Auth, put_data
 
 
@@ -752,9 +751,6 @@ def add_sku(rid):
 
         db.session.commit()
 
-        # run the task
-        _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
-
         tr_html = render_template('products/_tr_sku.html',
                                   product=product,
                                   sku=sku)
@@ -825,11 +821,6 @@ def edit_sku(rid, s_id):
 
         db.session.commit()
 
-        # run the task
-        current_app.logger.warn('uid: %d, pid: %d, spid: %d' % (sku.master_uid, sku.product_id, sku.supplier_id))
-
-        _dispatch_sku_task(sku.master_uid, sku.product_id, sku.supplier_id)
-
         tr_html = render_template('products/_tr_sku.html',
                                   product=product,
                                   sku=sku)
@@ -866,34 +857,21 @@ def edit_sku(rid, s_id):
 @user_has('admin_product')
 def delete_sku(rid):
     try:
-        sku = ProductSku.query.filter_by(serial_no=rid).first()
+        sku = ProductSku.query.filter_by(master_uid=Master.master_uid(), serial_no=rid).first()
         if sku is None:
             return custom_response(False, gettext("Product Sku isn't exist!"))
 
         product_id = sku.product_id
-        master_uid = sku.master_uid
-        supplier_id = sku.supplier_id
 
         db.session.delete(sku)
 
         db.session.commit()
-
-        # run the task
-        _dispatch_sku_task(master_uid, product_id, supplier_id)
 
         return full_response(True, R204_NOCONTENT, {'id': rid})
 
     except Exception as err:
         db.session.rollback()
         return full_response(True, custom_status('Delete sku is failed!', 500))
-
-
-def _dispatch_sku_task(master_uid, product_id, supplier_id):
-    from app.tasks import sync_supply_stats, sync_product_stock
-
-    sync_product_stock.apply_async(args=[product_id])
-    if supplier_id:
-        sync_supply_stats.apply_async(args=[master_uid, supplier_id])
 
 
 @main.route('/products/<string:rid>/orders')

@@ -37,32 +37,6 @@ def update_search_history(qk, uid, total_count=0, user_id=0):
     return SUCCESS
 
 
-@fsk_celery.task(name='product.sync_product_stock')
-def sync_product_stock(product_id):
-    """同步商品库存数"""
-    current_app.logger.warn('Task: sync product[%s] stock' % product_id)
-
-    total_stock = 0
-    skus = ProductSku.query.filter_by(product_id=product_id).all()
-    for sku in skus:
-        current_app.logger.warn('sku: %s, %d' % (sku.serial_no, sku.stock_quantity))
-        total_stock += sku.stock_quantity if sku.stock_quantity else 0
-
-    product = session.query(Product).get(product_id)
-    if product is None:
-        current_app.logger.warn('Task: sync product[%s] stock, not exist!' % product_id)
-        return FAIL
-
-    current_app.logger.warn('Task: sync product stock[%d]!' % total_stock)
-
-    # 更新库存
-    product.total_stock = total_stock
-
-    session.commit()
-
-    return SUCCESS
-
-
 @fsk_celery.task(name='product.sync_sku_stock')
 def sync_sku_stock(sku_id):
     """同步商品sku库存数"""
@@ -73,23 +47,6 @@ def sync_sku_stock(sku_id):
     # 1、更新数据
     sku = session.query(ProductSku).get(sku_id)
     sku.stock_quantity = stock_quantity
-
-    # 2、同步更新产品库存数
-    product_id = sku.product_id
-    product = session.query(Product).get(int(product_id))
-    if product is None:
-        current_app.logger.warn('Task: sync sku-product[%s] stock, not exist!' % product_id)
-        return FAIL
-
-    total_stock = 0
-    for sku in product.skus:
-        total_stock += sku.stock_quantity
-
-    current_app.logger.warn('total stock: %d' % total_stock)
-
-    # 更新库存
-    if product.total_stock != total_stock:
-        product.total_stock = total_stock
 
     # db.session.commit()
 
