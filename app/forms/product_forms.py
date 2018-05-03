@@ -39,9 +39,9 @@ class BrandForm(Form):
 
 class CategoryForm(Form):
     name = StringField(lazy_gettext('Category Name'), validators=[DataRequired()])
-    sort_order = IntegerField(lazy_gettext('Sort Order'))
+    sort_order = IntegerField(lazy_gettext('Sort Order'), default=1)
     pid = IntegerField(lazy_gettext('Parent'), default=0)
-    cover_id = IntegerField(lazy_gettext('Cover'), default=0)
+    cover_id = IntegerField(lazy_gettext('Category Cover'), default=0)
     description = TextAreaField(lazy_gettext('Description'))
     status = RadioField(lazy_gettext('Status'), choices=[
         (1, lazy_gettext('Enabled')), (-1, lazy_gettext('Disabled'))
