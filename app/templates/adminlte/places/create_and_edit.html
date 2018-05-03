@@ -14,7 +14,7 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{% if mode == 'create' %}
 			{{ _('Add Place') }}
 		{% else %}
@@ -28,7 +28,7 @@
 				<i class="fa fa-reply"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
 	<form id="place-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

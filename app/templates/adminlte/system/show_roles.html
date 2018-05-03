@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block mainbar %}
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Role List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
@@ -23,7 +23,7 @@
 				<i class="glyphicon glyphicon-trash"></i>
 			</button>
 		</span>
-	</h2>
+	</div>
 
 	<div class="table-responsive">
 		<form id="roles-form" action="{{ url_for('main.delete_role') }}" method="post">
