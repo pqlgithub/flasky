@@ -1,0 +1,157 @@
+{% extends "layout/base.html" %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		已订购应用
+	</div>
+	
+	<div class="table-responsive m-t-20">
+		<div class="row">
+			{% for a in app_services %}
+			<div class="col-sm-6 col-md-4">
+				<div class="thumbnail horizontal p-10 clearfix">
+					<img src="{{ a.icon }}" alt="{{ a.name }}">
+					<div class="caption">
+						<h4>{{ a.title }}</h4>
+						<p class="description">
+							{{ a.summary }}
+						</p>
+						<p>类别：{{ a.type_label }}</p>	
+						{% if a.is_paid %}				
+						<a href="{{ url_for('main.view_app_detail') }}?rid={{ a.rid }}" class="btn btn-mixpus" role="button">
+							管理
+						</a>
+						{% else %}
+						<a href="{{ url_for('main.submit_subscribe') }}?rid={{ a.rid }}" class="btn btn-danger" data-toggle="tooltip" data-original-title="去支付">
+							去支付
+						</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		
+		<div class="page-header">
+			已订购记录
+		</div>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input name="check_all" type="checkbox" class="check-all">
+					</th>
+					<th>订单号</th>
+					<th>订单内容</th>
+					<th class="text-center">购买天数/数量</th>
+					<th class="text-right">订单金额</th>
+					<th class="text-right">应付金额</th>
+					<th class="text-right">已付金额</th>
+					<th class="text-right">支付方式</th>
+					<th class="text-right">支付状态</th>
+					<th class="text-right">订单状态</th>
+					<th class="text-right">下单时间</th>
+					<th class="text-right">过期时间</th>
+					<th class="text-right">邀请码</th>
+					<th class="text-right">{{ _('Action') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for apm in subscribe_services %}
+				<tr>
+					<td class="text-center">
+						<input name="selected[]" class="check-one" value="{{ apm.id }}" type="checkbox">
+					</td>
+					<td>
+						{{ apm.trade_no }}
+					</td>
+					<td>
+						{{ apm.trade_content }}
+					</td>
+					<td class="text-center">
+						{% if apm.ordered_days > 1 %}
+							{{ apm.ordered_days }}天
+						{% else %}
+							{{ apm.ordered_days }}
+						{% endif %}
+					</td>
+					<td class="text-right">
+						￥{{ apm.total_amount }}
+					</td>
+					<td class="text-right">
+						￥{{ apm.pay_amount }}
+					</td>
+					<td class="text-right">
+						￥{{ apm.pay_amount }}
+					</td>
+					<td class="text-right">
+						{{ apm.pay_mode }}
+					</td>
+					<td class="text-right">
+						{% if apm.is_paid %}
+                        <span class="indicator success">
+							已支付
+						</span>
+						{% else %}
+                        <span class="indicator danger">
+							待支付
+						</span>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{% if apm.status %}
+                        <span class="indicator success">
+							正常
+						</span>
+						{% else %}
+                        <span class="indicator danger">
+							已过期
+						</span>
+						{% endif %}
+					</td>
+					<td class="text-right">
+						{{ apm.ordered_at|timestamp2string('%Y-%m-%d %H:%M') }}
+					</td>
+					<td class="text-right">
+                        {{ apm.expired_at }}
+					</td>
+					<td class="text-right">
+                        {{ apm.coupon_code|supress_none }}
+					</td>
+					<td class="text-right">
+						{% if apm.status == -1 %}
+						<a href="" class="btn-link" data-toggle="tooltip" data-original-title="续订">
+							续订
+						</a>
+						{% endif %}
+						
+						{% if not apm.is_paid %}
+						<a href="{{ url_for('main.submit_subscribe') }}?rid={{ apm.service_serial_no }}" class="btn btn-danger" data-toggle="tooltip" data-original-title="去支付">
+							去支付
+						</a>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	
+	
+</div>
+{% endblock %}

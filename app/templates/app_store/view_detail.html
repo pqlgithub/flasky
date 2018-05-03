@@ -1,0 +1,68 @@
+{% extends "layout/base.html" %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+
+	});
+</script>
+{% endblock %}
+
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		应用市场 <small>> {{ app_service.title }}</small>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-6 col-md-9">
+			<div class="thumbnail horizontal clearfix">
+				<img src="{{ app_service.icon.view_url }}" alt="{{ app_service.title }}">
+				<div class="caption">
+					<h4>{{ app_service.title }}</h4>
+					<p class="description">
+						{{ app_service.summary }}
+					</p>
+					<p class="price">
+						{% if app_service.is_free %}
+						<label class="label label-success">
+							免费
+						</label>
+						{% else %}
+						<b class="text-success">
+							￥{{ app_service.sale_price }} / 年
+						</b>
+						{% endif %}
+					</p>
+					
+					<a href="{{ url_for('main.submit_subscribe') }}?rid={{ app_service.serial_no }}" class="btn btn-mixpus m-t-20" role="button">
+						<i class="fa fa-shopping-cart"></i> 现在订购
+					</a>
+				</div>
+			</div>
+			
+			<div class="app-page">
+				<h4>应用介绍</h4>
+				<div class="description m-b-30">
+					{{ app_service.description }}
+				</div>
+				
+				<h4 class="m-t-20">注意事项</h4>
+				<div class="description m-b-30">
+					{{ app_service.remark }}
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+</div>
+{% endblock %}

@@ -70,6 +70,14 @@ class MixGenId(object):
         return ''.join([prefix, MixGenId.gen_digits(length)])
 
     @staticmethod
+    def gen_trade_no(length=9):
+        """生成开放市场应用sn"""
+        prefix = 'S'
+        now = datetime.datetime.now()
+        date_str = now.strftime("%y%m%d")
+        return ''.join([prefix, date_str, MixGenId.gen_digits(length)])
+
+    @staticmethod
     def gen_banner_sn(length=8):
         """生成banner sn"""
         prefix = 'Ad'

@@ -4,13 +4,13 @@
     </a>
     <section class="sidebar">
         <ul class="sidebar-menu tree" data-widget="tree">
-            <li class="{% if sub_menu == 'dashboard'%}active {% endif %} treeview">
+            <li class="{% if top_menu == 'dashboard'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.index') }}">
                     <i class="fa fa-dashboard fa-2x"></i>
                     <span>{{ _('Dashboard') }}</span>
                 </a>
             </li>
-             <li class="{% if sub_menu == 'orders'%}active {% endif %} treeview">
+             <li class="{% if top_menu == 'orders'%}active {% endif %} treeview">
                  <a href="{{ url_for('main.show_orders') }}">
                      <i class="fa fa-shopping-cart fa-2x"></i>
                      <span>{{ _('Sales') }}</span>
@@ -35,7 +35,8 @@
                     <span>{{ _('Marketing') }}</span>
                 </a>
             </li>
-
+			
+			{% if current_user.edition_enterprise %}
             <li class="{% if top_menu == 'purchases'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_purchases') }}">
                     <i class="fa fa-file-text fa-2x"></i>
@@ -49,6 +50,7 @@
                     <span>{{ _('Stock') }}</span>
                 </a>
              </li>
+			{% endif %}
 
             <li class="{% if top_menu == 'stats' %}active {% endif %} treeview">
                 <a href="{{ url_for('main.stats') }}">
@@ -57,13 +59,14 @@
                 </a>
              </li>
              
-
+			 {% if current_user.edition_enterprise %}
             <li class="{% if top_menu == 'finances'%}active {% endif %} treeview">
                 <a href="{{ url_for('main.show_payments') }}">
                     <i class="fa fa-yen fa-2x"></i>
                     <span>{{ _('Finance') }}</span>
                 </a>
             </li>
+			{% endif %}
 			
         </ul>
 		<ul class="sidebar-menu tree fix-bottom" data-widget="tree">

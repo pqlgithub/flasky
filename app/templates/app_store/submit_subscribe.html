@@ -1,0 +1,133 @@
+{% extends "layout/base.html" %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+		
+		{% if pay_params %}
+		$('#pay-qrcode').qrcode({
+			width: 256,
+			height: 256,
+			render	: "table",
+			text: "{{ pay_params.code_url }}"
+		});
+		{% endif %}
+		
+		// 改变支付方式
+		$('input[name="pay_mode"]').bind('change', function() {
+			var pay_mode = $(this).data('mode'), coupon_code = $('input[name="coupon_code"]').val(), 
+			discount_amount = $('input[name="discount_amount"]').val();
+			
+			$.post("{{ url_for('main.subscribe_payment') }}", { 'pay_mode': pay_mode, 'coupon_code': coupon_code, 
+				'discount_amount': discount_amount, 'csrf_token': mixpus.csrf_token }, function(res) {
+					if (res.success) {
+						
+					}
+			});
+		});
+		
+		
+	});
+</script>
+{% endblock %}
+
+{% block submenu %}
+	{% include 'app_store/_sub_menu.html' %}
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		应用市场 <small>> {{ app_service.title }} > 确认订购信息</small>
+	</div>
+	
+	<div class="table-responsive m-t-20">
+		
+		<form id="subscribe-form" class="form-horizontal" action="" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+			
+			
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>应用名称</th>
+						<th>生效周期</th>
+						<th>生效时间</th>
+						<th>套餐价格</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							{{ app_service.title }}
+						</td>
+						<td>
+							{% if subscribe_service.ordered_days > 1 %}
+								{{ subscribe_service.ordered_at|timestamp2string('%Y-%m-%d %H:%M') }} -- {{ subscribe_service.expired_at }}（{{ subscribe_service.ordered_days }} 天）
+							{% else %}
+								永久
+							{% endif %}
+						</td>
+						<td>
+							订购成功后立即生效
+						</td>
+						<td>
+							<span class="text-mixpus">￥{{ app_service.sale_price }}</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		
+			<div class="pay-mode">
+				
+				<div class="form-group">
+					<label class="col-md-2 control-label">支付方式</label>
+					<div class="col-md-9">
+						<ul class="radio-inline-group">
+							<li>
+								<input type="radio" name="pay_mode" value="1" data-mode="wxpay" checked="checked" /> 
+								<label for="wxpay">微信支付</label>
+							</li>
+							<li>
+								<input type="radio" name="pay_mode" value="2" data-mode="alipay" disabled /> 
+								<label for="alipay">支付宝</label>
+							</li>
+						</ul>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label class="col-md-2 control-label">优惠码</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" name="coupon_code" />
+						<input type="hidden" name="discount_amount" >
+					</div>
+				</div>
+				
+				<div class="form-group m-t-20">
+					<label class="col-md-2 control-label">支付</label>
+					<div class="col-md-9">	
+						<div class="pay-amount">
+							<span class="control-label text-mixpus font-24">￥{{ subscribe_service.pay_amount }}</span>
+							<span class="control-label m-l-10 text-through">￥{{ subscribe_service.total_amount }}</span>
+							<span class="control-label m-l-10 text-danger">已优惠: -￥{{ subscribe_service.discount_amount }}</span>
+						</div>
+						<div class="pay-box m-t-20 text-center">
+							<div id="pay-qrcode"></div>
+							<h5 class="m-t-20 font-16">微信扫码，立即支付</h5>
+							<label class="font-14">订单号：</label>
+							<p class="font-14 text-mixpus">{{ subscribe_service.trade_no }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+	</div>
+	
+</div>
+{% endblock %}

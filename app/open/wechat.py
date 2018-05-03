@@ -5,7 +5,8 @@ import xml.etree.cElementTree as ET
 
 from . import open
 from .. import db, cache
-from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion, Order, OrderStatus
+from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion, Order, OrderStatus, \
+    SubscribeService
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
 from app.tasks import reply_wxa_service, sales_statistics
 from app.utils import Master, custom_response, timestamp, status_response
@@ -383,6 +384,44 @@ def service_message():
             pass
 
     return 'success'
+
+
+@open.route('/wx/service_pay_notice')
+def wxpay_service_notice():
+    """官方服务微信支付通知"""
+    if not request.data:
+        return status_response(False, {
+            'code': 400,
+            'message': '未收到请求参数'
+        })
+
+    data = WxPay.to_dict(request.data)
+    # 微信支付初始化参数
+    wx_pay = WxPay(
+        wx_app_id=current_app.config['WXPAY_APP_ID'],
+        wx_mch_id=current_app.config['WXPAY_MCH_ID'],
+        wx_mch_key=current_app.config['WXPAY_MCH_SECRET'],
+        wx_notify_url=current_app.config['WXPAY_NOTIFY_URL']
+    )
+    if not wx_pay.check(data):
+        return wx_pay.reply('签名验证失败', False)
+
+    # 处理业务逻辑
+    if data['result_code'] == 'SUCCESS' and data['return_code'] == 'SUCCESS':
+        rid = data['out_trade_no']
+        pay_time = data['time_end']
+
+        service_order = SubscribeService.query.filter_by(trade_no=rid).first()
+        if service_order is None:
+            current_app.logger.warn('订购订单[%s]不存在' % rid)
+            return wx_pay.reply('订购订单不存在', False)
+
+        if not service_order.is_paid:  # 待支付
+            service_order.is_paid = True
+
+            db.session.commit()
+
+    return wx_pay.reply('OK', True)
 
 
 @open.route('/wx/authorize')

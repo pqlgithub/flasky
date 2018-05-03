@@ -252,10 +252,10 @@ DISCOUNT_TEMPLET_TYPES = (
 # 服务市场应用类型
 # 营销插件、渠道应用、供销管理、主题皮肤
 SERVICE_TYPES = (
-    (1, lazy_gettext('Marketing')),
-    (2, lazy_gettext('Channel Application')),
-    (3, lazy_gettext('Supply Management')),
-    (4, lazy_gettext('Theme'))
+    (1, '营销插件'),
+    (2, '渠道应用'),
+    (3, '供销管理'),
+    (4, '主题皮肤')
 )
 
 

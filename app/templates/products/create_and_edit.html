@@ -134,8 +134,9 @@
 						<ul class="radio-inline-group">
 						{% for store in stores %}
 						<li>
-							<label class="checkbox-inline">
-							  <input type="checkbox" name="store_ids[]" value="{{ store.id }}" checked="checked"> {{ store.name }}({{ store.platform_name }})
+							<input type="checkbox" name="store_ids[]" value="{{ store.id }}" checked="checked" id="store-{{ store.id }}">
+							<label for="store-{{ store.id }}">
+							   {{ store.name }}({{ store.platform_name }})
 							</label>
 						</li>
 						{% endfor %}
@@ -149,8 +150,9 @@
 						<ul class="radio-inline-group">
 						{% for store in stores %}
 						<li>
-							<label class="checkbox-inline">
-							  <input type="checkbox" name="store_ids[]" value="{{ store.id }}" {% if store.id in checked_store_ids %}checked="checked"{% endif %}> {{ store.name }}({{ store.platform_name }})
+							<input type="checkbox" name="store_ids[]" value="{{ store.id }}" id="store-{{ store.id }}" {% if store.id in checked_store_ids %}checked="checked"{% endif %}> 
+							<label for="store-{{ store.id }}">
+							  {{ store.name }}({{ store.platform_name }})
 							</label>
 						</li>
 						{% endfor %}

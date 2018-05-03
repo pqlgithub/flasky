@@ -93,3 +93,33 @@ def user_is_distributer(func, get_user=import_user):
         return redirect(url_for('auth.forbidden'))
 
     return decorator
+
+
+def service_has(service, get_user=import_user):
+    """装饰器：系统版本是否具有某个服务权限"""
+
+    def wrapper(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            from .models import AppService, SubscribeService, EditionService
+            desired_service = AppService.query.filter_by(name=service).first()
+            if not desired_service:
+                return redirect(url_for('auth.forbidden'))
+
+            current_user = get_user()
+
+            # 检测是否自主订购
+            master_uid = current_user.id if current_user.is_master else current_user.master_uid
+            subscribe_service = SubscribeService.query.filter_by(master_uid=master_uid,
+                                                                 service_id=desired_service.id).first()
+            if subscribe_service and subscribe_service.status != -1:  # 存在，并未过期
+                return func(*args, **kwargs)
+
+            # 检测版本下是否具有
+            edition_services = EditionService.services(current_user.edition)
+            if desired_service in edition_services:
+                return func(*args, **kwargs)
+
+            return redirect(url_for('auth.forbidden'))
+        return inner
+    return wrapper

@@ -18,73 +18,107 @@
 {% block mainbar %}
 <div class="list-page">
 	<div class="page-header">
-		{{ _('App List') }}
+		应用市场
 	</div>
-
-	<form class="form-inline" id="filter-supplier-form" method="post">
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-
-		<div class="form-group">
-			<input type="text" class="form-control searcher" size="60" name="qk" autocomplete="off" placeholder="{{ _('Search name...') }}">
-		</div>
-
-		<div class="form-group m-l-5">
-			<div class="dropdown">
-				<input type="hidden" name="type">
-				<button class="btn btn-default dropdown-toggle" id="filter-type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					{{ _('Type') }}: <b>{{ _('All') }}</b>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu dropdown-select-menu" data-target="type" aria-labelledby="filter-type">
-					<li class="dropdown-header">{{ _('Search Type')}}</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="javascript:void(0);" data-id="0" class="option">{{ _('All') }}</a>
-					</li>
-					{% for t in app_types %}
-					<li>
-						<a href="javascript:void(0);" data-id="{{ t[0] }}" class="option">{{ t[1] }}</a>
-					</li>
-					{% endfor %}
-				</ul>
-			</div>
-		</div>
-
-		<div class="form-group pull-right">
-			<div class="dropdown">
-				<input type="hidden" name="sk" value="{{ sk|default('ad') }}">
-				<button class="btn btn-flat-default dropdown-toggle" type="button" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					<i class="glyphicon glyphicon-sort-by-attributes-alt"></i> {{ _('Sort') }}: <b>{{ _('Add Date') }}</b>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu dropdown-menu-right dropdown-select-menu" data-target="sk" aria-labelledby="filter-sort">
-					<li class="dropdown-header">{{ _('Sort Order')}}</li>
-					<li class="divider" role="separator"></li>
-					<li>
-						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Default') }}</a>
-					</li>
-					<li>
-						<a href="javascript:void(0);" data-id="ad" class="option">{{ _('Add Date') }}</a>
-					</li>
-					<li>
-						<a href="javascript:void(0);" data-id="ud" class="option">{{ _('Update Date') }}</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-
-	</form>
-
+	<div class="jumbotron p-l-20">
+	  <h2>做生意一样可以简单</h2>
+	  <p>你所需要的工具，都能找到，做生意就是这么任性！</p>
+	</div>
 	<div class="m-t-20">
+		<div class="page-header">
+			营销插件
+		</div>
 		<div class="row">
-			{% for a in paginated_apps %}
-			<div class="col-sm-4 col-md-3">
-				<div class="thumbnail horizontal clearfix">
+			{% for a in market_apps %}
+			<div class="col-sm-6 col-md-4">
+				<div class="thumbnail horizontal p-10 clearfix">
 					<img src="{{ a.icon.view_url }}" alt="{{ a.name }}">
 					<div class="caption">
-						<h4>{{ a.name }}</h4>
-						<p class="description">{{ a.description }}</p>
-						<p><a href="{{ url_for('main.subscribe_app', sn=a.serial_no) }}" class="btn btn-mixpus" role="button">GET</a></p>
+						<h4>{{ a.title }}</h4>
+						<p class="description">
+							{{ a.summary }}
+						</p>
+						<p class="price">
+							{% if a.is_free %}
+							<label class="label label-success">
+								免费
+							</label>
+							{% else %}
+							<b class="text-success">
+								￥{{ a.sale_price }} / 年
+							</b>
+							{% endif %}
+						</p>
+						
+						<a href="{{ url_for('main.view_app_detail') }}?rid={{ a.serial_no }}" class="btn btn-mixpus" role="button">
+							<i class="fa fa-shopping-cart"></i> 查看
+						</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="page-header">
+			渠道应用
+		</div>
+		<div class="row">
+			{% for a in channel_apps %}
+			<div class="col-sm-6 col-md-4">
+				<div class="thumbnail horizontal p-10 clearfix">
+					<img src="{{ a.icon.view_url }}" alt="{{ a.name }}">
+					<div class="caption">
+						<h4>{{ a.title }}</h4>
+						<p class="description">
+							{{ a.summary }}
+						</p>
+						<p class="price">
+							{% if a.is_free %}
+							<label class="label label-success">
+								免费
+							</label>
+							{% else %}
+							<b class="text-success">
+								￥{{ a.sale_price }} / 年
+							</b>
+							{% endif %}
+						</p>
+						
+						<a href="{{ url_for('main.view_app_detail') }}?rid={{ a.serial_no }}" class="btn btn-mixpus" role="button">
+							<i class="fa fa-shopping-cart"></i> 查看
+						</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="page-header">
+			供销管理
+		</div>
+		<div class="row">
+			{% for a in supply_apps %}
+			<div class="col-sm-6 col-md-4">
+				<div class="thumbnail horizontal p-10 clearfix">
+					<img src="{{ a.icon.view_url }}" alt="{{ a.name }}">
+					<div class="caption">
+						<h4>{{ a.title }}</h4>
+						<p class="description">
+							{{ a.summary }}
+						</p>
+						<p class="price">
+							{% if a.is_free %}
+							<label class="label label-success">
+								免费
+							</label>
+							{% else %}
+							<b class="text-success">
+								￥{{ a.sale_price }} / 年
+							</b>
+							{% endif %}
+						</p>
+						
+						<a href="{{ url_for('main.view_app_detail') }}?rid={{ a.serial_no }}" class="btn btn-mixpus" role="button">
+							<i class="fa fa-shopping-cart"></i> 查看
+						</a>
 					</div>
 				</div>
 			</div>

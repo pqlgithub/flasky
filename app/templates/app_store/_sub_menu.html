@@ -1,6 +1,6 @@
  <div class="treeview-menu">
      <ul class="subtree">
-         <li class="header">{{ _('Subscribe App') }}</li>
+         <li class="header">快捷入口</li>
          <li>
              <a href="{{ url_for('main.show_coupons') }}" class="{% if sub_menu == 'coupon' %}active{% endif %}">
                  {{ _('Coupon Tools') }}
@@ -11,12 +11,17 @@
          <li class="header">{{ _('App Manage') }}</li>
          <li>
              <a href="{{ url_for('main.show_apps') }}" class="{% if sub_menu == 'app_store' %}active{% endif %}">
-                 {{ _('All List') }}
+                 应用市场
+             </a>
+         </li>
+         <li>
+             <a href="{{ url_for('main.subscribed_apps') }}" class="{% if sub_menu == 'subscribed' %}active{% endif %}">
+                 已订购应用
              </a>
          </li>
          <li>
              <a href="{{ url_for('main.show_clients') }}" class="{% if sub_menu == 'my_app' %}active{% endif %}">
-                 {{ _('My Apps') }}
+                 应用设置
              </a>
          </li>
      </ul>

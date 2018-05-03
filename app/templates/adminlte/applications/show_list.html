@@ -13,10 +13,10 @@
 
 		$('.ajax-published').click(function (e) {
 		    e.preventDefault();
-		    var req_url = $(this).attr('href'), sn = $(this).data('id');
-            $.post(req_url, { 'csrf_token': mixpus.csrf_token, 'sn': sn }, function(result){
+		    var req_url = $(this).attr('href'), sn = $(this).data('id'), status = $(this).data('status');
+            $.post(req_url, { 'csrf_token': mixpus.csrf_token, 'sn': sn, 'status': status }, function(result){
                 if (result.success) {
-                    mixpus.show_ok_message(result.status.message);
+					window.location.reload();
                 } else {
                     mixpus.show_error_message(result.status.message);
                 }
@@ -28,77 +28,91 @@
 
 {% block mainbar %}
 <div class="list-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{{ _('Service List') }}
 		<span class="pull-right">
 			{% include 'block/_select_items.html' %}
             <a href="{{ url_for('adminlte.create_application') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
-				<i class="glyphicon glyphicon-plus"></i>
+				<i class="fa fa-plus"></i>
 			</a>
 			<button class="btn btn-danger delete-all hidden" data-form-id="applications-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Disabled') }}">
-				<i class="glyphicon glyphicon-trash"></i>
+				<i class="fa fa-trash"></i>
 			</button>
 		</span>
-	</h2>
-
+	</div>
+	
 	<div class="table-responsive m-t-20">
 		<form id="applications-form" action="{{ url_for('adminlte.disabled_application') }}" method="post">
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-			<table class="table table-bordered table-striped table-hover">
+			
+			<table class="table table-bordered table-striped">
 				<thead>
-				<tr>
-					<th class="text-center">
-						<input name="check_all" type="checkbox" class="check-all">
-					</th>
-					<th class="text-center">{{ _('Icon') }}</th>
-					<th>{{ _('App Name') }}</th>
-					<th>{{ _('Type') }}</th>
-					<th class="text-center">{{ _('Is Free') }}</th>
-					<th>{{ _('Summary') }}</th>
-					<th class="text-right">{{ _('Status') }}</th>
-					<th class="text-right">{{ _('Created at') }}</th>
-					<th class="text-right">{{ _('Action') }}</th>
-				</tr>
+					<tr>
+						<th class="text-center">
+							<input name="check_all" type="checkbox" class="check-all">
+						</th>
+						<th class="text-center">{{ _('Icon') }}</th>
+						<th>应用标识</th>
+						<th>{{ _('App Name') }}</th>
+						<th>{{ _('Type') }}</th>
+						<th class="text-center">{{ _('Is Free') }}</th>
+						<th class="text-right">{{ _('Price') }}</th>
+						<th class="text-right">{{ _('Status') }}</th>
+						<th class="text-right">{{ _('Created at') }}</th>
+						<th class="text-right">{{ _('Action') }}</th>
+					</tr>
 				</thead>
 				<tbody>
-				{% for apm in paginated_markets.items %}
-				<tr>
-					<td class="text-center">
-						<input name="selected[]" class="check-one" value="{{ apm.id }}" type="checkbox">
-					</td>
-					<td class="text-center">
-						<img src="{{ apm.icon.view_url }}" width="60px">
-					</td>
-					<td>
-						{{ apm.name }}
-					</td>
-					<td>{{ apm.type_label[1] }}</td>
-					<td class="text-center">
-						{% if apm.is_free %}
-						<span class="text-success">{{ _('Yes') }}</span>
-						{% else %}
-						<span class="text-warning">{{ _('No') }}</span>
-						{% endif %}
-					</td>
-					<td>{{ apm.summary }}</td>
-					<td class="text-right">
-                        <span class="indicator {{ apm.status_label[2] }}">
-							{{ apm.status_label[1] }}
-						</span>
-					</td>
-					<td class="text-right">
-						{{ apm.created_at|timestamp2string() }}
-					</td>
-					<td class="text-right">
-						<a href="{{ url_for('adminlte.published_application', sn=apm.serial_no) }}" data-id="{{ apm.serial_no }}" class="btn btn-link ajax-published"  data-toggle="tooltip" data-original-title="{{ _('Publish') }}">
-							{{ _('Publish') }}
-						</a>
-						<a href="{{ url_for('adminlte.edit_application', sn=apm.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
-							{{ _('Edit') }}
-						</a>
-					</td>
-				</tr>
-				{% endfor %}
+					{% for apm in paginated_markets.items %}
+					<tr>
+						<td class="text-center">
+							<input name="selected[]" class="check-one" value="{{ apm.id }}" type="checkbox">
+						</td>
+						<td class="text-center">
+							<img src="{{ apm.icon.view_url }}" width="60px">
+						</td>
+						<td>
+							{{ apm.name }}
+						</td>
+						<td>
+							{{ apm.title }}
+						</td>
+						<td>{{ apm.type_label[1] }}</td>
+						<td class="text-center">
+							{% if apm.is_free %}
+							<span class="text-success">{{ _('Yes') }}</span>
+							{% else %}
+							<span class="text-warning">{{ _('No') }}</span>
+							{% endif %}
+						</td>
+						<td class="text-right">
+							<span class="text-mixpus">￥{{ apm.sale_price }}</span>
+						</td>
+						<td class="text-right">
+	                        <span class="indicator {{ apm.status_label[2] }}">
+								{{ apm.status_label[1] }}
+							</span>
+						</td>
+						<td class="text-right">
+							{{ apm.created_at|timestamp2string('%Y-%m-%d %H:%M') }}
+						</td>
+						<td class="text-right">
+							{% if apm.status == 2 %}
+							<a href="{{ url_for('adminlte.published_application', sn=apm.serial_no) }}" data-status="1" data-id="{{ apm.serial_no }}" class="btn btn-link ajax-published"  data-toggle="tooltip" data-original-title="返回待审">
+								返回待审
+							</a>
+							{% else %}
+							<a href="{{ url_for('adminlte.published_application', sn=apm.serial_no) }}" data-status="2" data-id="{{ apm.serial_no }}" class="btn btn-link ajax-published"  data-toggle="tooltip" data-original-title="{{ _('Publish') }}">
+								{{ _('Publish') }}
+							</a>
+							{% endif %}
+							
+							<a href="{{ url_for('adminlte.edit_application', sn=apm.serial_no) }}" class="btn btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+								{{ _('Edit') }}
+							</a>
+						</td>
+					</tr>
+					{% endfor %}
 				</tbody>
 			</table>
 		</form>

@@ -140,6 +140,21 @@
 .font-14 {
     font-size: 14px;
 }
+.font-16 {
+    font-size: 16px;
+}
+.font-18 {
+    font-size: 18px;
+}
+.font-20 {
+    font-size: 20px;
+}
+.font-22 {
+    font-size: 22px;
+}
+.font-24 {
+    font-size: 24px;
+}
 .wrapper-md {
     padding: 20px;
 }
@@ -152,6 +167,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.text-through {
+	text-decoration: line-through;
 }
 .b-0 {
     border: medium none;
@@ -197,6 +215,9 @@ select {
 .radio-inline-group > li > label {
     float: right;
     margin-left: 5px;
+}
+.pay-box {
+	width: 260px;
 }
 .alert {
     border-width: 0;
@@ -1798,6 +1819,9 @@ table.text-center,table.text-center td,table.text-center th {
 	margin-right: 15px;
 }
 
+.thumbnail.horizontal {
+	padding: 15px;
+}
 .thumbnail.horizontal a>img,
 .thumbnail.horizontal>img {
     width: 80px;
@@ -1814,9 +1838,18 @@ table.text-center,table.text-center td,table.text-center th {
     margin-top: 0;
 }
 .thumbnail.horizontal .caption .description {
-    min-height: 50px;
+    min-height: 40px;
 }
-
+.thumbnail.horizontal .caption .price {
+	font-size: 14px;
+}
+.jumbotron {
+	padding-left: 60px;
+}
+.app-page {
+	background-color: #ffffff;
+	padding: 20px;
+}
 .radio-inline-group {
     list-style-type: none;
     margin: 0;

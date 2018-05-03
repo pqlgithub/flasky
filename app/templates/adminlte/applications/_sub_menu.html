@@ -2,12 +2,25 @@
 	<div class="list-group-header">
 		{{ _('Service Market') }}
 	</div>
-	<a href="{{ url_for('adminlte.show_applications') }}" class="pjax list-group-item {% if not t %} active{% endif %}">
+	<a href="{{ url_for('adminlte.show_applications') }}" class="list-group-item {% if not t and not edition_id %} active{% endif %}">
 		{{ _('All List') }}
 	</a>
     {% for type in service_types %}
-	<a href="{{ url_for('adminlte.show_applications') }}?t={{ type[0] }}" class="pjax list-group-item {% if type[0] == t  %} active{% endif %}">
+	<a href="{{ url_for('adminlte.show_applications') }}?t={{ type[0] }}" class="list-group-item {% if type[0] == t  %} active{% endif %}">
 		{{ type[1] }}
 	</a>
     {% endfor %}
+	<div class="list-group-header">
+		系统版本
+	</div>
+	<a href="{{ url_for('adminlte.show_applications') }}?edition_id=1" class="list-group-item {% if edition_id == 1 %} active{% endif %}">
+		免费版
+	</a>
+	<a href="{{ url_for('adminlte.show_applications') }}?edition_id=6" class="list-group-item {% if edition_id == 6 %} active{% endif %}">
+		专业版
+	</a>
+	<a href="{{ url_for('adminlte.show_applications') }}?edition_id=8" class="list-group-item {% if edition_id == 8 %} active{% endif %}">
+		企业版
+	</a>
+	
 </div>

@@ -18,6 +18,7 @@ bundles = {
         'js/bootstrap-datetimepicker.js',
         'js/clipboard.js',
         'js/jquery.pjax.js',
+        'js/jquery.qrcode.min.js',
         output='js/admin.min.js'
     ),
     'app_js': Bundle(

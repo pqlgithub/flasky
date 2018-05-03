@@ -7,7 +7,7 @@
 
 {% block mainbar %}
 <div class="form-page">
-	<h2 class="page-header">
+	<div class="page-header">
 		{% if mode == 'create' %}
 		{{ _('Add Payment') }}
 		{% else %}
@@ -22,7 +22,7 @@
 				<i class="glyphicon glyphicon-share-alt"></i>
 			</a>
 		</span>
-	</h2>
+	</div>
 
 	<form id="transaction-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >

@@ -4,16 +4,16 @@ from jinja2 import PackageLoader, Environment
 from flask import g, render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, send_file
 from flask_sqlalchemy import Pagination
-from flask_login import login_required, current_user
 from flask_babelex import gettext
 from openpyxl.workbook import Workbook
 import flask_whooshalchemyplus
+
 from . import main
 from .. import db, uploader
 from ..utils import gen_serial_no, full_response, status_response, custom_status, R200_OK, Master, timestamp, custom_response,\
     datestr_to_timestamp, import_product_from_excel
 from ..constant import PURCHASE_STATUS, PURCHASE_PAYED, PURCHASE_EXCEL_FIELDS, SORT_TYPE_CODE
-from ..decorators import user_has
+from ..decorators import user_has, service_has
 from app.models import Purchase, PurchaseProduct, Supplier, Product, ProductSku, Warehouse, \
     TransactDetail, InWarehouse, StockHistory, ProductStock, Site, SupplyStats
 from app.forms import PurchaseForm, PurchaseExpressForm, SupplierForm
@@ -49,6 +49,7 @@ def load_common_data():
 
 @main.route('/purchases')
 @main.route('/purchases/<int:page>')
+@service_has('warehousing')
 @user_has('admin_purchase')
 def show_purchases(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -68,6 +69,7 @@ def show_purchases(page=1):
 
 
 @main.route('/purchases/search', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def search_purchases():
     """支持全文索引搜索采购单"""
@@ -126,6 +128,7 @@ def search_purchases():
 
 @main.route('/purchases/payments')
 @main.route('/purchases/payments/<int:page>')
+@service_has('warehousing')
 @user_has('admin_purchase')
 def payments(page=1):
     per_page = request.args.get('per_page', 10, type=int)
@@ -144,6 +147,7 @@ def payments(page=1):
 
 
 @main.route('/purchases/<string:rid>/preview')
+@service_has('warehousing')
 @user_has('admin_purchase')
 def preview_purchase(rid):
     """预览或查看采购单详情"""
@@ -159,6 +163,7 @@ def preview_purchase(rid):
 
 
 @main.route('/purchases/create', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def create_purchase():
     form = PurchaseForm()
@@ -231,6 +236,7 @@ def create_purchase():
 
 
 @main.route('/purchases/<string:rid>/edit', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def edit_purchase(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -332,6 +338,7 @@ def delete_purchase():
 
 
 @main.route('/purchases/delete_item', methods=['POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def delete_purchase_item():
     item_id = request.form.get('item_id')
@@ -357,6 +364,7 @@ def delete_purchase_item():
 
 
 @main.route('/purchases/<string:rid>/ajax_canceled', methods=['POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def ajax_canceled_purchase(rid):
     """取消采购单"""
@@ -376,6 +384,7 @@ def ajax_canceled_purchase(rid):
     
 
 @main.route('/purchases/ajax_verify', methods=['POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def ajax_verify():
     selected_ids = request.form.getlist('selected[]')
@@ -402,6 +411,7 @@ def ajax_verify():
 
 
 @main.route('/purchases/<string:rid>/ajax_arrival', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def ajax_arrival(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -491,6 +501,7 @@ def ajax_arrival(rid):
 
 
 @main.route('/purchases/ajax_apply_pay', methods=['POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def ajax_apply_pay():
     selected_ids = request.form.getlist('selected[]')
@@ -533,6 +544,7 @@ def ajax_apply_pay():
 
 
 @main.route('/purchases/<string:rid>/add_express_no', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def purchase_express_no(rid):
     purchase = Purchase.query.filter_by(serial_no=rid).first()
@@ -557,6 +569,7 @@ def purchase_express_no(rid):
 
 
 @main.route('/purchases/output_purchase')
+@service_has('warehousing')
 @user_has('admin_purchase')
 def output_purchase():
     rid = request.args.get('rid')
@@ -567,6 +580,7 @@ def output_purchase():
 
 
 @main.route('/purchases/print_purchase_pdf')
+@service_has('warehousing')
 @user_has('admin_purchase')
 def print_purchase_pdf():
     """输出pdf，并打印"""
@@ -647,6 +661,7 @@ def print_purchase_pdf():
 
 
 @main.route('/purchases/export_purchase', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def export_purchase():
     per_page = request.args.get('per_page', 30, type=int)
@@ -761,6 +776,7 @@ def _check_id_code(product_skus):
 
 
 @main.route('/purchases/import_purchase', methods=['GET', 'POST'])
+@service_has('warehousing')
 @user_has('admin_purchase')
 def import_purchase():
     if request.method == 'POST':
@@ -849,6 +865,7 @@ def import_purchase():
 
 
 @main.route('/purchases/download_template')
+@service_has('warehousing')
 def download_purchase_tpl():
     dest_filename = r'mic_template_purchasing.xlsx'
     export_path = current_app.root_path + '/static/tpl/'

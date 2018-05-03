@@ -17,7 +17,8 @@ __all__ = [
     'Ability',
     'Site',
     'AnonymousUser',
-    'UserIdType'
+    'UserIdType',
+    'UserEdition'
 ]
 
 # 定义user与role关系的辅助表
@@ -182,6 +183,16 @@ class User(UserMixin, db.Model):
             label = '免费版'
 
         return label
+
+    @property
+    def edition_professional(self):
+        """检测是否为专业版"""
+        return self.edition == UserEdition.PROFESSIONAL
+
+    @property
+    def edition_enterprise(self):
+        """检测是否为企业版"""
+        return self.edition == UserEdition.ENTERPRISE
 
     @property
     def store(self):

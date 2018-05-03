@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 from sqlalchemy import event
 from flask_babelex import lazy_gettext
+
 from app import db
 from .asset import Asset
 from ..utils import timestamp, datestr_to_timestamp
@@ -45,7 +47,7 @@ class ApplicationStatus:
 APPLICATION_STATUS = [
     (ApplicationStatus.ENABLED, lazy_gettext('Published'), 'success'),
     (ApplicationStatus.PENDING, lazy_gettext('Pending'), 'success'),
-    (ApplicationStatus.DISABLED, lazy_gettext('Disabled'), 'danger')
+    (ApplicationStatus.DISABLED, lazy_gettext('Disable'), 'danger')
 ]
 
 
@@ -107,6 +109,10 @@ class AppService(db.Model):
     def mark_set_published(self):
         """发布上架状态"""
         self.status = ApplicationStatus.ENABLED
+
+    def mark_set_pending(self):
+        """待审状态"""
+        self.status = ApplicationStatus.PENDING
         
     def mark_set_disabled(self):
         """设置禁用状态"""
@@ -114,7 +120,7 @@ class AppService(db.Model):
     
     @staticmethod
     def make_unique_sn():
-        """生成品牌编号"""
+        """生成编号"""
         sn = MixGenId.gen_app_sn()
         if AppService.query.filter_by(serial_no=sn).first() is None:
             return sn
@@ -130,6 +136,23 @@ class AppService(db.Model):
         # 自动生成用户编号
         target.serial_no = AppService.make_unique_sn()
 
+    def to_json(self):
+        """资源和JSON的序列化转换"""
+        json_obj = {
+            'rid': self.serial_no,
+            'name': self.name,
+            'title': self.title,
+            'icon': self.icon.view_url,
+            'summary': self.summary,
+            'type': self.type,
+            'type_label': self.type_label[1],
+            'is_free': self.is_free,
+            'sale_price': str(self.sale_price),
+            'sale_count': self.sale_count
+        }
+
+        return json_obj
+
     def __repr__(self):
         return '<AppService %r>' % self.name
 
@@ -143,14 +166,20 @@ class SubscribeService(db.Model):
 
     master_uid = db.Column(db.Integer, default=0)
     service_id = db.Column(db.Integer, db.ForeignKey('app_services.id'))
+    service_serial_no = db.Column(db.String(10), index=True)
 
     # 交易编号
     trade_no = db.Column(db.String(20), unique=True, index=True, nullable=False)
+    # 订购内容
+    trade_content = db.Column(db.String(100), nullable=False)
     # 支付金额
     pay_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 总金额
     total_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
+    # 支付方式：1、微信支付；2、支付宝
     pay_mode = db.Column(db.SmallInteger, default=1)
+    # 支付状态
+    is_paid = db.Column(db.Boolean, default=False)
     # 根据订阅方式，折扣金额
     discount_amount = db.Column(db.Numeric(precision=10, scale=2), default=0.00)
     # 订购时间
@@ -164,6 +193,19 @@ class SubscribeService(db.Model):
 
     created_at = db.Column(db.Integer, default=timestamp)
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @property
+    def expired_at(self):
+        """过期时间"""
+        if self.ordered_days == 1:
+            return '永久'
+
+        # 下单时间
+        ordered_at = datetime.fromtimestamp(self.ordered_at)
+        # 过期天数
+        expired_in = ordered_at + timedelta(days=self.ordered_days)
+
+        return expired_in.strftime("%Y-%m-%d %H:%S")
 
     def __repr__(self):
         return '<SubscribeService %r>' % self.id
@@ -180,6 +222,14 @@ class EditionService(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey('app_services.id'))
 
     updated_at = db.Column(db.Integer, default=timestamp, onupdate=timestamp)
+
+    @staticmethod
+    def services(edition_id):
+        edition_services = EditionService.query.filter_by(edition_id=edition_id).all()
+
+        service_ids = [edition_service.service_id for edition_service in edition_services]
+        if service_ids:
+            return AppService.query.filter(AppService.id.in_(service_ids)).all()
 
     def __repr__(self):
         return '<EditionService %r>' % self.id

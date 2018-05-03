@@ -11,8 +11,6 @@
 		mixpus.init_page_layout();
 
 		mixpus.upload_file_manager();
-
-
 	});
 </script>
 {% endblock %}
@@ -34,16 +32,7 @@
 
 	<form id="ability-form" class="form-horizontal" action="" method="post">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
-
-		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
-			{{ form.name.label(class="col-sm-2 control-label") }}
-			<div class="col-sm-6">
-				{{ form.name(id="name", class="form-control") }}
-				{% for error in form.errors.name %}
-				<span class="help-block">{{ error }}</span><br>
-				{% endfor %}
-			</div>
-		</div>
+		
         <div class="form-group required">
             {{ form.icon_id.label(class="col-sm-2 control-label") }}
             <div class="col-sm-6">
@@ -53,22 +42,68 @@
                 </a>
                 {% else %}
                 <a href="javascript:void(0);" id="icon_thumb_image" data-target="icon" data-toggle="image" class="img-thumbnail">
-                    <img src="{{ product.cover.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
+                    <img src="{{ app_service.icon.view_url|default(url_for('static', filename='img/no_img100x100.png')) }}" width="100px" data-placeholder="{{ url_for('static', filename='img/no_img100x100.png') }}">
                 </a>
                 {% endif %}
                 <input id="icon_id" name="icon_id" value="{{ form.icon_id.data|default(0) }}" type="hidden">
             </div>
         </div>
-        <div class="form-group">
+		<div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+			{{ form.name.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-4">
+				{{ form.name(id="name", class="form-control") }}
+				{% for error in form.errors.name %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+				<span class="help-block">
+					应用标识，验证是否有权限使用某项服务所用
+				</span>
+			</div>
+		</div>
+		
+		<div class="form-group required {% if form.errors.title %} has-error{% endif %}">
+			{{ form.title.label(class="col-sm-2 control-label") }}
+			<div class="col-sm-6">
+				{{ form.title(id="title", class="form-control") }}
+				{% for error in form.errors.title %}
+				<span class="help-block">{{ error }}</span><br>
+				{% endfor %}
+			</div>
+		</div>
+        <div class="form-group required">
 			{{ form.type.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-6">
-				{{ form.type(id="type", class="form-control select2") }}
+				{{ form.type(id="type", class="radio-inline-group") }}
+			</div>
+		</div>
+        <div class="form-group required">
+			<label class="col-sm-2 control-label">适用于版本</label>
+			<div class="col-sm-6">
+				<ul class="radio-inline-group">
+				{% for edition in system_edition %}
+				<li>
+					<label class="checkbox-inline">
+					  <input type="checkbox" name="edition_id[]" value="{{ edition.id }}" {% if edition.id in checked_edition_ids %}checked="checked"{% endif %}> {{ edition.title }}
+					</label>
+				</li>
+				{% endfor %}
+				</ul>
+				<span class="help-block">
+					此应用是否支持包含于版本套餐
+				</span>
 			</div>
 		</div>
         <div class="form-group">
 			{{ form.is_free.label(class="col-sm-2 control-label") }}
 			<div class="col-sm-6">
-				{{ form.is_free(id="is_free", class="form-control") }}
+				<ul class="radio-inline-group">
+					<li>
+						{{ form.is_free(id="is_free") }} 
+						<label for="is_free">
+							{{ _('Yes') }}
+						</label>
+					</li>
+				</ul>
 			</div>
 		</div>
         <div class="form-group">
@@ -80,6 +115,9 @@
 						CNY
 					</span>
 				</div>
+				<span class="help-block">
+					如应用免费，则无需设置价格
+				</span>
 			</div>
 		</div>
         <div class="form-group">
