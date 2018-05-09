@@ -5,6 +5,9 @@ import xlrd
 import random
 import hashlib
 import speaklater
+
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 from datetime import datetime
 from decimal import Decimal
 from string import digits, ascii_letters
@@ -13,6 +16,8 @@ from flask_login import current_user
 from flask._compat import text_type
 from flask.json import JSONEncoder as BaseEncoder
 from speaklater import _LazyString
+
+
 
 
 R200_OK = { 'code': 200, 'message': 'Ok all right.' }
@@ -401,3 +406,65 @@ class Map(dict):
     def __delitem__(self, key):
         super(Map, self).__delitem__(key)
         del self.__dict__[key]
+
+
+def make_verifycode_img():
+    """生产验证码图片"""
+    # 生成验证码背景颜色
+    def get_background_color():
+        return (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100))
+
+    # 生成验证码文字颜色
+    def get_font_color():
+        return (random.randint(101, 255), random.randint(101, 255), random.randint(101, 255))
+
+    # 生成验证码单个文字
+    def get_random_char():
+        random_num=str(random.randint(0,9))
+        random_upper_alph=chr(random.randint(65,90))
+        random_lowwer_alph=chr(random.randint(97,122))
+        random_char=random.choice([random_num,random_lowwer_alph,random_upper_alph])
+
+        return random_char
+
+    image = Image.new(mode="RGB", size=(260, 40), color=get_background_color())
+    draw=ImageDraw.Draw(image,mode="RGB")
+    font=ImageFont.truetype('app/static/fonts/kumo.ttf',size=32)
+
+    verifycode=""
+    for i in range(1,6):
+        char=get_random_char()
+        verifycode+=char
+        draw.text([i*40,5],char,get_font_color(),font=font)
+
+    width=260
+    height=40
+    for i in range(80):
+        draw.point((random.randint(0,width),random.randint(0,height)),fill=get_background_color())
+
+    for i in range(10):
+        x1=random.randint(0,width)
+        x2=random.randint(0,width)
+        y1=random.randint(0,height)
+        y2=random.randint(0,height)
+        draw.line((x1,y1,x2,y2),fill=get_background_color())
+    for i in range(40):
+        draw.point([random.randint(0, width), random.randint(0, height)], fill=get_background_color())
+        x = random.randint(0, width)
+        y = random.randint(0, height)
+        draw.arc((x, y, x + 4, y + 4), 0, 90, fill=get_background_color())
+
+    f=BytesIO()
+    image.save(f, "png")
+    data=f.getvalue()
+
+    return verifycode,data
+
+
+def make_phoneverifycode():
+    """生成手机验证码"""
+    phoneverifycode = ''
+    for i in range(4):
+        random_num = str(random.randint(0, 9))
+        phoneverifycode += random_num
+    return phoneverifycode

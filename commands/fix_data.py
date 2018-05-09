@@ -25,8 +25,8 @@ class FixData(Command):
                 address_str=address)
 
             order.buyer_province = buyer_province
-            order.buyer_city = buyer_city
-            order.buyer_area = buyer_area
+            order.buyer_city = buye_city
+            order.buyer_area = buyerr_area
             order.buyer_address = buyer_address
 
         db.session.commit()

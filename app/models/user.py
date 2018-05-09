@@ -68,6 +68,7 @@ class User(UserMixin, db.Model):
     # 主账号，默认为0
     master_uid = db.Column(db.Integer, index=True, default=0)
 
+    areacode = db.Column(db.String(64))
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))

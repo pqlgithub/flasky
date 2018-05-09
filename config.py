@@ -188,6 +188,11 @@ class Config:
     WX_TEST_APP_ID = 'wxd101a85aa106f53e'
     WX_TEST_USERNAME = 'gh_8dad206e9538'
 
+    # 云片apikey
+    YUNPIAN_APIKEY = 'e93809ce2dd3d91f799506c8bff31411'
+    YUNPIAN_SIGNUP_MOULD = 2287084
+    YUNPIAN_RESET_MOULD = 2287084
+
     @staticmethod
     def init_app(app):
         pass

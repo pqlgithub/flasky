@@ -2,89 +2,111 @@
 
 {% block jquery %}
     var h = $(window).height();
-	$('.has-full-screen-bg .upper-wrapper').css({'height': h});
+    $('.has-full-screen-bg .upper-wrapper').css({'height': h});
+
+    // 刷新验证码
+    $("#valid_img").click(function () {
+        $(this)[0].src += "?"
+    });
 {% endblock %}
 
 {% block header %}
 {% endblock %}
 
 {% block content %}
-<div class="has-full-screen-bg">
-	<div class="upper-wrapper">
-		<header class="header">
-			<div class="container">
-				<h1 class="logo">
-					<a href="{{ url_for('site.web_index') }}">
-						<span class="logo-icon"></span>
-						<span class="text">小灵兽</span>
-					</a>
-				</h1>
-			</div>
-		</header>
-		<section class="login-section access-section section">
-			<div class="container">
-				<div class="row">
-					<div class="form-box col-md-offset-3 col-sm-offset-0 xs-offset-0 col-xs-12 col-md-6">
-						<div class="form-box-inner">
-							<div class="row">
-								<h2 class="title text-center">{{ _('Login') }}</h2>
+    <div class="has-full-screen-bg">
+        <div class="upper-wrapper">
+            <header class="header">
+                <div class="container">
+                    <h1 class="logo">
+                        <a href="{{ url_for('site.web_index') }}">
+                            <span class="logo-icon"></span>
+                            <span class="text">小灵兽</span>
+                        </a>
+                    </h1>
+                </div>
+            </header>
+            <section class="login-section access-section section">
+                <div class="container">
+                    <div class="row">
+                        <div class="form-box col-md-offset-3 col-sm-offset-0 xs-offset-0 col-xs-12 col-md-6">
+                            <div class="form-box-inner">
+                                <div class="row">
+                                    <h2 class="title text-center">{{ _('Login') }}</h2>
 
-								<form class="form-signin" action="" method="post" name="login">
-									{{ form.hidden_tag() }}
+                                    <form class="form-signin" action="" method="post" name="login">
+                                        {{ form.hidden_tag() }}
 
-									{% with messages = get_flashed_messages(with_categories=true) %}
-									{% if messages %}
-									<div class="flashes">
-										{% for category, message in messages %}
-										<div class="alert alert-{{ category|default('danger') }} alert-dismissable">
-											<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
-											{{ message }}
-										</div>
-										{% endfor %}
-									</div>
-									{% endif %}
-									{% endwith %}
+                                        {% with messages = get_flashed_messages(with_categories=true) %}
+                                            {% if messages %}
+                                                <div class="flashes">
+                                                    {% for category, message in messages %}
+                                                        <div class="alert alert-{{ category|default('danger') }} alert-dismissable">
+                                                            <button class="close" type="button" data-dismiss="alert"
+                                                                    aria-hidden="true">×
+                                                            </button>
+                                                            {{ message }}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
 
-									<div class="form-group form-group-lg">
-										<label for="email" class="sr-only">{{ _('Account') }}</label>
-										<input type="email" id="email" name="email" class="form-control" placeholder="{{ _('Email') }}" required autofocus>
-										{% for error in form.errors.email %}
-										<span class="help-block">{{ error }}</span><br>
-										{% endfor %}
-									</div>
+                                        <div class="form-group form-group-lg">
+                                            <label for="email" class="sr-only">{{ _('Account') }}</label>
+                                            <input type="text" id="email" name="email" class="form-control"
+                                                   placeholder="{{ _('Email') }}" required>
+                                            {% for error in form.errors.email %}
+                                                <span class="help-block">{{ error }}</span><br>
+                                            {% endfor %}
+                                        </div>
 
-									<div class="form-group form-group-lg">
-										<label for="password" class="sr-only">{{ _('Password') }}</label>
-										<input type="password" id="password" name="password" class="form-control" placeholder="{{ _('Password') }}" required>
-										{% for error in form.errors.password %}
-										<span class="help-block">{{ error }}</span><br>
-										{% endfor %}
-									</div>
+                                        <div class="form-group form-group-lg">
+                                            <label for="password" class="sr-only">{{ _('Password') }}</label>
+                                            <input type="password" id="password" name="password" class="form-control"
+                                                   placeholder="{{ _('Password') }}" required>
+                                            {% for error in form.errors.password %}
+                                                <span class="help-block">{{ error }}</span><br>
+                                            {% endfor %}
+                                        </div>
 
-									<p class="forgot-password">
-										<a href="reset-password.html">Forgot password?</a>
-									</p>
+                                        {% if status == 'loginerror' %}
+                                            <!--验证码-->
+                                            <div class="form-group form-group-lg">
+                                                <label for="verifycode" class="sr-only">验证码</label>
+                                                <input type="text" id="verifycode" name="verifycode"
+                                                       class="" placeholder="验证码" required>
+                                                <img src="{{ url_for('auth.get_verifycode_img') }}" width="150"
+                                                     height="30"
+                                                     id="valid_img" ondragstart="return false;">
+                                            </div>
+                                        {% endif %}
 
-									<button class="btn btn-lg btn-mixpus btn-block" type="submit">{{ _('Login in') }}</button>
+                                        <p class="forgot-password">
+                                            <a href="{{ url_for('auth.reset_password') }}">Forgot password?</a>
+                                        </p>
 
-									<div class="checkbox remember">
-										<label>
-											{{ form.remember_me }} Remember me
-										</label>
-									</div>
+                                        <button class="btn btn-lg btn-mixpus btn-block"
+                                                type="submit">{{ _('Login in') }}</button>
 
-									<div class="lead">
-										{{ _("Don't have a account yet? ") }}
-										<a href="{{ url_for('auth.signup') }}">{{ _('Create your account now') }}</a>
-									</div>
+                                        <div class="checkbox remember">
+                                            <label>
+                                                {{ form.remember_me }} Remember me
+                                            </label>
+                                        </div>
 
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	</div>
-</div>
+                                        <div class="lead">
+                                            {{ _("Don't have a account yet? ") }}
+                                            <a href="{{ url_for('auth.signup') }}">{{ _('Create your account now') }}</a>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 {% endblock %}
