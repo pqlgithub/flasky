@@ -39,6 +39,7 @@ class Solution(db.Model):
     useful_count = db.Column(db.Integer, default=0)
     # 无用的数量
     useless_count = db.Column(db.Integer, default=0)
+
     # 无用的原因
     # 描述不清楚
     cause_describe = db.Column(db.Integer, default=0)

@@ -26,4 +26,5 @@ from .reminder import Reminder
 from .search import SearchHistory
 from .weixin import WxToken, WxAuthCode, WxAuthorizer, WxMiniApp, WxPayment, WxTemplate, WxVersion, WxServiceMessage, \
     WxServiceFrom
+from .announcement import Announcement
 from .qa import Question, Solution

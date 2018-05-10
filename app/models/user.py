@@ -437,7 +437,7 @@ def load_user(user_id):
 
 
 class Site(db.Model):
-    """公司信息配置"""
+    """个人或公司认证信息及偏好配置"""
 
     __tablename__ = 'sites'
 
