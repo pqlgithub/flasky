@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from app import db
-from app.models import Order, SalesLogStatistics
+from app.models import Order, SalesLogStats
 
 
 class SalesLog(object):
@@ -37,7 +37,7 @@ class SalesLog(object):
         from .day_summary import DaySummary
 
         try:
-            sales_logs = SalesLogStatistics.query.filter_by(order_id=self.order_id).all()
+            sales_logs = SalesLogStats.query.filter_by(order_id=self.order_id).all()
             for item in sales_logs:
                 item.status = -1
                
@@ -56,7 +56,7 @@ class SalesLog(object):
         product = sku.product
         category_ids = product.category_ids
 
-        sales_log_statistics = SalesLogStatistics(
+        sales_log_statistics = SalesLogStats(
             master_uid=self.master_uid,
             store_id=self.store_id,
             order_id=self.order_id,

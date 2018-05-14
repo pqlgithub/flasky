@@ -75,8 +75,8 @@ class Store(db.Model):
     )
 
     # store and store_statistics => 1 to N
-    store_statistics = db.relationship(
-        'StoreStatistics', backref='store', lazy='dynamic'
+    store_stats = db.relationship(
+        'StoreStats', backref='store', lazy='dynamic'
     )
 
     # store and product_packet => 1 to N

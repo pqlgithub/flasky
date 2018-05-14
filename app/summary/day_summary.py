@@ -2,14 +2,14 @@
 from datetime import datetime
 
 from app import db
-from app.models import SalesLogStatistics, DaySkuStatistics
+from app.models import SalesLogStats, DaySkuStats
 
 
 class DaySummary(object):
     """每日汇总结算"""
 
     def __init__(self, order_id):
-        self.sales_logs = SalesLogStatistics.query.filter_by(order_id=order_id).all()
+        self.sales_logs = SalesLogStats.query.filter_by(order_id=order_id).all()
 
     def pay_run(self):
         self.__action(self.__add)
@@ -33,13 +33,13 @@ class DaySummary(object):
 
     def __add(self, sales_log, income, profit, sales_day):
         # 查询加独占锁
-        day_sku = DaySkuStatistics.query.with_for_update(read=False).filter_by(
+        day_sku = DaySkuStats.query.with_for_update(read=False).filter_by(
             store_id=sales_log.store_id,
             sku_id=sales_log.sku_id,
             time=sales_day).first()
 
         if day_sku is None:
-            day_sku = DaySkuStatistics(
+            day_sku = DaySkuStats(
                 master_uid=sales_log.master_uid,
                 store_id=sales_log.store_id,
                 product_id=sales_log.product_id,
@@ -59,7 +59,7 @@ class DaySummary(object):
 
     def __delete(self, sales_log, income, profit, sales_day):
         # 加独占锁
-        day_sku = DaySkuStatistics.query.with_for_update(read=False).filter_by(
+        day_sku = DaySkuStats.query.with_for_update(read=False).filter_by(
             store_id=sales_log.store_id,
             sku_id=sales_log.sku_id,
             time=sales_day).first()

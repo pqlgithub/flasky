@@ -4,11 +4,11 @@ import datetime
 import pandas as pd
 import numpy as np
 from sqlalchemy import func
-from flask import render_template, redirect, url_for, abort, flash, request
+from flask import render_template, request
 from . import main
 from .. import db
 from ..decorators import user_has
-from app.models import MasterStatistics, StoreStatistics, ProductStatistics, DaySkuStatistics, Store, Supplier, ProductSku
+from app.models import MasterStats, StoreStats, ProductStats, DaySkuStats, Store, Supplier, ProductSku
 from ..utils import Master, full_response, R200_OK
 
 
@@ -26,15 +26,15 @@ def load_common_data():
 def stats():
     # 主账号当前月份统计
     month = time.strftime("%Y%m")
-    master_statistics = MasterStatistics.query.filter_by(time=month, master_uid=Master.master_uid(), type=1).first()
+    master_stats = MasterStats.query.filter_by(time=month, master_uid=Master.master_uid(), type=1).first()
 
     # 各店铺当前月份统计
-    store_statistics = StoreStatistics.query.filter_by(time=month, master_uid=Master.master_uid(), type=1)\
-        .order_by(StoreStatistics.store_id.asc()).all()
+    store_stats = StoreStats.query.filter_by(time=month, master_uid=Master.master_uid(), type=1)\
+        .order_by(StoreStats.store_id.asc()).all()
 
     return render_template('stats/index.html',
-                           master_statistics=master_statistics,
-                           store_statistics=store_statistics,
+                           master_statistics=master_stats,
+                           store_statistics=store_stats,
                            sub_menu='stats',
                            **load_common_data())
 
@@ -43,15 +43,16 @@ def stats():
 @user_has('admin_reports')
 def store_sku_top():
     """获取店铺sku销售排行"""
+
     store_id = request.form.get('store_id', type=int)
 
     month = datetime.datetime.now().strftime("%Y%m")
-    product_top = ProductStatistics.query.filter_by(
+    product_top = ProductStats.query.filter_by(
         store_id=store_id,
         type=2,
         time_type=1,
         time=month,
-    ).order_by(ProductStatistics.income.desc()).all()
+    ).order_by(ProductStats.income.desc()).all()
 
     data = []
     for v in product_top:
@@ -80,14 +81,14 @@ def sales_master():
     new_end_date = request.args.get("end_time")
     start_time, end_time = list(summary_time_range(new_start_date, new_end_date))
 
-    builder = db.session.query(func.sum(DaySkuStatistics.income).label('income'), DaySkuStatistics.time)\
-        .select_from(DaySkuStatistics).filter_by(master_uid=Master.master_uid())
+    builder = db.session.query(func.sum(DaySkuStats.income).label('income'), DaySkuStats.time)\
+        .select_from(DaySkuStats).filter_by(master_uid=Master.master_uid())
     if start_time:
-        builder = builder.filter(DaySkuStatistics.time >= start_time)
+        builder = builder.filter(DaySkuStats.time >= start_time)
     if end_time:
-        builder = builder.filter(DaySkuStatistics.time <= end_time)
+        builder = builder.filter(DaySkuStats.time <= end_time)
 
-    day_sku_statistics = builder.group_by(DaySkuStatistics.time)
+    day_sku_statistics = builder.group_by(DaySkuStats.time)
 
     data = pd.read_sql(day_sku_statistics.statement, db.session.bind)
 
@@ -121,10 +122,10 @@ def sales_store():
         summary_time_range(new_start_date, new_end_date))
 
     day_sku_statistics = db.session.query(
-        DaySkuStatistics.income,
-        DaySkuStatistics.time, DaySkuStatistics.store_id).filter(
-            DaySkuStatistics.time >= start_time).filter(
-                DaySkuStatistics.time <= end_time).filter_by(
+        DaySkuStats.income,
+        DaySkuStats.time, DaySkuStats.store_id).filter(
+            DaySkuStats.time >= start_time).filter(
+                DaySkuStats.time <= end_time).filter_by(
                     master_uid=Master.master_uid())
     data = pd.read_sql(day_sku_statistics.statement, db.session.bind)
     if not data.empty:
@@ -165,10 +166,10 @@ def sales_supplier():
         summary_time_range(new_start_date, new_end_date))
     
     day_sku_statistics = db.session.query(
-        DaySkuStatistics.income,
-        DaySkuStatistics.time, DaySkuStatistics.supplier_id).filter(
-            DaySkuStatistics.time >= start_time).filter(
-                DaySkuStatistics.time <= end_time).filter_by(
+        DaySkuStats.income,
+        DaySkuStats.time, DaySkuStats.supplier_id).filter(
+            DaySkuStats.time >= start_time).filter(
+                DaySkuStats.time <= end_time).filter_by(
                     master_uid=Master.master_uid())
     data = pd.read_sql(day_sku_statistics.statement, db.session.bind)
     if not data.empty:

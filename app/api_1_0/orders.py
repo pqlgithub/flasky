@@ -10,7 +10,7 @@ from .utils import *
 from app.helpers import WxPay, WxPayError
 from app.models import Order, OrderItem, Address, ProductSku, Warehouse, OrderStatus, WxPayment, WxMiniApp
 from app.utils import timestamp
-from app.tasks import remove_order_cart, update_coupon_status, sales_statistics
+from app.tasks import remove_order_cart, update_coupon_status, sales_stats
 
 
 @api.route('/orders')
@@ -176,7 +176,7 @@ def _update_order_status(rid, status):
         current_order.mark_checked_status()
 
         # 触发异步任务
-        sales_statistics.delay(current_order.id)
+        sales_stats.delay(current_order.id)
 
     elif status == OrderStatus.SIGNED:  # 已签收
         current_order.mark_finished_status()

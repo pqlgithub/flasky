@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from flask import current_app
 from app import db
-from app.models import Order, OrderItem, ProductSku, MasterStatistics, StoreStatistics, ProductStatistics
+from app.models import Order, ProductSku, MasterStats, StoreStats, ProductStats
 
 
 class Sales(object):
@@ -93,11 +93,11 @@ class StoreSales(Sales):
     def __master_year(self):
         """主账户按年统计处理 收入、利润、收入同比、利润同比"""
 
-        master_statistics_last_year = MasterStatistics.query.filter_by(
+        master_statistics_last_year = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_year, type=2).first()
 
         # 查询加独占锁
-        master_statistics_year = MasterStatistics.query.with_for_update(read=False).filter_by(
+        master_statistics_year = MasterStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.year, type=2).first()
 
         if master_statistics_year is None:
@@ -115,7 +115,7 @@ class StoreSales(Sales):
                 income_yoy = None
                 profit_yoy = None
 
-            master_statistics = MasterStatistics(
+            master_statistics = MasterStats(
                 master_uid=self.master_uid,
                 time=self.year,
                 type=2,
@@ -144,14 +144,14 @@ class StoreSales(Sales):
     def __master_month(self):
         """主账户按月统计处理"""
 
-        master_statistics_last_month = MasterStatistics.query.filter_by(
+        master_statistics_last_month = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_month, type=1).first()
 
-        master_statistics_last_year_month = MasterStatistics.query.filter_by(
+        master_statistics_last_year_month = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_year_month,
             type=1).first()
 
-        master_statistics_month = MasterStatistics.query.with_for_update(read=False).filter_by(
+        master_statistics_month = MasterStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.month, type=1).first()
 
         if master_statistics_month is None:
@@ -181,7 +181,7 @@ class StoreSales(Sales):
                 income_mom = None
                 profit_mom = None
 
-            master_statistics = MasterStatistics(
+            master_statistics = MasterStats(
                 master_uid=self.master_uid,
                 time=self.month,
                 type=1,
@@ -220,13 +220,13 @@ class StoreSales(Sales):
     def __store_year(self):
         """子账户按年统计处理"""
 
-        store_statistics_last_year = StoreStatistics.query.filter_by(
+        store_statistics_last_year = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year,
             store_id=self.store_id,
             type=2).first()
 
-        store_statistics_year = StoreStatistics.query.with_for_update(read=False).filter_by(
+        store_statistics_year = StoreStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             store_id=self.store_id,
             time=self.year,
@@ -245,7 +245,7 @@ class StoreSales(Sales):
                 income_yoy = None
                 profit_yoy = None
 
-            store_statistics = StoreStatistics(
+            store_statistics = StoreStats(
                 master_uid=self.master_uid,
                 store_id=self.store_id,
                 time=self.year,
@@ -274,19 +274,19 @@ class StoreSales(Sales):
     def __store_month(self):
         """子账户按月统计处理"""
 
-        store_statistics_last_month = StoreStatistics.query.filter_by(
+        store_statistics_last_month = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_month,
             store_id=self.store_id,
             type=1).first()
 
-        store_statistics_last_year_month = StoreStatistics.query.filter_by(
+        store_statistics_last_year_month = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year_month,
             store_id=self.store_id,
             type=1).first()
 
-        store_statistics_month = StoreStatistics.query.with_for_update(read=False).filter_by(
+        store_statistics_month = StoreStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             time=self.month,
             store_id=self.store_id,
@@ -319,7 +319,7 @@ class StoreSales(Sales):
                 income_mom = None
                 profit_mom = None
 
-            store_statistics = StoreStatistics(
+            store_statistics = StoreStats(
                 master_uid=self.master_uid,
                 store_id=self.store_id,
                 time=self.month,
@@ -359,9 +359,9 @@ class StoreSales(Sales):
     def __refund_master_year(self):
         """退款时主账户按年统计处理"""
 
-        master_statistics_last_year = MasterStatistics.query.filter_by(
+        master_statistics_last_year = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_year, type=2).first()
-        master_statistics_year = MasterStatistics.query.with_for_update(read=False).filter_by(
+        master_statistics_year = MasterStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.year, type=2).first()
 
         master_statistics_year.income = float(
@@ -382,14 +382,14 @@ class StoreSales(Sales):
     def __refund_master_year(self):
         """退款时主账户按月统计处理"""
 
-        master_statistics_last_month = MasterStatistics.query.filter_by(
+        master_statistics_last_month = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_month, type=1).first()
 
-        master_statistics_last_year_month = MasterStatistics.query.filter_by(
+        master_statistics_last_year_month = MasterStats.query.filter_by(
             master_uid=self.master_uid, time=self.last_year_month,
             type=1).first()
 
-        master_statistics_month = MasterStatistics.query.with_for_update(read=False).filter_by(
+        master_statistics_month = MasterStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid, time=self.month, type=1).first()
 
         master_statistics_month.income = float(
@@ -420,12 +420,12 @@ class StoreSales(Sales):
     def __refund_store_year(self):
         """退款时子账户按年统计处理"""
 
-        store_statistics_last_year = StoreStatistics.query.filter_by(
+        store_statistics_last_year = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year,
             store_id=self.store_id,
             type=2).first()
-        store_statistics_year = StoreStatistics.query.with_for_update(read=False).filter_by(
+        store_statistics_year = StoreStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             store_id=self.store_id,
             time=self.year,
@@ -449,19 +449,19 @@ class StoreSales(Sales):
     def __refund_store_month(self):
         """退款时子账户按月统计处理"""
 
-        store_statistics_last_month = StoreStatistics.query.filter_by(
+        store_statistics_last_month = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_month,
             store_id=self.store_id,
             type=1).first()
 
-        store_statistics_last_year_month = StoreStatistics.query.filter_by(
+        store_statistics_last_year_month = StoreStats.query.filter_by(
             master_uid=self.master_uid,
             time=self.last_year_month,
             store_id=self.store_id,
             type=1).first()
 
-        store_statistics_month = StoreStatistics.query.with_for_update(read=False).filter_by(
+        store_statistics_month = StoreStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             time=self.month,
             store_id=self.store_id,
@@ -549,7 +549,7 @@ class StoreProductSales(Sales):
         Returns:
             数据模型 | None.
         """
-        product_master = ProductStatistics.query.with_for_update(read=False).filter_by(
+        product_master = ProductStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             time=date,
             time_type=time_type,
@@ -569,7 +569,7 @@ class StoreProductSales(Sales):
         Returns:
             数据模型 | None
         """
-        product_store = ProductStatistics.query.with_for_update(read=False).filter_by(
+        product_store = ProductStats.query.with_for_update(read=False).filter_by(
             master_uid=self.master_uid,
             store_id=self.store_id,
             time=date,
@@ -602,7 +602,7 @@ class StoreProductSales(Sales):
                     income_yoy = None
                     profit_yoy = None
 
-                product_master_statistics = ProductStatistics(
+                product_master_statistics = ProductStats(
                     master_uid=self.master_uid,
                     sku_id=v['sku_id'],
                     sku_serial_no=v['sku_serial_no'],
@@ -669,7 +669,7 @@ class StoreProductSales(Sales):
                     income_mom = None
                     profit_mom = None
 
-                product_master = ProductStatistics(
+                product_master = ProductStats(
                     master_uid=self.master_uid,
                     sku_id=v['sku_id'],
                     sku_serial_no=v['sku_serial_no'],
@@ -735,7 +735,7 @@ class StoreProductSales(Sales):
                     income_yoy = None
                     profit_yoy = None
 
-                product_store_year = ProductStatistics(
+                product_store_year = ProductStats(
                     master_uid=self.master_uid,
                     store_id=self.store_id,
                     sku_id=v['sku_id'],
@@ -804,7 +804,7 @@ class StoreProductSales(Sales):
                     income_mom = None
                     profit_mom = None
 
-                product_master = ProductStatistics(
+                product_master = ProductStats(
                     master_uid=self.master_uid,
                     store_id=self.store_id,
                     sku_id=v['sku_id'],

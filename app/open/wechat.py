@@ -8,7 +8,7 @@ from .. import db, cache
 from app.models import WxToken, WxAuthorizer, WxServiceMessage, WxMiniApp, WxVersion, Order, OrderStatus, \
     SubscribeService
 from app.helpers import WXBizMsgCrypt, WxAppError, WxApp, WxPay, WxPayError, WxService, WxReply
-from app.tasks import reply_wxa_service, sales_statistics
+from app.tasks import reply_wxa_service, sales_stats
 from app.utils import Master, custom_response, timestamp, status_response
 
 
@@ -232,7 +232,7 @@ def wxpay_notify():
             current_order.payed_at = int(timestamp())
 
             # 触发异步任务
-            sales_statistics.delay(current_order.id)
+            sales_stats.delay(current_order.id)
 
             db.session.commit()
 

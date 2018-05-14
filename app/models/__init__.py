@@ -21,7 +21,7 @@ from .shop import Shop, ShopSeo
 from .customer import Customer, CustomerGrade, ProductPacket, DiscountTemplet, DiscountTempletItem, \
     CustomerDistributePacket
 from .counter import Counter
-from .statistics import MasterStatistics, StoreStatistics, ProductStatistics, SalesLogStatistics, DaySkuStatistics
+from .stats import MasterStats, StoreStats, ProductStats, SalesLogStats, DaySkuStats
 from .reminder import Reminder
 from .search import SearchHistory
 from .weixin import WxToken, WxAuthCode, WxAuthorizer, WxMiniApp, WxPayment, WxTemplate, WxVersion, WxServiceMessage, \

@@ -3,8 +3,8 @@ from app.extensions import fsk_celery
 from app.summary import StoreSales, StoreProductSales, SalesLog
 
 
-@fsk_celery.task(name='stats.sales_statistics')
-def sales_statistics(order_id):
+@fsk_celery.task(name='stats.sales_stats')
+def sales_stats(order_id):
     """订单支付后触发任务"""
 
     # 销售统计
@@ -17,8 +17,8 @@ def sales_statistics(order_id):
     StoreProductSales(order_id).order_pay()
 
 
-@fsk_celery.task(name='stats.refund_statistics')
-def refund_statistics(order_id):
+@fsk_celery.task(name='stats.refund_stats')
+def refund_stats(order_id):
     """订单退款后重新汇总"""
 
     # 销售退款

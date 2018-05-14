@@ -25,7 +25,7 @@ from app.models import Product, Order, OrderItem, OrderStatus, Warehouse, Store,
 from app.forms import OrderForm, OrderExpressForm, OrderRemark
 from .filters import supress_none, timestamp2string, break_line
 from app.helpers import kdniao, MixGenId
-from app.tasks import sales_statistics
+from app.tasks import sales_stats
 
 status_list = (
     (OrderStatus.PENDING_PAYMENT, lazy_gettext('Pending Payment')),
@@ -1072,7 +1072,7 @@ def ajax_verify_order():
                 order.mark_checked_status()
 
                 # 触发异步任务
-                sales_statistics.delay(order.id)
+                sales_stats.delay(order.id)
 
             # 完成审核，待发货状态
             elif order.status == OrderStatus.PENDING_CHECK:
@@ -1393,7 +1393,7 @@ def import_express_of_order(order_list, store_id):
     
     for order_info in order_list:
         # 验证是否已经存在
-        current_order=  Order.query.filter_by(master_uid=Master.master_uid(),
+        current_order = Order.query.filter_by(master_uid=Master.master_uid(),
                                  outside_target_id=order_info['serial_no']).first()
         if current_order is None:
             current_app.logger.warn("Order[%s] isn't exist!" % order_info['serial_no'])
