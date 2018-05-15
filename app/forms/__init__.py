@@ -16,3 +16,4 @@ from .address_forms import PlaceForm, CountryForm, EditCountryForm
 from .channel_forms import BannerForm, BannerImageForm
 from .market_forms import CouponForm, WxReplyForm
 from .wxapp_forms import WxPaymentForm
+from .qs_forms import QuestionForm, SolutionForm

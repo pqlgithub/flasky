@@ -1,0 +1,11 @@
+<div class="list-group">
+	<div class="list-group-header">
+		{{ _('问答管理') }}
+	</div>
+	<a href="{{ url_for('adminlte.show_questions') }}" class="list-group-item {% if sub_menu == 'questions'%} active{% endif %}">
+		{{ _('问题管理') }}
+	</a>
+	<a href="{{ url_for('adminlte.show_solutions') }}" class="list-group-item {% if sub_menu == 'solutions'%} active{% endif %}">
+		{{ _('解答管理') }}
+	</a>
+</div>

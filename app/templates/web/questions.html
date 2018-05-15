@@ -1,0 +1,55 @@
+{% extends "layout/web.html" %}
+
+{% block private_js %}
+<script type="text/javascript">
+	var click_question_item = function () {
+		var question_id = $('.question-list li').attr('id')
+	};
+
+	$(function () {
+        $('.question-list ul').bind('click', click_question_item);
+	});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="headline-bg"></div>
+
+<section class="features-video section section-on-bg">
+<div class="container text-center">
+    <h2 class="title">帮助您解答常见问题</h2>
+    <div class="video-container">
+        <div class="fluid-width-video-wrapper">
+            <p>您想知道的，它就在这里。</p>
+        </div>
+    </div>
+</div>
+</section>
+
+<section class="helps">
+    <form action="" class="form-search" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+        <input type="text" class="input" placeholder="请输入问题">
+        <input type="submit" class="search" value="搜索">
+    </form>
+
+    <div class="container">
+        <div class="question-list">
+            <ul>
+            {% for question in questions %}
+                <li class="question" id={{ question.id }}>
+                    {{ question.name }}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="sub-question">
+            <p class="question-name">问题01</p>
+            <ul>
+                <li>
+                这里是问题01详细问题列表
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

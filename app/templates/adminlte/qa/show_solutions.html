@@ -1,0 +1,75 @@
+{% extends "layout/admin.html" %}
+
+{% block sidebar %}
+	{% include 'adminlte/qa/_sub_menu.html' %}
+{% endblock %}
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.hook_per_page_select();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="list-page">
+	<div class="page-header">
+		{{ _('解答列表') }}
+		<span class="pull-right">
+			{% include 'block/_select_items.html' %}
+            <a href="{{ url_for('adminlte.create_solution') }}" class="btn btn-mixpus pjax" data-toggle="tooltip" data-original-title="{{ _('Add New') }}">
+				<i class="fa fa-plus"></i>
+			</a>
+			<button class="btn btn-danger delete-all hidden" data-form-id="solutions-form" type="button" data-toggle="tooltip" data-original-title="{{ _('Delete') }}">
+				<i class="fa fa-trash"></i>
+			</button>
+		</span>
+	</div>
+
+    <div class="table-responsive m-t-20">
+		<form id="solutions-form" action="{{ url_for('adminlte.delete_solution') }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+            <table class="table table-bordered table-striped table-hover">
+				<thead>
+                    <tr>
+                        <th class="text-center">
+                            <input name="check_all" type="checkbox" class="check-all">
+                        </th>
+                        <th class="text-center">{{ '问题类别' }}</th>
+                        <th class="text-center">{{ '标题' }}</th>
+                        <th class="text-right">{{ _('Action') }}</th>
+                    </tr>
+				</thead>
+				<tbody>
+				{% for solution in paginated_solutions.items %}
+                    <tr>
+                        <td class="text-center">
+                            <input name="selected[]" class="check-one" value="{{ solution.id }}" type="checkbox">
+                        </td>
+                        <td class="text-center">
+                            {{ solution.question_name }}
+                        </td>
+                        <td>
+                            {{ solution.title }}
+                        </td>
+                        <td class="text-right">
+                            <a href="{{ url_for('adminlte.edit_solution', id=solution.id) }}" class="pjax btn-link" data-toggle="tooltip" data-original-title="{{ _('Edit') }}">
+                                {{ _('Edit') }}
+                            </a>
+                        </td>
+                    </tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</form>
+
+
+        {% import "block/_macros.html" as macros %}
+		{{ macros.pagination_widget(paginated_solutions, '.show_solutions') }}
+	</div>
+</div>
+{% endblock %}

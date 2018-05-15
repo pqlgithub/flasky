@@ -23,6 +23,14 @@ class Question(db.Model):
     def __repr__(self):
         return '<Question {}>'.format(self.name)
 
+    @property
+    def p_name(self):
+        if self.pid > 0:
+            question = Question.query.get(self.pid)
+            return question.name
+        else:
+            return ''
+
 
 class Solution(db.Model):
     """问题的解决方案"""
@@ -55,3 +63,8 @@ class Solution(db.Model):
 
     def __repr__(self):
         return '<Solution {}>'.format(self.id)
+
+    @property
+    def question_name(self):
+        question = Question.query.get(self.question_id)
+        return question.name

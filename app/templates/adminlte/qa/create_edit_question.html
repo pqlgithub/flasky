@@ -1,0 +1,66 @@
+{% extends pjax("layout/admin.html") %}
+
+{% block sidebar %}
+	{% include 'adminlte/qa/_sub_menu.html' %}
+{% endblock %}
+
+
+{% block after_jquery %}
+<script type="text/javascript">
+	$(function () {
+		mixpus.init_page_layout();
+
+		mixpus.upload_file_manager();
+	});
+</script>
+{% endblock %}
+
+{% block mainbar %}
+<div class="form-page">
+	<div class="page-header">
+        {% if mode == 'create' %}
+		{{ _('添加问题') }}
+        {% elif mode == 'edit' %}
+        {{ _('修改问题') }}
+        {% endif %}
+
+		<span class="pull-right">
+            <button type="submit" form="questions-form" class="btn btn-icon btn-mixpus" data-toggle="tooltip" data-original-title="{{ _('Save') }}">
+				<i class="fa fa-save"></i>
+			</button>
+			<a href="{{ url_for('adminlte.show_questions') }}" class="pjax btn btn-default" data-toggle="tooltip" data-original-title="{{ _('Cancel') }}">
+				<i class="fa fa-reply"></i>
+			</a>
+		</span>
+	</div>
+
+    <form id="questions-form" class="form-horizontal" action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+
+        <div class="form-group">
+        	<div class="form-group m-b-25">
+                {{ form.pid.label(class="col-sm-2 control-label") }}
+                <div class="col-sm-4">
+                    <select name="pid" id="pid" class="form-control select2">
+{#                        <option value="0">{{ _('Select question...') }}</option>#}
+                        <option value="0">{{ _('选择问题...') }}</option>
+                        {% for question in paginated_questions.items %}
+                        <option value="{{ question.id }}" {% if current_question.pid == question.id %}selected="selected"{% endif %}>{{ question.name|safe }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group required {% if form.errors.name %} has-error{% endif %}">
+                {{ form.name.label(class="col-sm-2 control-label") }}
+                <div class="col-sm-6">
+                    {{ form.name(id="name", class="form-control") }}
+                    {% for error in form.errors.name %}
+                    <span class="help-block">{{ error }}</span><br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
