@@ -31,6 +31,13 @@ class Question(db.Model):
         else:
             return ''
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'pid': self.pid
+        }
+
 
 class Solution(db.Model):
     """问题的解决方案"""
@@ -68,3 +75,11 @@ class Solution(db.Model):
     def question_name(self):
         question = Question.query.get(self.question_id)
         return question.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'question_id': self.question_id,
+            'title': self.title,
+            'content': self.content
+        }

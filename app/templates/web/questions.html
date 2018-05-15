@@ -2,12 +2,25 @@
 
 {% block private_js %}
 <script type="text/javascript">
-	var click_question_item = function () {
-		var question_id = $('.question-list li').attr('id')
-	};
-
 	$(function () {
-        $('.question-list ul').bind('click', click_question_item);
+        $('.question-list ul li').on('click', function (e) {
+            var question_id = $(this).attr('id')
+            var question_name = $(this).text()
+            var data = {
+                "pid":question_id,
+            };
+            $.get("{{ url_for('qa.show_sub_questions', pid=16) }}", function (result) {
+                $('#sub-question-list').show()
+                if(true != result.success){
+                    alert(result.data.error)
+                }else{
+                    var sub_questions = result.data.sub_questions;
+                    {% for question in sub_questions %}
+                    $('#sub-question-list li').html('<li>{{ question }}<li>');
+                    {% endfor %}
+                }
+            });
+        });
 	});
 </script>
 {% endblock %}
@@ -43,13 +56,25 @@
             {% endfor %}
             </ul>
         </div>
-        <div class="sub-question">
+        <div id="sub-question-list" class="sub-question">
             <p class="question-name">问题01</p>
             <ul>
-                <li>
-                这里是问题01详细问题列表
-                </li>
+
             </ul>
         </div>
+
+         <div id="solution-content" class="">
+            <p>问题01>详细问题01</p>
+            <p>详细问题01</p>
+            问题解答内容
+         </div>
+
+         <div id="question-search" class="">
+             <p>关于问题，共找到251相关问题</p>
+
+             <p>常见问题1</p>
+             <p>问题标题</p>
+             问题解答内容
+         </div>
     </div>
 {% endblock %}

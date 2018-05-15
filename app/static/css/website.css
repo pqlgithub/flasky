@@ -1938,4 +1938,75 @@ a.btn-ghost .text,
 		position: fixed;
 	}
 }
+/* ======= Helps ======= */
+.helps {
+	background: #f5f5f5;
+	padding-top: 80px;
+	padding-bottom: 120px;
+}
+.helps .form-search{
+	width: 600px;
+	height: 30px;
+	margin: auto;
+}
+.helps .input{
+	height: 100%;
+	padding-left: 10px;
+	float: left;
+	width: 500px;
+}
+.helps .search {
+	height: 100%;
+	border: None;
+	background: green;
+	font-size: 16px;
+	color: white;
+	padding: 2px 15px;
+	float: left;
+}
+.helps .question-list{
+	margin: 20px;
+	width: 200px;
+	height: 100%;
+	background: white;
+	float: left;
+}
+.helps .question-list .active{
+	/*background: green;*/
+	/*color: white;*/
+}
+.question-list ul{
+	padding-left: 0px !important;
+	margin-bottom: 0px;
+}
+.helps .question{
+	padding-left: 30px ;
+	list-style: None;
+	height: 30px;
+	line-height: 30px;
+	border-bottom: 1px solid #eee;
+}
+.helps .sub-question{
+	margin: 20px;
+	width: 800px;
+	height: 600px;
+	background: white;
+	float: left;
+}
+.helps .sub-question .question-name{
+	padding: 0 20px;
+	height: 30px;
+	line-height: 30px;
+	border-bottom: 1px solid #eee;
+}
+.helps .sub-question ul{
+	padding-left: 0px !important;
+	margin-bottom: 0px;
+}
+.helps .sub-question li{
+	padding: 0 20px;
+	list-style: None;
+	height: 30px;
+	line-height: 30px;
+}
 /* Large devices (large desktops, 1200px and up) */
