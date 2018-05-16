@@ -80,6 +80,7 @@ class Solution(db.Model):
         return {
             'id': self.id,
             'question_id': self.question_id,
+            'question_name': self.question_name,
             'title': self.title,
             'content': self.content
         }
