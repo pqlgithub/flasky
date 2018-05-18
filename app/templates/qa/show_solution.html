@@ -1,0 +1,73 @@
+<div class="solution-content">
+    <p class="s-name">{{ solution.question_name }}</p>
+    <p class="s-title">{{ solution.title }}</p>
+    <p class="s-content">{{ solution.content|safe }}</p>
+    <div>
+        <div class="choose-hint">
+            <p>以上信息是否解决了您的问题？</p>
+            <input type="radio" name="choose" value="yes"/>是
+            <input type="radio" name="choose" value="no"/>否
+        </div>
+        <div class="useful-hint">
+            感谢您提供的反馈！
+        </div>
+        <div class="useless-reason">
+            <p>请选择未解决的原因</p>
+            <input type="radio" name="reason" value="1"/>描述不清
+            <input type="radio" name="reason" value="2"/>对产品不满意
+            <input type="radio" name="reason" value="3"/>内容不正确
+            <input type="radio" name="reason" value="4"/>操作后未能解决问题
+            <input type="button" class="submit-reason" value="提交">
+        </div>
+        <div class="useless-hint">
+            感谢您的反馈，我们将持续优化！
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('.choose-hint').show();
+    $('.useful-hint').hide();
+    $('.useless-reason').hide();
+    $('.useless-hint').hide();
+    $("[name='choose']").on("click",function (e) {
+        var choose = $(e.target).val();
+        if('yes' == choose){
+            $('.choose-hint').hide();
+            $('.useless-reason').hide();
+            e.target.checked = false;
+            var data = {
+                'csrf_token': mixpus.csrf_token,
+                solution_id:{{ solution.id }}
+            }
+            $.post("{{ url_for('qa.update_useful') }}", data, function(result){
+                if(result.success){
+                    $('.choose-hint').hide();
+                    $('.useful-hint').show();
+                }else{
+                    alert('更新失败！');
+                }
+            });
+        }else if('no' == choose){
+            $("[name='reason']").attr("checked",false);
+            $('.useless-reason').show();
+            $('.submit-reason').on('click', function (e) {
+                var reason = $("input[name='reason']:checked").val();
+                if(!reason){
+                    alert('请选择原因！');
+                    return;
+                }
+                var data = {
+                    'csrf_token': mixpus.csrf_token,
+                    solution_id:{{ solution.id }},
+                    reason:reason
+                };
+                $.post("{{ url_for('qa.update_useless') }}", data, function (result) {
+                    $('.choose-hint').hide();
+                    $('.useless-reason').hide();
+                    $('.useless-hint').show();
+                });
+            });
+        }
+    });
+</script>

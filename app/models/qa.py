@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from jieba.analyse.analyzer import ChineseAnalyzer
+
 from app import db
 from ..utils import timestamp
 
@@ -38,11 +40,21 @@ class Question(db.Model):
             'pid': self.pid
         }
 
+    def from_json(self, json_question):
+        return Question(
+            id=json_question.get('id'),
+            name=json_question.get('name'),
+            pid=json_question.get('pid')
+        )
+
 
 class Solution(db.Model):
     """问题的解决方案"""
 
     __tablename__ = 'solutions'
+
+    __searchable__ = ['title']
+    __analyzer__ = ChineseAnalyzer()
 
     id = db.Column(db.Integer, primary_key=True)
 

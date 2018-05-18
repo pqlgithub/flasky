@@ -1,0 +1,39 @@
+<div class="solution-list">
+    <p class="question-name">{{ question_name }}</p>
+    <ul class="solutions">
+        {% for solution in paginated_solutions %}
+        <li id="{{ solution.id }}">{{ solution.title }}</li>
+        {% endfor %}
+    </ul>
+
+    {% import "block/_macros.html" as macros %}
+    <div class="pages-box ajax">
+        <nav aria-label="Page navigation">
+            {{ macros.pagination_widget(pagination, '.show_solutions', question_id=question_id) }}
+        </nav>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function show_solution() {
+        var solution_id = $(this).attr('id');
+        $.get("{{ url_for('qa.show_solution') }}", {solution_id: solution_id}, function (result) {
+            $('.content').html(result);
+        }, 'html');
+    }
+
+    $('.solutions li').on('click', show_solution);
+
+    $('.ajax .per-page').change(function (e) {
+	    e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+        $('.solution-list').load(url);
+    });
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('.solution-search').load($(this).attr('href'));
+			return false;
+		});
+</script>

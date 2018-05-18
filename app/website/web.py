@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import render_template
+from flask import render_template, current_app
 from . import site
 
 from app.models import Question
@@ -29,9 +29,12 @@ def about():
     return render_template('web/about.html')
 
 
-@site.route('/questions.html')
-def questions():
+@site.route('/qa.html')
+def qa():
     questions = Question.query.filter_by(pid=0).all()
+    for question in questions:
+        question.sub_questions = Question.query.filter_by(pid=question.id).all()
+
     return render_template('web/questions.html',
-                           active_menu='questions',
+                           active_menu='qa',
                            questions=questions)

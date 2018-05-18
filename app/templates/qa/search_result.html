@@ -1,0 +1,81 @@
+<div class="solution-search">
+    <div class="solution-search">
+        <p class="result-count">关于{{qk}}，共找到{{total_count}}个相关问题</p>
+        <div class="result-show">
+            {% for solution in paginated_solutions %}
+                <p id={{ solution.id }} class="search-title">{{ solution.title }}</p>
+                <div class="search-content">{{ solution.content|safe }}</div>;
+            {% endfor %}
+        </div>
+    </div>
+
+    {% import "block/_macros.html" as macros %}
+    <div class="pages-box ajax">
+        <nav aria-label="Page navigation">
+            {{ macros.pagination_widget(pagination, '.search_solutions', qk=qk) }}
+        </nav>
+    </div>
+</div>
+
+{#<script type="text/javascript">#}
+{##}
+{#    $('.ajax .per-page').change(function (e) {#}
+{#	    e.preventDefault();#}
+{#		var url = $(this).find('option:selected').data('href');#}
+        {#$('.solution-list').load(url);#}
+{#        alert(url)#}
+{#    });#}
+{##}
+{#	$('.pages-box.ajax')#}
+{#		.find('a')#}
+{#		.click(function () {#}
+{#		    alert($(this).attr('href'));#}
+			{#$('.solution-search').load($(this).attr('href'));#}
+{#			return false;#}
+{#		});#}
+{##}
+{#    function show_solution() {#}
+{#        alert('aa');#}
+{#        var solution_id = $(this).attr('id');#}
+{#        var data = {#}
+{#            solution_id: solution_id,#}
+{#            questions: {{ questions }},#}
+{#            active_question: 0#}
+{#        }#}
+{#        $.get("{{ url_for('qa.show_solution') }}", data, function (result) {#}
+{#            $('.content').html(result);#}
+{#        }, 'html');#}
+{#    }#}
+{##}
+{#    $('.search-title').on('click', show_solution);#}
+{##}
+{##}
+{#</script>#}
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+
+<script type="text/javascript">
+    function show_solution() {
+        var solution_id = $(this).attr('id');
+        var data = {
+            solution_id: solution_id,
+        }
+        $.get("{{ url_for('qa.show_solution') }}", data, function (result) {
+            $('.content').html(result);
+        }, 'html');
+    }
+
+    $('.search-title').on('click', show_solution);
+
+    $('.ajax .per-page').change(function (e) {
+	    e.preventDefault();
+		var url = $(this).find('option:selected').data('href');
+        $('.solution-search').load(url);
+    });
+
+	$('.pages-box.ajax')
+		.find('a')
+		.click(function () {
+			$('.solution-search').load($(this).attr('href'));
+			return false;
+		});
+</script>

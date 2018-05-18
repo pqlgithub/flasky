@@ -2,25 +2,36 @@
 
 {% block private_js %}
 <script type="text/javascript">
-	$(function () {
-        $('.question-list ul li').on('click', function (e) {
-            var question_id = $(this).attr('id')
-            var question_name = $(this).text()
-            var data = {
-                "pid":question_id,
-            };
-            $.get("{{ url_for('qa.show_sub_questions', pid=16) }}", function (result) {
-                $('#sub-question-list').show()
-                if(true != result.success){
-                    alert(result.data.error)
-                }else{
-                    var sub_questions = result.data.sub_questions;
-                    {% for question in sub_questions %}
-                    $('#sub-question-list li').html('<li>{{ question }}<li>');
-                    {% endfor %}
-                }
-            });
+    function init_status() {
+        $('.level1').next('ul').hide();
+        $('.level1').click(function(){
+            $(this).next().slideDown(500).parent().siblings().children('ul').slideUp(500);
         });
+    }
+
+    function get_solution_list() {
+        var question_id = $(this).attr('id');
+        $.get("{{ url_for('qa.show_solutions') }}", {question_id: question_id}, function (result) {
+            $('.content').html(result);
+        }, 'html');
+    }
+
+    function search_solution() {
+        var qk = $('.input').val();
+        var data = {
+            qk:qk
+        };
+        $.get("{{ url_for('qa.search_solutions') }}", data, function (result) {
+            $('.content').html(result);
+        }, 'html');
+    }
+
+	$(function () {
+	    init_status();
+
+        $('.level2').on('click', get_solution_list);
+
+        $('.search').on('click', search_solution);
 	});
 </script>
 {% endblock %}
@@ -39,42 +50,26 @@
 </div>
 </section>
 
-<section class="helps">
-    <form action="" class="form-search" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" >
+<section class="qa">
+    <div class="top">
         <input type="text" class="input" placeholder="请输入问题">
-        <input type="submit" class="search" value="搜索">
-    </form>
+        <input id="search" type="submit" class="search" value="搜索">
+    </div>
+
 
     <div class="container">
-        <div class="question-list">
-            <ul>
+        <ul class="menu">
             {% for question in questions %}
-                <li class="question" id={{ question.id }}>
-                    {{ question.name }}
-                </li>
+            <li>
+                <a class="level1">{{ question.name }}</a>
+                <ul class="current">
+                    {% for sub_question in question.sub_questions %}
+                    <li><a class="level2" id={{ sub_question.id }}>{{ sub_question.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
             {% endfor %}
-            </ul>
-        </div>
-        <div id="sub-question-list" class="sub-question">
-            <p class="question-name">问题01</p>
-            <ul>
-
-            </ul>
-        </div>
-
-         <div id="solution-content" class="">
-            <p>问题01>详细问题01</p>
-            <p>详细问题01</p>
-            问题解答内容
-         </div>
-
-         <div id="question-search" class="">
-             <p>关于问题，共找到251相关问题</p>
-
-             <p>常见问题1</p>
-             <p>问题标题</p>
-             问题解答内容
-         </div>
+        </ul>
+        <div class="content"></div>
     </div>
 {% endblock %}
