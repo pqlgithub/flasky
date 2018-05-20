@@ -14,18 +14,29 @@ def help_center():
     pass
 
 
+@qa.route('/questions')
+def show_questions():
+    """获取所有的一级和二级分类问题列表"""
+
+    questions = Question.query.filter_by(pid=0).order_by(Question.created_at.desc()).all()
+    for question in questions:
+        question.sub_questions = Question.query.filter_by(pid=question.id).\
+            order_by(Question.created_at.desc()).all()
+
+    return render_template('qa/show_questions.html',
+                           questions=questions)
+
+
 @qa.route('/solutions')
 def show_solutions():
-    """二级问题分类下所有的Solution"""
+    """二级分类下所有的问答列表"""
+
     page = request.values.get('page', 1, type=int)
     per_page = request.values.get('per_page', 10, type=int)
     question_id = request.values.get('question_id', 0, type=int)
-
-    question = Question.query.get(question_id)
-    if question is None:
-        return status_response(False, R400_BADREQUEST)
-
+    question = Question.query.get_or_404(question_id)
     solutions = Solution.query.filter_by(question_id=question_id).all()
+
     # 构造分页
     total_count = len(solutions)
     if page == 1:
@@ -57,9 +68,7 @@ def show_solution():
 def update_useful():
     """解答有用，更新有用的数量"""
     solution_id = request.values.get('solution_id', 0, type=int)
-    solution = Solution.query.get(solution_id)
-    if solution is None:
-        return status_response(False, R400_BADREQUEST)
+    solution = Solution.query.get_or_404(solution_id)
 
     solution.useful_count += 1
     db.session.add(solution)
@@ -71,11 +80,8 @@ def update_useful():
 def update_useless():
     """解答无用，更新无用的数量和无用原因"""
     solution_id = request.values.get('solution_id')
-    reason = request.values.get('reason')
-    solution = Solution.query.get(solution_id)
-
-    if solution is None:
-        return status_response(False, R400_BADREQUEST)
+    reason = request.values.get('reason', type=int)
+    solution = Solution.query.get_or_404(int(solution_id))
 
     solution.useless_count += 1
     if '1' == reason:
@@ -99,12 +105,12 @@ def search_solutions(page=1):
     qk = request.values.get('qk')
     qk = qk.strip()
     if not qk:
-        return render_template('qa/search_result.html')
+        abort(404)
 
     builder = Solution.query.whoosh_search(qk, like=True)
     solutions = builder.order_by(Solution.id.desc()).all()
     # 构造分页
-    total_count = len(solutions)
+    total_count = builder.count()
     if page == 1:
         start = 0
     else:

@@ -1,0 +1,27 @@
+<ul class="menu">
+    {% for question in questions %}
+    <li>
+        <a class="level1">{{ question.name }}</a>
+        <ul class="current">
+            {% for sub_question in question.sub_questions %}
+            <li><a class="level2" id={{ sub_question.id }}>{{ sub_question.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+
+<script type="text/javascript">
+    function get_solution_list() {
+        var question_id = $(this).attr('id');
+        $.get("{{ url_for('qa.show_solutions') }}", {question_id: question_id}, function (result) {
+            $('.content').html(result);
+        }, 'html');
+    }
+
+    $('.level1').next('ul').hide();
+    $('.level1').click(function(){
+        $(this).next().slideDown(500).parent().siblings().children('ul').slideUp(500);
+    });
+    $('.level2').on('click', get_solution_list);
+</script>

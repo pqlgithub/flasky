@@ -1,35 +1,30 @@
 {% extends "layout/web.html" %}
 
 {% block private_js %}
-<script type="text/javascript">
-    function init_status() {
-        $('.level1').next('ul').hide();
-        $('.level1').click(function(){
-            $(this).next().slideDown(500).parent().siblings().children('ul').slideUp(500);
-        });
-    }
 
-    function get_solution_list() {
-        var question_id = $(this).attr('id');
-        $.get("{{ url_for('qa.show_solutions') }}", {question_id: question_id}, function (result) {
-            $('.content').html(result);
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+<script type="text/javascript">
+    function get_questions() {
+        $.get("{{ url_for('qa.show_questions') }}", function (result) {
+            $('.position_menu').html(result);
         }, 'html');
     }
 
     function search_solution() {
         var qk = $('.input').val();
-        var data = {
-            qk:qk
-        };
-        $.get("{{ url_for('qa.search_solutions') }}", data, function (result) {
+        if(qk == ""){
+            return;
+        }
+        $.get("{{ url_for('qa.search_solutions') }}", {qk:qk}, function (result) {
             $('.content').html(result);
         }, 'html');
     }
 
 	$(function () {
-	    init_status();
-
-        $('.level2').on('click', get_solution_list);
+	    get_questions();
 
         $('.search').on('click', search_solution);
 	});
@@ -58,18 +53,7 @@
 
 
     <div class="container">
-        <ul class="menu">
-            {% for question in questions %}
-            <li>
-                <a class="level1">{{ question.name }}</a>
-                <ul class="current">
-                    {% for sub_question in question.sub_questions %}
-                    <li><a class="level2" id={{ sub_question.id }}>{{ sub_question.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="position_menu"></div>
         <div class="content"></div>
     </div>
 {% endblock %}

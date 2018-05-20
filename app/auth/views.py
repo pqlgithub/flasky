@@ -217,5 +217,5 @@ def get_phoneverifycode():
             return json.dumps(msg)
 
         else:
-            flash(gettext(f'({int(60-time_interval)}s)后获取验证码。'), 'danger')
+            flash(gettext('({int(60-time_interval)}s)后获取验证码。'), 'danger')
             return json.dumps({'status': 0})

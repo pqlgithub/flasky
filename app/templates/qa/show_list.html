@@ -15,6 +15,8 @@
 </div>
 
 <script type="text/javascript">
+    mixpus.hook_ajax_modal();
+
     function show_solution() {
         var solution_id = $(this).attr('id');
         $.get("{{ url_for('qa.show_solution') }}", {solution_id: solution_id}, function (result) {
@@ -33,7 +35,7 @@
 	$('.pages-box.ajax')
 		.find('a')
 		.click(function () {
-			$('.solution-search').load($(this).attr('href'));
+			$('.solution-list').load($(this).attr('href'));
 			return false;
 		});
 </script>
